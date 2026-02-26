@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo Game • Games Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/shared/css/base.css" />
+    <style>
+      .demo-shell {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 1.75rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .demo-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .demo-title {
+        margin: 0;
+        font-size: clamp(1.4rem, 3vw, 1.8rem);
+      }
+
+      .demo-tagline {
+        margin: 0.3rem 0 0;
+        color: var(--color-text-muted);
+        font-size: 0.95rem;
+      }
+
+      .demo-meta-pill {
+        padding: 0.35rem 0.8rem;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--color-border-subtle);
+        background: rgba(15, 23, 42, 0.85);
+        font-size: 0.78rem;
+      }
+
+      .demo-play-area {
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border-subtle);
+        background: radial-gradient(circle at top, #0b1120, #020617 60%);
+        padding: 1.4rem 1.3rem 1.6rem;
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+      }
+
+      .demo-score {
+        font-size: 0.95rem;
+        color: var(--color-text-muted);
+      }
+
+      .demo-target {
+        font-size: 1.6rem;
+      }
+
+      .demo-button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .demo-button {
+        min-width: 80px;
+        padding: 0.45rem 0.9rem;
+        border-radius: var(--radius-full);
+        border: 1px solid rgba(56, 189, 248, 0.7);
+        background: linear-gradient(
+          120deg,
+          rgba(56, 189, 248, 0.15),
+          rgba(15, 23, 42, 0.9)
+        );
+        color: var(--color-accent);
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition:
+          transform var(--transition-fast),
+          box-shadow var(--transition-fast),
+          background var(--transition-fast);
+      }
+
+      .demo-button:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(
+          120deg,
+          rgba(56, 189, 248, 0.23),
+          rgba(15, 23, 42, 1)
+        );
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.7);
+      }
+
+      .demo-button:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+
+      .demo-message {
+        font-size: 0.95rem;
+        color: var(--color-text-muted);
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--color-accent);
+        padding: 0.3rem 0.2rem;
+        border-radius: var(--radius-full);
+        border: 1px solid transparent;
+      }
+
+      .back-link span {
+        font-size: 1rem;
+      }
+
+      .back-link:hover {
+        border-color: rgba(56, 189, 248, 0.6);
+        background: rgba(15, 23, 42, 0.6);
+      }
+
+      @media (max-width: 640px) {
+        .demo-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="demo-shell">
+        <header class="demo-header">
+          <div>
+            <h1 class="demo-title">Demo Game</h1>
+            <p class="demo-tagline">
+              A tiny clicker-style game just to prove the pipeline works.
+            </p>
+          </div>
+          <div class="demo-meta-pill">apps/demo-game</div>
+        </header>
+
+        <section class="demo-play-area" aria-label="Demo game playground">
+          <p class="demo-score">
+            Score:
+            <span id="demo-score-value">0</span>
+          </p>
+          <p class="demo-target">
+            Tap the button as many times as you like.
+          </p>
+          <div class="demo-button-row">
+            <button id="demo-play-button" class="demo-button" type="button">
+              Tap me
+            </button>
+            <button id="demo-reset-button" class="demo-button" type="button">
+              Reset
+            </button>
+          </div>
+          <p id="demo-message" class="demo-message">
+            Tip: Try this from <strong>npm run dev</strong> and after a
+            <strong>npm run build</strong> to confirm everything is wired.
+          </p>
+        </section>
+
+        <a class="back-link" href="../hub/">
+          <span>←</span>
+          <span>Back to hub</span>
+        </a>
+      </div>
+    </main>
+
+    <script type="module" src="/apps/demo-game/demo-game.js"></script>
+  </body>
+</html>
+
