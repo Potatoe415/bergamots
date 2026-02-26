@@ -8,7 +8,7 @@ const config = {
   build: {
     rollupOptions: {
       input: {
-        hub: resolve(__dirname, "apps/hub/index.html"),
+        hub: resolve(__dirname, "index.html"),
         demoGame: resolve(__dirname, "apps/demo-game/index.html"),
         easyfrog: resolve(__dirname, "apps/easyfrog/index.html"),
         pictionary: resolve(__dirname, "apps/pictionary/index.html"),

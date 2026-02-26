@@ -32,9 +32,11 @@ body {
   min-height: 100vh;
   font-family: var(--font-sans);
   color: var(--color-text);
-  background: radial-gradient(circle at top left, #1d283a 0, #020617 50%);
+  background: radial-gradient(circle at top left, #FFF2E2 0, #f3d2a6 80%);
   -webkit-font-smoothing: antialiased;
 }
+
+
 
 img,
 picture,
@@ -55,9 +57,5 @@ textarea {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-main {
-  padding: 1.5rem clamp(1.5rem, 3vw, 3rem) 2.5rem;
 }
 

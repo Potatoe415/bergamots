@@ -8,19 +8,33 @@
     <link rel="stylesheet" href="/apps/hub/hub.css" />
   </head>
   <body>
-    <main>
-      <header class="hub-header">
-        <div class="hub-title-group">
-          <h1 class="hub-title">Games Hub</h1>
-          <p class="hub-subtitle">
-            A minimal multi-game playground. Pick a game to jump in.
-          </p>
+    <header class="hub-header">
+      <a href="/" class="hub-banner-link" aria-label="Back to hub">
+        <div class="hub-banner">
+          <img
+            src="/assets/banner.jpg"
+            alt="Games Hub"
+            class="hub-banner-image"
+          />
+          <div
+          class="hub-lang-strip"
+          role="group"
+          aria-label="Language selection"
+        >
+        <button type="button" aria-label="Français">🇫🇷</button>
+        <button type="button" aria-label="English">🇬🇧</button>
+        <button type="button" aria-label="Español">🇪🇸</button>
         </div>
-        <div class="hub-meta">
-          <span class="hub-pill">Vanilla JS • Vite</span>
+         
         </div>
-      </header>
+      </a>
 
+      <div class="hub-header-inner">
+       
+      </div>
+    </header>
+
+    <main class="main-with-header">
       <section aria-label="Available games">
         <div id="games-grid" class="games-grid"></div>
       </section>
