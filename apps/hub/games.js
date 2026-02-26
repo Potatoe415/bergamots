@@ -11,7 +11,7 @@ export const games = [
       fr: "",
       es: ""
     },
-    path: "../easyfrog/",
+    path: "https://easyfrog.web.app/",
     image: "/assets/games/easyfrog.jpg"
   },
   {
@@ -26,7 +26,7 @@ export const games = [
       fr: "",
       es: ""
     },
-    path: "../pictionary/",
+    path: "/apps/pictionary/",
     image: "/assets/games/pictionary.jpg"
   },
   {
@@ -41,8 +41,23 @@ export const games = [
       fr: "",
       es: ""
     },
-    path: "../blackstories/",
+    path: "/apps/blackstories/",
     image: "/assets/games/blackstories.jpg"
+  },
+  {
+    id: "olemains",
+    title: {
+      en: "Olé Mains",
+      fr: "Olé Mains",
+      es: "Olé Mains"
+    },
+    description: {
+      en: "",
+      fr: "",
+      es: ""
+    },
+    path: "/apps/olemains/",
+    image: "/assets/games/olemains.jpg"
   },
   {
     id: "esquisse",
@@ -56,7 +71,7 @@ export const games = [
       fr: "",
       es: ""
     },
-    path: "../esquisse/",
+    path: "/apps/esquisse/",
     image: "/assets/games/esquisse.jpg"
   }
 ];
