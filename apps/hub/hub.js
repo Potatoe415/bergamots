@@ -1,24 +1,36 @@
 import { games } from "./games.js";
-import { qs, on } from "../../shared/js/dom.js";
+import { qs, qsa, on } from "../../shared/js/dom.js";
+
+const LANG_STORAGE_KEY = "lang";
+const SUPPORTED_LANGS = ["en", "fr", "es"];
+const DEFAULT_LANG = "en";
+
+let currentLang = DEFAULT_LANG;
+
+function getLocalizedText(entry) {
+  if (!entry) {
+    return "";
+  }
+
+  return entry[currentLang] || entry[DEFAULT_LANG] || "";
+}
 
 function createGameCard(game) {
   const card = document.createElement("article");
+  const title = getLocalizedText(game.title) || game.id;
+
   card.className = "game-card";
   card.tabIndex = 0;
   card.setAttribute("role", "button");
-  card.setAttribute("aria-label", `Open ${game.title}`);
+  card.setAttribute("aria-label", `Open ${title}`);
 
   card.innerHTML = `
-    <div class="game-card__body">
-      <div class="game-card__meta">
-        <span class="game-card__badge">Mini game</span>
-      </div>
-      <h2 class="game-card__title">${game.title}</h2>
-      <p class="game-card__description">${game.description}</p>
-    </div>
-    <div class="game-card__footer">
-      <span class="game-card__cta">Play</span>
-      <span aria-hidden="true" class="game-card__chevron">↗</span>
+    <div class="game-card__image-shell">
+      <img
+        src="${game.image}"
+        alt="${title}"
+        class="game-card__image"
+      />
     </div>
   `;
 
@@ -51,5 +63,53 @@ function renderHubGrid() {
   });
 }
 
-renderHubGrid();
+function setActiveLanguage(lang) {
+  currentLang = lang;
+  window.localStorage.setItem(LANG_STORAGE_KEY, lang);
+
+  const buttons = qsa("[data-lang-toggle]");
+  buttons.forEach((button) => {
+    const buttonLang = button.getAttribute("data-lang");
+    if (buttonLang === lang) {
+      button.classList.add("lang-toggle--active");
+    } else {
+      button.classList.remove("lang-toggle--active");
+    }
+  });
+
+  renderHubGrid();
+}
+
+function applyStoredLanguage() {
+  const stored = window.localStorage.getItem(LANG_STORAGE_KEY);
+  if (stored && SUPPORTED_LANGS.includes(stored)) {
+    currentLang = stored;
+  } else {
+    currentLang = DEFAULT_LANG;
+  }
+}
+
+function initLanguageControls() {
+  const buttons = qsa("[data-lang-toggle]");
+  buttons.forEach((button) => {
+    const buttonLang = button.getAttribute("data-lang");
+    if (!buttonLang || !SUPPORTED_LANGS.includes(buttonLang)) {
+      return;
+    }
+
+    on(button, "click", () => {
+      if (buttonLang !== currentLang) {
+        setActiveLanguage(buttonLang);
+      }
+    });
+  });
+}
+
+function init() {
+  applyStoredLanguage();
+  initLanguageControls();
+  setActiveLanguage(currentLang);
+}
+
+init();
 
