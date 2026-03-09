@@ -1,0 +1,87 @@
+/* --- Core Layout --- */
+:root { --nav-height: 60px; }
+body {
+  margin: 0;
+  background-color: #f4f4f9;
+  font-family: -apple-system, system-ui, sans-serif;
+  overflow-x: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.view { display: none; flex-direction: column; height: 100%; width: 100%; }
+.view.active { display: flex; }
+.hidden { display: none !important; }
+
+/* --- Navigation --- */
+.game-nav {
+  position: sticky; top: 0; z-index: 1000; height: var(--nav-height);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 16px; background: #ffffff; border-bottom: 2px solid #ffffff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1); box-sizing: border-box; flex-shrink: 0;
+}
+.nav-side { width: 25%; display: flex; align-items: center; }
+.nav-left { justify-content: flex-start; }
+.nav-right { justify-content: flex-end; }
+.nav-center { width: 50%; height: 100%; display: flex; justify-content: center; align-items: center; }
+.nav-banner { max-width: 100%; max-height: 45px; object-fit: contain; }
+.back-button, .icon-button { text-decoration: none; font-size: 1.8rem; color: #333; font-weight: bold; background: none; border: none; padding: 0; cursor: pointer; }
+
+/* --- HUD --- */
+.timer-display { font-size: 2rem; font-weight: 900; color: #333; }
+.score-display { font-weight: bold; color: #28a745; background: #e8f5e9; padding: 4px 12px; border-radius: 12px; font-size: 1.2rem; }
+
+/* --- Containers --- */
+.game-container {
+  flex: 1; display: flex; flex-direction: column; width: 100%;
+  max-width: 600px; margin: 0 auto; padding: 20px 16px; box-sizing: border-box;
+  overflow-y: auto;
+}
+.game-interface { justify-content: center; gap: 30px; overflow-y: hidden; }
+
+/* --- Menu Setup --- */
+.setup-panel {
+  background: white; padding: 24px; border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;
+  margin-bottom: 30px; border: 2px solid #ffffff;
+}
+.setup-label { display: block; font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: #333; }
+.large-input {
+  width: 120px; padding: 15px; font-size: 2.5rem; font-weight: 900;
+  text-align: center; border: 2px solid #e0e0e0; border-radius: 16px;
+  background: #f8f9fa; color: #007bff; outline: none;
+}
+.large-input:focus { border-color: #007bff; }
+.section-title { text-align: center; margin-bottom: 16px; font-size: 1.2rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- Deck Grid --- */
+.deck-grid { display: flex; flex-direction: column; gap: 16px; }
+.deck-btn {
+  padding: 24px; font-size: 1.4rem; font-weight: bold; color: white;
+  border: 2px solid #ffffff; border-radius: 20px; cursor: pointer;
+  text-transform: uppercase; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transition: transform 0.1s; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.deck-btn:active { transform: scale(0.97); }
+
+/* --- Word Card (Style Wordplayer) --- */
+.word-card {
+  width: 100%; min-height: 250px; background-color: #fff3cd;
+  border: 2px solid #ffffff; border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex;
+  justify-content: center; align-items: center; font-size: 2.8rem;
+  font-weight: 900; text-align: center; padding: 20px;
+  box-sizing: border-box; color: #333; word-break: break-word; flex-shrink: 0;
+}
+
+/* --- Controls --- */
+.controls { display: flex; flex-direction: column; gap: 12px; width: 100%; flex-shrink: 0; }
+.action-button {
+  width: 100%; padding: 18px; font-size: 1.3rem; font-weight: bold;
+  border: none; border-radius: 16px; color: white; cursor: pointer;
+  transition: transform 0.1s;
+}
+.action-button:active { transform: scale(0.97); }
+.fail { background-color: #dc3545; }
+.success { background-color: #28a745; }

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Black Stories</title>
+  <link rel="stylesheet" href="./blackstories.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="/"> <div class="/">🕯️</div> </a>
+      <div class="brandText">
+        <div class="brandTitle">Black Stories</div>
+        <div class="brandSub">Lis l’énigme. Clique pour révéler la solution.</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="langWrap" role="group" aria-label="Langue">
+        <button class="chip langBtn" data-lang="fr" type="button">FR</button>
+        <button class="chip langBtn" data-lang="en" type="button">EN</button>
+        <button class="chip langBtn" data-lang="es" type="button">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="metaRow">
+        <div class="pill" id="storyCounter">—</div>
+        <div class="pill" id="storyId">ID: —</div>
+      </div>
+
+     <div class="titleRow">
+	  <h1 class="title" id="title">Chargement…</h1>
+
+	  <div class="illusWrap" id="illusWrap" aria-hidden="true">
+		<img id="illusImg" class="illusImg" alt="" />
+	  </div>
+</div>
+
+      <div class="label">Histoire courte</div>
+      <p class="short" id="shortStory">—</p>
+
+
+
+      <button id="revealBox" class="revealBox" type="button" aria-label="Révéler l’histoire complète">
+        <div class="revealHint" id="revealHint">REVEAL - Touchez pour révéler l’histoire complète</div>
+        <div class="full hidden" id="fullStory"></div>
+      </button>
+
+<div class="footerRow navRow">
+
+  <!-- LEFT / PREVIOUS -->
+  <button id="prevBtn" class="navBtn navPrev" type="button" aria-label="Précédent">
+    <svg class="navIcon" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+
+  <!-- RIGHT / NEXT -->
+  <button id="nextBtn" class="navBtn navNext" type="button" aria-label="Suivant">
+    <svg class="navIcon" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
+
+</div>
+
+    </section>
+  </main>
+
+  <script src="./blackstories.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{
+  "gameId": "pictionary",
+  "title": "Pictionary",
+  "controls": [
+    "next"
+  ],
+  "words": [
+    {
+      "id": "pictionary_C001_1",
+      "text": "Portemanteau",
+      "fr": "Portemanteau",
+      "en": "Coat rack",
+      "es": "Perchero",
+      "card_color": "yellow"
+    },
+    {
+      "id": "pictionary_C001_2",
+      "text": "Opéra",
+      "fr": "Opéra",
+      "en": "Opera",
+      "es": "Ópera",
+      "card_color": "yellow"
+    },
+    {
+      "id": "pictionary_C001_3",
+      "text": "S'évader",
+      "fr": "S'évader",
+      "en": "Escape",
+      "es": "Escapar",
+      "card_color": "yellow"
+    },
+    {
+      "id": "pictionary_C001_4",
+      "text": "Avoir un haut le cœur",
+      "fr": "Avoir un haut le cœur",
+      "en": "Feel nauseous",
+      "es": "Sentir náuseas",
+      "card_color": "yellow"
+    },
+    {
+      "id": "pictionary_C001_5",
+      "text": "Koh Lanta",
+      "fr": "Koh Lanta",
+      "en": "Survival show",
+      "es": "Programa de supervivencia",
+      "card_color": "yellow"
+    }
+  ]
+}

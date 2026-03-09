@@ -1,0 +1,49 @@
+{
+  "gameId": "esquisse",
+  "title": "Esquisse",
+  "controls": [
+    "next"
+  ],
+  "words": [
+    {
+      "id": "sqc_C001_1",
+      "text": "Western spaghetti",
+      "fr": "Western spaghetti",
+      "en": "Western spaghetti",
+      "es": "Western spaghetti",
+      "card_color": "yellow"
+    },
+    {
+      "id": "sqc_C001_2",
+      "text": "Guacamole",
+      "fr": "Guacamole",
+      "en": "Guacamole",
+      "es": "Guacamole",
+      "card_color": "yellow"
+    },
+    {
+      "id": "sqc_C001_3",
+      "text": "Air guitar",
+      "fr": "Air guitar",
+      "en": "Air guitar",
+      "es": "Guitarra aérea",
+      "card_color": "yellow"
+    },
+    {
+      "id": "sqc_C001_4",
+      "text": "Poule mouillée",
+      "fr": "Poule mouillée",
+      "en": "Chicken",
+      "es": "cobarde",
+      "card_color": "yellow"
+    },
+    {
+      "id": "sqc_C001_5",
+      "text": "Artiste de rue",
+      "fr": "Artiste de rue",
+      "en": "Street artist",
+      "es": "Artista callejero",
+      "card_color": "yellow"
+    }
+  ]
+}

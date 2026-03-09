@@ -1,46 +1,21 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Games Hub</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/shared/css/base.css" />
-    <link rel="stylesheet" href="/apps/hub/hub.css" />
-  </head>
-  <body>
-    <header class="hub-header">
-      <a href="/" class="hub-banner-link" aria-label="Back to hub">
-        <div class="hub-banner">
-          <img
-            src="/assets/banner.jpg"
-            alt="Games Hub"
-            class="hub-banner-image"
-          />
-          <div
-          class="hub-lang-strip"
-          role="group"
-          aria-label="Language selection"
-        >
-        <button type="button" aria-label="Français">🇫🇷</button>
-        <button type="button" aria-label="English">🇬🇧</button>
-        <button type="button" aria-label="Español">🇪🇸</button>
-        </div>
-         
-        </div>
-      </a>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Games Hub</title>
+  <link rel="stylesheet" href="./shared/css/base.css">
+  <link rel="stylesheet" href="./hub.css">
+</head>
+<body>
+  <header class="hub-header">
+    <img src="./assets/banner-games-hub.jpg" alt="Games Hub Banner" class="main-banner">
+  </header>
 
-      <div class="hub-header-inner">
-       
-      </div>
-    </header>
+  <main id="games-grid" class="games-grid">
+    <p>Chargement des jeux...</p>
+  </main>
 
-    <main class="main-with-header">
-      <section aria-label="Available games">
-        <div id="games-grid" class="games-grid"></div>
-      </section>
-    </main>
-
-    <script type="module" src="/apps/hub/hub.js"></script>
-  </body>
+  <script type="module" src="./hub.js"></script>
+</body>
 </html>
-

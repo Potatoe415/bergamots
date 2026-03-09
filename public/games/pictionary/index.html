@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pictionary - Games Hub</title>
+  
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="game-body">
+  
+  <nav class="game-nav">
+    <a href="../../index.html" class="back-button">← Retour au Hub</a>
+  </nav>
+
+  <main class="game-container">
+    <header class="game-header">
+      <img src="./assets/pictionary_top.jpg" alt="Pictionary Banner" class="game-banner">
+      <h1>Pictionary</h1>
+    </header>
+
+    <section class="game-interface">
+      <div id="word-display" class="word-card">
+        <em>Appuyez sur "Mot Suivant" pour commencer</em>
+      </div>
+      
+      <div class="controls">
+        <button id="next-word-button" class="action-button">Mot Suivant</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

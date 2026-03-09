@@ -25,7 +25,7 @@ additionalsAI Interaction Protocol
 
 - Keep changes small and committable
 - No duplicated shared code: use shared/
-- Each game lives in apps/<name>/
+- Game data lives in public/games/<id>/; hub reads public/hub-config.json
 - No assets at repo root
 - Use relative paths
 - Everything must work with npm run dev and npm run build

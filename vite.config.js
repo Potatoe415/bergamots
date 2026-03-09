@@ -1,29 +1,18 @@
-import { resolve } from "node:path";
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
 
-/**
- * @type {import('vite').UserConfig}
- */
-const config = {
-  root: ".",
+export default defineConfig({
+  server: {
+    host: true, // Autorise l'accès via l'IP locale (0.0.0.0)
+    port: 5173  // Optionnel : fixe le port si tu veux être sûr
+  },
   build: {
     rollupOptions: {
       input: {
-        hub: resolve(__dirname, "index.html"),
-        demoGame: resolve(__dirname, "apps/demo-game/index.html"),
-        easyfrog: resolve(__dirname, "apps/easyfrog/index.html"),
-        pictionary: resolve(__dirname, "apps/pictionary/index.html"),
-        blackstories: resolve(__dirname, "apps/blackstories/index.html"),
-        esquisse: resolve(__dirname, "apps/esquisse/index.html")
+        main: resolve(__dirname, 'index.html'),
+        wordplayer: resolve(__dirname, 'wordplayer.html')
       }
-    },
-    outDir: "dist",
-    emptyOutDir: true
+    }
   },
-  server: {
-    host: true,
-    port: 5173,
-    strictPort: true
-  }
-};
-
-export default config;
+  publicDir: 'public'
+});
