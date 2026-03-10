@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salade de Cafards</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="mode-setup">
+  <header class="game-nav">
+    <div class="nav-side nav-left">
+      <button id="backBtn" type="button" class="back-button" aria-label="Retour à l'écran de configuration">←</button>
+    </div>
+    <div class="nav-center">
+      <img
+        src="./assets/thumbnail.jpg"
+        alt="Salade de Cafards"
+        class="nav-banner"
+        onerror="this.style.display='none'"
+      />
+    </div>
+    <div class="nav-side nav-right">
+      <div class="lang-switch">
+        <button type="button" class="lang-btn active" data-lang="fr">FR</button>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="es">ES</button>
+      </div>
+      <div class="timer-bar">
+        <div id="timerLight" class="timer-light"></div>
+        <p id="timerText"></p>
+      </div>
+    </div>
+  </header>
+
+  <section id="setup" class="setup-screen">
+    <div class="setup-card">
+      <p class="intro" data-i18n="intro">Configure la partie, puis touchez la pile active pour reveler chaque nouvelle carte.</p>
+      <div class="setup-grid">
+        <label><span data-i18n="players">Nombre de joueurs</span>
+          <input id="playerCount" type="number" min="2" max="8" value="4" />
+        </label>
+        <label><span data-i18n="deck">Cartes totales</span>
+          <input id="deckSize" type="number" min="32" max="256" step="8" value="128" />
+        </label>
+        <label><span data-i18n="winners">Nombre de gagnants</span>
+          <input id="winnersCount" type="number" min="1" max="8" value="1" />
+        </label>
+        <label class="toggle"><span data-i18n="timer">Minuteur</span>
+          <input id="timerEnabled" type="checkbox" checked />
+          <span data-i18n="timerToggle">Activer la lumiere rouge</span>
+        </label>
+        <label><span data-i18n="timerSeconds">Secondes avant alerte</span>
+          <input id="timerSeconds" type="number" min="0.5" max="5" step="0.5" value="1.5" />
+        </label>
+      </div>
+      <button id="startBtn" type="button" class="start-btn" data-i18n="start">Lancer la partie</button>
+    </div>
+
+    <div id="rulesModal" class="rules-modal" hidden>
+      <div class="rules-panel">
+        <div class="rules-head">
+          <strong data-i18n="rulesTitle">Regles</strong>
+          <button id="rulesClose" type="button" class="ghost">x</button>
+        </div>
+        <iframe id="rulesFrame" class="rules-frame" title="Rules"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <button
+    id="rulesBtn"
+    class="floating-info-button"
+    type="button"
+    aria-label="Afficher les règles du jeu"
+  >
+    i
+  </button>
+
+  <main id="game" class="game">
+
+    <section class="board" aria-label="Table de jeu">
+      <article class="pile-shell active" data-pile="0">
+        <button id="pileAHit" type="button" class="pile-hit" aria-label="Reveler une carte sur la pile A">
+          <div id="pileA" class="pile"><span id="pileACta" class="pile-message"></span></div>
+        </button>
+      </article>
+      <article class="pile-shell" data-pile="1">
+        <button id="pileBHit" type="button" class="pile-hit" aria-label="Reveler une carte sur la pile B">
+          <div id="pileB" class="pile"><span id="pileBCta" class="pile-message"></span></div>
+        </button>
+      </article>
+    </section>
+
+    <section id="players" class="players"></section>
+  </main>
+
+  <div id="winnerOverlay" class="winner-overlay" hidden>
+    <div class="winner-panel">
+      <div id="winnerText" class="winner-text">Player 1 win!</div>
+      <div id="confettiLayer" class="confetti-layer"></div>
+    </div>
+  </div>
+
+  <template id="cardTpl">
+    <article class="card">
+      <div class="card-top"></div>
+      <div class="card-face"></div>
+      <div class="card-tag"></div>
+    </article>
+  </template>
+
+  <script defer src="game.js"></script>
+</body>
+</html>

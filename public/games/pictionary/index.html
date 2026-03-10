@@ -3,20 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pictionary - Games Hub</title>
+  <title>Pictionary - Bergamots</title>
   
   <link rel="stylesheet" href="../../shared/css/base.css">
-  <link rel="stylesheet" href="./style.css">
 </head>
-<body class="game-body">
+  <body class="game-body">
   
   <nav class="game-nav">
     <a href="../../index.html" class="back-button">← Retour au Hub</a>
+    <button
+      id="pictionary-rules-button"
+      class="floating-info-button"
+      type="button"
+      aria-label="Afficher les règles de Pictionary"
+      style="display: none; margin-left: auto;"
+    >
+      i
+    </button>
   </nav>
 
   <main class="game-container">
     <header class="game-header">
-      <img src="./assets/pictionary_top.jpg" alt="Pictionary Banner" class="game-banner">
+      <img src="./assets/thumbnail.jpg" alt="Pictionary Banner" class="game-banner">
       <h1>Pictionary</h1>
     </header>
 

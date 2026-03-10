@@ -17,7 +17,7 @@ export class GameState {
    * @param {string} url - Path to words.json
    * @returns {Promise<void>}
    */
-  async loadGameData(url = './config/words.json') {
+  async loadGameData(url = '../../data/olemains/words.json') {
     try {
       const response = await fetch(url);
       if (!response.ok) {

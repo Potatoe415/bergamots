@@ -1,0 +1,111 @@
+{
+  "gameId": "taboo",
+  "title": "Taboo",
+  "version": 1,
+  "engine": "wordplayer",
+  "mode": "taboo",
+  "defaultLanguage": "fr",
+  "supportedLanguages": ["fr", "en", "es"],
+  "controls": [
+    "skip",
+    "success"
+  ],
+  "cards": [
+    {
+      "id": "tab_001",
+      "prompt": {
+        "fr": "Machine à laver",
+        "en": "Washing machine",
+        "es": "Lavadora"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Linge","Lessive","Nettoyer","Sale","Adoucissant"],
+          "en": ["Laundry","Detergent","Clean","Dirty","Softener"],
+          "es": ["Ropa","Detergente","Limpiar","Sucio","Suavizante"]
+        }
+      }
+    },
+    {
+      "id": "tab_002",
+      "prompt": {
+        "fr": "Hobbit",
+        "en": "Hobbit",
+        "es": "Hobbit"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Seigneur","Anneaux","Tolkien","Bilbo","Film"],
+          "en": ["Lord","Rings","Tolkien","Bilbo","Movie"],
+          "es": ["Señor","Anillos","Tolkien","Bilbo","Película"]
+        }
+      }
+    },
+    {
+      "id": "tab_003",
+      "prompt": {
+        "fr": "Compote",
+        "en": "Compote",
+        "es": "Compota"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Pomme","Cuire","Sucre","Purée","Mixer"],
+          "en": ["Apple","Cook","Sugar","Puree","Blend"],
+          "es": ["Manzana","Cocinar","Azúcar","Puré","Mezclar"]
+        }
+      }
+    },
+    {
+      "id": "tab_004",
+      "prompt": {
+        "fr": "Jogging",
+        "en": "Jogging",
+        "es": "Correr"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Courir","Marathon","Pantalon","Exercice","Parc"],
+          "en": ["Run","Marathon","Pants","Exercise","Park"],
+          "es": ["Correr","Maratón","Pantalón","Ejercicio","Parque"]
+        }
+      }
+    },
+    {
+      "id": "tab_005",
+      "prompt": {
+        "fr": "Handball",
+        "en": "Handball",
+        "es": "Balonmano"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Football","Main","Arbitre","Champion","Sport"],
+          "en": ["Football","Hand","Referee","Champion","Sport"],
+          "es": ["Fútbol","Mano","Árbitro","Campeón","Deporte"]
+        }
+      }
+    },
+    {
+      "id": "tab_006",
+      "prompt": {
+        "fr": "SMS",
+        "en": "Text message",
+        "es": "SMS"
+      },
+      "meta": {
+        "category": "yellow",
+        "taboo": {
+          "fr": ["Message","Téléphone","Envoyer","Texto","Forfait"],
+          "en": ["Message","Phone","Send","Text","Plan"],
+          "es": ["Mensaje","Teléfono","Enviar","Texto","Tarifa"]
+        }
+      }
+    }
+  ]
+}

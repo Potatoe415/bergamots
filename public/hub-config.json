@@ -1,1 +1,58 @@
-[{"id":"pictionary","title":"Pictionary","type":"wordplayer","thumbnail":"./games/pictionary/assets/thumbnail.jpg"},{"id":"taboo","title":"Taboo","type":"wordplayer","thumbnail":"./games/taboo/assets/thumbnail.jpg"},{"id":"esquisse","title":"Esquisse","type":"custom","thumbnail":"./games/esquisse/assets/thumbnail.jpg"},{"id":"blackstories","title":"Black Stories","type":"custom","indexPath":"./games/blackstories/index.html","thumbnail":"./games/blackstories/assets/thumbnail.jpg"},{"id":"olemains","title":"Olé Mains","type":"custom","indexPath":"./games/olemains/index.html","thumbnail":"./games/olemains/assets/thumbnail.jpg"},{"id":"easyfrog","title":"Easy Frog","type":"custom","indexPath":"https://easyfrog.web.app/","thumbnail":"./games/easyfrog/assets/thumbnail.jpg"}]
+[
+  {
+    "id": "pictionary",
+    "title": "Pictionary",
+    "kind": "wordpack",
+    "engine": "wordplayer",
+    "launch": "/wordplayer.html?game=pictionary",
+    "data": "/data/pictionary/words.json",
+    "thumbnail": "/games/pictionary/assets/thumbnail.jpg"
+  },
+  {
+    "id": "taboo",
+    "title": "Taboo",
+    "kind": "wordpack",
+    "engine": "wordplayer",
+    "launch": "/wordplayer.html?game=taboo",
+    "data": "/data/taboo/words.json",
+    "thumbnail": "/games/taboo/assets/thumbnail.jpg"
+  },
+  {
+    "id": "esquisse",
+    "title": "Esquisse",
+    "kind": "wordpack",
+    "engine": "wordplayer",
+    "launch": "/wordplayer.html?game=esquisse",
+    "data": "/data/esquisse/words.json",
+    "thumbnail": "/games/esquisse/assets/thumbnail.jpg"
+  },
+  {
+    "id": "blackstories",
+    "title": "Black Stories",
+    "kind": "custom",
+    "launch": "/games/blackstories/index.html",
+    "thumbnail": "/games/blackstories/assets/thumbnail.jpg"
+  },
+  {
+    "id": "olemains",
+    "title": "Olé Mains",
+    "kind": "custom",
+    "launch": "/games/olemains/index.html",
+    "data": "/data/olemains/words.json",
+    "thumbnail": "/games/olemains/assets/thumbnail.jpg"
+  },
+  {
+    "id": "easyfrog",
+    "title": "Easy Frog",
+    "kind": "external",
+    "launch": "https://easyfrog.web.app/",
+    "thumbnail": "/games/easyfrog/assets/thumbnail.jpg"
+  },
+  {
+    "id": "cafards",
+    "title": "Salade de Cafards",
+    "kind": "custom",
+    "launch": "/games/cafards/index.html",
+    "thumbnail": "/games/cafards/assets/background.jpg"
+  }
+]

@@ -19,15 +19,22 @@
     <div class="nav-side nav-right">
       <div id="score-display" class="score-display" style="display: none;">0</div>
       <div id="lang-selector" class="lang-selector"></div>
+      <button
+        id="rules-button"
+        class="floating-info-button"
+        type="button"
+        aria-label="Afficher les règles du jeu"
+        style="display: none;"
+      >
+        i
+      </button>
     </div>
   </header>
 
   <main class="game-container">
     <section class="game-interface">
-      <div id="word-display" class="word-card">
-        <em>Chargement...</em>
-      </div>
       <div id="timer-display" class="timer-display"></div>
+      <div id="word-display" class="word-card"></div>
       <div id="controls-container" class="controls"></div>
     </section>
   </main>

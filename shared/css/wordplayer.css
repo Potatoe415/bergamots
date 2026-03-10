@@ -96,8 +96,8 @@ html, body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 30px;
+  justify-content: flex-start;
+  gap: 20px;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -111,6 +111,7 @@ html, body {
   border-radius: 24px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   font-size: 2.5rem;
@@ -120,6 +121,90 @@ html, body {
   box-sizing: border-box;
   color: #856404;
   word-break: break-word;
+}
+
+.word-main-term-wrapper {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.word-main-term {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.word-taboo-container {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.word-taboo-separator {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.15);
+  margin-bottom: 8px;
+}
+
+.word-taboo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.word-taboo-list .taboo-item {
+  background-color: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.word-card.defi-active {
+  position: relative;
+}
+
+.word-card.defi-active::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #dc3545;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.end-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.end-title {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.end-stats {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.end-stats li {
+  margin: 2px 0;
 }
 
 /* --- Controls (Boutons) --- */
@@ -145,10 +230,14 @@ html, body {
   transform: scale(0.97);
 }
 
-#btn-next     { background-color: #007bff; }
-#btn-pass     { background-color: #dc3545; }
-#btn-validate { background-color: #28a745; }
-#btn-start    { background-color: #28a745; }
+#btn-next        { background-color: #007bff; }
+#btn-pass        { background-color: #dc3545; }
+#btn-failed      { background-color: #dc3545; }
+#btn-validate    { background-color: #28a745; }
+#btn-success     { background-color: #28a745; }
+#btn-start       { background-color: #28a745; }
+#btn-restart-keep,
+#btn-restart-all { background-color: #343a40; }
 
 /* --- Timer Selector (setup screen) --- */
 .timer-selector {
@@ -178,6 +267,33 @@ html, body {
   border-color: #007bff;
   background-color: #e7f1ff;
   color: #007bff;
+}
+
+.timer-selector .custom-timer-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.custom-timer-wrap input {
+  width: 3.5rem;
+  padding: 10px 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid #dee2e6;
+  border-radius: 12px;
+  text-align: center;
+  color: #495057;
+}
+
+.custom-timer-wrap input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.custom-timer-suffix {
+  font-weight: bold;
+  color: #495057;
 }
 
 /* --- Timer Display (during play) --- */
@@ -215,4 +331,76 @@ html, body {
   font-weight: bold;
   color: #495057;
   margin-top: 6px;
+}
+
+.floating-info-button {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1400;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: #111827;
+  color: #f9fafb;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
+}
+
+.floating-info-button:active {
+  transform: scale(0.96);
+}
+
+.rules-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+}
+
+.rules-modal {
+  max-width: 480px;
+  max-height: 70vh;
+  width: 90%;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.55);
+  padding: 18px 20px 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.rules-modal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rules-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.rules-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.rules-modal-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
 }

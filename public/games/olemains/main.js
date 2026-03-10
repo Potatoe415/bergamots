@@ -8,12 +8,14 @@ import { GameState } from './gameState.js';
 import { GameTimer } from './timer.js';
 import { buildDeckMenu, readTimerInput, updateHUD, showGameOver, showWord, showSetupView, showGameView, showError } from './ui.js';
 import { isValidGameData } from './validation.js';
+import { loadRulesIfExists } from '../../shared/js/engine.js';
 
 class OlemainsGame {
   constructor() {
     this.gameState = new GameState();
     this.timer = new GameTimer();
     this.isGameActive = false;
+    this.rulesHtml = null;
   }
 
   /**
@@ -21,6 +23,7 @@ class OlemainsGame {
    */
   async init() {
     this.setupEventListeners();
+    await this.initRulesSupport();
     
     try {
       await this.gameState.loadGameData();
@@ -43,6 +46,83 @@ class OlemainsGame {
     DOM.btnValid.addEventListener('click', () => this.processTurn(1));
     DOM.btnPass.addEventListener('click', () => this.processTurn(0));
     DOM.btnQuit.addEventListener('click', () => this.quitGame());
+  }
+
+  async initRulesSupport() {
+    const button = document.getElementById('olemains-rules-button');
+
+    if (!button) {
+      return;
+    }
+
+    const language = document.documentElement.lang || 'fr';
+    this.rulesHtml = await loadRulesIfExists('olemains', language);
+
+    if (!this.rulesHtml) {
+      button.style.display = 'none';
+      return;
+    }
+
+    button.style.display = 'flex';
+
+    if (!button.dataset.bound) {
+      button.addEventListener('click', () => this.openRulesModal());
+      button.dataset.bound = 'true';
+    }
+  }
+
+  openRulesModal() {
+    if (!this.rulesHtml) {
+      return;
+    }
+
+    const existing = document.querySelector('.rules-modal-backdrop');
+    if (existing) {
+      existing.remove();
+    }
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'rules-modal-backdrop';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'rules-modal';
+
+    const header = document.createElement('header');
+    const title = document.createElement('div');
+    title.className = 'rules-modal-title';
+    title.textContent = 'Règles du jeu';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'rules-modal-close';
+    closeButton.type = 'button';
+    closeButton.innerHTML = '&times;';
+    closeButton.addEventListener('click', () => this.closeRulesModal(backdrop));
+
+    header.appendChild(title);
+    header.appendChild(closeButton);
+
+    const content = document.createElement('div');
+    content.className = 'rules-modal-content';
+    content.innerHTML = this.rulesHtml;
+
+    dialog.appendChild(header);
+    dialog.appendChild(content);
+    backdrop.appendChild(dialog);
+
+    backdrop.addEventListener('click', (event) => {
+      if (event.target === backdrop) {
+        this.closeRulesModal(backdrop);
+      }
+    });
+
+    document.body.appendChild(backdrop);
+  }
+
+  closeRulesModal(backdropElement) {
+    const target = backdropElement || document.querySelector('.rules-modal-backdrop');
+    if (target && target.parentNode) {
+      target.parentNode.removeChild(target);
+    }
   }
 
   /**

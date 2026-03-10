@@ -1,4 +1,4 @@
-const CONFIG_URL = './hub-config.json';
+const CONFIG_URL = '/hub-config.json';
 const DOM_ID = 'games-grid';
 
 document.addEventListener('DOMContentLoaded', initializeDashboard);
@@ -48,14 +48,18 @@ function createTileNode(game) {
   anchor.href = determineTargetUrl(game);
   anchor.className = 'game-tile';
 
+  if (isExternalLaunch(game.launch)) {
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+  }
+
   const article = document.createElement('article');
-  
+
   const img = document.createElement('img');
-  img.src = game.thumbnail;
+  img.src = game.thumbnail || '';
   img.alt = `Miniature de ${game.title}`;
   img.loading = 'lazy';
-  
-  // Remplacement dynamique par un SVG noir si l'image n'existe pas sur le disque
+
   img.onerror = () => { img.src = generateBlackFallbackSVG(); };
 
   const heading = document.createElement('h2');
@@ -68,7 +72,15 @@ function createTileNode(game) {
   return anchor;
 }
 
+function isExternalLaunch(launchUrl) {
+  if (!launchUrl || typeof launchUrl !== 'string') return false;
+  return launchUrl.startsWith('http://') || launchUrl.startsWith('https://');
+}
+
 function determineTargetUrl(game) {
+  if (game.launch) {
+    return game.launch;
+  }
   if (game.type === 'custom' && game.indexPath) {
     return game.indexPath;
   }

@@ -1,6 +1,6 @@
-## Games Hub
+## Bergamots
 
-Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games are listed in `public/hub-config.json`; word-based games use the universal **wordplayer** (single HTML shell + config/words.json per game).
+Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games are listed in `public/hub-config.json`; word-based games use the universal **wordplayer** (single HTML shell + `public/data/<gameId>/words.json` per game).
 
 ### Commands
 
@@ -35,15 +35,14 @@ Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games a
 
 - **`public/`**: Static assets and game data (unprocessed, served at site root)
   - **`public/hub-config.json`**: Master list of games; hub fetches this to build the dashboard grid.
-  - **`public/games/<id>/`**: One folder per game. Each has:
-    - **`assets/`**: At least `thumbnail.jpg` (required for hub tiles).
-    - **`config/words.json`**: For wordplayer games — payload with `gameId`, `title`, `controls`, `words`.
-  - **`public/assets/`**: Global assets (e.g. main banner).
+  - **`public/data/<gameId>/words.json`**: Readonly word datasets for wordplayer (and any game that consumes them). One file per game; payload has `gameId`, `title`, `controls`, `words`.
+  - **`public/games/<id>/`**: One folder per standalone/custom game. Each has at least **`assets/`** with `thumbnail.jpg` (for hub tiles); custom games add their own `index.html`, JS, CSS.
+  - **`public/assets/`**: Hub/global assets (e.g. main banner).
 
 - **`shared/css/`**: Shared styles (`base.css`, `wordplayer.css`).
 - **`shared/js/`**: Shared logic (`engine.js` for data loading, randomizers; `dom.js` if used).
 - **`index.html`** + **`hub.js`**: Hub entry; fetches `hub-config.json` and renders game tiles.
-- **`wordplayer.html`** + **`wordplayer.js`**: Universal game UI for word-based games; reads `?game=<id>`, loads `public/games/<id>/config/words.json`, and renders words + controls from the JSON.
+- **`wordplayer.html`** + **`wordplayer.js`**: Shared word-based game engine. Reads `?game=<id>`, fetches `hub-config.json`, finds the matching wordpack entry, loads the game’s `data` URL (e.g. `/data/<id>/words.json`), then renders words and controls using multilingual fields from the JSON.
 
 ### How to add a new game (zero code)
 
@@ -53,18 +52,20 @@ Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games a
    - Put at least `thumbnail.jpg` in `public/games/<your-game-id>/assets/`.
 
 3. **For a wordplayer game (e.g. Pictionary, Taboo)**
-   - Add `public/games/<your-game-id>/config/words.json` with this shape:
-     - `gameId`, `title`, `controls` (e.g. `["next"]` or `["pass","validate"]`), `words` (array of `{ id, text, ... }`).
+   - Add `public/data/<your-game-id>/words.json` with this shape:
+     - `gameId`, `title`, `controls` (e.g. `["next"]` or `["pass","validate"]`), `words` (array of objects with `id`, `text`, and optional `fr`/`en`/`es`).
+   - Ensure `public/games/<your-game-id>/assets/thumbnail.jpg` exists for the hub tile.
 
 4. **Register in the hub**
-   - Edit `public/hub-config.json` and add an entry, for example:
-     - Wordplayer: `{ "id": "your-game-id", "title": "Your Game", "type": "wordplayer", "thumbnail": "./games/your-game-id/assets/thumbnail.jpg" }`
-     - Custom (own HTML or external): `{ "id": "your-game-id", "title": "Your Game", "type": "custom", "indexPath": "./games/your-game-id/index.html", "thumbnail": "./games/your-game-id/assets/thumbnail.jpg" }`
+   - Edit `public/hub-config.json` and add an entry:
+     - Wordpack (shared engine): `{ "id": "your-game-id", "title": "Your Game", "kind": "wordpack", "engine": "wordplayer", "launch": "/wordplayer.html?game=your-game-id", "data": "/data/your-game-id/words.json", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
+     - Custom (standalone): `{ "id": "your-game-id", "title": "Your Game", "kind": "custom", "launch": "/games/your-game-id/index.html", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
+     - External: `{ "id": "your-game-id", "title": "Your Game", "kind": "external", "launch": "https://...", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
 
-No changes to `hub.js`, `wordplayer.js`, or `vite.config.js` are required.
+No changes to `hub.js` or `vite.config.js` are required; wordplayer discovers the data path from `hub-config.json`.
 
 ### Optional: use shared styles/scripts
 
 - Reuse `shared/css/base.css` and `shared/js/` from custom game HTML/JS to keep the look and behavior consistent.
 
-# games-hub
+# Bergamots

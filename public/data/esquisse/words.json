@@ -1,0 +1,88 @@
+{
+  "gameId": "sqc",
+  "title": "Esquisse",
+  "version": 1,
+  "engine": "wordplayer",
+  "mode": "esquisse",
+  "defaultLanguage": "fr",
+  "supportedLanguages": [
+    "fr",
+    "en",
+    "es"
+  ],
+  "controls": [
+    "next"
+  ],
+  "cards": [
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Western spaghetti",
+        "en": "Western spaghetti",
+        "es": "Western spaghetti"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "western_spaghetti"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Guacamole",
+        "en": "Guacamole",
+        "es": "Guacamole"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "guacamole"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Air guitar",
+        "en": "Air guitar",
+        "es": "Guitarra aérea"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "air_guitar"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Poule mouillée",
+        "en": "Chicken",
+        "es": "cobarde"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "poule_mouillee"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Artiste de rue",
+        "en": "Street artist",
+        "es": "Artista callejero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "artiste_de_rue"
+      }
+    }
+  ]
+}
