@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qui veut gagner des millions</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="aurora aurora-left"></div>
+      <div class="aurora aurora-right"></div>
+      <div class="scanlines" aria-hidden="true"></div>
+
+      <header class="topbar">
+        <button class="icon-button" id="homeShortcut" type="button" aria-label="Return to home screen">
+          <span class="icon">⌂</span>
+        </button>
+        <div class="brand-lockup">
+          <img
+            src="./assets/thumbnail.jpg"
+            alt="Qui veut gagner des millions"
+            class="brand-logo"
+          />
+          <p class="eyebrow visually-hidden" id="brandEyebrow">TV Quiz Challenge</p>
+          <h1 class="visually-hidden" id="brandTitle">Qui veut gagner des millions</h1>
+        </div>
+        <button class="icon-button" id="restartShortcut" type="button" aria-label="Restart game">
+          <span class="icon">↻</span>
+        </button>
+      </header>
+
+      <main class="layout">
+        <aside class="ladder-panel glass-panel" aria-label="Prize ladder">
+          <div class="ladder-header">
+            <p class="eyebrow" id="ladderEyebrow">Progress</p>
+            <h2 id="ladderTitle">15-Step Ladder</h2>
+          </div>
+          <ol class="ladder-list" id="ladderList"></ol>
+        </aside>
+
+        <section class="stage">
+          <section class="screen active" id="startScreen">
+            <div class="hero-score glass-panel">
+              <p class="hero-label" id="heroLabel">Top prize</p>
+              <div class="hero-prize">1 000 000 €</div>
+              <button class="primary-cta" id="startGameButton" type="button">Start Game</button>
+              <p class="hero-copy" id="heroCopy">15 questions. 4 lifelines. 2 guaranteed milestones.</p>
+            </div>
+
+            <div class="start-card glass-panel">
+            <div class="start-meta-row">
+              <p class="mode-tag" id="modeTag">Classic Mode</p>
+              <label class="language-picker" for="languageSelect">
+                <span id="languageLabel">Language</span>
+                <select id="languageSelect">
+                  <option value="fr">Francais</option>
+                  <option value="en">English</option>
+                  <option value="es">Espanol</option>
+                  <option value="es-419">Espanol (Latam)</option>
+                </select>
+              </label>
+            </div>
+
+              <div class="start-actions">
+                <button class="secondary-cta" id="toggleTimerButton" type="button" aria-pressed="false">
+                  Timer: Off
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen" id="gameScreen" aria-labelledby="questionText">
+            <div class="game-header">
+              <div class="headline-block">
+                <div class="eyebrow">
+                  <span id="questionLabel">Question</span>
+                  <span id="questionCounter">1/15</span>
+                  <span id="guaranteedLabel">Guaranteed</span>
+                  <span id="guaranteedPrize">0 €</span>
+                  <span id="nextLabel">Next</span>
+                  <span id="nextPrize">200 €</span>
+                </div>
+                <div class="current-prize" id="currentPrize">100 €</div>
+              </div>
+
+              <div class="timer-chip" id="timerChip" hidden>
+                <span class="chip-label" id="timerChipLabel">Timer</span>
+                <strong id="timerValue">30</strong>
+              </div>
+            </div>
+
+            <article class="question-card glass-panel">
+              <div class="question-accent"></div>
+              <h2 class="question-text" id="questionText">Question text</h2>
+            </article>
+
+            <section class="lifeline-row lifeline-row-four" aria-label="Lifelines">
+              <button class="lifeline-button" id="lifeline5050" type="button">
+                <img src="./assets/images/5050.png" alt="" class="lifeline-icon-image" />
+              </button>
+              <button class="lifeline-button" id="lifelineAudience" type="button">
+                <img src="./assets/images/public.png" alt="" class="lifeline-icon-image" />
+              </button>
+              <button class="lifeline-button" id="lifelinePhone" type="button">
+                <img src="./assets/images/call.png" alt="" class="lifeline-icon-image" />
+              </button>
+              <button class="lifeline-button" id="lifelineSwap" type="button">
+                <img src="./assets/images/swap.png" alt="" class="lifeline-icon-image" />
+              </button>
+            </section>
+
+            <section class="answers-grid" id="answersGrid" aria-label="Answer choices"></section>
+          </section>
+
+          <section class="screen" id="resultScreen" aria-labelledby="resultTitle">
+            <div class="result-card glass-panel">
+              <p class="mode-tag" id="resultModeTag">Game Over</p>
+              <h2 id="resultTitle">You leave with 0 €</h2>
+              <p class="result-copy" id="resultCopy">
+                A tough break. Reset the lights, reload the questions, and take another run.
+              </p>
+
+              <div class="result-stats">
+                <article class="result-stat">
+                  <span id="resultReachedLabel">Reached</span>
+                  <strong id="resultReached">Question 1</strong>
+                </article>
+                <article class="result-stat">
+                  <span id="resultGuaranteedLabel">Guaranteed</span>
+                  <strong id="resultGuaranteed">0 €</strong>
+                </article>
+                <article class="result-stat">
+                  <span id="resultWonLabel">Won</span>
+                  <strong id="resultPrize">0 €</strong>
+                </article>
+              </div>
+
+              <div class="result-actions">
+                <button class="primary-cta" id="playAgainButton" type="button">Play Again</button>
+                <button class="secondary-cta" id="backHomeButton" type="button">Home Screen</button>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <button
+      class="floating-info-button"
+      id="ladderToggleButton"
+      type="button"
+      aria-label="Afficher les paliers"
+    >
+      i
+    </button>
+
+    <button
+      class="floating-music-button"
+      id="musicToggleButton"
+      type="button"
+      aria-pressed="true"
+      aria-label="Music: On"
+    >
+      🔊
+    </button>
+
+    <div class="overlay-backdrop hidden" id="modalBackdrop" aria-hidden="true">
+      <section class="modal glass-panel hidden" id="audienceModal" role="dialog" aria-modal="true" aria-labelledby="audienceTitle">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow" id="audienceEyebrow">Lifeline</p>
+            <h2 id="audienceTitle">Ask the Audience</h2>
+          </div>
+          <button class="icon-button modal-close" type="button" data-close-modal aria-label="Close audience vote">
+            <span class="icon">×</span>
+          </button>
+        </div>
+        <p class="modal-copy" id="audienceCopy">The studio has voted. Here is the split for the remaining answers.</p>
+        <div class="audience-chart" id="audienceChart"></div>
+      </section>
+
+      <section class="modal glass-panel hidden" id="phoneModal" role="dialog" aria-modal="true" aria-labelledby="phoneTitle">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow" id="phoneEyebrow">Lifeline</p>
+            <h2 id="phoneTitle">Phone a Friend</h2>
+          </div>
+          <button class="icon-button modal-close" type="button" data-close-modal aria-label="Close phone a friend">
+            <span class="icon">×</span>
+          </button>
+        </div>
+        <p class="modal-copy" id="phoneFriendCopy"></p>
+      </section>
+
+      <section class="modal glass-panel hidden" id="errorModal" role="dialog" aria-modal="true" aria-labelledby="errorTitle">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow" id="errorEyebrow">Data</p>
+            <h2 id="errorTitle">Question file unavailable</h2>
+          </div>
+        </div>
+        <p class="modal-copy" id="errorCopy"></p>
+        <button class="primary-cta" id="retryLoadButton" type="button">Retry Loading</button>
+      </section>
+    </div>
+
+    <template id="answerButtonTemplate">
+      <button class="answer-button" type="button">
+        <span class="answer-prefix"></span>
+        <span class="answer-text"></span>
+      </button>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
+
+

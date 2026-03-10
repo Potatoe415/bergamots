@@ -54,5 +54,12 @@
     "kind": "custom",
     "launch": "/games/cafards/index.html",
     "thumbnail": "/games/cafards/assets/background.jpg"
+  },
+  {
+    "id": "millionaire",
+    "title": "Qui veut gagner des millions ?",
+    "kind": "custom",
+    "launch": "/games/millionaire/index.html",
+    "thumbnail": "/games/millionaire/assets/thumbnail.jpg"
   }
 ]
