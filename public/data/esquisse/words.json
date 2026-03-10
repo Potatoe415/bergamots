@@ -29,6 +29,860 @@
       }
     },
     {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Passe-café",
+        "en": "Coffee filter",
+        "es": "Colador de café"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "passe_cafe"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Livreur de pizza",
+        "en": "Pizza delivery man",
+        "es": "Repartidor de pizza"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "livreur_de_pizza"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Échange de cartes de visite",
+        "en": "Business card exchange",
+        "es": "Intercambio de tarjetas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "echange_de_cartes_de_visite"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Petit doigt",
+        "en": "Little finger",
+        "es": "Dedo meñique"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "petit_doigt"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Méduse",
+        "en": "Jellyfish",
+        "es": "Medusa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "meduse"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Zèbre",
+        "en": "Zebra",
+        "es": "Cebra"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "zebre"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Harpe",
+        "en": "Harp",
+        "es": "Arpa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "harpe"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Passeport",
+        "en": "Passport",
+        "es": "Paspórte"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "passeport"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Lettres",
+        "en": "Letters",
+        "es": "Cartas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lettres"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Piscine",
+        "en": "Swimming pool",
+        "es": "Piscina"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "piscine"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Tableur",
+        "en": "Spreadsheet",
+        "es": "Hoja de cálculo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tableur"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Jacuzzi",
+        "en": "Jacuzzi",
+        "es": "Jacuzzi"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "jacuzzi"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Cadenas",
+        "en": "Padlock",
+        "es": "Candado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "cadenas"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Barrière",
+        "en": "Barrier",
+        "es": "Barrera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "barriere"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Fauteuil",
+        "en": "Armchair",
+        "es": "Sillón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "fauteuil"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Armoire de chambre",
+        "en": "Bedroom wardrobe",
+        "es": "Armario de dormitorio"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "armoire_de_chambre"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Passeport",
+        "en": "Passport",
+        "es": "Paspórte"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "passeport"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Fusible",
+        "en": "Fuse",
+        "es": "Fusible"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "fusible"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Cafetière",
+        "en": "Coffee maker",
+        "es": "Cafetera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "cafetiere"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Tatou",
+        "en": "Armadillo",
+        "es": "Armadillo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tatou"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Phare",
+        "en": "Lighthouse",
+        "es": "Faro"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "phare"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Poire",
+        "en": "Pear",
+        "es": "Pera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "poire"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Neige",
+        "en": "Snow",
+        "es": "Nieve"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "neige"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Titre de film",
+        "en": "Movie title",
+        "es": "Título de película"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "titre_de_film"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Élan",
+        "en": "Moose",
+        "es": "Alce"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "elan"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Radeau",
+        "en": "Raft",
+        "es": "Balsa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "radeau"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Salle de cinéma",
+        "en": "Movie theater",
+        "es": "Sala de cine"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "salle_de_cinema"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Blouson de biker",
+        "en": "Biker jacket",
+        "es": "Chaqueta de motociclista"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "blouson_de_biker"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Rock’n’roll",
+        "en": "Rock and roll",
+        "es": "Rock and roll"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "rock_n_roll"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Cambriolage",
+        "en": "Burglary",
+        "es": "Robo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "cambriolage"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Jet",
+        "en": "Jet plane",
+        "es": "Jet"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "jet"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Masque",
+        "en": "Mask",
+        "es": "Máscara"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "masque"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Jet",
+        "en": "Jet plane",
+        "es": "Jet"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "jet"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Rock’n’roll",
+        "en": "Rock and roll",
+        "es": "Rock and roll"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "rock_n_roll"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Jet",
+        "en": "Jet plane",
+        "es": "Jet"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "jet"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Boule de cristal",
+        "en": "Crystal ball",
+        "es": "Bola de cristal"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "boule_de_cristal"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Poséidon",
+        "en": "Poseidon",
+        "es": "Poseidón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "poseidon"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "La petite souris",
+        "en": "Tooth fairy",
+        "es": "Ratón Pérez"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "la_petite_souris"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Feu aux chandelles",
+        "en": "Candlelight dinner",
+        "es": "Cena a la luz de las velas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "feu_aux_chandelles"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Magicien",
+        "en": "Magician",
+        "es": "Mago"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "magicien"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Statue de la Liberté",
+        "en": "Statue of Liberty",
+        "es": "Estatua de la Libertad"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "statue_de_la_liberte"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Fermier",
+        "en": "Farmer",
+        "es": "Granjero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "fermier"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Danseuse étoile",
+        "en": "Principal dancer",
+        "es": "Bailarina estrella"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "danseuse_etoile"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Tilt de Sonne",
+        "en": "Tilt de Sonne",
+        "es": "Tilt de Sonne"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tilt_de_sonne"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Le Cid",
+        "en": "The Cid",
+        "es": "El Cid"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "le_cid"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Bœuf",
+        "en": "Beef",
+        "es": "Carne de res"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "boeuf"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Banque du sang",
+        "en": "Blood bank",
+        "es": "Banco de sangre"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "banque_du_sang"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Fromage à raclette",
+        "en": "Raclette cheese",
+        "es": "Queso raclette"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "fromage_a_raclette"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Empire de doigt",
+        "en": "Finger empire",
+        "es": "Imperio del dedo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "empire_de_doigt"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Soleil",
+        "en": "Sun",
+        "es": "Sol"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "soleil"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Crabe",
+        "en": "Crab",
+        "es": "Cangrejo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "crabe"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Boussole",
+        "en": "Compass",
+        "es": "Brújula"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "boussole"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Boîte aux lettres",
+        "en": "Mailbox",
+        "es": "Buzón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "boite_aux_lettres"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Dame de cœur",
+        "en": "Queen of hearts",
+        "es": "Dama de corazones"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "dame_de_coeur"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Paris",
+        "en": "Paris",
+        "es": "París"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "paris"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Salade verte",
+        "en": "Green salad",
+        "es": "Ensalada verde"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "salade_verte"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Motard",
+        "en": "Biker",
+        "es": "Motorista"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "motard"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Tomate cerise",
+        "en": "Cherry tomato",
+        "es": "Tomate cherry"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tomate_cerise"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Statue de la liberté",
+        "en": "Statue of Liberty",
+        "es": "Estatua de la Libertad"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "statue_de_la_liberte"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Salle de bain",
+        "en": "Bathroom",
+        "es": "Baño"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "salle_de_bain"
+      }
+    },
+    {
+      "id": "sqc_001",
+      "prompt": {
+        "fr": "Cafard",
+        "en": "Cockroach",
+        "es": "Cucaracha"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cafard"
+      }
+    },
+    {
       "id": "sqc_002",
       "prompt": {
         "fr": "Guacamole",
@@ -40,6 +894,790 @@
         "category": "yellow",
         "points": 1,
         "wordKey": "guacamole"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chinois",
+        "en": "Chinese",
+        "es": "Chino"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chinois"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Faire du stop",
+        "en": "Hitchhike",
+        "es": "Hacer autostop"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "faire_du_stop"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Fruits secs",
+        "en": "Dried fruits",
+        "es": "Frutos secos"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "fruits_secs"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Poêle à frire",
+        "en": "Frying pan",
+        "es": "Sartén"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "poele_a_frire"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Œufs brouillés",
+        "en": "Scrambled eggs",
+        "es": "Huevos revueltos"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "oeufs_brouilles"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Concombre",
+        "en": "Cucumber",
+        "es": "Pepino"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "concombre"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Fer à friser",
+        "en": "Curling iron",
+        "es": "Rizador"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "fer_a_friser"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Blaireau",
+        "en": "Badger",
+        "es": "Tejón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "blaireau"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Espion",
+        "en": "Spy",
+        "es": "Espía"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "espion"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Étudiant",
+        "en": "Student",
+        "es": "Estudiante"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "etudiant"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Cobra",
+        "en": "Cobra",
+        "es": "Cobra"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "cobra"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Crèche",
+        "en": "Daycare",
+        "es": "Guardería"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "creche"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Pont-levis",
+        "en": "Drawbridge",
+        "es": "Puente levadizo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "pont_levis"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Léopard",
+        "en": "Leopard",
+        "es": "Leopardo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "leopard"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Calamar",
+        "en": "Squid",
+        "es": "Calamar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "calamar"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Paon",
+        "en": "Peacock",
+        "es": "Pavo real"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "paon"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Blaireau",
+        "en": "Badger",
+        "es": "Tejón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "blaireau"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Poulpe",
+        "en": "Octopus",
+        "es": "Pulpo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "poulpe"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Panda",
+        "en": "Panda",
+        "es": "Panda"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "panda"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Brûle-neige",
+        "en": "Snow blower",
+        "es": "Quitanieves"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "brule_neige"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Geek",
+        "en": "Geek",
+        "es": "Geek"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "geek"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chauffeur de bus",
+        "en": "Bus driver",
+        "es": "Conductor de autobús"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chauffeur_de_bus"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Vélo tandem",
+        "en": "Tandem bike",
+        "es": "Bicicleta tándem"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "velo_tandem"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chasse-neige",
+        "en": "Snowplow",
+        "es": "Quitanieves"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chasse_neige"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Livre de chevet",
+        "en": "Bedside book",
+        "es": "Libro de cabecera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "livre_de_chevet"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Strip-teaseuse",
+        "en": "Stripper",
+        "es": "Stripper"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "strip_teaseuse"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Spiderman",
+        "en": "Spider-Man",
+        "es": "Spider-Man"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "spiderman"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Ceinture d’astéroïdes",
+        "en": "Asteroid belt",
+        "es": "Cinturón de asteroides"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "ceinture_d_asteroides"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Dessin animé",
+        "en": "Cartoon",
+        "es": "Dibujo animado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "dessin_anime"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Grossir",
+        "en": "Gain weight",
+        "es": "Engordar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "grossir"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Lune",
+        "en": "Moon",
+        "es": "Luna"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lune"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Bus scolaire",
+        "en": "School bus",
+        "es": "Autobús escolar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "bus_scolaire"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Lunettes 3D",
+        "en": "3D glasses",
+        "es": "Gafas 3D"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lunettes_3d"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Dessin animé",
+        "en": "Cartoon",
+        "es": "Dibujo animado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "dessin_anime"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Lunettes 3D",
+        "en": "3D glasses",
+        "es": "Gafas 3D"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lunettes_3d"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Karaté",
+        "en": "Karate",
+        "es": "Kárate"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "karate"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Rideaux",
+        "en": "Curtains",
+        "es": "Cortinas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "rideaux"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Tondeuse à gazon",
+        "en": "Lawn mower",
+        "es": "Cortacésped"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tondeuse_a_gazon"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Pilote",
+        "en": "Pilot",
+        "es": "Piloto"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pilote"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Parc de Surelles",
+        "en": "Parc de Surelles",
+        "es": "Parque de Surelles"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "parc_de_surelles"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Casserole",
+        "en": "Saucepan",
+        "es": "Cacerola"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "casserole"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Ales d’ange",
+        "en": "Angel wings",
+        "es": "Alas de ángel"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "ales_dange"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Journal",
+        "en": "Newspaper",
+        "es": "Periódico"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "journal"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Montre",
+        "en": "Watch",
+        "es": "Reloj"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "montre"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Super-héros",
+        "en": "Superhero",
+        "es": "Superhéroe"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "super_heros"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chaussettes",
+        "en": "Socks",
+        "es": "Calcetines"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chaussettes"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Moulin Rouge",
+        "en": "Moulin Rouge",
+        "es": "Moulin Rouge"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "moulin_rouge"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Perruque",
+        "en": "Wig",
+        "es": "Peluca"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "perruque"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Bateau de croisière",
+        "en": "Cruise ship",
+        "es": "Crucero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "bateau_de_croisiere"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Saint valentin",
+        "en": "Valentine’s Day",
+        "es": "San Valentín"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "saint_valentin"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chouette",
+        "en": "Owl",
+        "es": "Búho"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chouette"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Chien de traîneau",
+        "en": "Sled dog",
+        "es": "Perro de trineo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chien_de_traineau"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Machine à laver",
+        "en": "Washing machine",
+        "es": "Lavadora"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "machine_a_laver"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Potion magique",
+        "en": "Magic potion",
+        "es": "Poción mágica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "potion_magique"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Égypte",
+        "en": "Egypt",
+        "es": "Egipto"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "egypte"
+      }
+    },
+    {
+      "id": "sqc_002",
+      "prompt": {
+        "fr": "Périscope",
+        "en": "Periscope",
+        "es": "Periscopio"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "periscope"
       }
     },
     {
@@ -57,6 +1695,860 @@
       }
     },
     {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Sardines",
+        "en": "Sardines",
+        "es": "Sardinas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "sardines"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Matelas à eau",
+        "en": "Waterbed",
+        "es": "Colchón de agua"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "matelas_a_eau"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Épis de maïs",
+        "en": "Corn cob",
+        "es": "Mazorca de maíz"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "epis_de_mais"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Sous-vêtements",
+        "en": "Underwear",
+        "es": "Ropa interior"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "sous_vetements"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Harmonica",
+        "en": "Harmonica",
+        "es": "Armónica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "harmonica"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Mante religieuse",
+        "en": "Praying mantis",
+        "es": "Mantis religiosa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mante_religieuse"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Ligne de mire",
+        "en": "Sight line",
+        "es": "Línea de mira"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "ligne_de_mire"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Paon",
+        "en": "Peacock",
+        "es": "Pavo real"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "paon"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Frapper",
+        "en": "Hit",
+        "es": "Golpear"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "frapper"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Plucher",
+        "en": "Peel",
+        "es": "Pelar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "plucher"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Rebondir",
+        "en": "Bounce",
+        "es": "Rebotar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "rebondir"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Se mettre à genoux",
+        "en": "Kneel",
+        "es": "Arrodillarse"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "se_mettre_a_genoux"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Rétrécir",
+        "en": "Shrink",
+        "es": "Encogerse"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "retrecir"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Frissonner",
+        "en": "Shiver",
+        "es": "Escalofriarse"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "frissonner"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Se déshabiller",
+        "en": "Undress",
+        "es": "Desvestirse"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "se_deshabiller"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Plonger",
+        "en": "Dive",
+        "es": "Bucear"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "plonger"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Tendre",
+        "en": "Tender",
+        "es": "Enternecer"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tendre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Apprendre",
+        "en": "Learn",
+        "es": "Aprender"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "apprendre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Poncer",
+        "en": "Sand (wood)",
+        "es": "Lijar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "poncer"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Toucher le fond",
+        "en": "Hit rock bottom",
+        "es": "Tocar fondo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "toucher_le_fond"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Centre commercial",
+        "en": "Shopping mall",
+        "es": "Centro comercial"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "centre_commercial"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Oursin à la carbone",
+        "en": "Sea urchin carbonara",
+        "es": "Erizo a la carbonara"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "oursin_a_la_carbone"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Du pied gauche",
+        "en": "Get off on the wrong foot",
+        "es": "Empezar con mal pie"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "du_pied_gauche"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Morce libre Alcor",
+        "en": "Morce Libre Alcor",
+        "es": "Morce Libre Alcor"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "morce_libre_alcor"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Rouleau de printemps",
+        "en": "Spring roll",
+        "es": "Rollo de primavera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "rouleau_de_printemps"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Gardien de zoo",
+        "en": "Zookeeper",
+        "es": "Cuidador de zoológico"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "gardien_de_zoo"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Pomme de terre",
+        "en": "Potato",
+        "es": "Patata"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "pomme_de_terre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Fusée",
+        "en": "Rocket",
+        "es": "Cohete"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "fusee"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Chaloupe",
+        "en": "Dinghy",
+        "es": "Chalupa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chaloupe"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Chambre des parents",
+        "en": "Parents’ bedroom",
+        "es": "Habitación de los padres"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chambre_des_parents"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Lunettes 3D",
+        "en": "3D glasses",
+        "es": "Gafas 3D"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lunettes_3d"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Lézard",
+        "en": "Lizard",
+        "es": "Lagarto"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lezard"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Coquillettes",
+        "en": "Small pasta",
+        "es": "Macarrones pequeños"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "coquillettes"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Chaloupe",
+        "en": "Dinghy",
+        "es": "Chalupa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chaloupe"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Coquillettes",
+        "en": "Small pasta",
+        "es": "Macarrones pequeños"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "coquillettes"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Cuillère à soupe",
+        "en": "Soup spoon",
+        "es": "Cuchara sopera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cuillere_a_soupe"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Dans l’eau",
+        "en": "In the water",
+        "es": "En el agua"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "dans_leau"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Homme des cavernes",
+        "en": "Caveman",
+        "es": "Hombre de las cavernas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "homme_des_cavernes"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Maquette",
+        "en": "Scale model",
+        "es": "Maqueta"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "maquette"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Garde-côtes",
+        "en": "Coast guard",
+        "es": "Guardacostas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "garde_cotes"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Danseuse du ventre",
+        "en": "Belly dancer",
+        "es": "Bailarina del vientre"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "danseuse_du_ventre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Saute-mouton",
+        "en": "Leapfrog",
+        "es": "Salto del burro"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "saute_mouton"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Télescope",
+        "en": "Telescope",
+        "es": "Telescopio"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "telescope"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Cerisier",
+        "en": "Cherry tree",
+        "es": "Cerezo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cerisier"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Zeus",
+        "en": "Zeus",
+        "es": "Zeus"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "zeus"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Périscope",
+        "en": "Periscope",
+        "es": "Periscopio"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "periscope"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Parabole",
+        "en": "Satellite dish",
+        "es": "Antena parabólica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "parabole"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Les nuages dans",
+        "en": "Clouds in",
+        "es": "Las nubes en"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "les_nuages_dans"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Salsa",
+        "en": "Salsa",
+        "es": "Salsa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "salsa"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Chocolat chaud",
+        "en": "Hot chocolate",
+        "es": "Chocolate caliente"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chocolat_chaud"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Choux de Bruxelles",
+        "en": "Brussels sprouts",
+        "es": "Coles de Bruselas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "choux_de_bruxelles"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Chevalier",
+        "en": "Knight",
+        "es": "Caballero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chevalier"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Œil du tigre",
+        "en": "Tiger’s eye",
+        "es": "Ojo de tigre"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "oeil_du_tigre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Air bag",
+        "en": "Airbag",
+        "es": "Airbag"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "air_bag"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Trampoline",
+        "en": "Trampoline",
+        "es": "Trampolín"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "trampoline"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Pyjama",
+        "en": "Pajamas",
+        "es": "Pijama"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pyjama"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Machine à voyager",
+        "en": "Time machine",
+        "es": "Máquina del tiempo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "machine_a_voyager"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Homme des cavernes",
+        "en": "Caveman",
+        "es": "Hombre de las cavernas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "homme_des_cavernes"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Danseuse du ventre",
+        "en": "Belly dancer",
+        "es": "Bailarina del vientre"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "danseuse_du_ventre"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Serrez la main",
+        "en": "Shake hands",
+        "es": "Darse la mano"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "serrez_la_main"
+      }
+    },
+    {
+      "id": "sqc_003",
+      "prompt": {
+        "fr": "Moon boots",
+        "en": "Moon boots",
+        "es": "Botas lunares"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "moon_boots"
+      }
+    },
+    {
       "id": "sqc_004",
       "prompt": {
         "fr": "Poule mouillée",
@@ -71,6 +2563,846 @@
       }
     },
     {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Écrivain",
+        "en": "Writer",
+        "es": "Escritor"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "ecrivain"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Thé à la menthe",
+        "en": "Mint tea",
+        "es": "Té de menta"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "the_a_la_menthe"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Caméra vidéo",
+        "en": "Video camera",
+        "es": "Cámara de vídeo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "camera_video"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Tribunal",
+        "en": "Court",
+        "es": "Tribunal"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tribunal"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Câlin",
+        "en": "Hug",
+        "es": "Abrazo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "calin"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Restaurant routier",
+        "en": "Roadside restaurant",
+        "es": "Restaurante de carretera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "restaurant_routier"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Une part de gâteau",
+        "en": "Slice of cake",
+        "es": "Porción de pastel"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "une_part_de_gateau"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Plonger",
+        "en": "Dive",
+        "es": "Bucear"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "plonger"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Œil au beurre noir",
+        "en": "Black eye",
+        "es": "Ojo morado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "oeil_au_beurre_noir"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Être vivant",
+        "en": "Living being",
+        "es": "Ser vivo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "etre_vivant"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Faire un créneau",
+        "en": "Parallel park",
+        "es": "Aparcar en batería"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "faire_un_creneau"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Moutarde",
+        "en": "Mustard",
+        "es": "Mostaza"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "moutarde"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Haut-de-gamme",
+        "en": "High-end",
+        "es": "Alta gama"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "haut_de_gamme"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Marathon",
+        "en": "Marathon",
+        "es": "Maratón"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "marathon"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Chiffre d’affaires",
+        "en": "Turnover",
+        "es": "Facturación"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chiffre_d_affaires"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Chanter faux",
+        "en": "Sing off-key",
+        "es": "Cantar desafinado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chanter_faux"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Partie visible de l’iceberg",
+        "en": "Tip of the iceberg",
+        "es": "Punta del iceberg"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "partie_visible_de_l_iceberg"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Ville fantôme",
+        "en": "Ghost town",
+        "es": "Pueblo fantasma"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "ville_fantome"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Création",
+        "en": "Creation",
+        "es": "Creación"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "creation"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Flûte",
+        "en": "Flute",
+        "es": "Flauta"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "flute"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Loupe",
+        "en": "Magnifying glass",
+        "es": "Lupa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "loupe"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "L’Élysée",
+        "en": "Élysée Palace",
+        "es": "El Elíseo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "l_elysee"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Tremblement de terre",
+        "en": "Earthquake",
+        "es": "Terremoto"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tremblement_de_terre"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Commode",
+        "en": "Dresser",
+        "es": "Cómoda"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "comode"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Sortie de but",
+        "en": "Goal kick",
+        "es": "Saque de meta"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "sortie_de_but"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Mariage",
+        "en": "Wedding",
+        "es": "Boda"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mariage"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Femme de ménage",
+        "en": "Cleaning lady",
+        "es": "Empleada doméstica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "femme_de_menage"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Tahiti",
+        "en": "Tahiti",
+        "es": "Tahití"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tahit"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Gitane",
+        "en": "Gypsy",
+        "es": "Gitana"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "gitane"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Mascara",
+        "en": "Mascara",
+        "es": "Rímel"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mascara"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Coquillettes",
+        "en": "Small pasta",
+        "es": "Macarrones pequeños"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "coquillettes"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Mécanicien",
+        "en": "Mechanic",
+        "es": "Mecánico"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mecanicien"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Gitane",
+        "en": "Gypsy",
+        "es": "Gitana"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "gitane"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Mécanicien",
+        "en": "Mechanic",
+        "es": "Mecánico"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mecanicien"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Casino",
+        "en": "Casino",
+        "es": "Casino"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "casino"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Cheval de course",
+        "en": "Racehorse",
+        "es": "Caballo de carreras"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cheval_de_course"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Machine à laver",
+        "en": "Washing machine",
+        "es": "Lavadora"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "machine_a_laver"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Taj Mahal",
+        "en": "Taj Mahal",
+        "es": "Taj Mahal"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "taj_mahal"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Chien de traîneau",
+        "en": "Sled dog",
+        "es": "Perro de trineo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chien_de_traineau"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Viking",
+        "en": "Viking",
+        "es": "Vikingo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "viking"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Deltaplane",
+        "en": "Hang glider",
+        "es": "Ala delta"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "deltaplane"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Sphinx",
+        "en": "Sphinx",
+        "es": "Esfinge"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "sphinx"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Table basse",
+        "en": "Coffee table",
+        "es": "Mesa baja"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "table_basse"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Femme à barbe",
+        "en": "Bearded lady",
+        "es": "Mujer barbuda"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "femme_a_barbe"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Moon boots",
+        "en": "Moon boots",
+        "es": "Botas lunares"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "moon_boots"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Espérer la main",
+        "en": "Hope for a hand",
+        "es": "Esperar la mano"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "esperer_la_main"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Pizza surgelée",
+        "en": "Frozen pizza",
+        "es": "Pizza congelada"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pizza_surgele"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Plateau télé",
+        "en": "TV set",
+        "es": "Plató de TV"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "plateau_tele"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Sortie de secours",
+        "en": "Emergency exit",
+        "es": "Salida de emergencia"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "sortie_de_secours"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Tulipe",
+        "en": "Tulip",
+        "es": "Tulipán"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tulipe"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Pellicules",
+        "en": "Dandruff",
+        "es": "Caspa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pellicules"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Al Capo",
+        "en": "Al Capone",
+        "es": "Al Capone"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "al_capo"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Hôtesse de l’air",
+        "en": "Flight attendant",
+        "es": "Azafata"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "hotesse_de_l_air"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Sushi",
+        "en": "Sushi",
+        "es": "Sushi"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "sushi"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Feu de circulation",
+        "en": "Traffic light",
+        "es": "Semáforo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "feu_de_circulation"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Dans le temps",
+        "en": "Through time",
+        "es": "En el tiempo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "dans_le_temps"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Tondeuse à gazon",
+        "en": "Lawn mower",
+        "es": "Cortacésped"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tondeuse_a_gazon"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Viking",
+        "en": "Viking",
+        "es": "Vikingo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "viking"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Parabole",
+        "en": "Satellite dish",
+        "es": "Antena parabólica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "parabole"
+      }
+    },
+    {
+      "id": "sqc_004",
+      "prompt": {
+        "fr": "Montre",
+        "en": "Watch",
+        "es": "Reloj"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "montre"
+      }
+    },
+    {
       "id": "sqc_005",
       "prompt": {
         "fr": "Artiste de rue",
@@ -82,6 +3414,1084 @@
         "category": "yellow",
         "points": 1,
         "wordKey": "artiste_de_rue"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Baguettes chinoises",
+        "en": "Chopsticks",
+        "es": "Palillos chinos"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "baguettes_chinoises"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Bain de bouche",
+        "en": "Mouthwash",
+        "es": "Enjuague bucal"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "bain_de_bouche"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Pirate",
+        "en": "Pirate",
+        "es": "Pirata"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "pirate"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Vacances",
+        "en": "Holidays",
+        "es": "Vacaciones"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "vacances"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Alarme anti-incendie",
+        "en": "Fire alarm",
+        "es": "Alarma contra incendios"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "alarme_anti_incendie"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Lucky Luke",
+        "en": "Lucky Luke",
+        "es": "Lucky Luke"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lucky_luke"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Carte postale",
+        "en": "Postcard",
+        "es": "Postal"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "carte_postale"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Chanter faux",
+        "en": "Sing off-key",
+        "es": "Cantar desafinado"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chanter_faux"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Guerre froide",
+        "en": "Cold War",
+        "es": "Guerra fría"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "guerre_froide"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Coco Chanel",
+        "en": "Coco Chanel",
+        "es": "Coco Chanel"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "coco_chanel"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Haka",
+        "en": "Haka",
+        "es": "Haka"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "haka"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Co-voiturage",
+        "en": "Carpooling",
+        "es": "Coche compartido"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "co_voiturage"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Futuroscope",
+        "en": "Futuroscope",
+        "es": "Futuroscope"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "futuroscope"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Speed dating",
+        "en": "Speed dating",
+        "es": "Speed dating"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "speed_dating"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Jeux Olympiques",
+        "en": "Olympic Games",
+        "es": "Juegos Olímpicos"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "jeux_olympiques"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Steven Spielberg",
+        "en": "Steven Spielberg",
+        "es": "Steven Spielberg"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "steven_spielberg"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "George Clooney",
+        "en": "George Clooney",
+        "es": "George Clooney"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "george_clooney"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Guinness Record",
+        "en": "Guinness Record",
+        "es": "Guinness Record"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "guinness_record"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Faire le pont",
+        "en": "Take a long weekend",
+        "es": "Hacer puente"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "faire_le_pont"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Maison de poupée",
+        "en": "Dollhouse",
+        "es": "Casa de muñecas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "maison_de_poupee"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Cantine",
+        "en": "Cafeteria",
+        "es": "Cantina"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "cantine"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Maison de campagne",
+        "en": "Country house",
+        "es": "Casa de campo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "maison_de_campagne"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Président",
+        "en": "President",
+        "es": "Presidente"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "president"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Se ronger les ongles",
+        "en": "Bite one’s nails",
+        "es": "Morderse las uñas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "se_ronger_les_ongles"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Calamar géant",
+        "en": "Giant squid",
+        "es": "Calamar gigante"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "calamar_geant"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Se défendre bec et ongles",
+        "en": "Fight tooth and nail",
+        "es": "Defenderse con uñas y dientes"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "se_defendre_bec_et_ongles"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Sentir la rose",
+        "en": "Smell the roses",
+        "es": "Disfrutar el momento"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "sentir_la_rose"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Visite médicale",
+        "en": "Medical checkup",
+        "es": "Revisión médica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "visite_medicale"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Bus scolaire",
+        "en": "School bus",
+        "es": "Autobús escolar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "bus_scolaire"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Mécanicien",
+        "en": "Mechanic",
+        "es": "Mecánico"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "mecanicien"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Jardin",
+        "en": "Garden",
+        "es": "Jardín"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "jardin"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Bougie",
+        "en": "Candle",
+        "es": "Vela"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "bougie"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Dans le temps",
+        "en": "Through time",
+        "es": "En el tiempo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "dans_le_temps"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Huile de coude",
+        "en": "Elbow grease",
+        "es": "Trabajo duro"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "huile_de_coude"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Saint-Jacques",
+        "en": "Saint James",
+        "es": "San Jaime"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "saint_jacques"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Cocktail de crevettes",
+        "en": "Shrimp cocktail",
+        "es": "Cóctel de gambas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cocktail_de_crevettes"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Musique d’ascenseur",
+        "en": "Elevator music",
+        "es": "Música de ascensor"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "musique_dascenseur"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Égypte",
+        "en": "Egypt",
+        "es": "Egipto"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "egypte"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Chapeau de magicien",
+        "en": "Magician’s hat",
+        "es": "Sombrero de mago"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "chapeau_de_magicien"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Coiffeur",
+        "en": "Hairdresser",
+        "es": "Peluquero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "coiffeur"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Jambe de bois",
+        "en": "Wooden leg",
+        "es": "Pata de palo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "jambe_de_bois"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Confiture de fraise",
+        "en": "Strawberry jam",
+        "es": "Mermelada de fresa"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "confiture_de_fraise"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Fleuriste",
+        "en": "Florist",
+        "es": "Florista"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "fleuriste"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Yoyo",
+        "en": "Yo-yo",
+        "es": "Yo-yo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "yoyo"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Escargot",
+        "en": "Snail",
+        "es": "Caracol"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "escargot"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Course",
+        "en": "Race",
+        "es": "Carrera"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "course"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Magicien",
+        "en": "Magician",
+        "es": "Mago"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "magicien"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Joueur de lion",
+        "en": "Lion tamer",
+        "es": "Domador de leones"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "joueur_de_lion"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Cowboy",
+        "en": "Cowboy",
+        "es": "Cowboy"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cowboy"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Banque du sang",
+        "en": "Blood bank",
+        "es": "Banco de sangre"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "banque_du_sang"
+      }
+    },
+    {
+      "id": "sqc_005",
+      "prompt": {
+        "fr": "Bœuf",
+        "en": "Beef",
+        "es": "Carne de res"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "boeuf"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Espion",
+        "en": "Spy",
+        "es": "Espía"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "espion"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Lance-flammes",
+        "en": "Flamethrower",
+        "es": "Lanzallamas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "lance_flammes"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Steven Spielberg",
+        "en": "Steven Spielberg",
+        "es": "Steven Spielberg"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "steven_spielberg"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Tourner un film",
+        "en": "Shoot a movie",
+        "es": "Rodar una película"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "tourner_un_film"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Chaperon rouge",
+        "en": "Little Red Riding Hood",
+        "es": "Caperucita Roja"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "chaperon_rouge"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Volley-ball",
+        "en": "Volleyball",
+        "es": "Voleibol"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "volley_ball"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Serpent à sonnette",
+        "en": "Rattlesnake",
+        "es": "Serpiente de cascabel"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "serpent_a_sonnette"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Soirée pyjama",
+        "en": "Pajama party",
+        "es": "Fiesta de pijamas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "yellow",
+        "points": 1,
+        "wordKey": "soiree_pyjama"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Maison de Lourdes",
+        "en": "House of Lourdes",
+        "es": "Casa de Lourdes"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "maison_de_lordes"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Écureuil volant",
+        "en": "Flying squirrel",
+        "es": "Ardilla voladora"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "ecureuil_volant"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Tomate cerise",
+        "en": "Cherry tomato",
+        "es": "Tomate cherry"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "tomate_cerise"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Microbe",
+        "en": "Germ",
+        "es": "Microbio"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "microbe"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Montre à gousset",
+        "en": "Pocket watch",
+        "es": "Reloj de bolsillo"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "montre_a_gousset"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Potion magique",
+        "en": "Magic potion",
+        "es": "Poción mágica"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "potion_magique"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Décheter",
+        "en": "Shred",
+        "es": "Triturar"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "decheter"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Carte au trésor",
+        "en": "Treasure map",
+        "es": "Mapa del tesoro"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "carte_au_tresor"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Pompier",
+        "en": "Firefighter",
+        "es": "Bombero"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pompier"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Cafard",
+        "en": "Cockroach",
+        "es": "Cucaracha"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cafard"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Salle de bain",
+        "en": "Bathroom",
+        "es": "Baño"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "salle_de_bain"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Œuf pourri",
+        "en": "Rotten egg",
+        "es": "Huevo podrido"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "oeuf_pourri"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Cheeseburger",
+        "en": "Cheeseburger",
+        "es": "Hamburguesa con queso"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "cheeseburger"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Allumettes",
+        "en": "Matches",
+        "es": "Cerillas"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "allumettes"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Plumecard",
+        "en": "Plumecard",
+        "es": "Plumecard"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "plumecard"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Géant",
+        "en": "Giant",
+        "es": "Gigante"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "geant"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Dessous de table",
+        "en": "Placemat",
+        "es": "Salvamanteles"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "dessous_de_table"
+      }
+    },
+    {
+      "id": "sqc_006",
+      "prompt": {
+        "fr": "Pôle nord",
+        "en": "North Pole",
+        "es": "Polo Norte"
+      },
+      "meta": {
+        "group": "base",
+        "category": "blue",
+        "points": 1,
+        "wordKey": "pole_nord"
       }
     }
   ]
