@@ -70,5 +70,12 @@
     "launch": "/wordplayer.html?game=pigeonpigeon",
     "data": "/data/pigeonpigeon/pigeonpigeon_words.json",
     "thumbnail": "/games/pigeonpigeon/assets/thumbnail.jpg"
+  },
+  {
+    "id": "pyramide",
+    "title": "Pyramide",
+    "kind": "custom",
+    "launch": "/games/pyramide/index.html",
+    "thumbnail": "/games/pyramide/data/images/thumbnail.jpg"
   }
 ]

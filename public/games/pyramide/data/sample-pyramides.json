@@ -1,0 +1,575 @@
+{
+  "batch_id": 3,
+  "cards": [
+    {
+      "position": "top_left",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Saison des pluies...", "en": "Rainy season...", "es": "Temporada de lluvias..." },
+          "text": {
+            "fr": "Ce vent violent et pluvieux de l'Asie du Sud-Est apporte chaque année de violentes précipitations.",
+            "en": "This violent and rainy wind from Southeast Asia brings violent precipitation every year.",
+            "es": "Este viento violento y lluvioso del sudeste asiático trae precipitaciones violentas cada año."
+          },
+          "keywords": {
+            "fr": ["violent", "pluvieux", "apporte", "année", "précipitations"],
+            "en": ["violent", "rainy", "brings", "year", "precipitation"],
+            "es": ["violento", "lluvioso", "trae", "año", "precipitaciones"]
+          },
+          "answer": { "fr": "La mousson", "en": "The monsoon", "es": "El monzón" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "De source alpine", "en": "From alpine source", "es": "De fuente alpina" },
+          "text": {
+            "fr": "Frontière entre l'Allemagne et la France, c'est également le plus long d'Europe Occidentale.",
+            "en": "Border between Germany and France, it is also the longest in Western Europe.",
+            "es": "Frontera entre Alemania y Francia, también es el más largo de Europa Occidental."
+          },
+          "keywords": {
+            "fr": ["Frontière", "Allemagne", "également", "long", "Occidentale"],
+            "en": ["Border", "Germany", "also", "longest", "Western"],
+            "es": ["Frontera", "Alemania", "también", "largo", "Occidental"]
+          },
+          "answer": { "fr": "Le Rhin", "en": "The Rhine", "es": "El Rin" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "Scarlett", "en": "Scarlett", "es": "Scarlett" },
+          "text": {
+            "fr": "Cette actrice américaine joua dans «Autant en emporte le vent» et «Un tramway nommé Désir».",
+            "en": "This American actress played in 'Gone with the Wind' and 'A Streetcar Named Desire'.",
+            "es": "Esta actriz estadounidense actuó en 'Lo que el viento se llevó' y 'Un tranvía llamado Deseo'."
+          },
+          "keywords": {
+            "fr": ["actrice", "joua", "emporte", "tramway", "Désir"],
+            "en": ["actress", "played", "Gone", "Streetcar", "Desire"],
+            "es": ["actriz", "actuó", "llevó", "tranvía", "Deseo"]
+          },
+          "answer": { "fr": "Vivien Leigh", "en": "Vivien Leigh", "es": "Vivien Leigh" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Belge", "en": "Belgian", "es": "Belga" },
+          "text": {
+            "fr": "Ce célèbre détective, personnage des romans d'Agatha Christie, sait faire marcher sa matière grise pour élucider les crimes.",
+            "en": "This famous detective, a character in Agatha Christie's novels, knows how to use his gray matter to solve crimes.",
+            "es": "Este famoso detective, personaje de las novelas de Agatha Christie, sabe hacer funcionar su materia gris para resolver los crímenes."
+          },
+          "keywords": {
+            "fr": ["détective", "marcher", "matière", "élucider", "crimes"],
+            "en": ["detective", "use", "matter", "solve", "crimes"],
+            "es": ["detective", "funcionar", "materia", "resolver", "crímenes"]
+          },
+          "answer": { "fr": "Hercule Poirot", "en": "Hercule Poirot", "es": "Hercule Poirot" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Grandes eaux", "en": "Great waters", "es": "Grandes aguas" },
+          "text": {
+            "fr": "Ce palais royal est connu pour ses jardins somptueux et sa galerie des glaces.",
+            "en": "This royal palace is known for its sumptuous gardens and its hall of mirrors.",
+            "es": "Este palacio real es conocido por sus suntuosos jardines y su galería de los espejos."
+          },
+          "keywords": {
+            "fr": ["palais", "connu", "jardins", "galerie", "glaces"],
+            "en": ["palace", "known", "gardens", "hall", "mirrors"],
+            "es": ["palacio", "conocido", "jardines", "galería", "espejos"]
+          },
+          "answer": { "fr": "Château de Versailles", "en": "Palace of Versailles", "es": "Palacio de Versalles" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "Club", "en": "Club", "es": "Club" },
+          "text": {
+            "fr": "Présentatrice d'émissions télévisées pour enfants, ses «chaussettes rouges et jaunes à petits pois» sont célèbres.",
+            "en": "Presenter of children's television shows, her 'red and yellow polka dot socks' are famous.",
+            "es": "Presentadora de programas de televisión para niños, sus 'calcetines rojos y amarillos a lunares' son famosos."
+          },
+          "keywords": {
+            "fr": ["Présentatrice", "enfants", "chaussettes", "jaunes", "pois"],
+            "en": ["Presenter", "children", "socks", "yellow", "polka"],
+            "es": ["Presentadora", "niños", "calcetines", "amarillos", "lunares"]
+          },
+          "answer": { "fr": "Dorothée", "en": "Dorothée", "es": "Dorothée" }
+        }
+      ]
+    },
+    {
+      "position": "top_right",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Sorcière", "en": "Witch", "es": "Bruja" },
+          "text": {
+            "fr": "Nécessaire et vital pour les animaux, c'est pour l'homme une activité physique qui s'accompagne souvent de la pêche.",
+            "en": "Necessary and vital for animals, for man it is a physical activity often accompanied by fishing.",
+            "es": "Necesario y vital para los animales, para el hombre es una actividad física que a menudo se acompaña de la pesca."
+          },
+          "keywords": {
+            "fr": ["Nécessaire", "vital", "activité", "physique", "pêche"],
+            "en": ["Necessary", "vital", "activity", "physical", "fishing"],
+            "es": ["Necesario", "vital", "actividad", "física", "pesca"]
+          },
+          "answer": { "fr": "La chasse", "en": "Hunting", "es": "La caza" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "Même pas vrai", "en": "Not even true", "es": "Ni siquiera es verdad" },
+          "text": {
+            "fr": "Action de cacher ou de ne dévoiler qu'une partie de la vérité ; on peut le faire comme un arracheur de dents.",
+            "en": "Action of hiding or revealing only a part of the truth; one can do it like a tooth puller.",
+            "es": "Acción de ocultar o no revelar más que una parte de la verdad; uno puede hacerlo como un sacamuelas."
+          },
+          "keywords": {
+            "fr": ["Action", "cacher", "dévoiler", "vérité", "arracheur"],
+            "en": ["Action", "hiding", "revealing", "truth", "puller"],
+            "es": ["Acción", "ocultar", "revelar", "verdad", "sacamuelas"]
+          },
+          "answer": { "fr": "Mentir", "en": "To lie", "es": "Mentir" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "Asphyxiant", "en": "Asphyxiating", "es": "Asfixiante" },
+          "text": {
+            "fr": "Certains d'entre eux sont vitaux, tels l'oxygène, d'autres toxiques, tel le monoxyde de carbone ; le plus répandu sur terre, se nomme l'air.",
+            "en": "Some of them are vital, like oxygen, others toxic, like carbon monoxide; the most widespread on earth is called air.",
+            "es": "Algunos de ellos son vitales, como el oxígeno, otros tóxicos, como el monóxido de carbono; el más extendido en la tierra se llama aire."
+          },
+          "keywords": {
+            "fr": ["vitaux", "oxygène", "toxiques", "carbone", "air"],
+            "en": ["vital", "oxygen", "toxic", "carbon", "air"],
+            "es": ["vitales", "oxígeno", "tóxicos", "carbono", "aire"]
+          },
+          "answer": { "fr": "Les gaz", "en": "Gases", "es": "Los gases" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Du barbier", "en": "Of the barber", "es": "Del barbero" },
+          "text": {
+            "fr": "Mammifère blanc et noir, devenu rare en France, il porte le nom d'une brosse à savonner la barbe.",
+            "en": "Black and white mammal, become rare in France, it bears the name of a brush to lather the beard.",
+            "es": "Mamífero blanco y negro, vuelto raro en Francia, lleva el nombre de una brocha para enjabonar la barba."
+          },
+          "keywords": {
+            "fr": ["Mammifère", "rare", "brosse", "savonner", "barbe"],
+            "en": ["mammal", "rare", "brush", "lather", "beard"],
+            "es": ["Mamífero", "raro", "brocha", "enjabonar", "barba"]
+          },
+          "answer": { "fr": "Le blaireau", "en": "The badger", "es": "El tejón" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Récent procès", "en": "Recent trial", "es": "Juicio reciente" },
+          "text": {
+            "fr": "Milicien lyonnais de la seconde guerre mondiale, il fut reconnu coupable de crimes contre l'humanité pour avoir fait fusiller sept otages juifs.",
+            "en": "Lyon militiaman from the Second World War, he was found guilty of crimes against humanity for having seven Jewish hostages shot.",
+            "es": "Miliciano lionés de la Segunda Guerra Mundial, fue declarado culpable de crímenes contra la humanidad por haber fusilado a siete rehenes judíos."
+          },
+          "keywords": {
+            "fr": ["Milicien", "crimes", "humanité", "fusiller", "juifs"],
+            "en": ["Militiaman", "crimes", "humanity", "shot", "Jewish"],
+            "es": ["Miliciano", "crímenes", "humanidad", "fusilado", "judíos"]
+          },
+          "answer": { "fr": "Paul Touvier", "en": "Paul Touvier", "es": "Paul Touvier" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "Pas d'pot", "en": "No luck (exhaust)", "es": "Sin suerte (escape)" },
+          "text": {
+            "fr": "Phénomène d'expulsion dans l'atmosphère de gaz de combustion d'un moteur.",
+            "en": "Phenomenon of expulsion into the atmosphere of combustion gases from an engine.",
+            "es": "Fenómeno de expulsión a la atmósfera de gases de combustión de un motor."
+          },
+          "keywords": {
+            "fr": ["expulsion", "atmosphère", "gaz", "combustion", "moteur"],
+            "en": ["expulsion", "atmosphere", "gases", "combustion", "engine"],
+            "es": ["expulsión", "atmósfera", "gases", "combustión", "motor"]
+          },
+          "answer": { "fr": "Echappement", "en": "Exhaust", "es": "Escape" }
+        }
+      ]
+    },
+    {
+      "position": "mid_left",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Archange", "en": "Archangel", "es": "Arcángel" },
+          "text": {
+            "fr": "Ancien membre du groupe «Genesis», je suis le créateur du festival WOMAD. J'ai en outre composé certains génériques de films, dont «Birdy».",
+            "en": "Former member of the group 'Genesis', I am the creator of the WOMAD festival. I also composed some film soundtracks, including 'Birdy'.",
+            "es": "Antiguo miembro del grupo 'Genesis', soy el creador del festival WOMAD. También compuse algunas bandas sonoras de películas, como 'Birdy'."
+          },
+          "keywords": {
+            "fr": ["membre", "groupe", "festival", "génériques", "films"],
+            "en": ["member", "group", "festival", "soundtracks", "films"],
+            "es": ["miembro", "grupo", "festival", "sonoras", "películas"]
+          },
+          "answer": { "fr": "Peter Gabriel", "en": "Peter Gabriel", "es": "Peter Gabriel" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "Mythologie", "en": "Mythology", "es": "Mitología" },
+          "text": {
+            "fr": "Dieu égyptien, je suis plus connu comme Dieu du Soleil, primordial et créateur de la vie.",
+            "en": "Egyptian God, I am best known as the Sun God, primordial and creator of life.",
+            "es": "Dios egipcio, soy más conocido como el Dios del Sol, primordial y creador de la vida."
+          },
+          "keywords": {
+            "fr": ["Dieu", "Soleil", "primordial", "créateur", "vie"],
+            "en": ["God", "Sun", "primordial", "creator", "life"],
+            "es": ["Dios", "Sol", "primordial", "creador", "vida"]
+          },
+          "answer": { "fr": "Râ", "en": "Ra", "es": "Ra" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "Si laide", "en": "So ugly", "es": "Tan fea" },
+          "text": {
+            "fr": "Déesse de la fécondité, originaire d'Asie Mineure, son culte se répandit dans le monde gréco-romain et donna lieu à des cérémonies orgiastiques.",
+            "en": "Goddess of fertility, native to Asia Minor, her cult spread throughout the Greco-Roman world and gave rise to orgiastic ceremonies.",
+            "es": "Diosa de la fecundidad, originaria de Asia Menor, su culto se extendió por el mundo grecorromano y dio lugar a ceremonias orgiásticas."
+          },
+          "keywords": {
+            "fr": ["Déesse", "fécondité", "culte", "monde", "cérémonies"],
+            "en": ["Goddess", "fertility", "cult", "world", "ceremonies"],
+            "es": ["Diosa", "fecundidad", "culto", "mundo", "ceremonias"]
+          },
+          "answer": { "fr": "Cybèle", "en": "Cybele", "es": "Cibeles" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Farouches guerrières", "en": "Fierce warriors", "es": "Fieras guerreras" },
+          "text": {
+            "fr": "Divinités scandinaves et messagères d'Odin, nous sommes responsables du destin des guerriers nordiques.",
+            "en": "Scandinavian deities and messengers of Odin, we are responsible for the destiny of Nordic warriors.",
+            "es": "Divinidades escandinavas y mensajeras de Odín, somos responsables del destino de los guerreros nórdicos."
+          },
+          "keywords": {
+            "fr": ["Divinités", "messagères", "responsables", "destin", "guerriers"],
+            "en": ["deities", "messengers", "responsible", "destiny", "warriors"],
+            "es": ["Divinidades", "mensajeras", "responsables", "destino", "guerreros"]
+          },
+          "answer": { "fr": "Les Walkyries", "en": "The Valkyries", "es": "Las valquirias" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Carré chic", "en": "Chic square", "es": "Cuadrado elegante" },
+          "text": {
+            "fr": "Dieu grec assimilé au dieu lunaire d'Egypte Thot. Buste ou tête d'un dieu.",
+            "en": "Greek god assimilated to the lunar god of Egypt Thoth. Bust or head of a god.",
+            "es": "Dios griego asimilado al dios lunar de Egipto Thot. Busto o cabeza de un dios."
+          },
+          "keywords": {
+            "fr": ["assimilé", "Buste", "tête", "dieu"],
+            "en": ["assimilated", "Bust", "head", "god"],
+            "es": ["asimilado", "Busto", "cabeza", "dios"]
+          },
+          "answer": { "fr": "Hermès", "en": "Hermes", "es": "Hermes" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "Le Vicomte Pourfendu", "en": "The Cloven Viscount", "es": "El vizconde demediado" },
+          "text": {
+            "fr": "Romancier italien, je suis l'auteur du «Chevalier Inexistant», le «Baron perché» ou encore «La journée d'un scrutateur».",
+            "en": "Italian novelist, I am the author of 'The Nonexistent Knight', 'The Baron in the Trees' or 'The Watcher'.",
+            "es": "Novelista italiano, soy el autor de 'El caballero inexistente', 'El barón rampante' o 'La jornada de un interventor electoral'."
+          },
+          "keywords": {
+            "fr": ["Romancier", "italien", "Chevalier", "Baron", "journée"],
+            "en": ["novelist", "Italian", "Knight", "Baron", "Watcher"],
+            "es": ["Novelista", "italiano", "caballero", "barón", "jornada"]
+          },
+          "answer": { "fr": "Italo Calvino", "en": "Italo Calvino", "es": "Italo Calvino" }
+        }
+      ]
+    },
+    {
+      "position": "mid_right",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Citronné", "en": "Lemony", "es": "A limonado" },
+          "text": {
+            "fr": "Ce coureur cycliste fut le premier américain champion du monde professionnel sur route.",
+            "en": "This racing cyclist was the first American professional road world champion.",
+            "es": "Este ciclista fue el primer estadounidense campeón del mundo profesional en ruta."
+          },
+          "keywords": {
+            "fr": ["coureur", "cycliste", "champion", "monde", "professionnel", "route"],
+            "en": ["racing", "cyclist", "champion", "world", "professional", "road"],
+            "es": ["ciclista", "corredor", "campeón", "mundo", "profesional", "ruta"]
+          },
+          "answer": { "fr": "Greg Lemond", "en": "Greg LeMond", "es": "Greg LeMond" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "L'homme d'acier", "en": "Man of Steel", "es": "El hombre de acero" },
+          "text": {
+            "fr": "Homme politique russe, il fut le premier Premier Secrétaire du Comité Central du Parti Communiste.",
+            "en": "Russian politician, he was the first First Secretary of the Central Committee of the Communist Party.",
+            "es": "Político ruso, fue el primer Primer Secretario del Comité Central del Partido Comunista."
+          },
+          "keywords": {
+            "fr": ["politique", "Secrétaire", "Comité", "Central", "Communiste"],
+            "en": ["politician", "Secretary", "Committee", "Central", "Communist"],
+            "es": ["político", "Secretario", "Comité", "Central", "Comunista"]
+          },
+          "answer": { "fr": "Staline", "en": "Stalin", "es": "Stalin" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "Se poursuit", "en": "Is pursued", "es": "Se persigue" },
+          "text": {
+            "fr": "Idée ou projet très séduisant mais qui ne peut être réalisé, car pure oeuvre de l'imagination.",
+            "en": "A very attractive idea or project but which cannot be realized, because it is the pure work of the imagination.",
+            "es": "Idea o proyecto muy atractivo pero que no se puede realizar, ya que es obra pura de la imaginación."
+          },
+          "keywords": {
+            "fr": ["Idée", "projet", "séduisant", "pure", "imagination"],
+            "en": ["idea", "project", "attractive", "pure", "imagination"],
+            "es": ["Idea", "proyecto", "atractivo", "pura", "imaginación"]
+          },
+          "answer": { "fr": "Chimère", "en": "Chimera", "es": "Quimera" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Druidique", "en": "Druidic", "es": "Druídico" },
+          "text": {
+            "fr": "Plante parasite des arbres, elle est souvent associée au Nouvel An.",
+            "en": "Parasitic plant of trees, it is often associated with the New Year.",
+            "es": "Planta parásita de los árboles, a menudo se asocia con el Año Nuevo."
+          },
+          "keywords": {
+            "fr": ["Plante", "parasite", "arbres", "associée"],
+            "en": ["plant", "parasitic", "trees", "associated"],
+            "es": ["Planta", "parásita", "árboles", "asocia"]
+          },
+          "answer": { "fr": "Le gui", "en": "Mistletoe", "es": "El muérdago" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Initiales", "en": "Initials", "es": "Iniciales" },
+          "text": {
+            "fr": "Moyen de locomotion, surtout utilisé en tant que loisir, c'est une aile delta équipée d'un moteur.",
+            "en": "Means of locomotion, mostly used as a hobby, it is a hang glider equipped with an engine.",
+            "es": "Medio de locomoción, utilizado sobre todo como afición, es un ala delta equipada con un motor."
+          },
+          "keywords": {
+            "fr": ["Moyen", "locomotion", "loisir", "aile", "équipée", "moteur"],
+            "en": ["Means", "locomotion", "hobby", "wing", "equipped", "engine"],
+            "es": ["Medio", "locomoción", "afición", "ala", "equipada", "motor"]
+          },
+          "answer": { "fr": "U.L.M.", "en": "Ultralight aviation", "es": "Ultraligero" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "Voleur", "en": "Thief", "es": "Ladrón" },
+          "text": {
+            "fr": "Personnage biblique, qui fut libéré à la place de Jésus pour le supplice de la croix.",
+            "en": "Biblical character, who was released in Jesus's place for the torment of the cross.",
+            "es": "Personaje bíblico, que fue liberado en lugar de Jesús para el suplicio de la cruz."
+          },
+          "keywords": {
+            "fr": ["Personnage", "libéré", "place", "supplice", "croix"],
+            "en": ["character", "released", "place", "torment", "cross"],
+            "es": ["Personaje", "liberado", "lugar", "suplicio", "cruz"]
+          },
+          "answer": { "fr": "Barabas", "en": "Barabbas", "es": "Barrabás" }
+        }
+      ]
+    },
+    {
+      "position": "bottom_left",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Canin", "en": "Canine", "es": "Canino" },
+          "text": {
+            "fr": "Chien de traîneau pouvant endurer des températures très basses ; ses yeux sont d'un bleu très clair.",
+            "en": "Sled dog that can endure very low temperatures; its eyes are very light blue.",
+            "es": "Perro de trineo que puede soportar temperaturas muy bajas; sus ojos son de un azul muy claro."
+          },
+          "keywords": {
+            "fr": ["traîneau", "endurer", "températures", "yeux", "bleu"],
+            "en": ["Sled", "endure", "temperatures", "eyes", "blue"],
+            "es": ["trineo", "soportar", "temperaturas", "ojos", "azul"]
+          },
+          "answer": { "fr": "Husky", "en": "Husky", "es": "Husky" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "Paix Verte", "en": "Green Peace", "es": "Paz Verde" },
+          "text": {
+            "fr": "Organisation écologiste internationale, elle se consacre à la protection de l'environnement. On la connaît en particulier pour ses attaques des cargos en Zodiac.",
+            "en": "International environmental organization, it is dedicated to the protection of the environment. It is known in particular for its attacks on cargo ships in Zodiacs.",
+            "es": "Organización ecologista internacional, se dedica a la protección del medio ambiente. Es conocida en particular por sus ataques a buques de carga en Zodiac."
+          },
+          "keywords": {
+            "fr": ["écologiste", "protection", "environnement", "attaques", "cargos"],
+            "en": ["environmental", "protection", "environment", "attacks", "cargo"],
+            "es": ["ecologista", "protección", "ambiente", "ataques", "carga"]
+          },
+          "answer": { "fr": "Greenpeace", "en": "Greenpeace", "es": "Greenpeace" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "D'amis", "en": "Friends'", "es": "De amigos" },
+          "text": {
+            "fr": "Froide, noire ou à air, c'est avant tout un endroit privilégié pour se reposer.",
+            "en": "Cold, dark or open-air, it is above all a privileged place to rest.",
+            "es": "Fría, oscura o al aire libre, es ante todo un lugar privilegiado para descansar."
+          },
+          "keywords": {
+            "fr": ["Froide", "air", "endroit", "privilégié", "reposer"],
+            "en": ["Cold", "air", "place", "privileged", "rest"],
+            "es": ["Fría", "aire", "lugar", "privilegiado", "descansar"]
+          },
+          "answer": { "fr": "La chambre", "en": "The bedroom", "es": "La habitación" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Histoire", "en": "History", "es": "Historia" },
+          "text": {
+            "fr": "Politicien américain assassiné après la victoire Nordiste, il fut contre l'esclavage des noirs.",
+            "en": "American politician assassinated after the Northern victory, he was against the slavery of black people.",
+            "es": "Político estadounidense asesinado tras la victoria del Norte, estaba en contra de la esclavitud de los negros."
+          },
+          "keywords": {
+            "fr": ["Politicien", "assassiné", "victoire", "esclavage", "noirs"],
+            "en": ["politician", "assassinated", "victory", "slavery", "black"],
+            "es": ["Político", "asesinado", "victoria", "esclavitud", "negros"]
+          },
+          "answer": { "fr": "Lincoln", "en": "Lincoln", "es": "Lincoln" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Indomptable", "en": "Indomitable", "es": "Indomable" },
+          "text": {
+            "fr": "Cet animal d'Afrique, très proche cousin du cheval, est reconnaissable entre tous, grâce à son pelage rayé blanc et noir.",
+            "en": "This African animal, a very close cousin of the horse, is instantly recognizable thanks to its black and white striped coat.",
+            "es": "Este animal africano, primo muy cercano del caballo, es inconfundible gracias a su pelaje a rayas blancas y negras."
+          },
+          "keywords": {
+            "fr": ["animal", "cousin", "cheval", "reconnaissable", "pelage"],
+            "en": ["animal", "cousin", "horse", "recognizable", "coat"],
+            "es": ["animal", "primo", "caballo", "inconfundible", "pelaje"]
+          },
+          "answer": { "fr": "Le zèbre", "en": "The zebra", "es": "La cebra" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "Chanteur anglais", "en": "English singer", "es": "Cantante inglés" },
+          "text": {
+            "fr": "Cet ingénieur anglais fut le premier à mettre au point des modèles de machines à coudre.",
+            "en": "This English engineer was the first to develop sewing machine models.",
+            "es": "Este ingeniero inglés fue el primero en desarrollar modelos de máquinas de coser."
+          },
+          "keywords": {
+            "fr": ["ingénieur", "point", "modèles", "machines", "coudre"],
+            "en": ["engineer", "develop", "models", "machines", "sewing"],
+            "es": ["ingeniero", "desarrollar", "modelos", "máquinas", "coser"]
+          },
+          "answer": { "fr": "Singer", "en": "Singer", "es": "Singer" }
+        }
+      ]
+    },
+    {
+      "position": "bottom_right",
+      "enigmas": [
+        {
+          "id": 1,
+          "clue": { "fr": "Ce n'est pas une histoire", "en": "It's not a story", "es": "No es una historia" },
+          "text": {
+            "fr": "Né à Bruxelles, ce roi des belges, très pieux, épousa la reine Fabiola. Sa mort survenue en 1993 fu particulièrement regrettée.",
+            "en": "Born in Brussels, this King of the Belgians, very pious, married Queen Fabiola. His death in 1993 was particularly mourned.",
+            "es": "Nacido en Bruselas, este rey de los belgas, muy piadoso, se casó con la reina Fabiola. Su muerte en 1993 fue especialmente lamentada."
+          },
+          "keywords": {
+            "fr": ["belges", "pieux", "reine", "mort", "regrettée"],
+            "en": ["Belgians", "pious", "Queen", "death", "mourned"],
+            "es": ["belgas", "piadoso", "reina", "muerte", "lamentada"]
+          },
+          "answer": { "fr": "Baudouin 1er", "en": "Baudouin 1st", "es": "Balduino I" }
+        },
+        {
+          "id": 2,
+          "clue": { "fr": "Montrez le dont !", "en": "Show it then!", "es": "¡Muéstralo entonces!" },
+          "text": {
+            "fr": "Etat de l'Inde, j'ai donné mon nom à un tissu fin, confectionné à partir de poils de chèvres.",
+            "en": "State of India, I gave my name to a fine fabric, made from goat hair.",
+            "es": "Estado de la India, di mi nombre a una fina tela, confeccionada con pelo de cabras."
+          },
+          "keywords": {
+            "fr": ["Etat", "tissu", "confectionné", "chèvres"],
+            "en": ["State", "fabric", "made", "goats"],
+            "es": ["Estado", "tela", "confeccionada", "cabras"]
+          },
+          "answer": { "fr": "Le Cachemire", "en": "Cashmere", "es": "Cachemira" }
+        },
+        {
+          "id": 3,
+          "clue": { "fr": "Cha m'a réussi", "en": "Cha succeeded me", "es": "Cha me ha funcionado" },
+          "text": {
+            "fr": "Commune du Puy-de-Dôme, j'abrite l'imprimerie de la Banque de France et j'ai eu pour maire le Président Giscard d'Estaing.",
+            "en": "Municipality in the Puy-de-Dôme, I house the Bank of France printing press and I had President Giscard d'Estaing as mayor.",
+            "es": "Municipio del Puy-de-Dôme, albergo la imprenta del Banco de Francia y tuve como alcalde al Presidente Giscard d'Estaing."
+          },
+          "keywords": {
+            "fr": ["Commune", "Banque", "maire", "Président"],
+            "en": ["Municipality", "Bank", "mayor", "President"],
+            "es": ["Municipio", "Banco", "alcalde", "Presidente"]
+          },
+          "answer": { "fr": "Chamalières", "en": "Chamalières", "es": "Chamalières" }
+        },
+        {
+          "id": 4,
+          "clue": { "fr": "Brandy", "en": "Brandy", "es": "Brandy" },
+          "text": {
+            "fr": "Ville de la Charente, qui donna son nom à une eau de vie très «estimée» et appréciée dans le monde entier.",
+            "en": "Town in Charente, which gave its name to a very 'esteemed' eau-de-vie appreciated worldwide.",
+            "es": "Ciudad de Charente, que dio su nombre a un aguardiente muy 'estimado' y apreciado en todo el mundo."
+          },
+          "keywords": {
+            "fr": ["Ville", "eau", "vie", "appréciée", "entier"],
+            "en": ["Town", "eau", "vie", "appreciated", "worldwide"],
+            "es": ["Ciudad", "agua", "vida", "apreciado", "mundo"]
+          },
+          "answer": { "fr": "Cognac", "en": "Cognac", "es": "Coñac" }
+        },
+        {
+          "id": 5,
+          "clue": { "fr": "Filtre à eau", "en": "Water filter", "es": "Filtro de agua" },
+          "text": {
+            "fr": "Département de l'Auvergne, je désigne également une montagne, point culminant de la chaîne des massifs volcaniques.",
+            "en": "Department of Auvergne, I also designate a mountain, the highest point of the chain of volcanic massifs.",
+            "es": "Departamento de Auvernia, también designo una montaña, punto culminante de la cadena de macizos volcánicos."
+          },
+          "keywords": {
+            "fr": ["Département", "montagne", "culminant", "chaîne", "massifs"],
+            "en": ["Department", "mountain", "highest", "chain", "massifs"],
+            "es": ["Departamento", "montaña", "culminante", "cadena", "macizos"]
+          },
+          "answer": { "fr": "Le Puy de Dôme", "en": "Puy-de-Dôme", "es": "Puy-de-Dôme" }
+        },
+        {
+          "id": 6,
+          "clue": { "fr": "J'aime la galette...", "en": "I like the cake...", "es": "Me gusta la torta..." },
+          "text": {
+            "fr": "Fête religieuse chrétienne représentant l'arrivée des rois mages auprès du Christ.",
+            "en": "Christian religious festival representing the arrival of the Magi to Christ.",
+            "es": "Fiesta religiosa cristiana que representa la llegada de los Reyes Magos ante Cristo."
+          },
+          "keywords": {
+            "fr": ["religieuse", "arrivée", "rois", "mages", "Christ"],
+            "en": ["religious", "arrival", "Magi", "Kings", "Christ"],
+            "es": ["religiosa", "llegada", "Reyes", "Magos", "Cristo"]
+          },
+          "answer": { "fr": "L'Epiphanie", "en": "Epiphany", "es": "La Epifanía" }
+        }
+      ]
+    }
+  ]
+}

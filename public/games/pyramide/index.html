@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pyramide</title>
+    <link rel="stylesheet" href="../../shared/css/base.css" />
+    <link rel="stylesheet" href="../../shared/css/wordplayer.css" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="game-body pyramide-body">
+    <div class="app-shell">
+      <nav class="game-nav">
+        <div class="nav-side nav-left">
+          <a
+            href="../../index.html"
+            class="icon-button nav-back"
+            aria-label="Retour au hub"
+          >
+            ?
+          </a>
+        </div>
+        <div class="nav-center">
+          <img
+            class="nav-banner"
+            src="./data/images/banner.jpg"
+            alt="Banni?re Pyramide"
+          />
+        </div>
+        <div class="nav-side nav-right">
+          <button
+            id="pyramide-reset-button"
+            class="icon-button nav-reset"
+            type="button"
+            aria-label="Nouvelle partie de Pyramide"
+          >
+            ?
+          </button>
+          <div class="status-strip" id="statusStrip" aria-live="polite"></div>
+        </div>
+      </nav>
+
+      <main class="game-layout" id="gameLayout">
+        <section class="public-stage card" id="publicStage" aria-labelledby="publicTitle">
+          <h2 id="publicTitle" class="sr-only">Chargement...</h2>
+          <div id="publicContent" class="public-content"></div>
+        </section>
+
+        <aside class="secret-stage card" id="secretStage" aria-labelledby="secretTitle">
+          <h2 id="secretTitle" class="sr-only">Commandes tactiles</h2>
+          <div id="secretContent" class="secret-content"></div>
+        </aside>
+      </main>
+    </div>
+
+    <template id="holdRevealTemplate">
+      <div class="hold-reveal">
+        <button type="button" class="hold-button"></button>
+        <div class="hold-value" aria-live="polite">??????</div>
+      </div>
+    </template>
+
+    <button
+      id="pyramide-info-button"
+      class="floating-info-button"
+      type="button"
+      aria-label="Afficher les r?gles de Pyramide"
+    >
+      i
+    </button>
+
+    <div id="pyramide-rules-modal" class="rules-modal-backdrop" hidden>
+      <div class="rules-modal" role="dialog" aria-modal="true" aria-labelledby="pyramide-rules-title">
+        <header>
+          <h2 id="pyramide-rules-title" class="rules-modal-title">R?gles de Pyramide</h2>
+          <button id="pyramide-rules-close" class="rules-modal-close" type="button" aria-label="Fermer les r?gles">
+            ?
+          </button>
+        </header>
+        <div id="pyramide-rules-content" class="rules-modal-content"></div>
+      </div>
+    </div>
+
+    <script src="./i18n.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
