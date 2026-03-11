@@ -675,16 +675,6 @@ code {
   box-shadow: var(--pill-shadow);
 }
 
-.answer-button.debug-correct-answer::after {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: var(--green);
-  margin-left: 4px;
-  box-shadow: 0 0 10px rgba(62, 207, 120, 0.8);
-}
-
 .answer-prefix {
   flex: 0 0 auto;
   min-width: 58px;

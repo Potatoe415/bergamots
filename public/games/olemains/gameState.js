@@ -14,10 +14,11 @@ export class GameState {
 
   /**
    * Load game data from JSON file
+   * Uses an absolute path so it works both locally and on Firebase.
    * @param {string} url - Path to words.json
    * @returns {Promise<void>}
    */
-  async loadGameData(url = '../../data/olemains/words.json') {
+  async loadGameData(url = '/data/olemains/words.json') {
     try {
       const response = await fetch(url);
       if (!response.ok) {

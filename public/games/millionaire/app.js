@@ -69,11 +69,6 @@ const CONFIG = {
   ]
 };
 
-// Temporary debug: surface the correct answer in the UI.
-const DEBUG_FLAGS = {
-  showCorrectAnswer: true
-};
-
 function getRevealDelayMs(roundIndex) {
   const prize = CONFIG.prizeLadder[roundIndex];
   if (!prize) {
@@ -603,14 +598,7 @@ function renderAnswerButtons() {
     const fragment = elements.answerTemplate.content.cloneNode(true);
     const button = fragment.querySelector(".answer-button");
     const prefix = fragment.querySelector(".answer-prefix");
-    const isDebugCorrect = DEBUG_FLAGS.showCorrectAnswer && answer.isCorrect;
-
-    if (isDebugCorrect) {
-      prefix.textContent = "KARD";
-      button.classList.add("debug-correct-answer");
-    } else {
-      prefix.textContent = `${ANSWER_LABELS[index]}:`;
-    }
+    prefix.textContent = `${ANSWER_LABELS[index]}:`;
     fragment.querySelector(".answer-text").textContent = answer.text;
     button.dataset.index = String(index);
     button.disabled = answer.hidden;

@@ -5,40 +5,4810 @@
   "engine": "wordplayer",
   "mode": "pigeon_pigeon",
   "defaultLanguage": "fr",
-  "supportedLanguages": ["fr","en","es"],
-  "controls": ["next"],
+  "supportedLanguages": [
+    "fr",
+    "en",
+    "es"
+  ],
+  "controls": [
+    "next"
+  ],
   "cards": [
     {
       "id": "pig_001",
+      "prompt": {
+        "fr": "Le chien aboie, et le rat ______\n\n chicote.",
+        "en": "The dog barks, and the rat ______\n\n chicotes.",
+        "es": "El perro ladra, y la rata ______\n\n chicotea."
+      },
+      "meta": {
+        "wordKey": "pig_001"
+      }
+    },
+    {
+      "id": "pig_002",
+      "prompt": {
+        "fr": "Le bébé du zèbre s’appelle ______\n\n un zébron.",
+        "en": "A baby zebra is called ______\n\n a zébron.",
+        "es": "La cría de la cebra se llama ______\n\n un zébron."
+      },
+      "meta": {
+        "wordKey": "pig_002"
+      }
+    },
+    {
+      "id": "pig_003",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « corbillot » ?\n\n Le bébé du corbeau.",
+        "en": "What is a \"corbillot\"?\n\n A baby crow.",
+        "es": "¿Qué es un \"corbillot\"?\n\n La cría del cuervo."
+      },
+      "meta": {
+        "wordKey": "pig_003"
+      }
+    },
+    {
+      "id": "pig_004",
+      "prompt": {
+        "fr": "Laquelle de ces personnalités est née en 1969 ?\n\n Jennifer Aniston.",
+        "en": "Which of these celebrities was born in 1969?\n\n Jennifer Aniston.",
+        "es": "¿Cuál de estas celebridades nació en 1969?\n\n Jennifer Aniston."
+      },
+      "meta": {
+        "wordKey": "pig_004"
+      }
+    },
+    {
+      "id": "pig_005",
+      "prompt": {
+        "fr": "La tortue serpentine à gorge blanche ______\n\n respire par l’anus.",
+        "en": "The white-throated snapping turtle ______\n\n breathes through its anus.",
+        "es": "La tortuga mordedora de garganta blanca ______\n\n respira por el ano."
+      },
+      "meta": {
+        "wordKey": "pig_005"
+      }
+    },
+    {
+      "id": "pig_006",
+      "prompt": {
+        "fr": "La sœur de Sissi était surnommée ______\n\n Néné.",
+        "en": "Sissi's sister was nicknamed ______\n\n Néné.",
+        "es": "La hermana de Sissi tenía el apodo de ______\n\n Néné."
+      },
+      "meta": {
+        "wordKey": "pig_006"
+      }
+    },
+    {
+      "id": "pig_007",
+      "prompt": {
+        "fr": "La première fusée française lancée de Guyane s’appelait ______\n\n Véronique.",
+        "en": "The first French rocket launched from French Guiana was called ______\n\n Véronique.",
+        "es": "El primer cohete francés lanzado desde la Guayana Francesa se llamaba ______\n\n Véronique."
+      },
+      "meta": {
+        "wordKey": "pig_007"
+      }
+    },
+    {
+      "id": "pig_008",
+      "prompt": {
+        "fr": "La plupart des méduses font caca ______\n\n par la bouche.",
+        "en": "Most jellyfish poop ______\n\n through their mouths.",
+        "es": "La mayoría de las medusas hacen caca ______\n\n por la boca."
+      },
+      "meta": {
+        "wordKey": "pig_008"
+      }
+    },
+    {
+      "id": "pig_009",
+      "prompt": {
+        "fr": "La langue officielle des Incas était ______\n\n le quechua.",
+        "en": "The official language of the Incas was ______\n\n Quechua.",
+        "es": "La lengua oficial de los incas era ______\n\n el quechua."
+      },
+      "meta": {
+        "wordKey": "pig_009"
+      }
+    },
+    {
+      "id": "pig_010",
+      "prompt": {
+        "fr": "La femelle du gnou s’appelle ______\n\n la maroufle.",
+        "en": "A female wildebeest is called ______\n\n a maroufle.",
+        "es": "La hembra del ñu se llama ______\n\n la maroufle."
+      },
+      "meta": {
+        "wordKey": "pig_010"
+      }
+    },
+    {
+      "id": "pig_011",
+      "prompt": {
+        "fr": "L’animal officiel de l’Écosse est ______\n\n la licorne.",
+        "en": "Scotland's official animal is ______\n\n the unicorn.",
+        "es": "El animal oficial de Escocia es ______\n\n el unicornio."
+      },
+      "meta": {
+        "wordKey": "pig_011"
+      }
+    },
+    {
+      "id": "pig_012",
+      "prompt": {
+        "fr": "La capitale du Swaziland est ______\n\n Mbabane.",
+        "en": "The capital of Swaziland is ______\n\n Mbabane.",
+        "es": "La capital de Suazilandia es ______\n\n Mbabane."
+      },
+      "meta": {
+        "wordKey": "pig_012"
+      }
+    },
+    {
+      "id": "pig_013",
+      "prompt": {
+        "fr": "Le petit d’un léopard et d’une lionne s’appelle ______\n\n un léopon.",
+        "en": "The offspring of a leopard and a lioness is called ______\n\n a leopon.",
+        "es": "La cría de un leopardo y una leona se llama ______\n\n un leopón."
+      },
+      "meta": {
+        "wordKey": "pig_013"
+      }
+    },
+    {
+      "id": "pig_014",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une personne « cacopyge » ?\n\n Une personne qui n’a pas de belles fesses.",
+        "en": "What is a \"cacopyge\" person?\n\n Someone who doesn't have nice buttocks.",
+        "es": "¿Qué es una persona \"cacopige\"?\n\n Una persona que no tiene unas nalgas bonitas."
+      },
+      "meta": {
+        "wordKey": "pig_014"
+      }
+    },
+    {
+      "id": "pig_015",
+      "prompt": {
+        "fr": "La capitale du Guatemala est ______\n\n Guatemala City.",
+        "en": "The capital of Guatemala is ______\n\n Guatemala City.",
+        "es": "La capital de Guatemala es ______\n\n Ciudad de Guatemala."
+      },
+      "meta": {
+        "wordKey": "pig_015"
+      }
+    },
+    {
+      "id": "pig_016",
+      "prompt": {
+        "fr": "Le petit d’un hérisson s’appelle ______\n\n un choupisson.",
+        "en": "A baby hedgehog is called ______\n\n a choupisson.",
+        "es": "La cría del erizo se llama ______\n\n un choupisson."
+      },
+      "meta": {
+        "wordKey": "pig_016"
+      }
+    },
+    {
+      "id": "pig_017",
+      "prompt": {
+        "fr": "En vrai, Bénabar s’appelle ______\n\n Bruno Nicolini.",
+        "en": "Bénabar's real name is ______\n\n Bruno Nicolini.",
+        "es": "El verdadero nombre de Bénabar es ______\n\n Bruno Nicolini."
+      },
+      "meta": {
+        "wordKey": "pig_017"
+      }
+    },
+    {
+      "id": "pig_018",
+      "prompt": {
+        "fr": "François II est mort ______\n\n d’une otite.",
+        "en": "Francis II died ______\n\n from an ear infection.",
+        "es": "Francisco II murió ______\n\n de una otitis."
+      },
+      "meta": {
+        "wordKey": "pig_018"
+      }
+    },
+    {
+      "id": "pig_019",
+      "prompt": {
+        "fr": "Le prénom de Calogero est ______\n\n Calogero.",
+        "en": "Calogero's first name is ______\n\n Calogero.",
+        "es": "El nombre de pila de Calogero es ______\n\n Calogero."
+      },
+      "meta": {
+        "wordKey": "pig_019"
+      }
+    },
+    {
+      "id": "pig_020",
+      "prompt": {
+        "fr": "En Grèce Antique, ______ était un signe d’intelligence.\n\n un petit pénis.",
+        "en": "In Ancient Greece, ______ was a sign of intelligence.\n\n a small penis.",
+        "es": "En la Antigua Grecia, ______ era un signo de inteligencia.\n\n un pene pequeño."
+      },
+      "meta": {
+        "wordKey": "pig_020"
+      }
+    },
+    {
+      "id": "pig_021",
+      "prompt": {
+        "fr": "« Espagne » vient de « Ispania » qui veut dire ______\n\n la « terre des lapins ».",
+        "en": "\"Spain\" comes from \"Ispania\", which means ______\n\n the \"land of rabbits.\"",
+        "es": "\"España\" viene de \"Ispania\", que significa ______\n\n la \"tierra de los conejos\"."
+      },
+      "meta": {
+        "wordKey": "pig_021"
+      }
+    },
+    {
+      "id": "pig_022",
+      "prompt": {
+        "fr": "À la base Mickey Mouse ______\n\n s’appelait Mortimer.",
+        "en": "Originally, Mickey Mouse ______\n\n was called Mortimer.",
+        "es": "Al principio, Mickey Mouse ______\n\n se llamaba Mortimer."
+      },
+      "meta": {
+        "wordKey": "pig_022"
+      }
+    },
+    {
+      "id": "pig_023",
+      "prompt": {
+        "fr": "À la base on ne disait pas « kiwi » mais ______\n\n « groseille de Chine ».",
+        "en": "Originally, people didn't say \"kiwi\" but ______\n\n \"Chinese gooseberry.\"",
+        "es": "Al principio no se decía \"kiwi\", sino ______\n\n \"grosella china\"."
+      },
+      "meta": {
+        "wordKey": "pig_023"
+      }
+    },
+    {
+      "id": "pig_024",
+      "prompt": {
+        "fr": "À Rome, Crepitus était le dieu ______\n\n des pets.",
+        "en": "In Rome, Crepitus was the god ______\n\n of farts.",
+        "es": "En Roma, Crepitus era el dios ______\n\n de los pedos."
+      },
+      "meta": {
+        "wordKey": "pig_024"
+      }
+    },
+    {
+      "id": "pig_025",
+      "prompt": {
+        "fr": "À Rome, Rumia était la déesse ______\n\n des tétons.",
+        "en": "In Rome, Rumia was the goddess ______\n\n of nipples.",
+        "es": "En Roma, Rumia era la diosa ______\n\n de los pezones."
+      },
+      "meta": {
+        "wordKey": "pig_025"
+      }
+    },
+    {
+      "id": "pig_026",
+      "prompt": {
+        "fr": "Le roi de France qui a succédé à Hugues Capet s’appelait ______\n\n Robert.",
+        "en": "The king of France who succeeded Hugh Capet was called ______\n\n Robert.",
+        "es": "El rey de Francia que sucedió a Hugo Capeto se llamaba ______\n\n Roberto."
+      },
+      "meta": {
+        "wordKey": "pig_026"
+      }
+    },
+    {
+      "id": "pig_027",
+      "prompt": {
+        "fr": "Laquelle de ces chansons de Patrick Sébastien existe vraiment ?\n\n On va finir à poil.",
+        "en": "Which of these Patrick Sébastien songs really exists?\n\n We're Going to End Up Naked.",
+        "es": "¿Cuál de estas canciones de Patrick Sébastien existe de verdad?\n\n Vamos a acabar en pelotas."
+      },
+      "meta": {
+        "wordKey": "pig_027"
+      }
+    },
+    {
+      "id": "pig_028",
+      "prompt": {
+        "fr": "Le roi de France qui a succédé à Robert I s’appelait ______\n\n Raoul.",
+        "en": "The king of France who succeeded Robert I was called ______\n\n Raoul.",
+        "es": "El rey de Francia que sucedió a Roberto I se llamaba ______\n\n Raúl."
+      },
+      "meta": {
+        "wordKey": "pig_028"
+      }
+    },
+    {
+      "id": "pig_029",
+      "prompt": {
+        "fr": "Au Cameroun, il y a un peuple qui s’appelle ______\n\n les Bakaka.",
+        "en": "In Cameroon, there is an ethnic group called ______\n\n the Bakaka.",
+        "es": "En Camerún hay un pueblo llamado ______\n\n los Bakaka."
+      },
+      "meta": {
+        "wordKey": "pig_029"
+      }
+    },
+    {
+      "id": "pig_030",
+      "prompt": {
+        "fr": "Au Canada, les médecins peuvent prescrire ______\n\n des visites au musée.",
+        "en": "In Canada, doctors can prescribe ______\n\n museum visits.",
+        "es": "En Canadá, los médicos pueden recetar ______\n\n visitas al museo."
+      },
+      "meta": {
+        "wordKey": "pig_030"
+      }
+    },
+    {
+      "id": "pig_031",
+      "prompt": {
+        "fr": "Au Danemark, pour imiter le canard, on crie ______\n\n « Rap ! ».",
+        "en": "In Denmark, to imitate a duck, people shout ______\n\n \"Rap!\"",
+        "es": "En Dinamarca, para imitar a un pato, se grita ______\n\n \"¡Rap!\"."
+      },
+      "meta": {
+        "wordKey": "pig_031"
+      }
+    },
+    {
+      "id": "pig_032",
+      "prompt": {
+        "fr": "Au Japon, les fantômes ne font pas « houu » ou « bouu », ils font ______\n\n Kekeke !",
+        "en": "In Japan, ghosts don't go \"boo\"; they go ______\n\n Kekeke!",
+        "es": "En Japón, los fantasmas no hacen \"buu\"; hacen ______\n\n ¡Kekeke!"
+      },
+      "meta": {
+        "wordKey": "pig_032"
+      }
+    },
+    {
+      "id": "pig_033",
+      "prompt": {
+        "fr": "Au Japon, on ne dit pas « beurk », on dit ______\n\n « Yada Yada ! ».",
+        "en": "In Japan, people don't say \"yuck\", they say ______\n\n \"Yada Yada!\"",
+        "es": "En Japón no se dice \"puaj\", se dice ______\n\n \"¡Yada Yada!\"."
+      },
+      "meta": {
+        "wordKey": "pig_033"
+      }
+    },
+    {
+      "id": "pig_034",
+      "prompt": {
+        "fr": "Au Japon, « zizi » se dit ______\n\n « tintin ».",
+        "en": "In Japan, \"willy\" is said ______\n\n \"tintin.\"",
+        "es": "En Japón, \"pitito\" se dice ______\n\n \"tintin\"."
+      },
+      "meta": {
+        "wordKey": "pig_034"
+      }
+    },
+    {
+      "id": "pig_035",
+      "prompt": {
+        "fr": "Au Québec, pour signifier « il est bizarre », on peut dire ______\n\n « drôle de moineau ».",
+        "en": "In Quebec, to mean \"he's weird,\" you can say ______\n\n \"funny sparrow.\"",
+        "es": "En Quebec, para decir \"es raro\", puedes decir ______\n\n \"gorrión raro\"."
+      },
+      "meta": {
+        "wordKey": "pig_035"
+      }
+    },
+    {
+      "id": "pig_036",
+      "prompt": {
+        "fr": "Au Japon, pour imiter une sonnette, on crie ______\n\n « Pin Pon ! ».",
+        "en": "In Japan, to imitate a doorbell, people shout ______\n\n \"Pin Pon!\"",
+        "es": "En Japón, para imitar un timbre, se grita ______\n\n \"¡Pin Pon!\"."
+      },
+      "meta": {
+        "wordKey": "pig_036"
+      }
+    },
+    {
+      "id": "pig_037",
+      "prompt": {
+        "fr": "Au Japon, Tintin s’appelle ______\n\n Tantan.",
+        "en": "In Japan, Tintin is called ______\n\n Tantan.",
+        "es": "En Japón, Tintín se llama ______\n\n Tantan."
+      },
+      "meta": {
+        "wordKey": "pig_037"
+      }
+    },
+    {
+      "id": "pig_038",
+      "prompt": {
+        "fr": "Au Moyen Âge, on ne disait pas « catapulte », mais ______\n\n « couillard ».",
+        "en": "In the Middle Ages, people didn't say \"catapult\" but ______\n\n \"couillard.\"",
+        "es": "En la Edad Media no se decía \"catapulta\", sino ______\n\n \"couillard\"."
+      },
+      "meta": {
+        "wordKey": "pig_038"
+      }
+    },
+    {
+      "id": "pig_039",
+      "prompt": {
+        "fr": "Au Pérou, du IIe au VIIIe siècle, vivait un peuple nommé ______\n\n les « Moches ».",
+        "en": "In Peru, from the 2nd to the 8th century, there was a people called ______\n\n the \"Moches.\"",
+        "es": "En Perú, del siglo II al VIII, vivió un pueblo llamado ______\n\n los \"Moches\"."
+      },
+      "meta": {
+        "wordKey": "pig_039"
+      }
+    },
+    {
+      "id": "pig_040",
+      "prompt": {
+        "fr": "Aux Jeux Olympiques antiques, les athlètes ______\n\n étaient nus.",
+        "en": "At the ancient Olympic Games, athletes ______\n\n were naked.",
+        "es": "En los Juegos Olímpicos antiguos, los atletas ______\n\n estaban desnudos."
+      },
+      "meta": {
+        "wordKey": "pig_040"
+      }
+    },
+    {
+      "id": "pig_041",
+      "prompt": {
+        "fr": "Au Québec, on ne dit pas « il pleut des cordes », mais ______\n\n « il tombe des clous ».",
+        "en": "In Quebec, people don't say \"it's raining ropes\" but ______\n\n \"it's raining nails.\"",
+        "es": "En Quebec no se dice \"llueve a cántaros\", sino ______\n\n \"caen clavos\"."
+      },
+      "meta": {
+        "wordKey": "pig_041"
+      }
+    },
+    {
+      "id": "pig_042",
+      "prompt": {
+        "fr": "Au XIe siècle, les bergers normands installés en Angleterre rassemblaient leur troupeau en criant ______\n\n « Hallo ! ».",
+        "en": "In the 11th century, Norman shepherds settled in England gathered their flock by shouting ______\n\n \"Hallo!\"",
+        "es": "En el siglo XI, los pastores normandos instalados en Inglaterra reunían a su rebaño gritando ______\n\n \"¡Hallo!\"."
+      },
+      "meta": {
+        "wordKey": "pig_042"
+      }
+    },
+    {
+      "id": "pig_043",
+      "prompt": {
+        "fr": "En vrai, Eddy Mitchell s’appelle ______\n\n Claude Moine.",
+        "en": "Eddy Mitchell's real name is ______\n\n Claude Moine.",
+        "es": "El verdadero nombre de Eddy Mitchell es ______\n\n Claude Moine."
+      },
+      "meta": {
+        "wordKey": "pig_043"
+      }
+    },
+    {
+      "id": "pig_044",
+      "prompt": {
+        "fr": "Au XIXe siècle, on ne disait pas « fumer » mais ______\n\n « pétuner ».",
+        "en": "In the 19th century, people didn't say \"to smoke\" but ______\n\n \"pétuner.\"",
+        "es": "En el siglo XIX no se decía \"fumar\", sino ______\n\n \"pétuner\"."
+      },
+      "meta": {
+        "wordKey": "pig_044"
+      }
+    },
+    {
+      "id": "pig_045",
+      "prompt": {
+        "fr": "Aux JO de Paris de 1900, on organisa une épreuve de ______\n\n pêche à la ligne.",
+        "en": "At the 1900 Paris Olympics, an event was organized for ______\n\n angling.",
+        "es": "En los Juegos Olímpicos de París de 1900, se organizó una prueba de ______\n\n pesca con caña."
+      },
+      "meta": {
+        "wordKey": "pig_045"
+      }
+    },
+    {
+      "id": "pig_046",
+      "prompt": {
+        "fr": "En espagnol, « raclette » se dit ______\n\n « racleta ».",
+        "en": "In Spanish, \"raclette\" is said ______\n\n \"racleta.\"",
+        "es": "En español, \"raclette\" se dice ______\n\n \"racleta\"."
+      },
+      "meta": {
+        "wordKey": "pig_046"
+      }
+    },
+    {
+      "id": "pig_047",
+      "prompt": {
+        "fr": "En créole réunionnais, « suppositoire » se dit ______\n\n « bonbon la fesse ».",
+        "en": "In Réunion Creole, \"suppository\" is said ______\n\n \"butt candy.\"",
+        "es": "En criollo de Reunión, \"supositorio\" se dice ______\n\n \"caramelo del culo\"."
+      },
+      "meta": {
+        "wordKey": "pig_047"
+      }
+    },
+    {
+      "id": "pig_048",
+      "prompt": {
+        "fr": "En Chine, pour parler de gros seins, on dit ______\n\n « elle a de gros tofu ».",
+        "en": "In China, to talk about big breasts, people say ______\n\n \"she has big tofu.\"",
+        "es": "En China, para hablar de pechos grandes, se dice ______\n\n \"ella tiene tofu grande\"."
+      },
+      "meta": {
+        "wordKey": "pig_048"
+      }
+    },
+    {
+      "id": "pig_049",
+      "prompt": {
+        "fr": "En Espagne, pour imiter le bruit du klaxon d’une voiture, on ne dit pas « tut tut », mais on dit ______\n\n « Pi Pi ! ».",
+        "en": "In Spain, to imitate a car horn, people don't say \"beep beep\" but ______\n\n \"Pi Pi!\"",
+        "es": "En España, para imitar el claxon de un coche, no se dice \"pi pi\" sino ______\n\n \"¡Pi Pi!\"."
+      },
+      "meta": {
+        "wordKey": "pig_049"
+      }
+    },
+    {
+      "id": "pig_050",
+      "prompt": {
+        "fr": "En chinois, le chien ne dit pas « wouf wouf », il fait ______\n\n « wang wang ».",
+        "en": "In Chinese, a dog doesn't say \"woof woof\"; it goes ______\n\n \"wang wang.\"",
+        "es": "En chino, el perro no dice \"guau guau\"; hace ______\n\n \"wang wang\"."
+      },
+      "meta": {
+        "wordKey": "pig_050"
+      }
+    },
+    {
+      "id": "pig_051",
+      "prompt": {
+        "fr": "En Belgique, les auto-tamponneuses s’appellent ______\n\n « autos-scooters ».",
+        "en": "In Belgium, bumper cars are called ______\n\n \"autos-scooters.\"",
+        "es": "En Bélgica, los coches de choque se llaman ______\n\n \"autos-scooters\"."
+      },
+      "meta": {
+        "wordKey": "pig_051"
+      }
+    },
+    {
+      "id": "pig_052",
+      "prompt": {
+        "fr": "Avant de dire « girafe », on disait ______\n\n un « camélopard ».",
+        "en": "Before saying \"giraffe\", people said ______\n\n a \"camelopard.\"",
+        "es": "Antes de decir \"jirafa\", se decía ______\n\n un \"camelopardo\"."
+      },
+      "meta": {
+        "wordKey": "pig_052"
+      }
+    },
+    {
+      "id": "pig_053",
+      "prompt": {
+        "fr": "Avant les années 50, on ne disait pas un « tube » de musique, on disait ______\n\n un « saucisson ».",
+        "en": "Before the 1950s, people didn't call a hit song a \"hit\" but ______\n\n a \"sausage.\"",
+        "es": "Antes de los años 50, no se decía un \"éxito\" musical, sino ______\n\n un \"salchichón\"."
+      },
+      "meta": {
+        "wordKey": "pig_053"
+      }
+    },
+    {
+      "id": "pig_054",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « foutou » ?\n\n Un plat ivoirien à base de banane et de manioc.",
+        "en": "What is \"foutou\"?\n\n An Ivorian dish made from banana and cassava.",
+        "es": "¿Qué es el \"foutou\"?\n\n Un plato marfileño hecho con plátano y yuca."
+      },
+      "meta": {
+        "wordKey": "pig_054"
+      }
+    },
+    {
+      "id": "pig_055",
+      "prompt": {
+        "fr": "Le petit d’un faisan et d’une poule s’appelle ______\n\n un coquard.",
+        "en": "The offspring of a pheasant and a hen is called ______\n\n a coquard.",
+        "es": "La cría de un faisán y una gallina se llama ______\n\n un coquard."
+      },
+      "meta": {
+        "wordKey": "pig_055"
+      }
+    },
+    {
+      "id": "pig_056",
+      "prompt": {
+        "fr": "Lequel de ces animaux existe vraiment ?\n\n La grenouille taureau.",
+        "en": "Which of these animals really exists?\n\n The bullfrog.",
+        "es": "¿Cuál de estos animales existe de verdad?\n\n La rana toro."
+      },
+      "meta": {
+        "wordKey": "pig_056"
+      }
+    },
+    {
+      "id": "pig_057",
+      "prompt": {
+        "fr": "Ça a été inventé en 673 : ______\n\n le lance-flamme.",
+        "en": "This was invented in 673: ______\n\n the flamethrower.",
+        "es": "Esto se inventó en 673: ______\n\n el lanzallamas."
+      },
+      "meta": {
+        "wordKey": "pig_057"
+      }
+    },
+    {
+      "id": "pig_058",
+      "prompt": {
+        "fr": "Cléopâtre était ______\n\n grecque.",
+        "en": "Cleopatra was ______\n\n Greek.",
+        "es": "Cleopatra era ______\n\n griega."
+      },
+      "meta": {
+        "wordKey": "pig_058"
+      }
+    },
+    {
+      "id": "pig_059",
+      "prompt": {
+        "fr": "Les habitants de la ville de Malakoff s’appellent ______\n\n les Malakoffiotes.",
+        "en": "The inhabitants of the town of Malakoff are called ______\n\n the Malakoffiotes.",
+        "es": "Los habitantes de la ciudad de Malakoff se llaman ______\n\n los Malakoffiotes."
+      },
+      "meta": {
+        "wordKey": "pig_059"
+      }
+    },
+    {
+      "id": "pig_060",
+      "prompt": {
+        "fr": "Les habitants de Villechien s’appellent ______\n\n les Toutouvillais.",
+        "en": "The inhabitants of Villechien are called ______\n\n the Toutouvillais.",
+        "es": "Los habitantes de Villechien se llaman ______\n\n los Toutouvillais."
+      },
+      "meta": {
+        "wordKey": "pig_060"
+      }
+    },
+    {
+      "id": "pig_061",
+      "prompt": {
+        "fr": "Laquelle de ces propositions est vraie ?\n\n On dit « un » pétale.",
+        "en": "Which of these statements is true?\n\n In French, you say \"un pétale\".",
+        "es": "¿Cuál de estas afirmaciones es verdadera?\n\n En francés se dice \"un pétale\"."
+      },
+      "meta": {
+        "wordKey": "pig_061"
+      }
+    },
+    {
+      "id": "pig_062",
+      "prompt": {
+        "fr": "Cri d’animaux : la belette ______\n\n belote.",
+        "en": "Animal sounds: the weasel ______\n\n belotes.",
+        "es": "Sonidos de animales: la comadreja ______\n\n belotea."
+      },
+      "meta": {
+        "wordKey": "pig_062"
+      }
+    },
+    {
+      "id": "pig_063",
+      "prompt": {
+        "fr": "Cri d’animaux : la mésange ______\n\n titine.",
+        "en": "Animal sounds: the titmouse ______\n\n titines.",
+        "es": "Sonidos de animales: la carbonera ______\n\n titinea."
+      },
+      "meta": {
+        "wordKey": "pig_063"
+      }
+    },
+    {
+      "id": "pig_064",
+      "prompt": {
+        "fr": "Ça a été inventé en 1783 : ______\n\n le Schweppes.",
+        "en": "This was invented in 1783: ______\n\n Schweppes.",
+        "es": "Esto se inventó en 1783: ______\n\n Schweppes."
+      },
+      "meta": {
+        "wordKey": "pig_064"
+      }
+    },
+    {
+      "id": "pig_065",
+      "prompt": {
+        "fr": "Comment appelle-t-on un collectionneur de pipes ?\n\n Un « pipomane ».",
+        "en": "What do you call a pipe collector?\n\n A \"pipomaniac.\"",
+        "es": "¿Cómo se llama a un coleccionista de pipas?\n\n Un \"pipómano\"."
+      },
+      "meta": {
+        "wordKey": "pig_065"
+      }
+    },
+    {
+      "id": "pig_066",
+      "prompt": {
+        "fr": "Cri d’animaux : le rhinocéros ______\n\n barète.",
+        "en": "Animal sounds: the rhinoceros ______\n\n barètes.",
+        "es": "Sonidos de animales: el rinoceronte ______\n\n baretea."
+      },
+      "meta": {
+        "wordKey": "pig_066"
+      }
+    },
+    {
+      "id": "pig_067",
+      "prompt": {
+        "fr": "Cri d’animaux : le chevreuil ______\n\n abole.",
+        "en": "Animal sounds: the roe deer ______\n\n aboles.",
+        "es": "Sonidos de animales: el corzo ______\n\n abolea."
+      },
+      "meta": {
+        "wordKey": "pig_067"
+      }
+    },
+    {
+      "id": "pig_068",
+      "prompt": {
+        "fr": "Dans la mythologie grecque, il existait un démoniaque nommée ______\n\n « Ocypète ».",
+        "en": "In Greek mythology, there was a demoness named ______\n\n \"Ocypete.\"",
+        "es": "En la mitología griega existía una demonia llamada ______\n\n \"Ocípete\"."
+      },
+      "meta": {
+        "wordKey": "pig_068"
+      }
+    },
+    {
+      "id": "pig_069",
+      "prompt": {
+        "fr": "Dans la mythologie grecque, le basilic était un monstre qui avait ______\n\n une haleine mortelle.",
+        "en": "In Greek mythology, the basilisk was a monster that had ______\n\n a deadly breath.",
+        "es": "En la mitología griega, el basilisco era un monstruo que tenía ______\n\n un aliento mortal."
+      },
+      "meta": {
+        "wordKey": "pig_069"
+      }
+    },
+    {
+      "id": "pig_070",
+      "prompt": {
+        "fr": "Dans la version africaine des Visiteurs, Jacquouille s’appelle ______\n\n André le Pâté.",
+        "en": "In the African version of The Visitors, Jacquouille is called ______\n\n André le Pâté.",
+        "es": "En la versión africana de Los Visitantes, Jacquouille se llama ______\n\n André le Pâté."
+      },
+      "meta": {
+        "wordKey": "pig_070"
+      }
+    },
+    {
+      "id": "pig_071",
+      "prompt": {
+        "fr": "Durant la Seconde Guerre mondiale, la capitale de la France libre était ______\n\n Brazzaville.",
+        "en": "During World War II, the capital of Free France was ______\n\n Brazzaville.",
+        "es": "Durante la Segunda Guerra Mundial, la capital de la Francia Libre era ______\n\n Brazzaville."
+      },
+      "meta": {
+        "wordKey": "pig_071"
+      }
+    },
+    {
+      "id": "pig_072",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « verrucols » ?\n\n Un habitant de la ville de Verrue.",
+        "en": "What is a \"verrucols\"?\n\n An inhabitant of the town of Verrue.",
+        "es": "¿Qué es un \"verrucols\"?\n\n Un habitante del pueblo de Verrue."
+      },
+      "meta": {
+        "wordKey": "pig_072"
+      }
+    },
+    {
+      "id": "pig_073",
+      "prompt": {
+        "fr": "Dans l’histoire originale, Bambi ______\n\n est un chevreuil.",
+        "en": "In the original story, Bambi ______\n\n is a roe deer.",
+        "es": "En la historia original, Bambi ______\n\n es un corzo."
+      },
+      "meta": {
+        "wordKey": "pig_073"
+      }
+    },
+    {
+      "id": "pig_074",
+      "prompt": {
+        "fr": "En 2014, un avion qui reliait Los Angeles à Philadelphie a dû atterrir car un chien ______\n\n a fait un pet irrespirable.",
+        "en": "In 2014, a plane flying from Los Angeles to Philadelphia had to land because a dog ______\n\n let out an unbearable fart.",
+        "es": "En 2014, un avión que iba de Los Ángeles a Filadelfia tuvo que aterrizar porque un perro ______\n\n se tiró un pedo insoportable."
+      },
+      "meta": {
+        "wordKey": "pig_074"
+      }
+    },
+    {
+      "id": "pig_075",
+      "prompt": {
+        "fr": "En 1972, le prénom féminin le plus donné en France était ______\n\n Sandrine.",
+        "en": "In 1972, the most given female first name in France was ______\n\n Sandrine.",
+        "es": "En 1972, el nombre femenino más puesto en Francia era ______\n\n Sandrine."
+      },
+      "meta": {
+        "wordKey": "pig_075"
+      }
+    },
+    {
+      "id": "pig_076",
+      "prompt": {
+        "fr": "En 1982, Colgate a lancé un nouveau produit : ______\n\n des lasagnes.",
+        "en": "In 1982, Colgate launched a new product: ______\n\n lasagna.",
+        "es": "En 1982, Colgate lanzó un nuevo producto: ______\n\n lasaña."
+      },
+      "meta": {
+        "wordKey": "pig_076"
+      }
+    },
+    {
+      "id": "pig_077",
+      "prompt": {
+        "fr": "En 1988, Doc Gynéco a sorti un titre en duo avec ______\n\n Bernard Tapie.",
+        "en": "In 1988, Doc Gynéco released a duet with ______\n\n Bernard Tapie.",
+        "es": "En 1988, Doc Gynéco sacó un tema a dúo con ______\n\n Bernard Tapie."
+      },
+      "meta": {
+        "wordKey": "pig_077"
+      }
+    },
+    {
+      "id": "pig_078",
+      "prompt": {
+        "fr": "En 2008, le champion de saut en hauteur Ivan Ukhov a été exclu d’une compétition car il était ______\n\n complètement bourré.",
+        "en": "In 2008, high jump champion Ivan Ukhov was excluded from a competition because he was ______\n\n completely drunk.",
+        "es": "En 2008, el campeón de salto de altura Ivan Ukhov fue expulsado de una competición porque estaba ______\n\n completamente borracho."
+      },
+      "meta": {
+        "wordKey": "pig_078"
+      }
+    },
+    {
+      "id": "pig_079",
+      "prompt": {
+        "fr": "En 2019, la justice française a refusé à des parents de prénommer leur fils ______\n\n « Griezmann Mbappé ».",
+        "en": "In 2019, French justice refused to let parents name their son ______\n\n \"Griezmann Mbappé.\"",
+        "es": "En 2019, la justicia francesa rechazó que unos padres llamaran a su hijo ______\n\n \"Griezmann Mbappé\"."
+      },
+      "meta": {
+        "wordKey": "pig_079"
+      }
+    },
+    {
+      "id": "pig_080",
+      "prompt": {
+        "fr": "En 2019, un conducteur s’est retrouvé avec la voiture de sa mère sur son siège passager : ______\n\n un poney.",
+        "en": "In 2019, a driver ended up with his mother's car on the passenger seat: ______\n\n a pony.",
+        "es": "En 2019, un conductor acabó con el coche de su madre en el asiento del copiloto: ______\n\n un poni."
+      },
+      "meta": {
+        "wordKey": "pig_080"
+      }
+    },
+    {
+      "id": "pig_081",
+      "prompt": {
+        "fr": "En 2020, un producteur de chèvre a été condamné à fermer sa ferme car ______\n\n il travaillait nu devant ses employés.",
+        "en": "In 2020, a goat farmer was ordered to close his farm because ______\n\n he worked naked in front of his employees.",
+        "es": "En 2020, un criador de cabras fue condenado a cerrar su granja porque ______\n\n trabajaba desnudo delante de sus empleados."
+      },
+      "meta": {
+        "wordKey": "pig_081"
+      }
+    },
+    {
+      "id": "pig_082",
+      "prompt": {
+        "fr": "En 1927, le Museum of French Arts de New York exposa ______\n\n le zizi de Napoléon.",
+        "en": "In 1927, New York's Museum of French Arts exhibited ______\n\n Napoleon's penis.",
+        "es": "En 1927, el Museum of French Arts de Nueva York expuso ______\n\n el pene de Napoleón."
+      },
+      "meta": {
+        "wordKey": "pig_082"
+      }
+    },
+    {
+      "id": "pig_083",
+      "prompt": {
+        "fr": "En 1969, Johnny Hallyday a sorti une chanson intitulée Une guitare, une fille et ______\n\n un ricard.",
+        "en": "In 1969, Johnny Hallyday released a song titled A Guitar, a Girl and ______\n\n a Ricard.",
+        "es": "En 1969, Johnny Hallyday sacó una canción titulada Una guitarra, una chica y ______\n\n un Ricard."
+      },
+      "meta": {
+        "wordKey": "pig_083"
+      }
+    },
+    {
+      "id": "pig_084",
+      "prompt": {
+        "fr": "En allemand, pour dire « lapin », on dit ______\n\n « kaninchen ».",
+        "en": "In German, to say \"rabbit\", you say ______\n\n \"Kaninchen.\"",
+        "es": "En alemán, para decir \"conejo\", se dice ______\n\n \"Kaninchen\"."
+      },
+      "meta": {
+        "wordKey": "pig_084"
+      }
+    },
+    {
+      "id": "pig_085",
+      "prompt": {
+        "fr": "En anglais, pour dire « bisousser, cajoler amoureusement », on dit ______\n\n « to canoodle ».",
+        "en": "In English, to say \"to kiss and cuddle lovingly\", you say ______\n\n \"to canoodle.\"",
+        "es": "En inglés, para decir \"besuquear y acariciar amorosamente\", se dice ______\n\n \"to canoodle\"."
+      },
+      "meta": {
+        "wordKey": "pig_085"
+      }
+    },
+    {
+      "id": "pig_086",
+      "prompt": {
+        "fr": "Au Royaume-Uni, à l’époque victorienne, quand quelqu’un mourait, il était commun de ______\n\n prendre une photo de famille avec.",
+        "en": "In Victorian Britain, when someone died, it was common to ______\n\n take a family photo with them.",
+        "es": "En el Reino Unido victoriano, cuando alguien moría, era común ______\n\n hacerse una foto familiar con él."
+      },
+      "meta": {
+        "wordKey": "pig_086"
+      }
+    },
+    {
+      "id": "pig_087",
+      "prompt": {
+        "fr": "En Arabe, on ne dit pas « oups », on dit ______\n\n « Yooh ! ».",
+        "en": "In Arabic, people don't say \"oops\", they say ______\n\n \"Yooh!\"",
+        "es": "En árabe no se dice \"ups\", se dice ______\n\n \"¡Yooh!\"."
+      },
+      "meta": {
+        "wordKey": "pig_087"
+      }
+    },
+    {
+      "id": "pig_088",
+      "prompt": {
+        "fr": "En 2009, qui a fait la une de Playboy alors qu’il pose photos sexys ?\n\n Marge Simpson.",
+        "en": "In 2009, who made the cover of Playboy while posing for sexy photos?\n\n Marge Simpson.",
+        "es": "En 2009, ¿quién salió en la portada de Playboy posando en fotos sexys?\n\n Marge Simpson."
+      },
+      "meta": {
+        "wordKey": "pig_088"
+      }
+    },
+    {
+      "id": "pig_089",
+      "prompt": {
+        "fr": "En 2013, dans le Maine-et-Loire, des gendarmes ont braqué une supérette ______\n\n avec des sabres lasers.",
+        "en": "In 2013, in Maine-et-Loire, police officers robbed a convenience store ______\n\n with lightsabers.",
+        "es": "En 2013, en Maine-et-Loire, unos gendarmes atracaron un minimercado ______\n\n con sables láser."
+      },
+      "meta": {
+        "wordKey": "pig_089"
+      }
+    },
+    {
+      "id": "pig_090",
+      "prompt": {
+        "fr": "En espagnol, « téton » se dit ______\n\n « tetilla ».",
+        "en": "In Spanish, \"nipple\" is said ______\n\n \"tetilla.\"",
+        "es": "En español, \"pezón\" se dice ______\n\n \"tetilla\"."
+      },
+      "meta": {
+        "wordKey": "pig_090"
+      }
+    },
+    {
+      "id": "pig_091",
+      "prompt": {
+        "fr": "En finnois, on ne dit pas « oups », on dit ______\n\n « Hupsista ».",
+        "en": "In Finnish, people don't say \"oops\", they say ______\n\n \"Hupsista.\"",
+        "es": "En finés no se dice \"ups\", se dice ______\n\n \"Hupsista\"."
+      },
+      "meta": {
+        "wordKey": "pig_091"
+      }
+    },
+    {
+      "id": "pig_092",
+      "prompt": {
+        "fr": "En grec, « bonjour » se dit ______\n\n « Kalimera ».",
+        "en": "In Greek, \"hello\" is said ______\n\n \"Kalimera.\"",
+        "es": "En griego, \"hola\" se dice ______\n\n \"Kalimera\"."
+      },
+      "meta": {
+        "wordKey": "pig_092"
+      }
+    },
+    {
+      "id": "pig_093",
+      "prompt": {
+        "fr": "En Grèce antique, on se torchait les fesses avec ______\n\n de petits cailloux.",
+        "en": "In ancient Greece, people wiped their buttocks with ______\n\n small pebbles.",
+        "es": "En la Antigua Grecia, la gente se limpiaba el culo con ______\n\n pequeñas piedras."
+      },
+      "meta": {
+        "wordKey": "pig_093"
+      }
+    },
+    {
+      "id": "pig_094",
+      "prompt": {
+        "fr": "En 2022, un projet de loi en Nouvelle-Zélande prévoyait de taxer ______\n\n les pets de vaches.",
+        "en": "In 2022, a bill in New Zealand proposed taxing ______\n\n cow farts.",
+        "es": "En 2022, un proyecto de ley en Nueva Zelanda proponía gravar ______\n\n los pedos de las vacas."
+      },
+      "meta": {
+        "wordKey": "pig_094"
+      }
+    },
+    {
+      "id": "pig_095",
+      "prompt": {
+        "fr": "En Allemagne on ne « croise pas les doigts » mais ______\n\n « serre les pouces ».",
+        "en": "In Germany, people don't \"cross their fingers\" but ______\n\n \"press their thumbs.\"",
+        "es": "En Alemania no se \"cruzan los dedos\", sino que ______\n\n \"aprietan los pulgares\"."
+      },
+      "meta": {
+        "wordKey": "pig_095"
+      }
+    },
+    {
+      "id": "pig_096",
+      "prompt": {
+        "fr": "En italien, pour dire « c’est stupéfiant », on dit ______\n\n « Mozzafiato ».",
+        "en": "In Italian, to say \"it's breathtaking\", you say ______\n\n \"Mozzafiato.\"",
+        "es": "En italiano, para decir \"es asombroso\", se dice ______\n\n \"Mozzafiato\"."
+      },
+      "meta": {
+        "wordKey": "pig_096"
+      }
+    },
+    {
+      "id": "pig_097",
+      "prompt": {
+        "fr": "En japonais, pour dire « perdre son temps », on dit ______\n\n « girigiri ».",
+        "en": "In Japanese, to say \"to waste one's time\", people say ______\n\n \"girigiri.\"",
+        "es": "En japonés, para decir \"perder el tiempo\", se dice ______\n\n \"girigiri\"."
+      },
+      "meta": {
+        "wordKey": "pig_097"
+      }
+    },
+    {
+      "id": "pig_098",
+      "prompt": {
+        "fr": "En langue germanique, le prénom Bernard signifie ______\n\n « ours courageux ».",
+        "en": "In Germanic language, the first name Bernard means ______\n\n \"brave bear.\"",
+        "es": "En lengua germánica, el nombre Bernardo significa ______\n\n \"oso valiente\"."
+      },
+      "meta": {
+        "wordKey": "pig_098"
+      }
+    },
+    {
+      "id": "pig_099",
+      "prompt": {
+        "fr": "En Pologne, on ne dit pas « beurk », on dit ______\n\n « Fuj ! ».",
+        "en": "In Poland, people don't say \"yuck\", they say ______\n\n \"Fuj!\"",
+        "es": "En Polonia no se dice \"puaj\", se dice ______\n\n \"¡Fuj!\"."
+      },
+      "meta": {
+        "wordKey": "pig_099"
+      }
+    },
+    {
+      "id": "pig_100",
+      "prompt": {
+        "fr": "Qui a inventé la tartiflette ?\n\n Le syndicat inter-professionnel du reblochon.",
+        "en": "Who invented tartiflette?\n\n The interprofessional Reblochon trade association.",
+        "es": "¿Quién inventó la tartiflette?\n\n El sindicato interprofesional del reblochón."
+      },
+      "meta": {
+        "wordKey": "pig_100"
+      }
+    },
+    {
+      "id": "pig_101",
+      "prompt": {
+        "fr": "Le vrai nom de Bob Sinclar est ______\n\n Christophe le Friant.",
+        "en": "Bob Sinclar's real name is ______\n\n Christophe Le Friant.",
+        "es": "El verdadero nombre de Bob Sinclar es ______\n\n Christophe Le Friant."
+      },
+      "meta": {
+        "wordKey": "pig_101"
+      }
+    },
+    {
+      "id": "pig_102",
+      "prompt": {
+        "fr": "La Côte d’Ivoire est le pays d’Afrique où ______\n\n on apprend le plus le japonais.",
+        "en": "Ivory Coast is the African country where ______\n\n Japanese is studied the most.",
+        "es": "Costa de Marfil es el país de África donde ______\n\n más se aprende japonés."
+      },
+      "meta": {
+        "wordKey": "pig_102"
+      }
+    },
+    {
+      "id": "pig_103",
+      "prompt": {
+        "fr": "Quand il était au collège, George W. Bush ______\n\n était pom-pom boy.",
+        "en": "When he was in middle school, George W. Bush ______\n\n was a cheerleader.",
+        "es": "Cuando estaba en el instituto, George W. Bush ______\n\n era animador."
+      },
+      "meta": {
+        "wordKey": "pig_103"
+      }
+    },
+    {
+      "id": "pig_104",
+      "prompt": {
+        "fr": "Le paresseux met 1 minute ______\n\n pour faire 3 mètres.",
+        "en": "A sloth takes 1 minute ______\n\n to move 3 meters.",
+        "es": "Un perezoso tarda 1 minuto ______\n\n en recorrer 3 metros."
+      },
+      "meta": {
+        "wordKey": "pig_104"
+      }
+    },
+    {
+      "id": "pig_105",
+      "prompt": {
+        "fr": "C’est interdit à Hawaï : ______\n\n les hamsters.",
+        "en": "This is banned in Hawaii: ______\n\n hamsters.",
+        "es": "Esto está prohibido en Hawái: ______\n\n los hámsters."
+      },
+      "meta": {
+        "wordKey": "pig_105"
+      }
+    },
+    {
+      "id": "pig_106",
+      "prompt": {
+        "fr": "En 2008, Vladimir Poutine a sorti un DVD intitulé ______\n\n Apprendre le judo avec Vladimir Poutine.",
+        "en": "In 2008, Vladimir Putin released a DVD titled ______\n\n Learning Judo with Vladimir Putin.",
+        "es": "En 2008, Vladímir Putin sacó un DVD titulado ______\n\n Aprender judo con Vladímir Putin."
+      },
+      "meta": {
+        "wordKey": "pig_106"
+      }
+    },
+    {
+      "id": "pig_107",
+      "prompt": {
+        "fr": "En Grèce, le mont qui surplombe la ville de Delphes s’appelle ______\n\n le mont Parnasse.",
+        "en": "In Greece, the mountain overlooking the city of Delphi is called ______\n\n Mount Parnassus.",
+        "es": "En Grecia, el monte que domina la ciudad de Delfos se llama ______\n\n el monte Parnaso."
+      },
+      "meta": {
+        "wordKey": "pig_107"
+      }
+    },
+    {
+      "id": "pig_108",
+      "prompt": {
+        "fr": "Avant 1914, la station Joué-lès-Tours du tram parisien s’appelait ______\n\n Allemagne.",
+        "en": "Before 1914, the Joué-lès-Tours station of the Paris tramway was called ______\n\n Germany.",
+        "es": "Antes de 1914, la estación Joué-lès-Tours del tranvía parisino se llamaba ______\n\n Alemania."
+      },
+      "meta": {
+        "wordKey": "pig_108"
+      }
+    },
+    {
+      "id": "pig_109",
+      "prompt": {
+        "fr": "Le diplomate qui introduisit le tabac en poudre en France en 1559 s’appelait ______\n\n Jean Nicot.",
+        "en": "The diplomat who introduced powdered tobacco to France in 1559 was called ______\n\n Jean Nicot.",
+        "es": "El diplomático que introdujo el tabaco en polvo en Francia en 1559 se llamaba ______\n\n Jean Nicot."
+      },
+      "meta": {
+        "wordKey": "pig_109"
+      }
+    },
+
+    {
+      "id": "pig_110",
+      "prompt": {
+        "fr": "À Noël, les Suédois ont pour tradition de ______\n\n regarder un dessin animé de Donald Duck.",
+        "en": "At Christmas, the Swedes traditionally ______\n\n watch a Donald Duck cartoon.",
+        "es": "En Navidad, los suecos tienen la tradición de ______\n\n ver un dibujo animado del Pato Donald."
+      },
+      "meta": {
+        "wordKey": "pig_110"
+      }
+    },
+    {
+      "id": "pig_111",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « sextette » ?\n\n Un orchestre de jazz avec six musiciens.",
+        "en": "What is a \"sextet\"?\n\n A jazz orchestra with six musicians.",
+        "es": "¿Qué es un \"sexteto\"?\n\n Una orquesta de jazz con seis músicos."
+      },
+      "meta": {
+        "wordKey": "pig_111"
+      }
+    },
+    {
+      "id": "pig_112",
+      "prompt": {
+        "fr": "En anglais, le verbe irrégulier fling se conjugue ______\n\n Fling, flung, flung.",
+        "en": "In English, the irregular verb fling is conjugated ______\n\n fling, flung, flung.",
+        "es": "En inglés, el verbo irregular fling se conjuga ______\n\n fling, flung, flung."
+      },
+      "meta": {
+        "wordKey": "pig_112"
+      }
+    },
+    {
+      "id": "pig_113",
+      "prompt": {
+        "fr": "Aux JO d’Albertville en 1992, il y a eu une épreuve de ______\n\n danse sur ski.",
+        "en": "At the 1992 Albertville Olympics, there was an event in ______\n\n ski ballet.",
+        "es": "En los Juegos Olímpicos de Albertville de 1992, hubo una prueba de ______\n\n ballet de esquí."
+      },
+      "meta": {
+        "wordKey": "pig_113"
+      }
+    },
+    {
+      "id": "pig_114",
+      "prompt": {
+        "fr": "À la cour royale britannique, les favoris du roi étaient appelés ______\n\n les « mignons ».",
+        "en": "At the British royal court, the king’s favorites were called ______\n\n the \"mignons.\"",
+        "es": "En la corte real británica, los favoritos del rey eran llamados ______\n\n los \"mignons\"."
+      },
+      "meta": {
+        "wordKey": "pig_114"
+      }
+    },
+    {
+      "id": "pig_115",
+      "prompt": {
+        "fr": "Qu’est-ce que le « jogging » ?\n\n Un sport qui consiste à courir en jonglant.",
+        "en": "What is \"jogging\"?\n\n A sport that consists of running while juggling.",
+        "es": "¿Qué es el \"jogging\"?\n\n Un deporte que consiste en correr mientras se hacen malabares."
+      },
+      "meta": {
+        "wordKey": "pig_115"
+      }
+    },
+    {
+      "id": "pig_116",
+      "prompt": {
+        "fr": "Un testicule de chimpanzé ______\n\n est 4 fois plus lourd que celui de gorille.",
+        "en": "A chimpanzee testicle ______\n\n is 4 times heavier than a gorilla’s.",
+        "es": "Un testículo de chimpancé ______\n\n pesa 4 veces más que el de un gorila."
+      },
+      "meta": {
+        "wordKey": "pig_116"
+      }
+    },
+    {
+      "id": "pig_117",
+      "prompt": {
+        "fr": "En vrai, Morphée est ______\n\n un homme.",
+        "en": "In fact, Morpheus is ______\n\n a man.",
+        "es": "En realidad, Morfeo es ______\n\n un hombre."
+      },
+      "meta": {
+        "wordKey": "pig_117"
+      }
+    },
+    {
+      "id": "pig_118",
+      "prompt": {
+        "fr": "En vrai, Passe Partout s’appelle ______\n\n André Bouchet.",
+        "en": "In real life, Passe-Partout is called ______\n\n André Bouchet.",
+        "es": "En realidad, Passe-Partout se llama ______\n\n André Bouchet."
+      },
+      "meta": {
+        "wordKey": "pig_118"
+      }
+    },
+    {
+      "id": "pig_119",
+      "prompt": {
+        "fr": "Il existe un astéroïde nommé ______\n\n Florentpagny.",
+        "en": "There is an asteroid named ______\n\n Florentpagny.",
+        "es": "Existe un asteroide llamado ______\n\n Florentpagny."
+      },
+      "meta": {
+        "wordKey": "pig_119"
+      }
+    },
+    {
+      "id": "pig_120",
+      "prompt": {
+        "fr": "Lequel de ces magazines existe ?\n\n Sanglier Passion.",
+        "en": "Which of these magazines exists?\n\n Boar Passion.",
+        "es": "¿Cuál de estas revistas existe?\n\n Pasión Jabalí."
+      },
+      "meta": {
+        "wordKey": "pig_120"
+      }
+    },
+    {
+      "id": "pig_121",
+      "prompt": {
+        "fr": "Laquelle de ces chansons de Renaud existe ?\n\n J’ai loupé Téléfoot.",
+        "en": "Which of these Renaud songs exists?\n\n I Missed Téléfoot.",
+        "es": "¿Cuál de estas canciones de Renaud existe?\n\n Me perdí Téléfoot."
+      },
+      "meta": {
+        "wordKey": "pig_121"
+      }
+    },
+    {
+      "id": "pig_122",
+      "prompt": {
+        "fr": "Lequel de ces oiseaux existe ?\n\n Le chevalier cul-blanc.",
+        "en": "Which of these birds exists?\n\n The white-rumped sandpiper.",
+        "es": "¿Cuál de estas aves existe?\n\n El andarríos culiblanco."
+      },
+      "meta": {
+        "wordKey": "pig_122"
+      }
+    },
+    {
+      "id": "pig_123",
+      "prompt": {
+        "fr": "Il existe un affluent de la Marne qui s’appelle ______\n\n le Frion.",
+        "en": "There is a tributary of the Marne called ______\n\n the Frion.",
+        "es": "Existe un afluente del Marne que se llama ______\n\n el Frion."
+      },
+      "meta": {
+        "wordKey": "pig_123"
+      }
+    },
+    {
+      "id": "pig_124",
+      "prompt": {
+        "fr": "Il y aurait 5 planètes naines dans notre système solaire : Pluton, Cérès, Éris, Hauméa et ______\n\n Makémaké.",
+        "en": "There are said to be 5 dwarf planets in our solar system: Pluto, Ceres, Eris, Haumea and ______\n\n Makemake.",
+        "es": "Se dice que hay 5 planetas enanos en nuestro sistema solar: Plutón, Ceres, Eris, Haumea y ______\n\n Makemake."
+      },
+      "meta": {
+        "wordKey": "pig_124"
+      }
+    },
+    {
+      "id": "pig_125",
+      "prompt": {
+        "fr": "Isabeau de Bavière, reine de France de 1385 à 1422, avait ______\n\n des piercings aux tétons.",
+        "en": "Isabeau of Bavaria, Queen of France from 1385 to 1422, had ______\n\n nipple piercings.",
+        "es": "Isabeau de Baviera, reina de Francia de 1385 a 1422, tenía ______\n\n piercings en los pezones."
+      },
+      "meta": {
+        "wordKey": "pig_125"
+      }
+    },
+    {
+      "id": "pig_126",
+      "prompt": {
+        "fr": "Lequel de ces prénoms a été donné à une petite fille en France, en 2014 ?\n\n Merdive.",
+        "en": "Which of these first names was given to a baby girl in France in 2014?\n\n Merdive.",
+        "es": "¿Cuál de estos nombres fue dado a una niña en Francia en 2014?\n\n Merdive."
+      },
+      "meta": {
+        "wordKey": "pig_126"
+      }
+    },
+    {
+      "id": "pig_127",
+      "prompt": {
+        "fr": "La bague en métal entre le crayon à papier et sa gomme s’appelle ______\n\n une virole.",
+        "en": "The metal ring between a pencil and its eraser is called ______\n\n a ferrule.",
+        "es": "El anillo de metal entre el lápiz y su goma se llama ______\n\n una virola."
+      },
+      "meta": {
+        "wordKey": "pig_127"
+      }
+    },
+    {
+      "id": "pig_128",
+      "prompt": {
+        "fr": "Dans la Rome antique, il était considéré comme valorisé d’avoir ______\n\n un monosourcil.",
+        "en": "In ancient Rome, it was considered desirable to have ______\n\n a unibrow.",
+        "es": "En la antigua Roma, se consideraba valioso tener ______\n\n una ceja unida."
+      },
+      "meta": {
+        "wordKey": "pig_128"
+      }
+    },
+    {
+      "id": "pig_129",
+      "prompt": {
+        "fr": "Les paroles de la Macarena racontent l’histoire ______\n\n d’une femme qui trompe son mari avec deux amis.",
+        "en": "The lyrics of Macarena tell the story ______\n\n of a woman cheating on her husband with two friends.",
+        "es": "La letra de la Macarena cuenta la historia ______\n\n de una mujer que engaña a su marido con dos amigos."
+      },
+      "meta": {
+        "wordKey": "pig_129"
+      }
+    },
+    {
+      "id": "pig_130",
+      "prompt": {
+        "fr": "En Italie, on ne dit pas « il pleut des cordes », on dit ______\n\n « il pleut des lavabos ».",
+        "en": "In Italy, they do not say \"it’s raining ropes,\" they say ______\n\n \"it’s raining sinks.\"",
+        "es": "En Italia no se dice \"llueve a cántaros\", se dice ______\n\n \"llueven lavabos\"."
+      },
+      "meta": {
+        "wordKey": "pig_130"
+      }
+    },
+    {
+      "id": "pig_131",
+      "prompt": {
+        "fr": "Sainte Vérène de Zurzach est la sainte patronne des ______\n\n femmes de ménage et des presbytères.",
+        "en": "Saint Verena of Zurzach is the patron saint of ______\n\n housekeepers and rectories.",
+        "es": "Santa Verena de Zurzach es la patrona de ______\n\n las empleadas domésticas y las casas parroquiales."
+      },
+      "meta": {
+        "wordKey": "pig_131"
+      }
+    },
+    {
+      "id": "pig_132",
+      "prompt": {
+        "fr": "Superman est le premier super-héros qui ______\n\n portait son slip au-dessus de son pantalon.",
+        "en": "Superman is the first superhero who ______\n\n wore his underpants over his trousers.",
+        "es": "Superman es el primer superhéroe que ______\n\n llevaba los calzoncillos por encima del pantalón."
+      },
+      "meta": {
+        "wordKey": "pig_132"
+      }
+    },
+    {
+      "id": "pig_133",
+      "prompt": {
+        "fr": "En 2011, la justice italienne a autorisé un pizzaiolo ______\n\n à payer sa pension alimentaire en pizzas.",
+        "en": "In 2011, the Italian courts allowed a pizza maker ______\n\n to pay his alimony in pizzas.",
+        "es": "En 2011, la justicia italiana autorizó a un pizzero ______\n\n a pagar la pensión alimenticia en pizzas."
+      },
+      "meta": {
+        "wordKey": "pig_133"
+      }
+    },
+    {
+      "id": "pig_134",
+      "prompt": {
+        "fr": "La quatrième fable du Livre IX de Jean de La Fontaine s’appelle ______\n\n Le Gland et la Citrouille.",
+        "en": "The fourth fable in Book IX by Jean de La Fontaine is called ______\n\n The Acorn and the Pumpkin.",
+        "es": "La cuarta fábula del Libro IX de Jean de La Fontaine se llama ______\n\n La Bellota y la Calabaza."
+      },
+      "meta": {
+        "wordKey": "pig_134"
+      }
+    },
+    {
+      "id": "pig_135",
+      "prompt": {
+        "fr": "En 1919, un quartier de Boston a été ravagé ______\n\n par un tsunami de caramel.",
+        "en": "In 1919, a district of Boston was devastated ______\n\n by a caramel tsunami.",
+        "es": "En 1919, un barrio de Boston fue arrasado ______\n\n por un tsunami de caramelo."
+      },
+      "meta": {
+        "wordKey": "pig_135"
+      }
+    },
+    {
+      "id": "pig_136",
+      "prompt": {
+        "fr": "En 2017, des juges allemands ont estimé qu’on a le droit ______\n\n de péter à côté d’un policier.",
+        "en": "In 2017, German judges ruled that people have the right ______\n\n to fart next to a police officer.",
+        "es": "En 2017, unos jueces alemanes estimaron que se tiene derecho ______\n\n a tirarse un pedo al lado de un policía."
+      },
+      "meta": {
+        "wordKey": "pig_136"
+      }
+    },
+    {
+      "id": "pig_137",
+      "prompt": {
+        "fr": "Matt Stutzman détient le record de précision du tir à l’arc, alors qu’il ______\n\n n’a pas de bras.",
+        "en": "Matt Stutzman holds the record for archery accuracy even though he ______\n\n has no arms.",
+        "es": "Matt Stutzman tiene el récord de precisión en tiro con arco aunque ______\n\n no tiene brazos."
+      },
+      "meta": {
+        "wordKey": "pig_137"
+      }
+    },
+    {
+      "id": "pig_138",
+      "prompt": {
+        "fr": "Dans son autobiographie, Brigitte Bardot avoue que son fils, son fils préféré ______\n\n accoucher d’un petit chien.",
+        "en": "In her autobiography, Brigitte Bardot admits that her son, her favorite son ______\n\n gave birth to a little dog.",
+        "es": "En su autobiografía, Brigitte Bardot confiesa que su hijo, su hijo favorito ______\n\n dio a luz a un perrito."
+      },
+      "meta": {
+        "wordKey": "pig_138"
+      }
+    },
+    {
+      "id": "pig_139",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « herpétophile » ?\n\n Un amateur de reptiles.",
+        "en": "What is a \"herpetophile\"?\n\n A reptile lover.",
+        "es": "¿Qué es un \"herpetófilo\"?\n\n Un aficionado a los reptiles."
+      },
+      "meta": {
+        "wordKey": "pig_139"
+      }
+    },
+    {
+      "id": "pig_140",
+      "prompt": {
+        "fr": "En 2019, trois chercheurs d’un hôpital danois ont étudié pour savoir ______\n\n si on peut se saouler par les pieds.",
+        "en": "In 2019, three researchers from a Danish hospital studied whether ______\n\n you can get drunk through your feet.",
+        "es": "En 2019, tres investigadores de un hospital danés estudiaron si ______\n\n uno puede emborracharse por los pies."
+      },
+      "meta": {
+        "wordKey": "pig_140"
+      }
+    },
+    {
+      "id": "pig_141",
+      "prompt": {
+        "fr": "À Taïwan, il existe un restaurant dans lequel ______\n\n tous les sièges sont des cuvettes de toilettes.",
+        "en": "In Taiwan, there is a restaurant where ______\n\n all the seats are toilet bowls.",
+        "es": "En Taiwán existe un restaurante en el que ______\n\n todos los asientos son tazas de váter."
+      },
+      "meta": {
+        "wordKey": "pig_141"
+      }
+    },
+    {
+      "id": "pig_142",
+      "prompt": {
+        "fr": "Lequel de ces contes existe vraiment ?\n\n La Bergère et le Ramoneur.",
+        "en": "Which of these tales really exists?\n\n The Shepherdess and the Chimney Sweep.",
+        "es": "¿Cuál de estos cuentos existe de verdad?\n\n La Pastora y el Deshollinador."
+      },
+      "meta": {
+        "wordKey": "pig_142"
+      }
+    },
+    {
+      "id": "pig_143",
+      "prompt": {
+        "fr": "Initialement, l’Arc de Triomphe devait ______\n\n ressembler à un éléphant géant.",
+        "en": "Originally, the Arc de Triomphe was supposed to ______\n\n look like a giant elephant.",
+        "es": "Inicialmente, el Arco del Triunfo debía ______\n\n parecerse a un elefante gigante."
+      },
+      "meta": {
+        "wordKey": "pig_143"
+      }
+    },
+    {
+      "id": "pig_144",
+      "prompt": {
+        "fr": "En Corée du Sud, on ne dit pas « avoir le bras long » mais ______\n\n « avoir les pieds larges ».",
+        "en": "In South Korea, they do not say \"to have a long arm\" but ______\n\n \"to have wide feet.\"",
+        "es": "En Corea del Sur no se dice \"tener buenos contactos\", sino ______\n\n \"tener los pies anchos\"."
+      },
+      "meta": {
+        "wordKey": "pig_144"
+      }
+    },
+    {
+      "id": "pig_145",
+      "prompt": {
+        "fr": "En 2019, une femme participa à un rodéo en Allemagne, pas supertalent. Son talent : ______\n\n avaler des saucisses par les fesses.",
+        "en": "In 2019, a woman took part in a rodeo in Germany, not supertalent. Her talent: ______\n\n swallowing sausages with her butt.",
+        "es": "En 2019, una mujer participó en un rodeo en Alemania, no supertalent. Su talento: ______\n\n tragarse salchichas por el culo."
+      },
+      "meta": {
+        "wordKey": "pig_145"
+      }
+    },
+    {
+      "id": "pig_146",
+      "prompt": {
+        "fr": "Selon l’étude de chercheurs de Grenoble, plus on boit, ______\n\n plus on se trouve beau.",
+        "en": "According to a study by researchers in Grenoble, the more you drink, ______\n\n the better-looking you find yourself.",
+        "es": "Según un estudio de investigadores de Grenoble, cuanto más se bebe, ______\n\n más guapo se ve uno."
+      },
+      "meta": {
+        "wordKey": "pig_146"
+      }
+    },
+    {
+      "id": "pig_147",
+      "prompt": {
+        "fr": "En 2017, un habitant de Clermont-Ferrand a porté plainte contre son voisin, car ______\n\n son chien s’est accouplé avec sa chienne de race.",
+        "en": "In 2017, a resident of Clermont-Ferrand filed a complaint against his neighbor because ______\n\n his dog had mated with his purebred female dog.",
+        "es": "En 2017, un habitante de Clermont-Ferrand denunció a su vecino porque ______\n\n su perro se había apareado con su perra de raza."
+      },
+      "meta": {
+        "wordKey": "pig_147"
+      }
+    },
+    {
+      "id": "pig_148",
+      "prompt": {
+        "fr": "Lequel de ces albums de Lucky Luke existe ?\n\n Le retour de Joe la Gachette.",
+        "en": "Which of these Lucky Luke albums exists?\n\n The Return of Joe Trigger.",
+        "es": "¿Cuál de estos álbumes de Lucky Luke existe?\n\n El regreso de Joe Gatillo."
+      },
+      "meta": {
+        "wordKey": "pig_148"
+      }
+    },
+    {
+      "id": "pig_149",
+      "prompt": {
+        "fr": "En 2014, un détenu belge a réclamé l’heure à son procès car ______\n\n c’était le jour des frites à la cantine.",
+        "en": "In 2014, a Belgian inmate asked for a delay in his trial because ______\n\n it was fries day in the cafeteria.",
+        "es": "En 2014, un preso belga pidió aplazar su juicio porque ______\n\n era el día de las patatas fritas en el comedor."
+      },
+      "meta": {
+        "wordKey": "pig_149"
+      }
+    },
+    {
+      "id": "pig_150",
+      "prompt": {
+        "fr": "En Alsace, on ne dit pas « un pain aux raisins », mais ______\n\n « une schneck ».",
+        "en": "In Alsace, they do not say \"a raisin roll\" but ______\n\n \"a schneck.\"",
+        "es": "En Alsacia no se dice \"un bollo con pasas\", sino ______\n\n \"una schneck\"."
+      },
+      "meta": {
+        "wordKey": "pig_150"
+      }
+    },
+    {
+      "id": "pig_151",
+      "prompt": {
+        "fr": "Au Québec, quand on a la diarrhée, on dit ______\n\n « j’ai en spray ».",
+        "en": "In Quebec, when you have diarrhea, you say ______\n\n \"I’ve got it in spray.\"",
+        "es": "En Quebec, cuando tienes diarrea, dices ______\n\n \"lo tengo en espray\"."
+      },
+      "meta": {
+        "wordKey": "pig_151"
+      }
+    },
+    {
+      "id": "pig_152",
+      "prompt": {
+        "fr": "Hitler, Tito, Staline, avaient un point commun : ______\n\n ils ont tous vécu à Vienne en 1913.",
+        "en": "Hitler, Tito, and Stalin had one thing in common: ______\n\n they all lived in Vienna in 1913.",
+        "es": "Hitler, Tito y Stalin tenían algo en común: ______\n\n todos vivieron en Viena en 1913."
+      },
+      "meta": {
+        "wordKey": "pig_152"
+      }
+    },
+    {
+      "id": "pig_153",
+      "prompt": {
+        "fr": "Au lieu de « il était une fois », de nombreux contes turcs commencent par ______\n\n « Quand les tigres fumaient la pipe ».",
+        "en": "Instead of \"once upon a time,\" many Turkish tales begin with ______\n\n \"When tigers smoked pipes.\"",
+        "es": "En lugar de \"érase una vez\", muchos cuentos turcos comienzan con ______\n\n \"Cuando los tigres fumaban en pipa\"."
+      },
+      "meta": {
+        "wordKey": "pig_153"
+      }
+    },
+    {
+      "id": "pig_154",
+      "prompt": {
+        "fr": "Sophie Stenström, candidate à la présidentielle française en 2020, avait pour slogan ______\n\n « Bezos de toutes nos forces ! ».",
+        "en": "Sophie Stenström, candidate in the 2020 French presidential election, had the slogan ______\n\n \"Bezos with all our strength!\"",
+        "es": "Sophie Stenström, candidata a las presidenciales francesas de 2020, tenía como eslogan ______\n\n \"¡Bezos con todas nuestras fuerzas!\""
+      },
+      "meta": {
+        "wordKey": "pig_154"
+      }
+    },
+    {
+      "id": "pig_155",
+      "prompt": {
+        "fr": "Le pénis du gorille ______\n\n mesure 5 centimètres en érection.",
+        "en": "A gorilla’s penis ______\n\n measures 5 centimeters when erect.",
+        "es": "El pene del gorila ______\n\n mide 5 centímetros en erección."
+      },
+      "meta": {
+        "wordKey": "pig_155"
+      }
+    },
+    {
+      "id": "pig_156",
+      "prompt": {
+        "fr": "À Paris, la piscine Roger Le Gall a une particularité : ______\n\n on peut y nager nu à certaines heures.",
+        "en": "In Paris, the Roger Le Gall swimming pool has a special feature: ______\n\n you can swim there naked at certain times.",
+        "es": "En París, la piscina Roger Le Gall tiene una particularidad: ______\n\n se puede nadar desnudo a ciertas horas."
+      },
+      "meta": {
+        "wordKey": "pig_156"
+      }
+    },
+    {
+      "id": "pig_157",
+      "prompt": {
+        "fr": "Dans le premier Terminator, Arnold Schwarzenegger ______\n\n prononce 17 phrases.",
+        "en": "In the first Terminator, Arnold Schwarzenegger ______\n\n says 17 sentences.",
+        "es": "En la primera Terminator, Arnold Schwarzenegger ______\n\n pronuncia 17 frases."
+      },
+      "meta": {
+        "wordKey": "pig_157"
+      }
+    },
+    {
+      "id": "pig_158",
+      "prompt": {
+        "fr": "En Corée du Sud, la loi impose que les masseurs ______\n\n soient aveugles.",
+        "en": "In South Korea, the law requires that masseurs ______\n\n be blind.",
+        "es": "En Corea del Sur, la ley exige que los masajistas ______\n\n sean ciegos."
+      },
+      "meta": {
+        "wordKey": "pig_158"
+      }
+    },
+    {
+      "id": "pig_159",
+      "prompt": {
+        "fr": "Au Japon, pour faire comprendre que les nouilles sont excellentes, on ______\n\n les aspire bruyamment.",
+        "en": "In Japan, to show that noodles are excellent, people ______\n\n slurp them loudly.",
+        "es": "En Japón, para dar a entender que los fideos están buenísimos, se ______\n\n sorben ruidosamente."
+      },
+      "meta": {
+        "wordKey": "pig_159"
+      }
+    },
+    {
+      "id": "pig_160",
+      "prompt": {
+        "fr": "Initialement, Lamborghini fabriquait ______\n\n des tracteurs.",
+        "en": "Originally, Lamborghini made ______\n\n tractors.",
+        "es": "Inicialmente, Lamborghini fabricaba ______\n\n tractores."
+      },
+      "meta": {
+        "wordKey": "pig_160"
+      }
+    },
+    {
+      "id": "pig_161",
+      "prompt": {
+        "fr": "Selon des chercheurs de l’université de Westminster, regarder un film d’horreur ______\n\n fait maigrir.",
+        "en": "According to researchers at the University of Westminster, watching a horror movie ______\n\n makes you lose weight.",
+        "es": "Según investigadores de la Universidad de Westminster, ver una película de terror ______\n\n adelgaza."
+      },
+      "meta": {
+        "wordKey": "pig_161"
+      }
+    },
+    {
+      "id": "pig_162",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une fontaine « tubérale » ?\n\n Une fontaine dont l’eau jaillit des mamelons de femmes.",
+        "en": "What is a \"tuberal\" fountain?\n\n A fountain whose water spurts from women’s nipples.",
+        "es": "¿Qué es una fuente \"tuberal\"?\n\n Una fuente de la que el agua brota de los pezones de mujeres."
+      },
+      "meta": {
+        "wordKey": "pig_162"
+      }
+    },
+    {
+      "id": "pig_163",
+      "prompt": {
+        "fr": "Dans sa salle de bain, François Ier avait ______\n\n La Joconde.",
+        "en": "In his bathroom, Francis I had ______\n\n the Mona Lisa.",
+        "es": "En su cuarto de baño, Francisco I tenía ______\n\n la Mona Lisa."
+      },
+      "meta": {
+        "wordKey": "pig_163"
+      }
+    },
+    {
+      "id": "pig_164",
+      "prompt": {
+        "fr": "La capitale de la Côte d’Ivoire est ______\n\n Yamoussoukro.",
+        "en": "The capital of Côte d’Ivoire is ______\n\n Yamoussoukro.",
+        "es": "La capital de Costa de Marfil es ______\n\n Yamusukro."
+      },
+      "meta": {
+        "wordKey": "pig_164"
+      }
+    },
+    {
+      "id": "pig_165",
+      "prompt": {
+        "fr": "En vrai, Chuck Norris s’appelle ______\n\n Carlos.",
+        "en": "In real life, Chuck Norris is called ______\n\n Carlos.",
+        "es": "En realidad, Chuck Norris se llama ______\n\n Carlos."
+      },
+      "meta": {
+        "wordKey": "pig_165"
+      }
+    },
+    {
+      "id": "pig_166",
+      "prompt": {
+        "fr": "En 2018, le joueur professionnel de Fortnite Dennis Fogg, alias XXiF Harms a déposé un recours car ______\n\n son adversaire avait pété avant toute la partie.",
+        "en": "In 2018, professional Fortnite player Dennis Fogg, aka XXiF Harms, filed an appeal because ______\n\n his opponent had farted before the whole match.",
+        "es": "En 2018, el jugador profesional de Fortnite Dennis Fogg, alias XXiF Harms, presentó un recurso porque ______\n\n su adversario se había tirado un pedo antes de toda la partida."
+      },
+      "meta": {
+        "wordKey": "pig_166"
+      }
+    },
+    {
+      "id": "pig_167",
+      "prompt": {
+        "fr": "Selon la mythologie grecque, la femme de Zeus ______\n\n créa la Voie lactée avec le lait de ses seins.",
+        "en": "According to Greek mythology, Zeus’s wife ______\n\n created the Milky Way with the milk from her breasts.",
+        "es": "Según la mitología griega, la esposa de Zeus ______\n\n creó la Vía Láctea con la leche de sus pechos."
+      },
+      "meta": {
+        "wordKey": "pig_167"
+      }
+    },
+    {
+      "id": "pig_168",
+      "prompt": {
+        "fr": "Le rugby a été inventé ______\n\n à Rugby.",
+        "en": "Rugby was invented ______\n\n in Rugby.",
+        "es": "El rugby fue inventado ______\n\n en Rugby."
+      },
+      "meta": {
+        "wordKey": "pig_168"
+      }
+    },
+    {
+      "id": "pig_169",
+      "prompt": {
+        "fr": "En Suisse, pour dire « bonjour », il arrive qu’on dise ______\n\n « adieu ».",
+        "en": "In Switzerland, to say \"hello,\" people sometimes say ______\n\n \"adieu.\"",
+        "es": "En Suiza, para decir \"hola\", a veces se dice ______\n\n \"adieu\"."
+      },
+      "meta": {
+        "wordKey": "pig_169"
+      }
+    },
+    {
+      "id": "pig_170",
+      "prompt": {
+        "fr": "En 1782, Mozart a composé un canon à 6 voix qu’il intitula ______\n\n Leche-moi le cul.",
+        "en": "In 1782, Mozart composed a six-part canon that he titled ______\n\n Lick Me in the Ass.",
+        "es": "En 1782, Mozart compuso un canon a 6 voces que tituló ______\n\n Lámeme el culo."
+      },
+      "meta": {
+        "wordKey": "pig_170"
+      }
+    },
+    {
+      "id": "pig_171",
+      "prompt": {
+        "fr": "Dans l’album N’attendons pas de Vianney, la chanson 11 s’intitule ______\n\n Tout nu dans la neige.",
+        "en": "On Vianney’s album N’attendons pas, track 11 is called ______\n\n Stark Naked in the Snow.",
+        "es": "En el álbum N’attendons pas de Vianney, la canción 11 se titula ______\n\n Totalmente desnudo en la nieve."
+      },
+      "meta": {
+        "wordKey": "pig_171"
+      }
+    },
+    {
+      "id": "pig_172",
+      "prompt": {
+        "fr": "Les Anglais ne croisent pas les doigts quand les poules auront des dents », ils disent ______\n\n « quand les cochons voleront ».",
+        "en": "The English do not say \"when hens have teeth,\" they say ______\n\n \"when pigs fly.\"",
+        "es": "Los ingleses no dicen \"cuando las gallinas tengan dientes\", dicen ______\n\n \"cuando los cerdos vuelen\"."
+      },
+      "meta": {
+        "wordKey": "pig_172"
+      }
+    },
+    {
+      "id": "pig_173",
+      "prompt": {
+        "fr": "Selon une étude, plus les animaux sont petits ______\n\n plus ils voient au ralenti.",
+        "en": "According to a study, the smaller animals are, ______\n\n the more they see in slow motion.",
+        "es": "Según un estudio, cuanto más pequeños son los animales, ______\n\n más ven a cámara lenta."
+      },
+      "meta": {
+        "wordKey": "pig_173"
+      }
+    },
+    {
+      "id": "pig_174",
+      "prompt": {
+        "fr": "Éric Judor est ______\n\n plus vieux que Nikos Aliagas.",
+        "en": "Éric Judor is ______\n\n older than Nikos Aliagas.",
+        "es": "Éric Judor es ______\n\n mayor que Nikos Aliagas."
+      },
+      "meta": {
+        "wordKey": "pig_174"
+      }
+    },
+    {
+      "id": "pig_175",
+      "prompt": {
+        "fr": "Quand une fourmi chute dans le vide ______\n\n elle ne se blesse pas.",
+        "en": "When an ant falls into empty space, ______\n\n it does not hurt itself.",
+        "es": "Cuando una hormiga cae al vacío, ______\n\n no se hace daño."
+      },
+      "meta": {
+        "wordKey": "pig_175"
+      }
+    },
+    {
+      "id": "pig_176",
+      "prompt": {
+        "fr": "Céline Dion a 13 ______\n\n frères et sœurs.",
+        "en": "Céline Dion has 13 ______\n\n brothers and sisters.",
+        "es": "Céline Dion tiene 13 ______\n\n hermanos y hermanas."
+      },
+      "meta": {
+        "wordKey": "pig_176"
+      }
+    },
+    {
+      "id": "pig_177",
+      "prompt": {
+        "fr": "Le petit de l’orque s’appelle ______\n\n le veau.",
+        "en": "A baby orca is called ______\n\n a calf.",
+        "es": "La cría de la orca se llama ______\n\n el ternero."
+      },
+      "meta": {
+        "wordKey": "pig_177"
+      }
+    },
+    {
+      "id": "pig_178",
+      "prompt": {
+        "fr": "Au Québec, pour dire « mon petit copain », on dit ______\n\n « mon chum ».",
+        "en": "In Quebec, to say \"my boyfriend,\" people say ______\n\n \"my chum.\"",
+        "es": "En Quebec, para decir \"mi novio\", se dice ______\n\n \"mi chum\"."
+      },
+      "meta": {
+        "wordKey": "pig_178"
+      }
+    },
+    {
+      "id": "pig_179",
+      "prompt": {
+        "fr": "Le vrai nom de Michel Berger était ______\n\n Michel Hamburger.",
+        "en": "Michel Berger’s real name was ______\n\n Michel Hamburger.",
+        "es": "El verdadero nombre de Michel Berger era ______\n\n Michel Hamburger."
+      },
+      "meta": {
+        "wordKey": "pig_179"
+      }
+    },
+    {
+      "id": "pig_180",
+      "prompt": {
+        "fr": "Selon le code de la route, un piéton qui traverse en dehors d’un passage piéton ______\n\n risque une amende de 4 euros.",
+        "en": "According to the highway code, a pedestrian who crosses outside a crosswalk ______\n\n risks a 4-euro fine.",
+        "es": "Según el código de circulación, un peatón que cruza fuera de un paso de peatones ______\n\n se arriesga a una multa de 4 euros."
+      },
+      "meta": {
+        "wordKey": "pig_180"
+      }
+    },
+    {
+      "id": "pig_181",
+      "prompt": {
+        "fr": "Du côté d’Angers, pour dire « au revoir », certains disent ______\n\n « topette ».",
+        "en": "Around Angers, to say \"goodbye,\" some people say ______\n\n \"topette.\"",
+        "es": "Por la zona de Angers, para decir \"adiós\", algunos dicen ______\n\n \"topette\"."
+      },
+      "meta": {
+        "wordKey": "pig_181"
+      }
+    },
+    {
+      "id": "pig_182",
+      "prompt": {
+        "fr": "Les Italiens ne disent pas « pris la main dans le sac », ils disent ______\n\n « pris la main dans les pâtes ».",
+        "en": "Italians do not say \"caught red-handed\" literally \"caught with your hand in the bag\"; they say ______\n\n \"caught with your hand in the pasta.\"",
+        "es": "Los italianos no dicen \"pillado con las manos en la masa\" con bolsa, dicen ______\n\n \"pillado con la mano en la pasta\"."
+      },
+      "meta": {
+        "wordKey": "pig_182"
+      }
+    },
+    {
+      "id": "pig_183",
+      "prompt": {
+        "fr": "Il existe un jeu de société pour enfants dont le nom est ______\n\n 1, 2, 3 Prout.",
+        "en": "There is a children’s board game called ______\n\n 1, 2, 3 Fart.",
+        "es": "Existe un juego de mesa para niños cuyo nombre es ______\n\n 1, 2, 3 Pedo."
+      },
+      "meta": {
+        "wordKey": "pig_183"
+      }
+    },
+    {
+      "id": "pig_184",
+      "prompt": {
+        "fr": "Si je dis « je viens de vesser », cela veut dire que je viens de ______\n\n péter sans faire de bruit.",
+        "en": "If I say \"I just vessered,\" it means I just ______\n\n farted without making any noise.",
+        "es": "Si digo \"acabo de vesser\", significa que acabo de ______\n\n tirarme un pedo sin hacer ruido."
+      },
+      "meta": {
+        "wordKey": "pig_184"
+      }
+    },
+    {
+      "id": "pig_185",
+      "prompt": {
+        "fr": "Selon une étude japonaise, certains mammifères peuvent ______\n\n respirer par l’anus en cas d’urgence.",
+        "en": "According to a Japanese study, some mammals can ______\n\n breathe through the anus in an emergency.",
+        "es": "Según un estudio japonés, algunos mamíferos pueden ______\n\n respirar por el ano en caso de emergencia."
+      },
+      "meta": {
+        "wordKey": "pig_185"
+      }
+    },
+    {
+      "id": "pig_186",
+      "prompt": {
+        "fr": "En Turquie, une ville porte le nom de ______\n\n Batman.",
+        "en": "In Turkey, a city bears the name ______\n\n Batman.",
+        "es": "En Turquía, una ciudad lleva el nombre de ______\n\n Batman."
+      },
+      "meta": {
+        "wordKey": "pig_186"
+      }
+    },
+    {
+      "id": "pig_187",
+      "prompt": {
+        "fr": "En vrai, Vianney s’appelle ______\n\n Vianney Bureau.",
+        "en": "In real life, Vianney is called ______\n\n Vianney Bureau.",
+        "es": "En realidad, Vianney se llama ______\n\n Vianney Bureau."
+      },
+      "meta": {
+        "wordKey": "pig_187"
+      }
+    },
+    {
+      "id": "pig_188",
+      "prompt": {
+        "fr": "La partie du corps entre l’anus et le sexe s’appelle ______\n\n l’entre-fesson.",
+        "en": "The part of the body between the anus and the genitals is called ______\n\n the entre-fesson.",
+        "es": "La parte del cuerpo entre el ano y el sexo se llama ______\n\n el entre-fesson."
+      },
+      "meta": {
+        "wordKey": "pig_188"
+      }
+    },
+    {
+      "id": "pig_189",
+      "prompt": {
+        "fr": "Au Québec, pour signifier qu’une personne est mal habillée, on dit qu’elle est ______\n\n comme la chienne à Jacques.",
+        "en": "In Quebec, to mean that someone is badly dressed, people say that they are ______\n\n like Jacques’s female dog.",
+        "es": "En Quebec, para decir que alguien va mal vestido, se dice que está ______\n\n como la perra de Jacques."
+      },
+      "meta": {
+        "wordKey": "pig_189"
+      }
+    },
+    {
+      "id": "pig_190",
+      "prompt": {
+        "fr": "En 2019, la ville de Seillo (Belgique) a fait la Une de l’actualité car le curé ______\n\n a montré ses couilles sur la place publique.",
+        "en": "In 2019, the town of Seillo (Belgium) made the headlines because the priest ______\n\n showed his balls in the town square.",
+        "es": "En 2019, la ciudad de Seillo (Bélgica) fue noticia porque el cura ______\n\n enseñó sus cojones en la plaza pública."
+      },
+      "meta": {
+        "wordKey": "pig_190"
+      }
+    },
+    {
+      "id": "pig_191",
+      "prompt": {
+        "fr": "Jusque dans les années 1980, les instituteurs des écoles belges ______\n\n servaient de la bière.",
+        "en": "Until the 1980s, primary school teachers in Belgium ______\n\n served beer.",
+        "es": "Hasta los años 80, los maestros de las escuelas belgas ______\n\n servían cerveza."
+      },
+      "meta": {
+        "wordKey": "pig_191"
+      }
+    },
+    {
+      "id": "pig_192",
+      "prompt": {
+        "fr": "En espagnol, « la retraite » se dit ______\n\n « la jubilación. »",
+        "en": "In Spanish, \"retirement\" is said ______\n\n \"la jubilación.\"",
+        "es": "En español, \"la retraite\" se dice ______\n\n \"la jubilación\"."
+      },
+      "meta": {
+        "wordKey": "pig_192"
+      }
+    },
+    {
+      "id": "pig_193",
+      "prompt": {
+        "fr": "Le vainqueur du Prix Goncourt reçoit ______\n\n un chèque de 10 euros.",
+        "en": "The winner of the Prix Goncourt receives ______\n\n a 10-euro check.",
+        "es": "El ganador del Premio Goncourt recibe ______\n\n un cheque de 10 euros."
+      },
+      "meta": {
+        "wordKey": "pig_193"
+      }
+    },
+    {
+      "id": "pig_194",
+      "prompt": {
+        "fr": "Pour renforcer le goût de la vanille, l’industrie agroalimentaire utilise souvent ______\n\n des sécrétions anales de castor.",
+        "en": "To enhance vanilla flavor, the food industry often uses ______\n\n beaver anal secretions.",
+        "es": "Para reforzar el sabor de la vainilla, la industria alimentaria utiliza a menudo ______\n\n secreciones anales de castor."
+      },
+      "meta": {
+        "wordKey": "pig_194"
+      }
+    },
+    {
+      "id": "pig_195",
+      "prompt": {
+        "fr": "La cathédrale de Washington a une particularité : ______\n\n elle a une gargouille Dark Vador.",
+        "en": "Washington Cathedral has a special feature: ______\n\n it has a Darth Vader gargoyle.",
+        "es": "La catedral de Washington tiene una particularidad: ______\n\n tiene una gárgola de Darth Vader."
+      },
+      "meta": {
+        "wordKey": "pig_195"
+      }
+    },
+    {
+      "id": "pig_196",
+      "prompt": {
+        "fr": "Au Québec, pour dire qu’on est fatigué, on peut dire ______\n\n « j’ai les yeux dans l’même trou ».",
+        "en": "In Quebec, to say that you are tired, you can say ______\n\n \"my eyes are in the same hole.\"",
+        "es": "En Quebec, para decir que estás cansado, puedes decir ______\n\n \"tengo los ojos en el mismo agujero\"."
+      },
+      "meta": {
+        "wordKey": "pig_196"
+      }
+    },
+    {
+      "id": "pig_197",
+      "prompt": {
+        "fr": "En 2015, le tribunal de Valenciennes a refusé à un nouveau-né, car ses parents l’avaient appelé ______\n\n « Nutella ».",
+        "en": "In 2015, the court in Valenciennes refused a newborn’s name because the parents had called the child ______\n\n \"Nutella.\"",
+        "es": "En 2015, el tribunal de Valenciennes rechazó el nombre de un recién nacido porque sus padres lo habían llamado ______\n\n \"Nutella\"."
+      },
+      "meta": {
+        "wordKey": "pig_197"
+      }
+    },
+    {
+      "id": "pig_198",
+      "prompt": {
+        "fr": "Le 13 janvier est la journée mondiale ______\n\n sans pantalon.",
+        "en": "January 13 is the world day ______\n\n without pants.",
+        "es": "El 13 de enero es el día mundial ______\n\n sin pantalones."
+      },
+      "meta": {
+        "wordKey": "pig_198"
+      }
+    },
+    {
+      "id": "pig_199",
+      "prompt": {
+        "fr": "Jusque en 2019, les Soudanais pouvaient ______\n\n divorcer sans prévenir leur épouse.",
+        "en": "Until 2019, Sudanese men could ______\n\n divorce without informing their wives.",
+        "es": "Hasta 2019, los sudaneses podían ______\n\n divorciarse sin avisar a su esposa."
+      },
+      "meta": {
+        "wordKey": "pig_199"
+      }
+    },
+    {
+      "id": "pig_200",
+      "prompt": {
+        "fr": "Les loutres ont une poche qui leur sert à ______\n\n garder leurs cailloux préférés.",
+        "en": "Otters have a pouch used to ______\n\n keep their favorite pebbles.",
+        "es": "Las nutrias tienen una bolsa que les sirve para ______\n\n guardar sus piedras favoritas."
+      },
+      "meta": {
+        "wordKey": "pig_200"
+      }
+    },
+    {
+      "id": "pig_201",
+      "prompt": {
+        "fr": "Le saviez-vous ? « Robinette » ______\n\n est le deuxième prénom de Joe Biden.",
+        "en": "Did you know? \"Robinette\" ______\n\n is Joe Biden’s middle name.",
+        "es": "¿Lo sabías? \"Robinette\" ______\n\n es el segundo nombre de Joe Biden."
+      },
+      "meta": {
+        "wordKey": "pig_201"
+      }
+    },
+    {
+      "id": "pig_202",
+      "prompt": {
+        "fr": "Le bébé du crapaud s’appelle ______\n\n un crapelet.",
+        "en": "A baby toad is called ______\n\n a crapelet.",
+        "es": "La cría del sapo se llama ______\n\n un crapelet."
+      },
+      "meta": {
+        "wordKey": "pig_202"
+      }
+    },
+    {
+      "id": "pig_203",
+      "prompt": {
+        "fr": "La femelle du crapaud s’appelle ______\n\n la crapaude.",
+        "en": "A female toad is called ______\n\n a crapaude.",
+        "es": "La hembra del sapo se llama ______\n\n la crapaude."
+      },
+      "meta": {
+        "wordKey": "pig_203"
+      }
+    },
+    {
+      "id": "pig_204",
+      "prompt": {
+        "fr": "En lituanien, l’onomatopée du rire n’est pas « haha », mais ______\n\n « Cha cha ».",
+        "en": "In Lithuanian, the onomatopoeia for laughter is not \"haha\" but ______\n\n \"cha cha.\"",
+        "es": "En lituano, la onomatopeya de la risa no es \"jaja\", sino ______\n\n \"cha cha\"."
+      },
+      "meta": {
+        "wordKey": "pig_204"
+      }
+    },
+    {
+      "id": "pig_205",
+      "prompt": {
+        "fr": "Lequel de ces prénoms a été donné à une petite fille en France, en 2012 ?\n\n « Euthanasia ».",
+        "en": "Which of these first names was given to a baby girl in France in 2012?\n\n \"Euthanasia.\"",
+        "es": "¿Cuál de estos nombres fue dado a una niña en Francia en 2012?\n\n \"Euthanasia\"."
+      },
+      "meta": {
+        "wordKey": "pig_205"
+      }
+    },
+    {
+      "id": "pig_206",
+      "prompt": {
+        "fr": "Le roi Louis VI était surnommé ______\n\n « Le Gros ».",
+        "en": "King Louis VI was nicknamed ______\n\n \"the Fat.\"",
+        "es": "El rey Luis VI era apodado ______\n\n \"el Gordo\"."
+      },
+      "meta": {
+        "wordKey": "pig_206"
+      }
+    },
+    {
+      "id": "pig_207",
+      "prompt": {
+        "fr": "Laquelle de ces infos insolites à propos de Kanye West est vraie ?\n\n Il a passé une partie de son enfance en Chine.",
+        "en": "Which of these unusual facts about Kanye West is true?\n\n He spent part of his childhood in China.",
+        "es": "¿Cuál de estos datos insólitos sobre Kanye West es verdadero?\n\n Pasó parte de su infancia en China."
+      },
+      "meta": {
+        "wordKey": "pig_207"
+      }
+    },
+    {
+      "id": "pig_208",
+      "prompt": {
+        "fr": "Au Sénégal, pour dire « tu pues des pieds », on peut dire ______\n\n « tu camembères ».",
+        "en": "In Senegal, to say \"your feet stink,\" you can say ______\n\n \"you camembert.\"",
+        "es": "En Senegal, para decir \"te huelen los pies\", se puede decir ______\n\n \"camemberteas\"."
+      },
+      "meta": {
+        "wordKey": "pig_208"
+      }
+    },
+    {
+      "id": "pig_209",
+      "prompt": {
+        "fr": "Pour soulager son stress au travail, il paraît que Steve Jobs ______\n\n trempe ses pieds dans la cuvette des toilettes.",
+        "en": "To relieve stress at work, it seems that Steve Jobs ______\n\n soaked his feet in the toilet bowl.",
+        "es": "Para aliviar su estrés en el trabajo, al parecer Steve Jobs ______\n\n metía los pies en la taza del váter."
+      },
+      "meta": {
+        "wordKey": "pig_209"
+      }
+    },
+    {
+      "id": "pig_210",
+      "prompt": {
+        "fr": "Laquelle de ces communes existe vraiment ?\n\n Saint-Michel-Chef-Chef.",
+        "en": "Which of these municipalities really exists?\n\n Saint-Michel-Chef-Chef.",
+        "es": "¿Cuál de estos municipios existe de verdad?\n\n Saint-Michel-Chef-Chef."
+      },
+      "meta": {
+        "wordKey": "pig_210"
+      }
+    },
+    {
+      "id": "pig_211",
+      "prompt": {
+        "fr": "Ça date de 1942 : ______\n\n le film Bambi.",
+        "en": "This dates from 1942: ______\n\n the film Bambi.",
+        "es": "Esto data de 1942: ______\n\n la película Bambi."
+      },
+      "meta": {
+        "wordKey": "pig_211"
+      }
+    },
+    {
+      "id": "pig_212",
+      "prompt": {
+        "fr": "En créole réunionnais, « l’oiseau » se dit ______\n\n « z’oiseau ».",
+        "en": "In Réunion Creole, \"bird\" is said ______\n\n \"z’oiseau.\"",
+        "es": "En criollo reunionés, \"pájaro\" se dice ______\n\n \"z’oiseau\"."
+      },
+      "meta": {
+        "wordKey": "pig_212"
+      }
+    },
+    {
+      "id": "pig_213",
+      "prompt": {
+        "fr": "En Alsace, pour dire « conasse », certains disent ______\n\n « papapa ».",
+        "en": "In Alsace, to say \"bitch,\" some people say ______\n\n \"papapa.\"",
+        "es": "En Alsacia, para decir \"gilipollas\" en femenino, algunos dicen ______\n\n \"papapa\"."
+      },
+      "meta": {
+        "wordKey": "pig_213"
+      }
+    },
+    {
+      "id": "pig_214",
+      "prompt": {
+        "fr": "Les habitants de Besançon s’appellent ______\n\n Les « Bisontins ».",
+        "en": "The inhabitants of Besançon are called ______\n\n the \"Bisontins.\"",
+        "es": "Los habitantes de Besançon se llaman ______\n\n los \"Bisontins\"."
+      },
+      "meta": {
+        "wordKey": "pig_214"
+      }
+    },
+    {
+      "id": "pig_215",
+      "prompt": {
+        "fr": "En 2017, l’US Navy a présenté ses excuses publiques car ______\n\n un pilote avait dessiné un pénis géant dans le ciel.",
+        "en": "In 2017, the US Navy issued a public apology because ______\n\n a pilot had drawn a giant penis in the sky.",
+        "es": "En 2017, la US Navy presentó disculpas públicas porque ______\n\n un piloto había dibujado un pene gigante en el cielo."
+      },
+      "meta": {
+        "wordKey": "pig_215"
+      }
+    },
+    {
+      "id": "pig_216",
+      "prompt": {
+        "fr": "Dans un Kit Kat, il y a ______\n\n des Kit Kat écrasés.",
+        "en": "Inside a Kit Kat, there are ______\n\n crushed Kit Kats.",
+        "es": "Dentro de un Kit Kat hay ______\n\n Kit Kat triturados."
+      },
+      "meta": {
+        "wordKey": "pig_216"
+      }
+    },
+    {
+      "id": "pig_217",
+      "prompt": {
+        "fr": "Lequel de ces pays existe vraiment ?\n\n Kiribati.",
+        "en": "Which of these countries really exists?\n\n Kiribati.",
+        "es": "¿Cuál de estos países existe de verdad?\n\n Kiribati."
+      },
+      "meta": {
+        "wordKey": "pig_217"
+      }
+    },
+    {
+      "id": "pig_218",
+      "prompt": {
+        "fr": "En 1992, Mattel conçut une poupée Barbie qui fit scandale car elle disait ______\n\n « Les maths, c’est dur ».",
+        "en": "In 1992, Mattel designed a Barbie doll that caused scandal because it said ______\n\n \"Math is hard.\"",
+        "es": "En 1992, Mattel diseñó una muñeca Barbie que causó escándalo porque decía ______\n\n \"Las matemáticas son difíciles\"."
+      },
+      "meta": {
+        "wordKey": "pig_218"
+      }
+    },
+    {
+      "id": "pig_219",
+      "prompt": {
+        "fr": "Il existe un trimestriel destiné aux nudistes qui s’appelle ______\n\n La vie au soleil.",
+        "en": "There is a quarterly magazine for nudists called ______\n\n Sun Life.",
+        "es": "Existe una revista trimestral para nudistas que se llama ______\n\n La vie au soleil."
+      },
+      "meta": {
+        "wordKey": "il_existe_un_trimestriel_destine_aux_nudistes_qui_sappelle_la_vie_au_soleil"
+      }
+    },
+    {
+      "id": "pig_220",
+      "prompt": {
+        "fr": "Laquelle de ces disciplines existe vraiment ?\n\n Le rodéo sur cochon.",
+        "en": "Which of these disciplines really exists?\n\n pig rodeo.",
+        "es": "¿Cuál de estas disciplinas existe de verdad?\n\n el rodeo sobre cerdo."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_disciplines_existe_vraiment_le_rodeo_sur_cochon"
+      }
+    },
+    {
+      "id": "pig_221",
+      "prompt": {
+        "fr": "En 2013, un groupe de filles a battu un record du monde : ______\n\n s’entasser à 20 dans une Smart.",
+        "en": "In 2013, a group of girls broke a world record: ______\n\n cramming 20 people into a Smart car.",
+        "es": "En 2013, un grupo de chicas batió un récord del mundo: ______\n\n meterse 20 en un Smart."
+      },
+      "meta": {
+        "wordKey": "en_2013_un_groupe_de_filles_a_battu_un_record_du_monde_sentasser_a_20_dans_une_s"
+      }
+    },
+    {
+      "id": "pig_222",
+      "prompt": {
+        "fr": "Le scarabée tigre court tellement vite ______\n\n que sa vue se brouille et qu’il ne voit plus rien.",
+        "en": "The tiger beetle runs so fast ______\n\n that its vision blurs and it can no longer see anything.",
+        "es": "El escarabajo tigre corre tan rápido ______\n\n que su vista se vuelve borrosa y ya no ve nada."
+      },
+      "meta": {
+        "wordKey": "le_scarabee_tigre_court_tellement_vite_que_sa_vue_se_brouille_et_quil_ne_voit_pl"
+      }
+    },
+    {
+      "id": "pig_223",
+      "prompt": {
+        "fr": "En Sierra Leone, on a observé des chimpanzés ______\n\n qui se fabriquent des strings pour grimper aux arbres.",
+        "en": "In Sierra Leone, chimpanzees have been observed ______\n\n making themselves thong-like straps to climb trees.",
+        "es": "En Sierra Leona, se han observado chimpancés ______\n\n fabricándose tangas para trepar a los árboles."
+      },
+      "meta": {
+        "wordKey": "en_sierra_leone_on_a_observe_des_chimpanzes_qui_se_fabriquent_des_strings_pour_g"
+      }
+    },
+    {
+      "id": "pig_224",
+      "prompt": {
+        "fr": "Au Congo, pour dire « moto », on dit ______\n\n « tukutuku ».",
+        "en": "In the Congo, to say \"motorbike,\" people say ______\n\n \"tukutuku\".",
+        "es": "En el Congo, para decir «moto», se dice ______\n\n «tukutuku»."
+      },
+      "meta": {
+        "wordKey": "au_congo_pour_dire_moto_on_dit_tukutuku"
+      }
+    },
+    {
+      "id": "pig_225",
+      "prompt": {
+        "fr": "Pour dire « se faire avoir », les habitants du Haut et Bas-Rhin disent ______\n\n « se faire un schmutz ».",
+        "en": "To say \"to get screwed over,\" people from Haut-Rhin and Bas-Rhin say ______\n\n \"se faire un schmutz\".",
+        "es": "Para decir «que te la cuelen» o «que te engañen», los habitantes del Alto y Bajo Rin dicen ______\n\n «se faire un schmutz»."
+      },
+      "meta": {
+        "wordKey": "pour_dire_se_faire_avoir_les_habitants_du_haut_et_bas_rhin_disent_se_faire_un_sc"
+      }
+    },
+    {
+      "id": "pig_226",
+      "prompt": {
+        "fr": "L’entreprise Nintendo ______\n\n a été fondée en 1889.",
+        "en": "The company Nintendo ______\n\n was founded in 1889.",
+        "es": "La empresa Nintendo ______\n\n fue fundada en 1889."
+      },
+      "meta": {
+        "wordKey": "lentreprise_nintendo_a_ete_fondee_en_1889"
+      }
+    },
+    {
+      "id": "pig_227",
+      "prompt": {
+        "fr": "À Berlin, il existe un hôtel où l’on peut dormir ______\n\n dans un cercueil.",
+        "en": "In Berlin, there is a hotel where you can sleep ______\n\n in a coffin.",
+        "es": "En Berlín existe un hotel donde se puede dormir ______\n\n en un ataúd."
+      },
+      "meta": {
+        "wordKey": "a_berlin_il_existe_un_hotel_ou_lon_peut_dormir_dans_un_cercueil"
+      }
+    },
+    {
+      "id": "pig_228",
+      "prompt": {
+        "fr": "Au Danemark, la chaîne pour enfant Ramasjang a lancé un dessin animé dont le héros ______\n\n a le zizi le plus long du monde.",
+        "en": "In Denmark, the children's channel Ramasjang launched a cartoon whose hero ______\n\n has the longest penis in the world.",
+        "es": "En Dinamarca, el canal infantil Ramasjang lanzó un dibujo animado cuyo héroe ______\n\n tiene el pene más largo del mundo."
+      },
+      "meta": {
+        "wordKey": "au_danemark_la_chaine_pour_enfant_ramasjang_a_lance_un_dessin_anime_dont_le_hero"
+      }
+    },
+    {
+      "id": "pig_229",
+      "prompt": {
+        "fr": "Le petit d’une perdrix s’appelle ______\n\n un pouilleux.",
+        "en": "A baby partridge is called ______\n\n a pouilleux.",
+        "es": "La cría de la perdiz se llama ______\n\n un pouilleux."
+      },
+      "meta": {
+        "wordKey": "le_petit_dune_perdrix_sappelle_un_pouilleux"
+      }
+    },
+    {
+      "id": "pig_230",
+      "prompt": {
+        "fr": "Le cercle pigmenté qui entoure le mamelon du sein s’appelle ______\n\n l’aréole.",
+        "en": "The pigmented circle around the nipple is called ______\n\n the areola.",
+        "es": "El círculo pigmentado que rodea el pezón se llama ______\n\n la areola."
+      },
+      "meta": {
+        "wordKey": "le_cercle_pigmente_qui_entoure_le_mamelon_du_sein_sappelle_lareole"
+      }
+    },
+    {
+      "id": "pig_231",
+      "prompt": {
+        "fr": "Il existe une variété de banane nommée ______\n\n « Gros Michel ».",
+        "en": "There is a banana variety named ______\n\n \"Gros Michel\".",
+        "es": "Existe una variedad de plátano llamada ______\n\n «Gros Michel»."
+      },
+      "meta": {
+        "wordKey": "il_existe_une_variete_de_banane_nommee_gros_michel"
+      }
+    },
+    {
+      "id": "pig_232",
+      "prompt": {
+        "fr": "En espagnol, « rhume » se dit ______\n\n « constipado ».",
+        "en": "In Spanish, \"a cold\" is ______\n\n \"constipado\".",
+        "es": "En español, «rhume» se dice ______\n\n «constipado»."
+      },
+      "meta": {
+        "wordKey": "en_espagnol_rhume_se_dit_constipado"
+      }
+    },
+    {
+      "id": "pig_233",
+      "prompt": {
+        "fr": "Il y a de la nicotine ______\n\n dans les aubergines.",
+        "en": "There is nicotine ______\n\n in eggplants.",
+        "es": "Hay nicotina ______\n\n en las berenjenas."
+      },
+      "meta": {
+        "wordKey": "il_y_a_de_la_nicotine_dans_les_aubergines"
+      }
+    },
+    {
+      "id": "pig_234",
+      "prompt": {
+        "fr": "La morsure de l’araignée banane ______\n\n provoque des érections.",
+        "en": "The bite of the banana spider ______\n\n causes erections.",
+        "es": "La mordedura de la araña bananera ______\n\n provoca erecciones."
+      },
+      "meta": {
+        "wordKey": "la_morsure_de_laraignee_banane_provoque_des_erections"
+      }
+    },
+    {
+      "id": "pig_235",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une « pénicure » ?\n\n Un mot qui n’existe pas.",
+        "en": "What is a \"pénicure\"?\n\n A word that does not exist.",
+        "es": "¿Qué es una «pénicure»?\n\n Una palabra que no existe."
+      },
+      "meta": {
+        "wordKey": "quest_ce_quune_penicure_un_mot_qui_nexiste_pas"
+      }
+    },
+    {
+      "id": "pig_236",
+      "prompt": {
+        "fr": "George Clooney a tourné dans un film intitulé ______\n\n Le retour des tomates tueuses.",
+        "en": "George Clooney acted in a film titled ______\n\n Return of the Killer Tomatoes.",
+        "es": "George Clooney actuó en una película titulada ______\n\n El regreso de los tomates asesinos."
+      },
+      "meta": {
+        "wordKey": "george_clooney_a_tourne_dans_un_film_intitule_le_retour_des_tomates_tueuses"
+      }
+    },
+    {
+      "id": "pig_237",
+      "prompt": {
+        "fr": "Laquelle de ces affirmations est vraie ?\n\n Les crottes de hyène sont blanches.",
+        "en": "Which of these statements is true?\n\n Hyena droppings are white.",
+        "es": "¿Cuál de estas afirmaciones es verdadera?\n\n Las cacas de hiena son blancas."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_affirmations_est_vraie_les_crottes_de_hyene_sont_blanches"
+      }
+    },
+    {
+      "id": "pig_238",
+      "prompt": {
+        "fr": "Quelle est la particularité de George Webster, premier présentateur de la chaîne enfant de la BBC ?\n\n Il est trisomique.",
+        "en": "What is special about George Webster, the first presenter on the BBC children's channel?\n\n He has Down syndrome.",
+        "es": "¿Qué tiene de particular George Webster, primer presentador del canal infantil de la BBC?\n\n Tiene síndrome de Down."
+      },
+      "meta": {
+        "wordKey": "quelle_est_la_particularite_de_george_webster_premier_presentateur_de_la_chaine_"
+      }
+    },
+    {
+      "id": "pig_239",
+      "prompt": {
+        "fr": "Quelle est la particularité du poisson pacu ?\n\n Ses dents ressemblent aux nôtres.",
+        "en": "What is special about the pacu fish?\n\n Its teeth look like ours.",
+        "es": "¿Qué tiene de particular el pez pacú?\n\n Sus dientes se parecen a los nuestros."
+      },
+      "meta": {
+        "wordKey": "quelle_est_la_particularite_du_poisson_pacu_ses_dents_ressemblent_aux_notres"
+      }
+    },
+    {
+      "id": "pig_240",
+      "prompt": {
+        "fr": "Né sans bras, Johnir Wallace est connu car ______\n\n il joue de la trompette avec ses orteils.",
+        "en": "Born without arms, Johnir Wallace is known because ______\n\n he plays the trumpet with his toes.",
+        "es": "Nacido sin brazos, Johnir Wallace es conocido porque ______\n\n toca la trompeta con los dedos de los pies."
+      },
+      "meta": {
+        "wordKey": "ne_sans_bras_johnir_wallace_est_connu_car_il_joue_de_la_trompette_avec_ses_ortei"
+      }
+    },
+    {
+      "id": "pig_241",
+      "prompt": {
+        "fr": "En Israël, des scientifiques ont appris à des poissons rouges ______\n\n à conduire un véhicule.",
+        "en": "In Israel, scientists taught goldfish ______\n\n to drive a vehicle.",
+        "es": "En Israel, unos científicos enseñaron a unos peces rojos ______\n\n a conducir un vehículo."
+      },
+      "meta": {
+        "wordKey": "en_israel_des_scientifiques_ont_appris_a_des_poissons_rouges_a_conduire_un_vehic"
+      }
+    },
+    {
+      "id": "pig_242",
+      "prompt": {
+        "fr": "En 2008, Luc Costermans a réussi l’exploit d’atteindre 308 km/h ______\n\n en voiture, alors qu’il est aveugle.",
+        "en": "In 2008, Luc Costermans achieved the feat of reaching 308 km/h ______\n\n in a car, even though he is blind.",
+        "es": "En 2008, Luc Costermans logró alcanzar 308 km/h ______\n\n en coche, aunque es ciego."
+      },
+      "meta": {
+        "wordKey": "en_2008_luc_costermans_a_reussi_lexploit_datteindre_308_km_h_en_voiture_alors_qu"
+      }
+    },
+    {
+      "id": "pig_243",
+      "prompt": {
+        "fr": "Lequel de ces Pokémon existe ?\n\n Coudlangue.",
+        "en": "Which of these Pokémon really exists?\n\n Lickitung.",
+        "es": "¿Cuál de estos Pokémon existe de verdad?\n\n Lengüetazo."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_pokemon_existe_coudlangue"
+      }
+    },
+    {
+      "id": "pig_244",
+      "prompt": {
+        "fr": "Pour dire qu’ils ont des selles personnelles, les Québécois disent parfois qu’il ______\n\n des bibittes ».",
+        "en": "To say they have personal issues, Quebecers sometimes say that they ______\n\n have \"bibittes\".",
+        "es": "Para decir que tienen sus manías o problemas personales, los quebequeses a veces dicen que ______\n\n tienen «bibittes»."
+      },
+      "meta": {
+        "wordKey": "pour_dire_quils_ont_des_selles_personnelles_les_quebecois_disent_parfois_quil_de"
+      }
+    },
+    {
+      "id": "pig_245",
+      "prompt": {
+        "fr": "Quoi fit Van Gogh de son oreille coupée ?\n\n Il l’a donnée à une prostituée.",
+        "en": "What did Van Gogh do with his cut-off ear?\n\n He gave it to a prostitute.",
+        "es": "¿Qué hizo Van Gogh con su oreja cortada?\n\n Se la dio a una prostituta."
+      },
+      "meta": {
+        "wordKey": "quoi_fit_van_gogh_de_son_oreille_coupee_il_la_donnee_a_une_prostituee"
+      }
+    },
+    {
+      "id": "pig_246",
+      "prompt": {
+        "fr": "Qui a dit : « Le vin est la boisson la plus hygiénique du monde » ?\n\n Louis Pasteur.",
+        "en": "Who said: \"Wine is the most hygienic beverage in the world\"?\n\n Louis Pasteur.",
+        "es": "¿Quién dijo: «El vino es la bebida más higiénica del mundo»?\n\n Louis Pasteur."
+      },
+      "meta": {
+        "wordKey": "qui_a_dit_le_vin_est_la_boisson_la_plus_hygienique_du_monde_louis_pasteur"
+      }
+    },
+    {
+      "id": "pig_247",
+      "prompt": {
+        "fr": "Selon les anciennes croyances musulmanes, la reine de Saba ______\n\n ne s’épilait pas les jambes.",
+        "en": "According to old Muslim beliefs, the Queen of Sheba ______\n\n did not shave her legs.",
+        "es": "Según antiguas creencias musulmanas, la reina de Saba ______\n\n no se depilaba las piernas."
+      },
+      "meta": {
+        "wordKey": "selon_les_anciennes_croyances_musulmanes_la_reine_de_saba_ne_sepilait_pas_les_ja"
+      }
+    },
+    {
+      "id": "pig_248",
+      "prompt": {
+        "fr": "Laquelle de ces figures de natation synchronisée existe ?\n\n Le flamand rose.",
+        "en": "Which of these synchronized swimming figures really exists?\n\n The flamingo.",
+        "es": "¿Cuál de estas figuras de natación sincronizada existe de verdad?\n\n El flamenco."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_figures_de_natation_synchronisee_existe_le_flamand_rose"
+      }
+    },
+    {
+      "id": "pig_249",
+      "prompt": {
+        "fr": "En 2018, l’Assemblée corse a voté un budget de 52 800 euros pour ______\n\n développer une émoticone corse.",
+        "en": "In 2018, the Corsican Assembly voted a budget of 52,800 euros to ______\n\n develop a Corsican emoji.",
+        "es": "En 2018, la Asamblea corsa aprobó un presupuesto de 52.800 euros para ______\n\n desarrollar un emoji corso."
+      },
+      "meta": {
+        "wordKey": "en_2018_lassemblee_corse_a_vote_un_budget_de_52_800_euros_pour_developper_une_em"
+      }
+    },
+    {
+      "id": "pig_250",
+      "prompt": {
+        "fr": "Pour fêter Halloween en 2022, Kim Kardashian a déguisé son fils en ______\n\n éboueur.",
+        "en": "To celebrate Halloween in 2022, Kim Kardashian dressed her son as a ______\n\n garbage collector.",
+        "es": "Para celebrar Halloween en 2022, Kim Kardashian disfrazó a su hijo de ______\n\n basurero."
+      },
+      "meta": {
+        "wordKey": "pour_feter_halloween_en_2022_kim_kardashian_a_deguise_son_fils_en_eboueur"
+      }
+    },
+    {
+      "id": "pig_251",
+      "prompt": {
+        "fr": "Quand le coq chante ______\n\n ses oreilles se bouchent.",
+        "en": "When the rooster crows ______\n\n its ears close up.",
+        "es": "Cuando el gallo canta ______\n\n se le tapan las orejas."
+      },
+      "meta": {
+        "wordKey": "quand_le_coq_chante_ses_oreilles_se_bouchent"
+      }
+    },
+    {
+      "id": "pig_252",
+      "prompt": {
+        "fr": "Passe-Partout est en couple avec ______\n\n la belle-mère de Passe-Muraille.",
+        "en": "Passe-Partout is in a relationship with ______\n\n Passe-Muraille's mother-in-law.",
+        "es": "Passe-Partout está en pareja con ______\n\n la suegra de Passe-Muraille."
+      },
+      "meta": {
+        "wordKey": "passe_partout_est_en_couple_avec_la_belle_mere_de_passe_muraille"
+      }
+    },
+    {
+      "id": "pig_253",
+      "prompt": {
+        "fr": "Si l’on veut être poli, on ne dit pas « roter », mais ______\n\n « éructer ».",
+        "en": "If one wants to be polite, instead of saying \"to burp,\" one says ______\n\n \"to belch\".",
+        "es": "Si se quiere ser educado, no se dice «eructar», sino ______\n\n «eructar»."
+      },
+      "meta": {
+        "wordKey": "si_lon_veut_etre_poli_on_ne_dit_pas_roter_mais_eructer"
+      }
+    },
+    {
+      "id": "pig_254",
+      "prompt": {
+        "fr": "Comment appelle-t-on un danseur de salsa ?\n\n Un « salsero ».",
+        "en": "What do you call a salsa dancer?\n\n A \"salsero\".",
+        "es": "¿Cómo se llama a un bailarín de salsa?\n\n Un «salsero»."
+      },
+      "meta": {
+        "wordKey": "comment_appelle_t_on_un_danseur_de_salsa_un_salsero"
+      }
+    },
+    {
+      "id": "pig_255",
+      "prompt": {
+        "fr": "Utilisé en Normandie, le verbe « boujouter » signifie ______\n\n dire bonjour en s’embrassant.",
+        "en": "Used in Normandy, the verb \"boujouter\" means ______\n\n to say hello with kisses.",
+        "es": "En Normandía, el verbo «boujouter» significa ______\n\n saludarse con besos."
+      },
+      "meta": {
+        "wordKey": "utilise_en_normandie_le_verbe_boujouter_signifie_dire_bonjour_en_sembrassant"
+      }
+    },
+    {
+      "id": "pig_256",
+      "prompt": {
+        "fr": "Pour imiter les camions de pompiers, les Allemands ne disent pas « pin-pon », ils disent ______\n\n « Tatütata ! ».",
+        "en": "To imitate fire trucks, Germans do not say \"pin-pon\"; they say ______\n\n \"Tatütata!\"",
+        "es": "Para imitar a los camiones de bomberos, los alemanes no dicen «pin-pon», dicen ______\n\n «Tatütata!»"
+      },
+      "meta": {
+        "wordKey": "pour_imiter_les_camions_de_pompiers_les_allemands_ne_disent_pas_pin_pon_ils_dise"
+      }
+    },
+    {
+      "id": "pig_257",
+      "prompt": {
+        "fr": "Qui a dit « Le pénis contrôle l’opinion de son propre cerveau » ?\n\n Léonard de Vinci.",
+        "en": "Who said, \"The penis controls the opinion of its own brain\"?\n\n Leonardo da Vinci.",
+        "es": "¿Quién dijo «El pene controla la opinión de su propio cerebro»?\n\n Leonardo da Vinci."
+      },
+      "meta": {
+        "wordKey": "qui_a_dit_le_penis_controle_lopinion_de_son_propre_cerveau_leonard_de_vinci"
+      }
+    },
+    {
+      "id": "pig_258",
+      "prompt": {
+        "fr": "Ségolène Royal est née ______\n\n au Sénégal.",
+        "en": "Ségolène Royal was born ______\n\n in Senegal.",
+        "es": "Ségolène Royal nació ______\n\n en Senegal."
+      },
+      "meta": {
+        "wordKey": "segolene_royal_est_nee_au_senegal"
+      }
+    },
+    {
+      "id": "pig_259",
+      "prompt": {
+        "fr": "Sorti en 1978, le 6e album de Michel Polnareff s’intitule ______\n\n Coucou me revoilou !",
+        "en": "Released in 1978, Michel Polnareff's 6th album is titled ______\n\n Peekaboo, here I am again!",
+        "es": "Publicado en 1978, el sexto álbum de Michel Polnareff se titula ______\n\n ¡Cucú, aquí estoy otra vez!"
+      },
+      "meta": {
+        "wordKey": "sorti_en_1978_le_6e_album_de_michel_polnareff_sintitule_coucou_me_revoilou"
+      }
+    },
+    {
+      "id": "pig_260",
+      "prompt": {
+        "fr": "La plus vieille tortue du monde s’appelle ______\n\n Jonathan.",
+        "en": "The oldest tortoise in the world is called ______\n\n Jonathan.",
+        "es": "La tortuga más vieja del mundo se llama ______\n\n Jonathan."
+      },
+      "meta": {
+        "wordKey": "la_plus_vieille_tortue_du_monde_sappelle_jonathan"
+      }
+    },
+    {
+      "id": "pig_261",
+      "prompt": {
+        "fr": "Les gorilles dorment ______\n\n dans des nids.",
+        "en": "Gorillas sleep ______\n\n in nests.",
+        "es": "Los gorilas duermen ______\n\n en nidos."
+      },
+      "meta": {
+        "wordKey": "les_gorilles_dorment_dans_des_nids"
+      }
+    },
+    {
+      "id": "pig_262",
+      "prompt": {
+        "fr": "Cri d’animaux : le dindon ______\n\n glougloute.",
+        "en": "Animal cry: the turkey ______\n\n gobbles.",
+        "es": "Grito de animal: el pavo ______\n\n gluglutea."
+      },
+      "meta": {
+        "wordKey": "cri_danimaux_le_dindon_glougloute"
+      }
+    },
+    {
+      "id": "pig_263",
+      "prompt": {
+        "fr": "En vrai, Maître Gims s’appelle ______\n\n Gandhi Djuna.",
+        "en": "Maître Gims's real name is ______\n\n Gandhi Djuna.",
+        "es": "El verdadero nombre de Maître Gims es ______\n\n Gandhi Djuna."
+      },
+      "meta": {
+        "wordKey": "en_vrai_maitre_gims_sappelle_gandhi_djuna"
+      }
+    },
+    {
+      "id": "pig_264",
+      "prompt": {
+        "fr": "Le cténophore, un cousin de la méduse a la particularité d’avoir ______\n\n deux anus.",
+        "en": "The ctenophore, a cousin of the jellyfish, has the peculiarity of having ______\n\n two anuses.",
+        "es": "El ctenóforo, primo de la medusa, tiene la particularidad de tener ______\n\n dos anos."
+      },
+      "meta": {
+        "wordKey": "le_ctenophore_un_cousin_de_la_meduse_a_la_particularite_davoir_deux_anus"
+      }
+    },
+    {
+      "id": "pig_265",
+      "prompt": {
+        "fr": "Le deuxième prénom d’Emmanuel Macron est ______\n\n Jean-Michel.",
+        "en": "Emmanuel Macron's middle name is ______\n\n Jean-Michel.",
+        "es": "El segundo nombre de Emmanuel Macron es ______\n\n Jean-Michel."
+      },
+      "meta": {
+        "wordKey": "le_deuxieme_prenom_demmanuel_macron_est_jean_michel"
+      }
+    },
+    {
+      "id": "pig_266",
+      "prompt": {
+        "fr": "Lequel de ces prénoms a vraiment été enregistré à l’état civil, donc donné à un enfant ?\n\n Boghosse.",
+        "en": "Which of these first names was really registered in the civil registry, and thus given to a child?\n\n Boghosse.",
+        "es": "¿Cuál de estos nombres fue realmente inscrito en el registro civil y dado a un niño?\n\n Boghosse."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_prenoms_a_vraiment_ete_enregistre_a_letat_civil_donc_donne_a_un_en"
+      }
+    },
+    {
+      "id": "pig_267",
+      "prompt": {
+        "fr": "Le deuxième prénom de Beyoncé est ______\n\n Beyoncé.",
+        "en": "Beyoncé's middle name is ______\n\n Beyoncé.",
+        "es": "El segundo nombre de Beyoncé es ______\n\n Beyoncé."
+      },
+      "meta": {
+        "wordKey": "le_deuxieme_prenom_de_beyonce_est_beyonce"
+      }
+    },
+    {
+      "id": "pig_268",
+      "prompt": {
+        "fr": "Le deuxième prénom de Gérard Darmanin est ______\n\n Moussa.",
+        "en": "Gérard Darmanin's middle name is ______\n\n Moussa.",
+        "es": "El segundo nombre de Gérard Darmanin es ______\n\n Moussa."
+      },
+      "meta": {
+        "wordKey": "le_deuxieme_prenom_de_gerard_darmanin_est_moussa"
+      }
+    },
+    {
+      "id": "pig_269",
+      "prompt": {
+        "fr": "Le fils de Louis VI le Gros est mort à cheval après une collision avec ______\n\n un cochon.",
+        "en": "The son of Louis VI the Fat died on horseback after colliding with ______\n\n a pig.",
+        "es": "El hijo de Luis VI el Gordo murió a caballo tras chocar con ______\n\n un cerdo."
+      },
+      "meta": {
+        "wordKey": "le_fils_de_louis_vi_le_gros_est_mort_a_cheval_apres_une_collision_avec_un_cochon"
+      }
+    },
+    {
+      "id": "pig_270",
+      "prompt": {
+        "fr": "Le fruit de l’églantier s’appelle ______\n\n le gratte-cul.",
+        "en": "The fruit of the rosehip is called ______\n\n the scratch-ass.",
+        "es": "El fruto del escaramujo se llama ______\n\n el rascaculo."
+      },
+      "meta": {
+        "wordKey": "le_fruit_de_leglantier_sappelle_le_gratte_cul"
+      }
+    },
+    {
+      "id": "pig_271",
+      "prompt": {
+        "fr": "Le jacuzzi a été inventé par ______\n\n Monsieur Jacuzzi.",
+        "en": "The jacuzzi was invented by ______\n\n Mr. Jacuzzi.",
+        "es": "El jacuzzi fue inventado por ______\n\n el señor Jacuzzi."
+      },
+      "meta": {
+        "wordKey": "le_jacuzzi_a_ete_invente_par_monsieur_jacuzzi"
+      }
+    },
+    {
+      "id": "pig_272",
+      "prompt": {
+        "fr": "Le mammouth avait ______\n\n un clapet anal.",
+        "en": "The mammoth had ______\n\n an anal flap.",
+        "es": "El mamut tenía ______\n\n una válvula anal."
+      },
+      "meta": {
+        "wordKey": "le_mammouth_avait_un_clapet_anal"
+      }
+    },
+    {
+      "id": "pig_273",
+      "prompt": {
+        "fr": "Le martinet est un oiseau qui peut ______\n\n voler 10 mois sans se poser.",
+        "en": "The swift is a bird that can ______\n\n fly for 10 months without landing.",
+        "es": "El vencejo es un ave que puede ______\n\n volar 10 meses sin posarse."
+      },
+      "meta": {
+        "wordKey": "le_martinet_est_un_oiseau_qui_peut_voler_10_mois_sans_se_poser"
+      }
+    },
+    {
+      "id": "pig_274",
+      "prompt": {
+        "fr": "« Muscle » vient de « musculus » qui veut dire ______\n\n « petite souris » en latin.",
+        "en": "\"Muscle\" comes from \"musculus,\" which means ______\n\n \"little mouse\" in Latin.",
+        "es": "«Músculo» viene de «musculus», que significa ______\n\n «ratoncito» en latín."
+      },
+      "meta": {
+        "wordKey": "muscle_vient_de_musculus_qui_veut_dire_petite_souris_en_latin"
+      }
+    },
+    {
+      "id": "pig_275",
+      "prompt": {
+        "fr": "Le nez des cachalots ______\n\n s’appelle le melon.",
+        "en": "The noses of sperm whales ______\n\n are called the melon.",
+        "es": "La nariz de los cachalotes ______\n\n se llama el melón."
+      },
+      "meta": {
+        "wordKey": "le_nez_des_cachalots_sappelle_le_melon"
+      }
+    },
+    {
+      "id": "pig_276",
+      "prompt": {
+        "fr": "Le nom scientifique du chat est ______\n\n « Felis catus ».",
+        "en": "The scientific name for the cat is ______\n\n \"Felis catus\".",
+        "es": "El nombre científico del gato es ______\n\n «Felis catus»."
+      },
+      "meta": {
+        "wordKey": "le_nom_scientifique_du_chat_est_felis_catus"
+      }
+    },
+    {
+      "id": "pig_277",
+      "prompt": {
+        "fr": "Le vrai prénom de Nelson Mandela est ______\n\n Rolihlahla.",
+        "en": "Nelson Mandela's real first name is ______\n\n Rolihlahla.",
+        "es": "El verdadero nombre de Nelson Mandela es ______\n\n Rolihlahla."
+      },
+      "meta": {
+        "wordKey": "le_vrai_prenom_de_nelson_mandela_est_rolihlahla"
+      }
+    },
+    {
+      "id": "pig_278",
+      "prompt": {
+        "fr": "Le nom scientifique du cochon est ______\n\n « Sus domesticus. »",
+        "en": "The scientific name for the pig is ______\n\n \"Sus domesticus.\"",
+        "es": "El nombre científico del cerdo es ______\n\n «Sus domesticus»."
+      },
+      "meta": {
+        "wordKey": "le_nom_scientifique_du_cochon_est_sus_domesticus"
+      }
+    },
+    {
+      "id": "pig_279",
+      "prompt": {
+        "fr": "Le pénis des canards ______\n\n a une forme de tire-bouchon.",
+        "en": "The penis of ducks ______\n\n has a corkscrew shape.",
+        "es": "El pene de los patos ______\n\n tiene forma de sacacorchos."
+      },
+      "meta": {
+        "wordKey": "le_penis_des_canards_a_une_forme_de_tire_bouchon"
+      }
+    },
+    {
+      "id": "pig_280",
+      "prompt": {
+        "fr": "Le petit d’un grizzly et d’un ours polaire s’appelle ______\n\n un grolar.",
+        "en": "A baby born from a grizzly and a polar bear is called ______\n\n a grolar.",
+        "es": "La cría de un grizzly y un oso polar se llama ______\n\n un grolar."
+      },
+      "meta": {
+        "wordKey": "le_petit_dun_grizzly_et_dun_ours_polaire_sappelle_un_grolar"
+      }
+    },
+    {
+      "id": "pig_281",
+      "prompt": {
+        "fr": "Le petit-suisse est d’origine ______\n\n suisse.",
+        "en": "Petit-suisse is originally ______\n\n Swiss.",
+        "es": "El petit-suisse es de origen ______\n\n suizo."
+      },
+      "meta": {
+        "wordKey": "le_petit_suisse_est_dorigine_suisse"
+      }
+    },
+    {
+      "id": "pig_282",
+      "prompt": {
+        "fr": "Le plus grand platane de France ______\n\n est à Paris.",
+        "en": "The largest plane tree in France ______\n\n is in Paris.",
+        "es": "El plátano de sombra más grande de Francia ______\n\n está en París."
+      },
+      "meta": {
+        "wordKey": "le_plus_grand_platane_de_france_est_a_paris"
+      }
+    },
+    {
+      "id": "pig_283",
+      "prompt": {
+        "fr": "Le prénom de Kamini est ______\n\n Kamini.",
+        "en": "Kamini's first name is ______\n\n Kamini.",
+        "es": "El nombre de pila de Kamini es ______\n\n Kamini."
+      },
+      "meta": {
+        "wordKey": "le_prenom_de_kamini_est_kamini"
+      }
+    },
+    {
+      "id": "pig_284",
+      "prompt": {
+        "fr": "Le pénis du tatou ______\n\n fait la moitié de sa taille.",
+        "en": "The penis of the armadillo ______\n\n is half its body length.",
+        "es": "El pene del armadillo ______\n\n mide la mitad de su cuerpo."
+      },
+      "meta": {
+        "wordKey": "le_penis_du_tatou_fait_la_moitie_de_sa_taille"
+      }
+    },
+    {
+      "id": "pig_285",
+      "prompt": {
+        "fr": "Les Anglais ne disent pas « miam miam », ils disent ______\n\n « Yum-Yum ! ».",
+        "en": "The English do not say \"yum yum,\" they say ______\n\n \"Yum-Yum!\"",
+        "es": "Los ingleses no dicen «ñam ñam», dicen ______\n\n «Yum-Yum!»"
+      },
+      "meta": {
+        "wordKey": "les_anglais_ne_disent_pas_miam_miam_ils_disent_yum_yum"
+      }
+    },
+    {
+      "id": "pig_286",
+      "prompt": {
+        "fr": "Lequel de ces sports existe vraiment ?\n\n La pêche à l’écureuil.",
+        "en": "Which of these sports really exists?\n\n squirrel fishing.",
+        "es": "¿Cuál de estos deportes existe de verdad?\n\n la pesca de ardillas."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_sports_existe_vraiment_la_peche_a_lecureuil"
+      }
+    },
+    {
+      "id": "pig_287",
+      "prompt": {
+        "fr": "Le vrai nom d’une crotte d’œil est ______\n\n une chassie.",
+        "en": "The real name for eye gunk is ______\n\n rheum.",
+        "es": "El verdadero nombre de una legaña es ______\n\n una chassie."
+      },
+      "meta": {
+        "wordKey": "le_vrai_nom_dune_crotte_dil_est_une_chassie"
+      }
+    },
+    {
+      "id": "pig_288",
+      "prompt": {
+        "fr": "Lequel de ces animaux est bien dans le dictionnaire français ?\n\n Ouaouaron.",
+        "en": "Which of these animals is actually in the French dictionary?\n\n ouaouaron.",
+        "es": "¿Cuál de estos animales figura realmente en el diccionario francés?\n\n ouaouaron."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_animaux_est_bien_dans_le_dictionnaire_francais_ouaouaron"
+      }
+    },
+    {
+      "id": "pig_289",
+      "prompt": {
+        "fr": "Lequel de ces animaux en latin existe vraiment ?\n\n Le requin lutin.",
+        "en": "Which of these animals in Latin really exists?\n\n the goblin shark.",
+        "es": "¿Cuál de estos animales en latín existe de verdad?\n\n el tiburón duende."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_animaux_en_latin_existe_vraiment_le_requin_lutin"
+      }
+    },
+    {
+      "id": "pig_290",
+      "prompt": {
+        "fr": "Le vrai prénom de Polnareff est ______\n\n Robert.",
+        "en": "Polnareff's real first name is ______\n\n Robert.",
+        "es": "El verdadero nombre de Polnareff es ______\n\n Robert."
+      },
+      "meta": {
+        "wordKey": "le_vrai_prenom_de_polnareff_est_robert"
+      }
+    },
+    {
+      "id": "pig_291",
+      "prompt": {
+        "fr": "Lequel de ces Pokémon existe ?\n\n Grotadmorv.",
+        "en": "Which of these Pokémon really exists?\n\n Muk.",
+        "es": "¿Cuál de estos Pokémon existe de verdad?\n\n Muk."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_pokemon_existe_grotadmorv"
+      }
+    },
+    {
+      "id": "pig_292",
+      "prompt": {
+        "fr": "Pour dire « on n’apprend pas aux vieux singes à faire la grimace », les Anglais disent qu’on n’apprend pas à ______\n\n gober des œufs ».",
+        "en": "To say \"you can't teach an old monkey to make faces,\" the English say you can't teach it to ______\n\n \"suck eggs\".",
+        "es": "Para decir «a los monos viejos no se les enseña a hacer muecas», los ingleses dicen que no se le enseña a ______\n\n «chupar huevos»."
+      },
+      "meta": {
+        "wordKey": "pour_dire_on_napprend_pas_aux_vieux_singes_a_faire_la_grimace_les_anglais_disent"
+      }
+    },
+    {
+      "id": "pig_293",
+      "prompt": {
+        "fr": "Laquelle de ces stars de la culture noire de karaté ?\n\n Elvis Presley.",
+        "en": "Which of these stars practiced black-belt karate?\n\n Elvis Presley.",
+        "es": "¿Cuál de estas estrellas practicaba karate cinturón negro?\n\n Elvis Presley."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_stars_de_la_culture_noire_de_karate_elvis_presley"
+      }
+    },
+    {
+      "id": "pig_294",
+      "prompt": {
+        "fr": "Laquelle de ces chansons de Florent Pagny existe vraiment ?\n\n Constipation.",
+        "en": "Which of these Florent Pagny songs really exists?\n\n Constipation.",
+        "es": "¿Cuál de estas canciones de Florent Pagny existe de verdad?\n\n Constipation."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_chansons_de_florent_pagny_existe_vraiment_constipation"
+      }
+    },
+    {
+      "id": "pig_295",
+      "prompt": {
+        "fr": "Les Allemands ont inventé ______\n\n la bière Tsingtao.",
+        "en": "The Germans invented ______\n\n Tsingtao beer.",
+        "es": "Los alemanes inventaron ______\n\n la cerveza Tsingtao."
+      },
+      "meta": {
+        "wordKey": "les_allemands_ont_invente_la_biere_tsingtao"
+      }
+    },
+    {
+      "id": "pig_296",
+      "prompt": {
+        "fr": "Les bonobos font l’amour ______\n\n face-à-face.",
+        "en": "Bonobos make love ______\n\n face-to-face.",
+        "es": "Los bonobos hacen el amor ______\n\n cara a cara."
+      },
+      "meta": {
+        "wordKey": "les_bonobos_font_lamour_face_a_face"
+      }
+    },
+    {
+      "id": "pig_297",
+      "prompt": {
+        "fr": "Les braqueurs de Kim Kardashian à Paris étaient surnommés ______\n\n les « Papys Braqueurs ».",
+        "en": "Kim Kardashian's robbers in Paris were nicknamed ______\n\n the \"Grandpa Robbers\".",
+        "es": "A los atracadores de Kim Kardashian en París los apodaban ______\n\n los «abuelos atracadores»."
+      },
+      "meta": {
+        "wordKey": "les_braqueurs_de_kim_kardashian_a_paris_etaient_surnommes_les_papys_braqueurs"
+      }
+    },
+    {
+      "id": "pig_298",
+      "prompt": {
+        "fr": "Les éleveurs de lapins sont appelés des ______\n\n « cuniculteurs ».",
+        "en": "Rabbit breeders are called ______\n\n \"cuniculteurs\".",
+        "es": "A los criadores de conejos se les llama ______\n\n «cuniculteurs»."
+      },
+      "meta": {
+        "wordKey": "les_eleveurs_de_lapins_sont_appeles_des_cuniculteurs"
+      }
+    },
+    {
+      "id": "pig_299",
+      "prompt": {
+        "fr": "Les Japonais ne disent pas « miam miam », ils disent ______\n\n « mogu-mogu ! ».",
+        "en": "The Japanese do not say \"yum yum,\" they say ______\n\n \"mogu-mogu!\"",
+        "es": "Los japoneses no dicen «ñam ñam», dicen ______\n\n «mogu-mogu!»"
+      },
+      "meta": {
+        "wordKey": "les_japonais_ne_disent_pas_miam_miam_ils_disent_mogu_mogu"
+      }
+    },
+    {
+      "id": "pig_300",
+      "prompt": {
+        "fr": "Les olives vertes ______\n\n sont des olives noires pas mûres.",
+        "en": "Green olives ______\n\n are unripe black olives.",
+        "es": "Las aceitunas verdes ______\n\n son aceitunas negras no maduras."
+      },
+      "meta": {
+        "wordKey": "les_olives_vertes_sont_des_olives_noires_pas_mures"
+      }
+    },
+    {
+      "id": "pig_301",
+      "prompt": {
+        "fr": "Les territoires gaulois qui étaient encore à conquérir étaient appelés par les Romains ______\n\n la « Gaule chevelue ».",
+        "en": "The Gallic territories that still had to be conquered were called by the Romans ______\n\n \"long-haired Gaul\".",
+        "es": "Los territorios galos que aún quedaban por conquistar eran llamados por los romanos ______\n\n la «Galia cabelluda»."
+      },
+      "meta": {
+        "wordKey": "les_territoires_gaulois_qui_etaient_encore_a_conquerir_etaient_appeles_par_les_r"
+      }
+    },
+    {
+      "id": "pig_302",
+      "prompt": {
+        "fr": "Louis XVI était fan de ______\n\n serrures.",
+        "en": "Louis XVI was a fan of ______\n\n locks.",
+        "es": "Luis XVI era fan de ______\n\n las cerraduras."
+      },
+      "meta": {
+        "wordKey": "louis_xvi_etait_fan_de_serrures"
+      }
+    },
+    {
+      "id": "pig_303",
+      "prompt": {
+        "fr": "Marine Le Pen a un diplôme ______\n\n d’éleveuse de chats.",
+        "en": "Marine Le Pen has a diploma ______\n\n in cat breeding.",
+        "es": "Marine Le Pen tiene un diploma ______\n\n de criadora de gatos."
+      },
+      "meta": {
+        "wordKey": "marine_le_pen_a_un_diplome_deleveuse_de_chats"
+      }
+    },
+    {
+      "id": "pig_304",
+      "prompt": {
+        "fr": "Mark Harrisson et Tony Linn partagent un record depuis 1985 : ______\n\n ils ont sauté à cloche-pied pendant 101 h.",
+        "en": "Mark Harrisson and Tony Linn have shared a record since 1985: ______\n\n they hopped on one leg for 101 hours.",
+        "es": "Mark Harrisson y Tony Linn comparten un récord desde 1985: ______\n\n saltaron a la pata coja durante 101 h."
+      },
+      "meta": {
+        "wordKey": "mark_harrisson_et_tony_linn_partagent_un_record_depuis_1985_ils_ont_saute_a_cloc"
+      }
+    },
+    {
+      "id": "pig_305",
+      "prompt": {
+        "fr": "Neville Sharp détient le record du monde ______\n\n du rot le plus bruyant.",
+        "en": "Neville Sharp holds the world record ______\n\n for the loudest burp.",
+        "es": "Neville Sharp tiene el récord del mundo ______\n\n del eructo más ruidoso."
+      },
+      "meta": {
+        "wordKey": "neville_sharp_detient_le_record_du_monde_du_rot_le_plus_bruyant"
+      }
+    },
+    {
+      "id": "pig_306",
+      "prompt": {
+        "fr": "Pour dire « sérieux ! », les Japonais disent ______\n\n « maji ! ».",
+        "en": "To say \"seriously!\", the Japanese say ______\n\n \"maji!\"",
+        "es": "Para decir «¡en serio!», los japoneses dicen ______\n\n «maji!»"
+      },
+      "meta": {
+        "wordKey": "pour_dire_serieux_les_japonais_disent_maji"
+      }
+    },
+    {
+      "id": "pig_307",
+      "prompt": {
+        "fr": "Le pénis des alligators ______\n\n est toujours en érection.",
+        "en": "The penis of alligators ______\n\n is always erect.",
+        "es": "El pene de los aligátores ______\n\n está siempre erecto."
+      },
+      "meta": {
+        "wordKey": "le_penis_des_alligators_est_toujours_en_erection"
+      }
+    },
+    {
+      "id": "pig_308",
+      "prompt": {
+        "fr": "Le lamantin utilise ses pets pour ______\n\n régler sa flottabilité.",
+        "en": "The manatee uses its farts to ______\n\n adjust its buoyancy.",
+        "es": "El manatí usa sus pedos para ______\n\n ajustar su flotabilidad."
+      },
+      "meta": {
+        "wordKey": "le_lamantin_utilise_ses_pets_pour_regler_sa_flottabilite"
+      }
+    },
+    {
+      "id": "pig_309",
+      "prompt": {
+        "fr": "Qu’est-ce que la « parurésie » ?\n\n L’incapacité de faire pipi quand on se sent observé.",
+        "en": "What is \"paruresis\"?\n\n The inability to pee when feeling observed.",
+        "es": "¿Qué es la «paruresis»?\n\n La incapacidad de hacer pis cuando uno se siente observado."
+      },
+      "meta": {
+        "wordKey": "quest_ce_que_la_paruresie_lincapacite_de_faire_pipi_quand_on_se_sent_observe"
+      }
+    },
+    {
+      "id": "pig_310",
+      "prompt": {
+        "fr": "Pour attirer des femelles, le singe capucin ______\n\n s’asperge de son urine.",
+        "en": "To attract females, the capuchin monkey ______\n\n rubs itself with its urine.",
+        "es": "Para atraer hembras, el mono capuchino ______\n\n se rocía con su orina."
+      },
+      "meta": {
+        "wordKey": "pour_attirer_des_femelles_le_singe_capucin_sasperge_de_son_urine"
+      }
+    },
+    {
+      "id": "pig_311",
+      "prompt": {
+        "fr": "Pour dire « parfait » ou « d’accord », les Québécois disent ______\n\n « tiguidou ! ».",
+        "en": "To say \"perfect\" or \"okay,\" Quebecers say ______\n\n \"tiguidou!\"",
+        "es": "Para decir «perfecto» o «vale», los quebequeses dicen ______\n\n «tiguidou!»"
+      },
+      "meta": {
+        "wordKey": "pour_dire_parfait_ou_daccord_les_quebecois_disent_tiguidou"
+      }
+    },
+    {
+      "id": "pig_312",
+      "prompt": {
+        "fr": "Albert Einstein était ______\n\n marié à sa cousine.",
+        "en": "Albert Einstein was ______\n\n married to his cousin.",
+        "es": "Albert Einstein estaba ______\n\n casado con su prima."
+      },
+      "meta": {
+        "wordKey": "albert_einstein_etait_marie_a_sa_cousine"
+      }
+    },
+    {
+      "id": "pig_313",
+      "prompt": {
+        "fr": "À la fin du XIXe siècle, le célèbre whiskey Old Crow était noir, ______\n\n était noir.",
+        "en": "At the end of the 19th century, the famous Old Crow whiskey was black, ______\n\n was black.",
+        "es": "A finales del siglo XIX, el famoso whisky Old Crow era negro, ______\n\n era negro."
+      },
+      "meta": {
+        "wordKey": "a_la_fin_du_xixe_siecle_le_celebre_whiskey_old_crow_etait_noir_etait_noir"
+      }
+    },
+    {
+      "id": "pig_314",
+      "prompt": {
+        "fr": "On peut dire « on se régale », mais on peut aussi dire ______\n\n « on se gobichonne ».",
+        "en": "You can say \"we're having a feast,\" but you can also say ______\n\n \"we're gobichonning.\"",
+        "es": "Se puede decir «nos damos un festín», pero también se puede decir ______\n\n «on se gobichonne»."
+      },
+      "meta": {
+        "wordKey": "on_peut_dire_on_se_regale_mais_on_peut_aussi_dire_on_se_gobichonne"
+      }
+    },
+    {
+      "id": "pig_315",
+      "prompt": {
+        "fr": "Pour souhaiter bonne chance, les Japonais ne croisent pas les doigts, ils ______\n\n se tiennent les pouces.",
+        "en": "To wish someone good luck, the Japanese do not cross their fingers; they ______\n\n hold their thumbs.",
+        "es": "Para desear buena suerte, los japoneses no cruzan los dedos, sino que ______\n\n se sujetan los pulgares."
+      },
+      "meta": {
+        "wordKey": "pour_souhaiter_bonne_chance_les_japonais_ne_croisent_pas_les_doigts_ils_se_tienn"
+      }
+    },
+    {
+      "id": "pig_316",
+      "prompt": {
+        "fr": "En japonais, une « plainte » se dit ______\n\n « monku ».",
+        "en": "In Japanese, a \"complaint\" is ______\n\n \"monku\".",
+        "es": "En japonés, una «queja» se dice ______\n\n «monku»."
+      },
+      "meta": {
+        "wordKey": "en_japonais_une_plainte_se_dit_monku"
+      }
+    },
+    {
+      "id": "pig_317",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une « ridule » ?\n\n Une petite ride.",
+        "en": "What is a \"ridule\"?\n\n A small wrinkle.",
+        "es": "¿Qué es una «ridule»?\n\n Una pequeña arruga."
+      },
+      "meta": {
+        "wordKey": "quest_ce_quune_ridule_une_petite_ride"
+      }
+    },
+    {
+      "id": "pig_318",
+      "prompt": {
+        "fr": "Il existe une méduse dont ______\n\n l’anus apparaît, défèque et disparaît ensuite.",
+        "en": "There is a jellyfish whose ______\n\n anus appears, defecates, then disappears.",
+        "es": "Existe una medusa cuyo ______\n\n ano aparece, defeca y luego desaparece."
+      },
+      "meta": {
+        "wordKey": "il_existe_une_meduse_dont_lanus_apparait_defeque_et_disparait_ensuite"
+      }
+    },
+    {
+      "id": "pig_319",
+      "prompt": {
+        "fr": "Il existe un album BD de Titeuf intitulé ______\n\n Lâchez-moi le slip !",
+        "en": "There is a Titeuf comic album titled ______\n\n Get off my briefs!",
+        "es": "Existe un álbum de cómic de Titeuf titulado ______\n\n ¡Soltadme los calzoncillos!"
+      },
+      "meta": {
+        "wordKey": "il_existe_un_album_bd_de_titeuf_intitule_lachez_moi_le_slip"
+      }
+    },
+    {
+      "id": "pig_320",
+      "prompt": {
+        "fr": "Le petit d’une otarie s’appelle ______\n\n un chiot.",
+        "en": "A baby sea lion is called ______\n\n a pup.",
+        "es": "La cría de una otaria se llama ______\n\n un cachorro."
+      },
+      "meta": {
+        "wordKey": "le_petit_dune_otarie_sappelle_un_chiot"
+      }
+    },
+    {
+      "id": "pig_321",
+      "prompt": {
+        "fr": "En créole, la « nuit » se dit ______\n\n le « ténoir ».",
+        "en": "In Creole, \"night\" is ______\n\n \"ténoir\".",
+        "es": "En criollo, «noche» se dice ______\n\n «ténoir»."
+      },
+      "meta": {
+        "wordKey": "en_creole_la_nuit_se_dit_le_tenoir"
+      }
+    },
+    {
+      "id": "pig_322",
+      "prompt": {
+        "fr": "En russe, on ne dit pas « prout », mais ______\n\n « pook ».",
+        "en": "In Russian, they do not say \"fart,\" but ______\n\n \"pook\".",
+        "es": "En ruso, no se dice «pedete», sino ______\n\n «pook»."
+      },
+      "meta": {
+        "wordKey": "en_russe_on_ne_dit_pas_prout_mais_pook"
+      }
+    },
+    {
+      "id": "pig_323",
+      "prompt": {
+        "fr": "La femelle du buffle s’appelle ______\n\n la bufflone.",
+        "en": "The female buffalo is called ______\n\n the bufflone.",
+        "es": "La hembra del búfalo se llama ______\n\n la bufflone."
+      },
+      "meta": {
+        "wordKey": "la_femelle_du_buffle_sappelle_la_bufflone"
+      }
+    },
+    {
+      "id": "pig_324",
+      "prompt": {
+        "fr": "Le surnom de la guillotine était ______\n\n « Louisette ».",
+        "en": "The nickname of the guillotine was ______\n\n \"Louisette\".",
+        "es": "El apodo de la guillotina era ______\n\n «Louisette»."
+      },
+      "meta": {
+        "wordKey": "le_surnom_de_la_guillotine_etait_louisette"
+      }
+    },
+    {
+      "id": "pig_325",
+      "prompt": {
+        "fr": "Pour être belles, certaines femmes qui vivaient dans l’Empire romain ______\n\n se faisaient un monosourcil avec des poils de chèvre.",
+        "en": "To be beautiful, some women living in the Roman Empire ______\n\n made themselves a unibrow with goat hair.",
+        "es": "Para estar bellas, algunas mujeres del Imperio romano ______\n\n se hacían una ceja única con pelos de cabra."
+      },
+      "meta": {
+        "wordKey": "pour_etre_belles_certaines_femmes_qui_vivaient_dans_lempire_romain_se_faisaient_"
+      }
+    },
+    {
+      "id": "pig_326",
+      "prompt": {
+        "fr": "Aux Pays-Bas, les voitures de police sont équipées de ______\n\n nounours pour les enfants.",
+        "en": "In the Netherlands, police cars are equipped with ______\n\n teddy bears for children.",
+        "es": "En los Países Bajos, los coches de policía llevan ______\n\n osos de peluche para los niños."
+      },
+      "meta": {
+        "wordKey": "aux_pays_bas_les_voitures_de_police_sont_equipees_de_nounours_pour_les_enfants"
+      }
+    },
+    {
+      "id": "pig_327",
+      "prompt": {
+        "fr": "En 2019, une députée kenyane a voulu faire passer une loi ______\n\n contre les pets dans les avions.",
+        "en": "In 2019, a Kenyan MP tried to pass a law ______\n\n against farts on airplanes.",
+        "es": "En 2019, una diputada keniana quiso aprobar una ley ______\n\n contra los pedos en los aviones."
+      },
+      "meta": {
+        "wordKey": "en_2019_une_deputee_kenyane_a_voulu_faire_passer_une_loi_contre_les_pets_dans_le"
+      }
+    },
+    {
+      "id": "pig_328",
+      "prompt": {
+        "fr": "Chez les poissons-clowns, si le seul femelle du groupe meurt ______\n\n un des mâles devient la nouvelle femelle.",
+        "en": "In clownfish, if the group's only female dies ______\n\n one of the males becomes the new female.",
+        "es": "En los peces payaso, si la única hembra del grupo muere ______\n\n uno de los machos se convierte en la nueva hembra."
+      },
+      "meta": {
+        "wordKey": "chez_les_poissons_clowns_si_le_seul_femelle_du_groupe_meurt_un_des_males_devient"
+      }
+    },
+    {
+      "id": "pig_329",
+      "prompt": {
+        "fr": "Le petit d’un bélier et d’une chèvre s’appelle ______\n\n un mouchèvre.",
+        "en": "The offspring of a ram and a goat is called ______\n\n a mouchèvre.",
+        "es": "La cría de un carnero y una cabra se llama ______\n\n un mouchèvre."
+      },
+      "meta": {
+        "wordKey": "le_petit_d_un_belier_et_d_une_chevre_s_appelle_un_mouchevre"
+      }
+    },
+    {
+      "id": "pig_330",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « gynécomaste » ?\n\n Un homme qui a des seins.",
+        "en": "What is a \"gynécomaste\"?\n\n A man who has breasts.",
+        "es": "¿Qué es un \"gynécomaste\"?\n\n Un hombre que tiene pechos."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_gynecomaste_un_homme_qui_a_des_seins"
+      }
+    },
+    {
+      "id": "pig_331",
+      "prompt": {
+        "fr": "En 2010, le prénom le plus donné en Corse était ______\n\n Lisandru.",
+        "en": "In 2010, the most-given first name in Corsica was ______\n\n Lisandru.",
+        "es": "En 2010, el nombre más dado en Córcega fue ______\n\n Lisandru."
+      },
+      "meta": {
+        "wordKey": "en_2010_le_prenom_le_plus_donne_en_corse_etait_lisandru"
+      }
+    },
+    {
+      "id": "pig_332",
+      "prompt": {
+        "fr": "En France, il existe une taxe sur ______\n\n les pylônes électriques.",
+        "en": "In France, there is a tax on ______\n\n electric pylons.",
+        "es": "En Francia, existe un impuesto sobre ______\n\n los postes eléctricos."
+      },
+      "meta": {
+        "wordKey": "en_france_il_existe_une_taxe_sur_les_pylones_electriques"
+      }
+    },
+    {
+      "id": "pig_333",
+      "prompt": {
+        "fr": "Enfant, Mike Tyson était passionné par ______\n\n les pigeons.",
+        "en": "As a child, Mike Tyson was passionate about ______\n\n pigeons.",
+        "es": "De niño, Mike Tyson era un apasionado de ______\n\n las palomas."
+      },
+      "meta": {
+        "wordKey": "enfant_mike_tyson_etait_passionne_par_les_pigeons"
+      }
+    },
+    {
+      "id": "pig_334",
+      "prompt": {
+        "fr": "Dans la mythologie grecque, Apollon a tué Marsyas car il ______\n\n disait qu’il jouait mieux de la flûte que lui.",
+        "en": "In Greek mythology, Apollo killed Marsyas because he ______\n\n claimed he played the flute better than him.",
+        "es": "En la mitología griega, Apolo mató a Marsias porque ______\n\n decía que tocaba la flauta mejor que él."
+      },
+      "meta": {
+        "wordKey": "dans_la_mythologie_grecque_apollon_a_tue_marsyas_car_il_disait_qu_il_jouait_mieu"
+      }
+    },
+    {
+      "id": "pig_335",
+      "prompt": {
+        "fr": "La devise d’Andorre est : ______\n\n « Touché-moi si tu l’oses ».",
+        "en": "Andorra's motto is: ______\n\n \"Touch me if you dare.\"",
+        "es": "El lema de Andorra es: ______\n\n \"Tócame si te atreves.\""
+      },
+      "meta": {
+        "wordKey": "la_devise_d_andorre_est_touche_moi_si_tu_l_oses"
+      }
+    },
+    {
+      "id": "pig_336",
+      "prompt": {
+        "fr": "26 % des hommes français ______\n\n portent des slips.",
+        "en": "26% of French men ______\n\n wear briefs.",
+        "es": "El 26 % de los hombres franceses ______\n\n usa calzoncillos."
+      },
+      "meta": {
+        "wordKey": "26_des_hommes_francais_portent_des_slips"
+      }
+    },
+    {
+      "id": "pig_337",
+      "prompt": {
+        "fr": "L’inventeur de l’anduire s’appelait ______\n\n Sébastien Bottin.",
+        "en": "The inventor of the directory was called ______\n\n Sébastien Bottin.",
+        "es": "El inventor de la guía se llamaba ______\n\n Sébastien Bottin."
+      },
+      "meta": {
+        "wordKey": "l_inventeur_de_l_anduire_s_appelait_sebastien_bottin"
+      }
+    },
+    {
+      "id": "pig_338",
+      "prompt": {
+        "fr": "La zone entre les deux sourcils s’appelle ______\n\n la glabelle.",
+        "en": "The area between the eyebrows is called ______\n\n the glabella.",
+        "es": "La zona entre las dos cejas se llama ______\n\n la glabela."
+      },
+      "meta": {
+        "wordKey": "la_zone_entre_les_deux_sourcils_s_appelle_la_glabelle"
+      }
+    },
+    {
+      "id": "pig_339",
+      "prompt": {
+        "fr": "Le tout premier TGV ______\n\n s’appelait Patrick.",
+        "en": "The very first TGV ______\n\n was called Patrick.",
+        "es": "El primer TGV de la historia ______\n\n se llamaba Patrick."
+      },
+      "meta": {
+        "wordKey": "le_tout_premier_tgv_s_appelait_patrick"
+      }
+    },
+    {
+      "id": "pig_340",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « pantophile » ?\n\n Quelqu’un qui aime tout.",
+        "en": "What is a \"pantophile\"?\n\n Someone who loves everything.",
+        "es": "¿Qué es un \"pantophile\"?\n\n Alguien a quien le gusta todo."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_pantophile_quelqu_un_qui_aime_tout"
+      }
+    },
+    {
+      "id": "pig_341",
+      "prompt": {
+        "fr": "En Micronésie, on dit bonjour ______\n\n en fronçant les sourcils.",
+        "en": "In Micronesia, people say hello ______\n\n by raising/furrowing their eyebrows.",
+        "es": "En Micronesia, se dice hola ______\n\n frunciendo las cejas."
+      },
+      "meta": {
+        "wordKey": "en_micronesie_on_dit_bonjour_en_froncant_les_sourcils"
+      }
+    },
+    {
+      "id": "pig_342",
+      "prompt": {
+        "fr": "À l’origine, « Soudan » veut dire ______\n\n « La terre des noirs ».",
+        "en": "Originally, \"Sudan\" means ______\n\n \"the land of the blacks.\"",
+        "es": "Originalmente, « Sudán » significa ______\n\n \"la tierra de los negros.\""
+      },
+      "meta": {
+        "wordKey": "a_l_origine_soudan_veut_dire_la_terre_des_noirs"
+      }
+    },
+    {
+      "id": "pig_343",
+      "prompt": {
+        "fr": "L’inventeur du kfir s’appelait ______\n\n Félix Kir.",
+        "en": "The inventor of kir was called ______\n\n Félix Kir.",
+        "es": "El inventor del kir se llamaba ______\n\n Félix Kir."
+      },
+      "meta": {
+        "wordKey": "l_inventeur_du_kfir_s_appelait_felix_kir"
+      }
+    },
+    {
+      "id": "pig_344",
+      "prompt": {
+        "fr": "Jean-Luc Reichmann a été ______\n\n la voix off de Motus pendant 5 ans.",
+        "en": "Jean-Luc Reichmann was ______\n\n the voice-over of Motus for 5 years.",
+        "es": "Jean-Luc Reichmann fue ______\n\n la voz en off de Motus durante 5 años."
+      },
+      "meta": {
+        "wordKey": "jean_luc_reichmann_a_ete_la_voix_off_de_motus_pendant_5_ans"
+      }
+    },
+    {
+      "id": "pig_345",
+      "prompt": {
+        "fr": "Le goût est la journée internationale ______\n\n de la frite belge.",
+        "en": "August 1st is the international day ______\n\n of the Belgian fry.",
+        "es": "El 1 de agosto es el día internacional ______\n\n de la patata frita belga."
+      },
+      "meta": {
+        "wordKey": "le_gout_est_la_journee_internationale_de_la_frite_belge"
+      }
+    },
+    {
+      "id": "pig_346",
+      "prompt": {
+        "fr": "Qu’est-ce que l’émétophobie ?\n\n La peur de vomir.",
+        "en": "What is emetophobia?\n\n The fear of vomiting.",
+        "es": "¿Qué es la emetofobia?\n\n El miedo a vomitar."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_que_l_emetophobie_la_peur_de_vomir"
+      }
+    },
+    {
+      "id": "pig_347",
+      "prompt": {
+        "fr": "Un patient victime d’écholalie ______\n\n s’empêche de répéter les derniers mots de son interlocuteur.",
+        "en": "A patient suffering from echolalia ______\n\n keeps repeating the last words spoken by the other person.",
+        "es": "Un paciente con ecolalia ______\n\n repite los últimos palabras de su interlocutor."
+      },
+      "meta": {
+        "wordKey": "un_patient_victime_d_echolalie_s_empeche_de_repeter_les_derniers_mots_de_son_int"
+      }
+    },
+    {
+      "id": "pig_348",
+      "prompt": {
+        "fr": "D’après une étude publiée dans la revue Current Biology en 2012, les hommes vivent plus longtemps quand ______\n\n ils sont castrés.",
+        "en": "According to a study published in Current Biology in 2012, men live longer when ______\n\n they are castrated.",
+        "es": "Según un estudio publicado en la revista Current Biology en 2012, los hombres viven más tiempo cuando ______\n\n están castrados."
+      },
+      "meta": {
+        "wordKey": "d_apres_une_etude_publiee_dans_la_revue_current_biology_en_2012_les_hommes_viven"
+      }
+    },
+    {
+      "id": "pig_349",
+      "prompt": {
+        "fr": "Le petit d’une chouette s’appelle ______\n\n un chouetton.",
+        "en": "A baby owl is called ______\n\n a chouetton.",
+        "es": "La cría de una lechuza se llama ______\n\n un chouetton."
+      },
+      "meta": {
+        "wordKey": "le_petit_d_une_chouette_s_appelle_un_chouetton"
+      }
+    },
+    {
+      "id": "pig_350",
+      "prompt": {
+        "fr": "Le prénom d’Axelle Red est ______\n\n Fabienne.",
+        "en": "Axelle Red's first name is ______\n\n Fabienne.",
+        "es": "El nombre de pila de Axelle Red es ______\n\n Fabienne."
+      },
+      "meta": {
+        "wordKey": "le_prenom_d_axelle_red_est_fabienne"
+      }
+    },
+    {
+      "id": "pig_351",
+      "prompt": {
+        "fr": "Laquelle de ces propositions est vraie ?\n\n On dit un « testicule ».",
+        "en": "Which of these statements is true?\n\n The correct form is \"a testicule.\"",
+        "es": "¿Cuál de estas afirmaciones es verdadera?\n\n Se dice un « testicule »."
+      },
+      "meta": {
+        "wordKey": "laquelle_de_ces_propositions_est_vraie_on_dit_un_testicule"
+      }
+    },
+    {
+      "id": "pig_352",
+      "prompt": {
+        "fr": "Noël Mamère est ______\n\n né le jour de Noël.",
+        "en": "Noël Mamère was ______\n\n born on Christmas Day.",
+        "es": "Noël Mamère ______\n\n nació el día de Navidad."
+      },
+      "meta": {
+        "wordKey": "noel_mamere_est_ne_le_jour_de_noel"
+      }
+    },
+    {
+      "id": "pig_353",
+      "prompt": {
+        "fr": "Elle peut mesurer jusqu’à 50 cm : ______\n\n la langue d’une girafe.",
+        "en": "It can measure up to 50 cm: ______\n\n a giraffe's tongue.",
+        "es": "Puede medir hasta 50 cm: ______\n\n la lengua de una jirafa."
+      },
+      "meta": {
+        "wordKey": "elle_peut_mesurer_jusqu_a_50_cm_la_langue_d_une_girafe"
+      }
+    },
+    {
+      "id": "pig_354",
+      "prompt": {
+        "fr": "L’automirérovic est un livre qui explique comment ______\n\n cuisiner des testicules.",
+        "en": "L'automirérovic is a book that explains how to ______\n\n cook testicles.",
+        "es": "El automirérovic es un libro que explica cómo ______\n\n cocinar testículos."
+      },
+      "meta": {
+        "wordKey": "l_automirerovic_est_un_livre_qui_explique_comment_cuisiner_des_testicules"
+      }
+    },
+    {
+      "id": "pig_355",
+      "prompt": {
+        "fr": "Pour se saluer, les habitants du Tibet ______\n\n se tirent la langue.",
+        "en": "To greet each other, the inhabitants of Tibet ______\n\n stick out their tongues.",
+        "es": "Para saludarse, los habitantes del Tíbet ______\n\n sacan la lengua."
+      },
+      "meta": {
+        "wordKey": "pour_se_saluer_les_habitants_du_tibet_se_tirent_la_langue"
+      }
+    },
+    {
+      "id": "pig_356",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « clinomane » ?\n\n Quelqu’un qui a du mal à sortir de son lit le matin.",
+        "en": "What is a \"clinomaniac\"?\n\n Someone who has trouble getting out of bed in the morning.",
+        "es": "¿Qué es un « clinomane »?\n\n Alguien a quien le cuesta salir de la cama por la mañana."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_clinomane_quelqu_un_qui_a_du_mal_a_sortir_de_son_lit_le_matin"
+      }
+    },
+    {
+      "id": "pig_357",
+      "prompt": {
+        "fr": "Le second prénom de Greta Thunberg est ______\n\n Tintin.",
+        "en": "Greta Thunberg's middle name is ______\n\n Tintin.",
+        "es": "El segundo nombre de Greta Thunberg es ______\n\n Tintin."
+      },
+      "meta": {
+        "wordKey": "le_second_prenom_de_greta_thunberg_est_tintin"
+      }
+    },
+    {
+      "id": "pig_358",
+      "prompt": {
+        "fr": "En 2018, un braconnier tanzanien a été condamné à ______\n\n regarder Bambi une fois par mois.",
+        "en": "In 2018, a Tanzanian poacher was sentenced to ______\n\n watch Bambi once a month.",
+        "es": "En 2018, un cazador furtivo tanzano fue condenado a ______\n\n ver Bambi una vez al mes."
+      },
+      "meta": {
+        "wordKey": "en_2018_un_braconnier_tanzanien_a_ete_condamne_a_regarder_bambi_une_fois_par_moi"
+      }
+    },
+    {
+      "id": "pig_359",
+      "prompt": {
+        "fr": "Durant son service militaire, Élisabeth II était ______\n\n mécanicienne.",
+        "en": "During her military service, Elizabeth II was ______\n\n a mechanic.",
+        "es": "Durante su servicio militar, Isabel II era ______\n\n mecánica."
+      },
+      "meta": {
+        "wordKey": "durant_son_service_militaire_elisabeth_ii_etait_mecanicienne"
+      }
+    },
+    {
+      "id": "pig_360",
+      "prompt": {
+        "fr": "En Italie, Mickey Mouse s’appelle ______\n\n « Topolino ».",
+        "en": "In Italy, Mickey Mouse is called ______\n\n \"Topolino.\"",
+        "es": "En Italia, Mickey Mouse se llama ______\n\n \"Topolino\"."
+      },
+      "meta": {
+        "wordKey": "en_italie_mickey_mouse_s_appelle_topolino"
+      }
+    },
+    {
+      "id": "pig_361",
+      "prompt": {
+        "fr": "En Tanzanie, l’expression « Hakuna Matata » signifie ______\n\n « pas de problème ».",
+        "en": "In Tanzania, the expression \"Hakuna Matata\" means ______\n\n \"no problem.\"",
+        "es": "En Tanzania, la expresión « Hakuna Matata » significa ______\n\n \"no hay problema\"."
+      },
+      "meta": {
+        "wordKey": "en_tanzanie_l_expression_hakuna_matata_signifie_pas_de_probleme"
+      }
+    },
+    {
+      "id": "pig_362",
+      "prompt": {
+        "fr": "Complétez le titre de cet article du Dauphiné en 2018 : Elle retrouve l’amante de son mari ______\n\n nue avec le chien ».",
+        "en": "Complete this 2018 Dauphiné headline: She finds her husband's lover ______\n\n naked with the dog.\"",
+        "es": "Complete el título de este artículo de Le Dauphiné en 2018: Encuentra a la amante de su marido ______\n\n desnuda con el perro»."
+      },
+      "meta": {
+        "wordKey": "completez_le_titre_de_cet_article_du_dauphine_en_2018_elle_retrouve_l_amante_de_"
+      }
+    },
+    {
+      "id": "pig_363",
+      "prompt": {
+        "fr": "D’après des experts, Ramsès II ______\n\n était roux.",
+        "en": "According to experts, Ramses II ______\n\n was red-haired.",
+        "es": "Según los expertos, Ramsés II ______\n\n era pelirrojo."
+      },
+      "meta": {
+        "wordKey": "d_apres_des_experts_ramses_ii_etait_roux"
+      }
+    },
+    {
+      "id": "pig_364",
+      "prompt": {
+        "fr": "Selon une étude, environ 28 % des chiens ______\n\n dorment dans la chambre de leur propriétaire.",
+        "en": "According to a study, about 28% of dogs ______\n\n sleep in their owner's bedroom.",
+        "es": "Según un estudio, alrededor del 28 % de los perros ______\n\n duermen en la habitación de su dueño."
+      },
+      "meta": {
+        "wordKey": "selon_une_etude_environ_28_des_chiens_dorment_dans_la_chambre_de_leur_proprietai"
+      }
+    },
+    {
+      "id": "pig_365",
+      "prompt": {
+        "fr": "En Suisse, il est illégal d’avoir ______\n\n un seul cochon d’Inde.",
+        "en": "In Switzerland, it is illegal to have ______\n\n just one guinea pig.",
+        "es": "En Suiza, es ilegal tener ______\n\n un solo conejillo de Indias."
+      },
+      "meta": {
+        "wordKey": "en_suisse_il_est_illegal_d_avoir_un_seul_cochon_d_inde"
+      }
+    },
+    {
+      "id": "pig_366",
+      "prompt": {
+        "fr": "La première souris d’ordinateur ______\n\n était en bois.",
+        "en": "The first computer mouse ______\n\n was made of wood.",
+        "es": "El primer ratón de ordenador ______\n\n era de madera."
+      },
+      "meta": {
+        "wordKey": "la_premiere_souris_d_ordinateur_etait_en_bois"
+      }
+    },
+    {
+      "id": "pig_367",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « dromelon » ?\n\n Un bébé dromadaire.",
+        "en": "What is a \"dromelon\"?\n\n A baby dromedary.",
+        "es": "¿Qué es un « dromelon »?\n\n Una cría de dromedario."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_dromelon_un_bebe_dromadaire"
+      }
+    },
+    {
+      "id": "pig_368",
+      "prompt": {
+        "fr": "D’après un sondage réalisé en 2019, 74 % des hommes français ______\n\n se trouvent drôles.",
+        "en": "According to a 2019 survey, 74% of French men ______\n\n think they are funny.",
+        "es": "Según una encuesta realizada en 2019, el 74 % de los hombres franceses ______\n\n se consideran graciosos."
+      },
+      "meta": {
+        "wordKey": "d_apres_un_sondage_realise_en_2019_74_des_hommes_francais_se_trouvent_droles"
+      }
+    },
+    {
+      "id": "pig_369",
+      "prompt": {
+        "fr": "Selon une étude, quand les chiens font caca, ils ont tendance à ______\n\n s’aligner sur un axe nord-sud.",
+        "en": "According to a study, when dogs poop, they tend to ______\n\n align themselves on a north-south axis.",
+        "es": "Según un estudio, cuando los perros hacen caca, tienden a ______\n\n alinearse en un eje norte-sur."
+      },
+      "meta": {
+        "wordKey": "selon_une_etude_quand_les_chiens_font_caca_ils_ont_tendance_a_s_aligner_sur_un_a"
+      }
+    },
+    {
+      "id": "pig_370",
+      "prompt": {
+        "fr": "15 % des militaires français sont ______\n\n des femmes.",
+        "en": "15% of French military personnel are ______\n\n women.",
+        "es": "El 15 % de los militares franceses son ______\n\n mujeres."
+      },
+      "meta": {
+        "wordKey": "15_des_militaires_francais_sont_des_femmes"
+      }
+    },
+    {
+      "id": "pig_371",
+      "prompt": {
+        "fr": "Il en existe 47 : ______\n\n des saisons des Feux de l’Amour.",
+        "en": "There are 47 of them: ______\n\n seasons of The Young and the Restless.",
+        "es": "Hay 47: ______\n\n temporadas de The Young and the Restless."
+      },
+      "meta": {
+        "wordKey": "il_en_existe_47_des_saisons_des_feux_de_l_amour"
+      }
+    },
+    {
+      "id": "pig_372",
+      "prompt": {
+        "fr": "L’épouse de Jean-Marie Le Pen préside l’association ______\n\n SOS Enfants d’Irak.",
+        "en": "Jean-Marie Le Pen's wife chairs the association ______\n\n SOS Enfants d’Irak.",
+        "es": "La esposa de Jean-Marie Le Pen preside la asociación ______\n\n SOS Enfants d’Irak."
+      },
+      "meta": {
+        "wordKey": "l_epouse_de_jean_marie_le_pen_preside_l_association_sos_enfants_d_irak"
+      }
+    },
+    {
+      "id": "pig_373",
+      "prompt": {
+        "fr": "Quand ils répondent au téléphone, les Japonais disent ______\n\n « Moshi Moshi. »",
+        "en": "When answering the phone, Japanese people say ______\n\n \"Moshi Moshi.\"",
+        "es": "Cuando contestan al teléfono, los japoneses dicen ______\n\n \"Moshi Moshi.\""
+      },
+      "meta": {
+        "wordKey": "quand_ils_repondent_au_telephone_les_japonais_disent_moshi_moshi"
+      }
+    },
+    {
+      "id": "pig_374",
+      "prompt": {
+        "fr": "À l’aéroport de San Francisco, pour rassurer les passagers, il y a ______\n\n un cochon nain déguisé qui se promène.",
+        "en": "At San Francisco airport, to reassure passengers, there is ______\n\n a costumed mini pig wandering around.",
+        "es": "En el aeropuerto de San Francisco, para tranquilizar a los pasajeros, hay ______\n\n un cerdo mini disfrazado paseando."
+      },
+      "meta": {
+        "wordKey": "a_l_aeroport_de_san_francisco_pour_rassurer_les_passagers_il_y_a_un_cochon_nain_"
+      }
+    },
+    {
+      "id": "pig_375",
+      "prompt": {
+        "fr": "En 1999, est sorti un film d’horreur grec intitulé ______\n\n L’attaque de la moussaka géante.",
+        "en": "In 1999, a Greek horror film titled ______ was released\n\n Attack of the Giant Moussaka.",
+        "es": "En 1999, se estrenó una película de terror griega titulada ______\n\n El ataque de la musaca gigante."
+      },
+      "meta": {
+        "wordKey": "en_1999_est_sorti_un_film_d_horreur_grec_intitule_l_attaque_de_la_moussaka_geant"
+      }
+    },
+    {
+      "id": "pig_376",
+      "prompt": {
+        "fr": "En indonésien, on ne dit pas « ha ha », on dit ______\n\n « Waka Kaka ».",
+        "en": "In Indonesian, people don't say \"ha ha,\" they say ______\n\n \"Waka Kaka.\"",
+        "es": "En indonesio, no se dice « ja ja », se dice ______\n\n \"Waka Kaka\"."
+      },
+      "meta": {
+        "wordKey": "en_indonesien_on_ne_dit_pas_ha_ha_on_dit_waka_kaka"
+      }
+    },
+    {
+      "id": "pig_377",
+      "prompt": {
+        "fr": "Le soir de Noël, de nombreux Japonais ______\n\n dînent chez KFC.",
+        "en": "On Christmas Eve, many Japanese people ______\n\n have dinner at KFC.",
+        "es": "En Nochebuena, muchos japoneses ______\n\n cenan en KFC."
+      },
+      "meta": {
+        "wordKey": "le_soir_de_noel_de_nombreux_japonais_dinent_chez_kfc"
+      }
+    },
+    {
+      "id": "pig_378",
+      "prompt": {
+        "fr": "En moyenne, un Français met 20 minutes pour ______\n\n s’endormir.",
+        "en": "On average, a French person takes 20 minutes to ______\n\n fall asleep.",
+        "es": "De media, un francés tarda 20 minutos en ______\n\n dormirse."
+      },
+      "meta": {
+        "wordKey": "en_moyenne_un_francais_met_20_minutes_pour_s_endormir"
+      }
+    },
+    {
+      "id": "pig_379",
+      "prompt": {
+        "fr": "En 2018, un Américain a porté plainte contre ses parents, car ils ______\n\n ont jeté sa collection de magazines porno.",
+        "en": "In 2018, an American sued his parents because they ______\n\n threw away his collection of porn magazines.",
+        "es": "En 2018, un estadounidense denunció a sus padres porque ______\n\n tiraron su colección de revistas porno."
+      },
+      "meta": {
+        "wordKey": "en_2018_un_americain_a_porte_plainte_contre_ses_parents_car_ils_ont_jete_sa_coll"
+      }
+    },
+    {
+      "id": "pig_380",
+      "prompt": {
+        "fr": "En 2007, des chercheurs ont prouvé que le Viagra limite ______\n\n les effets du décalage horaire sur les hamsters.",
+        "en": "In 2007, researchers proved that Viagra reduces ______\n\n the effects of jet lag in hamsters.",
+        "es": "En 2007, unos investigadores demostraron que el Viagra reduce ______\n\n los efectos del desfase horario en los hámsteres."
+      },
+      "meta": {
+        "wordKey": "en_2007_des_chercheurs_ont_prouve_que_le_viagra_limite_les_effets_du_decalage_ho"
+      }
+    },
+    {
+      "id": "pig_381",
+      "prompt": {
+        "fr": "En Chine, pendant les enterrements, il est parfois organisé ______\n\n un show de strip-teaseuses.",
+        "en": "In China, during funerals, people sometimes organize ______\n\n a stripper show.",
+        "es": "En China, durante los funerales, a veces se organiza ______\n\n un espectáculo de strippers."
+      },
+      "meta": {
+        "wordKey": "en_chine_pendant_les_enterrements_il_est_parfois_organise_un_show_de_strip_tease"
+      }
+    },
+    {
+      "id": "pig_382",
+      "prompt": {
+        "fr": "Astuce du quotidien pour trouver le sommeil facilement : il est conseillé ______\n\n de manger une banane.",
+        "en": "Daily tip to fall asleep easily: it is recommended ______\n\n to eat a banana.",
+        "es": "Consejo diario para conciliar el sueño fácilmente: se recomienda ______\n\n comer un plátano."
+      },
+      "meta": {
+        "wordKey": "astuce_du_quotidien_pour_trouver_le_sommeil_facilement_il_est_conseille_de_mange"
+      }
+    },
+    {
+      "id": "pig_383",
+      "prompt": {
+        "fr": "En 2019, pour recouvrir les dettes d’un huissier allemand a ______\n\n vendu leur chien sur eBay.",
+        "en": "In 2019, to recover debts, a German bailiff ______\n\n sold their dog on eBay.",
+        "es": "En 2019, para cobrar las deudas, un alguacil alemán ______\n\n vendió su perro en eBay."
+      },
+      "meta": {
+        "wordKey": "en_2019_pour_recouvrir_les_dettes_d_un_huissier_allemand_a_vendu_leur_chien_sur_"
+      }
+    },
+    {
+      "id": "pig_384",
+      "prompt": {
+        "fr": "Winnie l’ourson ______\n\n est censuré en Chine.",
+        "en": "Winnie the Pooh ______\n\n is censored in China.",
+        "es": "Winnie the Pooh ______\n\n está censurado en China."
+      },
+      "meta": {
+        "wordKey": "winnie_l_ourson_est_censure_en_chine"
+      }
+    },
+    {
+      "id": "pig_385",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une « fébricule » ?\n\n Une petite fièvre.",
+        "en": "What is a \"fébricule\"?\n\n A slight fever.",
+        "es": "¿Qué es una « fébricule »?\n\n Una fiebre leve."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_une_febricule_une_petite_fievre"
+      }
+    },
+    {
+      "id": "pig_386",
+      "prompt": {
+        "fr": "Louis XI aimait se divertir en ______\n\n déguisant des cochons en hommes.",
+        "en": "Louis XI liked to amuse himself by ______\n\n dressing pigs up as men.",
+        "es": "A Luis XI le gustaba divertirse ______\n\n disfrazando a los cerdos de hombres."
+      },
+      "meta": {
+        "wordKey": "louis_xi_aimait_se_divertir_en_deguisant_des_cochons_en_hommes"
+      }
+    },
+    {
+      "id": "pig_387",
+      "prompt": {
+        "fr": "Au XIXᵉ siècle, pour réduire la bryone, il était conseillé de lui ______\n\n souffler de la fumée de tabac dans l’anus.",
+        "en": "In the 19th century, to revive the drowned, it was recommended to ______\n\n blow tobacco smoke into their anus.",
+        "es": "En el siglo XIX, para reanimar a los ahogados, se recomendaba ______\n\n soplar humo de tabaco en el ano."
+      },
+      "meta": {
+        "wordKey": "au_xix_siecle_pour_reduire_la_bryone_il_etait_conseille_de_lui_souffler_de_la_fu"
+      }
+    },
+    {
+      "id": "pig_388",
+      "prompt": {
+        "fr": "Chaque année, la ville de Triel-sur-Seine organise le Championnat ______\n\n du cri de cochon.",
+        "en": "Every year, the town of Triel-sur-Seine organizes the championship ______\n\n of pig calling.",
+        "es": "Cada año, la ciudad de Triel-sur-Seine organiza el campeonato ______\n\n del grito de cerdo."
+      },
+      "meta": {
+        "wordKey": "chaque_annee_la_ville_de_triel_sur_seine_organise_le_championnat_du_cri_de_cocho"
+      }
+    },
+    {
+      "id": "pig_389",
+      "prompt": {
+        "fr": "En 2004, 5 chercheurs ont découvert que les harengs ______\n\n pètent pour communiquer.",
+        "en": "In 2004, 5 researchers discovered that herrings ______\n\n fart to communicate.",
+        "es": "En 2004, 5 investigadores descubrieron que los arenques ______\n\n se tiran pedos para comunicarse."
+      },
+      "meta": {
+        "wordKey": "en_2004_5_chercheurs_ont_decouvert_que_les_harengs_petent_pour_communiquer"
+      }
+    },
+    {
+      "id": "pig_390",
+      "prompt": {
+        "fr": "En médecine, l’échelle de Bristol sert à classer ______\n\n les crottes des gens en sept types.",
+        "en": "In medicine, the Bristol scale is used to classify ______\n\n people's poop into seven types.",
+        "es": "En medicina, la escala de Bristol sirve para clasificar ______\n\n las cacas de la gente en siete tipos."
+      },
+      "meta": {
+        "wordKey": "en_medecine_l_echelle_de_bristol_sert_a_classer_les_crottes_des_gens_en_sept_typ"
+      }
+    },
+    {
+      "id": "pig_391",
+      "prompt": {
+        "fr": "Les voitures Tesla ont toute une option ______\n\n coussin péteur.",
+        "en": "Tesla cars all have a ______ option\n\n fart cushion.",
+        "es": "Los coches Tesla tienen una opción ______\n\n cojín pedorro."
+      },
+      "meta": {
+        "wordKey": "les_voitures_tesla_ont_toute_une_option_coussin_peteur"
+      }
+    },
+    {
+      "id": "pig_392",
+      "prompt": {
+        "fr": "L’argonaute est une pieuvre qui se reproduit bizarrement : ______\n\n le pénis du mâle se détache et nage jusqu’à la femelle.",
+        "en": "The argonaut is an octopus that reproduces strangely: ______\n\n the male's penis detaches itself and swims to the female.",
+        "es": "El argonauta es un pulpo que se reproduce de forma extraña: ______\n\n el pene del macho se desprende y nada hasta la hembra."
+      },
+      "meta": {
+        "wordKey": "l_argonaute_est_une_pieuvre_qui_se_reproduit_bizarrement_le_penis_du_male_se_det"
+      }
+    },
+    {
+      "id": "pig_393",
+      "prompt": {
+        "fr": "Dans la tribu Wa-biri, ethnie australienne, pour se dire bonjour, les hommes ______\n\n se serrent le pénis.",
+        "en": "In the Wa-biri tribe, an Australian ethnic group, to greet each other, men ______\n\n shake each other's penis.",
+        "es": "En la tribu wa-biri, una etnia australiana, para saludarse, los hombres ______\n\n se estrechan el pene."
+      },
+      "meta": {
+        "wordKey": "dans_la_tribu_wa_biri_ethnie_australienne_pour_se_dire_bonjour_les_hommes_se_ser"
+      }
+    },
+    {
+      "id": "pig_394",
+      "prompt": {
+        "fr": "Selon une étude anglaise, une vache produit plus de lait quand ______\n\n elle a un prénom.",
+        "en": "According to an English study, a cow produces more milk when ______\n\n she has a name.",
+        "es": "Según un estudio inglés, una vaca produce más leche cuando ______\n\n tiene nombre."
+      },
+      "meta": {
+        "wordKey": "selon_une_etude_anglaise_une_vache_produit_plus_de_lait_quand_elle_a_un_prenom"
+      }
+    },
+    {
+      "id": "pig_395",
+      "prompt": {
+        "fr": "Le deuxième prénom de Louis XIV était ______\n\n Dieudonné.",
+        "en": "Louis XIV's middle name was ______\n\n Dieudonné.",
+        "es": "El segundo nombre de Luis XIV era ______\n\n Dieudonné."
+      },
+      "meta": {
+        "wordKey": "le_deuxieme_prenom_de_louis_xiv_etait_dieudonne"
+      }
+    },
+    {
+      "id": "pig_396",
+      "prompt": {
+        "fr": "Enfant, Jean-Luc Mélenchon était ______\n\n enfant de chœur.",
+        "en": "As a child, Jean-Luc Mélenchon was ______\n\n an altar boy.",
+        "es": "De niño, Jean-Luc Mélenchon era ______\n\n monaguillo."
+      },
+      "meta": {
+        "wordKey": "enfant_jean_luc_melenchon_etait_enfant_de_ch_ur"
+      }
+    },
+    {
+      "id": "pig_397",
+      "prompt": {
+        "fr": "Les deux filles de Shakespeare étaient ______\n\n analphabètes.",
+        "en": "Shakespeare's two daughters were ______\n\n illiterate.",
+        "es": "Las dos hijas de Shakespeare eran ______\n\n analfabetas."
+      },
+      "meta": {
+        "wordKey": "les_deux_filles_de_shakespeare_etaient_analphabetes"
+      }
+    },
+    {
+      "id": "pig_398",
+      "prompt": {
+        "fr": "Les wombats, cousins des koalas, sont les seuls animaux au monde qui ______\n\n font des crottes en cube.",
+        "en": "Wombats, cousins of koalas, are the only animals in the world that ______\n\n poop cubes.",
+        "es": "Los wombats, primos de los koalas, son los únicos animales del mundo que ______\n\n hacen cacas en forma de cubo."
+      },
+      "meta": {
+        "wordKey": "les_wombats_cousins_des_koalas_sont_les_seuls_animaux_au_monde_qui_font_des_crot"
+      }
+    },
+    {
+      "id": "pig_399",
+      "prompt": {
+        "fr": "Les chimpanzés femelles copulent souvent uniquement avec les mâles qui ______\n\n partagent leur viande avec elles.",
+        "en": "Female chimpanzees often mate only with males who ______\n\n share their meat with them.",
+        "es": "Las chimpancés hembras a menudo copulan solo con los machos que ______\n\n comparten su carne con ellas."
+      },
+      "meta": {
+        "wordKey": "les_chimpanzes_femelles_copulent_souvent_uniquement_avec_les_males_qui_partagent"
+      }
+    },
+    {
+      "id": "pig_400",
+      "prompt": {
+        "fr": "Selon des chercheurs sud-coréens, on s’endort plus vite quand ______\n\n on garde ses chaussettes.",
+        "en": "According to South Korean researchers, you fall asleep faster when ______\n\n you keep your socks on.",
+        "es": "Según investigadores surcoreanos, uno se duerme más rápido cuando ______\n\n mantiene los calcetines puestos."
+      },
+      "meta": {
+        "wordKey": "selon_des_chercheurs_sud_coreens_on_s_endort_plus_vite_quand_on_garde_ses_chauss"
+      }
+    },
+    {
+      "id": "pig_401",
+      "prompt": {
+        "fr": "Albert Einstein avait une particularité : ______\n\n il ne portait jamais de chaussettes.",
+        "en": "Albert Einstein had a peculiarity: ______\n\n he never wore socks.",
+        "es": "Albert Einstein tenía una peculiaridad: ______\n\n nunca llevaba calcetines."
+      },
+      "meta": {
+        "wordKey": "albert_einstein_avait_une_particularite_il_ne_portait_jamais_de_chaussettes"
+      }
+    },
+    {
+      "id": "pig_402",
+      "prompt": {
+        "fr": "La girafe est le seul vertébré du monde qui ______\n\n ne bâille pas.",
+        "en": "The giraffe is the only vertebrate in the world that ______\n\n doesn't yawn.",
+        "es": "La jirafa es el único vertebrado del mundo que ______\n\n no bosteza."
+      },
+      "meta": {
+        "wordKey": "la_girafe_est_le_seul_vertebre_du_monde_qui_ne_baille_pas"
+      }
+    },
+    {
+      "id": "pig_403",
+      "prompt": {
+        "fr": "Que crient les Japonais pour dire « Vive l’empereur » ?\n\n Banzai !",
+        "en": "What do Japanese people shout to say \"Long live the emperor\"?\n\n Banzai!",
+        "es": "¿Qué gritan los japoneses para decir «Viva el emperador»?\n\n ¡Banzai!"
+      },
+      "meta": {
+        "wordKey": "que_crient_les_japonais_pour_dire_vive_l_empereur_banzai"
+      }
+    },
+    {
+      "id": "pig_404",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « nyctalope » ?\n\n Une personne qui voit très bien la nuit.",
+        "en": "What is a \"nyctalope\"?\n\n A person who sees very well at night.",
+        "es": "¿Qué es un « nyctalope »?\n\n Una persona que ve muy bien de noche."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_nyctalope_une_personne_qui_voit_tres_bien_la_nuit"
+      }
+    },
+    {
+      "id": "pig_405",
+      "prompt": {
+        "fr": "Si je vous dis « j’éniquette », cela signifie que je ______\n\n coupe la queue d’un cheval.",
+        "en": "If I tell you \"j'éniquette,\" it means I ______\n\n cut off a horse's tail.",
+        "es": "Si te digo « j’éniquette », significa que ______\n\n corto la cola de un caballo."
+      },
+      "meta": {
+        "wordKey": "si_je_vous_dis_j_eniquette_cela_signifie_que_je_coupe_la_queue_d_un_cheval"
+      }
+    },
+    {
+      "id": "pig_406",
+      "prompt": {
+        "fr": "Qu’est-ce qu’un « cattalo » ?\n\n Le petit d’un taureau et d’une bisonne.",
+        "en": "What is a \"cattalo\"?\n\n The offspring of a bull and a bison cow.",
+        "es": "¿Qué es un « cattalo »?\n\n La cría de un toro y una bisonte."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_un_cattalo_le_petit_d_un_taureau_et_d_une_bisonne"
+      }
+    },
+    {
+      "id": "pig_407",
+      "prompt": {
+        "fr": "Si je dis que je suis « carminophobe », j’ai peur ______\n\n de péter.",
+        "en": "If I say I am \"carminophobe,\" I am afraid ______\n\n of farting.",
+        "es": "Si digo que soy « carminophobe », tengo miedo ______\n\n de tirarme pedos."
+      },
+      "meta": {
+        "wordKey": "si_je_dis_que_je_suis_carminophobe_j_ai_peur_de_peter"
+      }
+    },
+    {
+      "id": "pig_408",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une « colonnette » ?\n\n Une petite colonne.",
+        "en": "What is a \"colonnette\"?\n\n A small column.",
+        "es": "¿Qué es una « colonnette »?\n\n Una columna pequeña."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_une_colonnette_une_petite_colonne"
+      }
+    },
+    {
+      "id": "pig_409",
+      "prompt": {
+        "fr": "Comment appelle-t-on un éleveur de lapins ?\n\n Un « cuniculteur ».",
+        "en": "What do you call a rabbit breeder?\n\n A \"cuniculteur.\"",
+        "es": "¿Cómo se llama a un criador de conejos?\n\n Un « cuniculteur »."
+      },
+      "meta": {
+        "wordKey": "comment_appelle_t_on_un_eleveur_de_lapins_un_cuniculteur"
+      }
+    },
+    {
+      "id": "pig_410",
+      "prompt": {
+        "fr": "En japonais, pour dire « oreille », on dit ______\n\n « mimi ».",
+        "en": "In Japanese, to say \"ear,\" you say ______\n\n \"mimi.\"",
+        "es": "En japonés, para decir «oreja», se dice ______\n\n \"mimi\"."
+      },
+      "meta": {
+        "wordKey": "en_japonais_pour_dire_oreille_on_dit_mimi"
+      }
+    },
+    {
+      "id": "pig_411",
+      "prompt": {
+        "fr": "Que signifie le verbe « vaglir » ?\n\n Pousser de faibles cris.",
+        "en": "What does the verb \"vaglir\" mean?\n\n To utter faint cries.",
+        "es": "¿Qué significa el verbo « vaglir »?\n\n Lanzar gritos débiles."
+      },
+      "meta": {
+        "wordKey": "que_signifie_le_verbe_vaglir_pousser_de_faibles_cris"
+      }
+    },
+    {
+      "id": "pig_412",
+      "prompt": {
+        "fr": "En Grèce antique, pour punir un homme surpris en train d’adultère, on ______\n\n lui glissait un radis dans les fesses.",
+        "en": "In ancient Greece, to punish a man caught committing adultery, people ______\n\n slid a radish into his buttocks.",
+        "es": "En la Grecia antigua, para castigar a un hombre sorprendido en adulterio, le ______\n\n metían un rábano en las nalgas."
+      },
+      "meta": {
+        "wordKey": "en_grece_antique_pour_punir_un_homme_surpris_en_train_d_adultere_on_lui_glissait"
+      }
+    },
+    {
+      "id": "pig_413",
+      "prompt": {
+        "fr": "La première personne enterrée dans la basilique de Saint-Denis fut ______\n\n le roi Dagobert.",
+        "en": "The first person buried in the Basilica of Saint-Denis was ______\n\n King Dagobert.",
+        "es": "La primera persona enterrada en la basílica de Saint-Denis fue ______\n\n el rey Dagoberto."
+      },
+      "meta": {
+        "wordKey": "la_premiere_personne_enterree_dans_la_basilique_de_saint_denis_fut_le_roi_dagobe"
+      }
+    },
+    {
+      "id": "pig_414",
+      "prompt": {
+        "fr": "En 802, le calife de Bagdad a offert à Charlemagne ______\n\n un éléphant albinos.",
+        "en": "In 802, the caliph of Baghdad offered Charlemagne ______\n\n an albino elephant.",
+        "es": "En 802, el califa de Bagdad le ofreció a Carlomagno ______\n\n un elefante albino."
+      },
+      "meta": {
+        "wordKey": "en_802_le_calife_de_bagdad_a_offert_a_charlemagne_un_elephant_albinos"
+      }
+    },
+    {
+      "id": "pig_415",
+      "prompt": {
+        "fr": "Lequel de ces prénoms a vraiment été enregistré à l’état civil, donc donné à un enfant ?\n\n Gerbade.",
+        "en": "Which of these first names was actually registered by the civil registry and therefore given to a child?\n\n Gerbade.",
+        "es": "¿Cuál de estos nombres fue realmente inscrito en el registro civil y, por tanto, dado a un niño?\n\n Gerbade."
+      },
+      "meta": {
+        "wordKey": "lequel_de_ces_prenoms_a_vraiment_ete_enregistre_a_l_etat_civil_donc_donne_a_un_e"
+      }
+    },
+    {
+      "id": "pig_416",
+      "prompt": {
+        "fr": "Au Québec, que signifie l’expression « avoir le piton collé » ?\n\n Avoir fou rire.",
+        "en": "In Quebec, what does the expression \"avoir le piton collé\" mean?\n\n To have a laughing fit.",
+        "es": "En Quebec, ¿qué significa la expresión « avoir le piton collé »?\n\n Tener un ataque de risa."
+      },
+      "meta": {
+        "wordKey": "au_quebec_que_signifie_l_expression_avoir_le_piton_colle_avoir_fou_rire"
+      }
+    },
+    {
+      "id": "pig_417",
+      "prompt": {
+        "fr": "Les paresseux sont capables de ______\n\n rester 40 minutes sous l’eau sans respirer.",
+        "en": "Sloths are capable of ______\n\n staying underwater for 40 minutes without breathing.",
+        "es": "Los perezosos son capaces de ______\n\n permanecer 40 minutos bajo el agua sin respirar."
+      },
+      "meta": {
+        "wordKey": "les_paresseux_sont_capables_de_rester_40_minutes_sous_l_eau_sans_respirer"
+      }
+    },
+    {
+      "id": "pig_418",
+      "prompt": {
+        "fr": "Chez les Manggaia (Pacifique Sud), les garçons ont leur premier rapport sexuel ______\n\n avec les anciennes de la tribu.",
+        "en": "Among the Manggaia (South Pacific), boys have their first sexual intercourse ______\n\n with the older women of the tribe.",
+        "es": "Entre los Manggaia (Pacífico Sur), los chicos tienen su primera relación sexual ______\n\n con las mujeres mayores de la tribu."
+      },
+      "meta": {
+        "wordKey": "chez_les_manggaia_pacifique_sud_les_garcons_ont_leur_premier_rapport_sexuel_avec"
+      }
+    },
+    {
+      "id": "pig_419",
+      "prompt": {
+        "fr": "Au XVIᵉ siècle, les Allemands organisaient des concours de ______\n\n lancer de renard.",
+        "en": "In the 16th century, Germans organized ______ contests\n\n fox throwing.",
+        "es": "En el siglo XVI, los alemanes organizaban concursos de ______\n\n lanzamiento de zorros."
+      },
+      "meta": {
+        "wordKey": "au_xvi_siecle_les_allemands_organisaient_des_concours_de_lancer_de_renard"
+      }
+    },
+    {
+      "id": "pig_420",
+      "prompt": {
+        "fr": "Durant ses études, le pape François, pour se payer son loyer, il était ______\n\n videur de boîte de nuit.",
+        "en": "During his studies, to pay his rent, Pope Francis worked as ______\n\n a nightclub bouncer.",
+        "es": "Durante sus estudios, para pagar el alquiler, el papa Francisco trabajó como ______\n\n portero de discoteca."
+      },
+      "meta": {
+        "wordKey": "durant_ses_etudes_le_pape_francois_pour_se_payer_son_loyer_il_etait_videur_de_bo"
+      }
+    },
+    {
+      "id": "pig_421",
+      "prompt": {
+        "fr": "Quel était Marcel Boudrières ?\n\n Le maire de Montcuq.",
+        "en": "Who was Marcel Boudrières?\n\n The mayor of Montcuq.",
+        "es": "¿Quién era Marcel Boudrières?\n\n El alcalde de Montcuq."
+      },
+      "meta": {
+        "wordKey": "quel_etait_marcel_boudrieres_le_maire_de_montcuq"
+      }
+    },
+    {
+      "id": "pig_422",
+      "prompt": {
+        "fr": "Selon une étude, quand ils sont ivres, les poissons ______\n\n nagent plus vite.",
+        "en": "According to a study, when fish are drunk, they ______\n\n swim faster.",
+        "es": "Según un estudio, cuando están borrachos, los peces ______\n\n nadan más rápido."
+      },
+      "meta": {
+        "wordKey": "selon_une_etude_quand_ils_sont_ivres_les_poissons_nagent_plus_vite"
+      }
+    },
+    {
+      "id": "pig_423",
+      "prompt": {
+        "fr": "En Namibie, une des spécialités gastronomiques les plus appréciées est ______\n\n l’anus de phacochère.",
+        "en": "In Namibia, one of the most appreciated culinary specialties is ______\n\n warthog anus.",
+        "es": "En Namibia, una de las especialidades gastronómicas más apreciadas es ______\n\n el ano de facóquero."
+      },
+      "meta": {
+        "wordKey": "en_namibie_une_des_specialites_gastronomiques_les_plus_appreciees_est_l_anus_de_"
+      }
+    },
+    {
+      "id": "pig_424",
+      "prompt": {
+        "fr": "Kevin Shelley est le détenteur d’un record super impressionnant : ______\n\n il a cassé 46 lunettes de WC avec sa tête en 1 minute.",
+        "en": "Kevin Shelley holds a very impressive record: ______\n\n he broke 46 toilet seats with his head in 1 minute.",
+        "es": "Kevin Shelley ostenta un récord muy impresionante: ______\n\n rompió 46 tapas de váter con la cabeza en 1 minuto."
+      },
+      "meta": {
+        "wordKey": "kevin_shelley_est_le_detenteur_d_un_record_super_impressionnant_il_a_casse_46_lu"
+      }
+    },
+    {
+      "id": "pig_425",
+      "prompt": {
+        "fr": "Patrice Caumon est l’auteur du livre de cuisine ______\n\n Les plats qui font péter.",
+        "en": "Patrice Caumon is the author of the cookbook ______\n\n Dishes That Make You Fart.",
+        "es": "Patrice Caumon es el autor del libro de cocina ______\n\n Los platos que hacen tirarse pedos."
+      },
+      "meta": {
+        "wordKey": "patrice_caumon_est_l_auteur_du_livre_de_cuisine_les_plats_qui_font_peter"
+      }
+    },
+    {
+      "id": "pig_426",
+      "prompt": {
+        "fr": "Qu’est-ce qu’une « tessonnade » ?\n\n Une réunion de spécialistes de la terre cuite.",
+        "en": "What is a \"tessonnade\"?\n\n A meeting of terracotta specialists.",
+        "es": "¿Qué es una « tessonnade »?\n\n Una reunión de especialistas en terracota."
+      },
+      "meta": {
+        "wordKey": "qu_est_ce_qu_une_tessonnade_une_reunion_de_specialistes_de_la_terre_cuite"
+      }
+    },
+    {
+      "id": "pig_427",
+      "prompt": {
+        "fr": "Que signifie l’adjectif « éplapourdi » ?\n\n Être étonné.",
+        "en": "What does the adjective \"éplapourdi\" mean?\n\n To be astonished.",
+        "es": "¿Qué significa el adjetivo « éplapourdi »?\n\n Estar asombrado."
+      },
+      "meta": {
+        "wordKey": "que_signifie_l_adjectif_eplapourdi_etre_etonne"
+      }
+    },
+    {
+      "id": "pig_428",
+      "prompt": {
+        "fr": "Les jeunes canards, qui ont encore du duvet, sont appelés des ______\n\n « canichons ».",
+        "en": "Young ducks that still have down are called ______\n\n \"canichons.\"",
+        "es": "Los patos jóvenes, que aún tienen plumón, se llaman ______\n\n \"canichons\"."
+      },
+      "meta": {
+        "wordKey": "les_jeunes_canards_qui_ont_encore_du_duvet_sont_appeles_des_canichons"
+      }
+    },
+    {
+      "id": "pig_429",
+      "prompt": {
+        "fr": "En Suisse, on ne dit pas « clignotant » mais ______\n\n « signofil ».",
+        "en": "In Switzerland, people don't say \"turn signal\" but ______\n\n \"signofil.\"",
+        "es": "En Suiza, no se dice « intermitente », sino ______\n\n \"signofil\"."
+      },
+      "meta": {
+        "wordKey": "en_suisse_on_ne_dit_pas_clignotant_mais_signofil"
+      }
+    },
+    {
+      "id": "pig_430",
+      "prompt": {
+        "fr": "Que signifie le verbe « télémater » ?\n\n Utiliser un minitel.",
+        "en": "What does the verb \"télémater\" mean?\n\n To use a Minitel.",
+        "es": "¿Qué significa el verbo « télémater »?\n\n Usar un Minitel."
+      },
+      "meta": {
+        "wordKey": "que_signifie_le_verbe_telemater_utiliser_un_minitel"
+      }
+    },
+    {
+      "id": "pig_431",
       "prompt": {
         "fr": "Les écrevisses urinent ______\n\n par les antennes.",
         "en": "Crayfish urinate ______\n\n through their antennae.",
         "es": "Los cangrejos de río orinan ______\n\n por las antenas."
       },
       "meta": {
-        "wordKey": "ecrevisses_urinent_par_les_antennes"
+        "wordKey": "les_ecrevisses_urinent_par_les_antennes"
       }
     },
     {
-      "id": "pig_002",
+      "id": "pig_432",
       "prompt": {
         "fr": "À la pétanque, quand on joue une boule beaucoup trop courte, il est coutume de dire : ______\n\n « J’ai fait une palouf ».",
         "en": "In pétanque, when you throw a boule much too short, people usually say: ______\n\n \"I made a palouf.\"",
-        "es": "En la petanca, cuando lanzas una bola demasiado corta, se suele decir: ______\n\n \"He hecho una palouf.\""
+        "es": "En la petanca, cuando lanzas una bola demasiado corta, se suele decir: ______\n\n \"He hecho una palouf\"."
       },
       "meta": {
-        "wordKey": "jai_fait_une_palouf"
+        "wordKey": "a_la_petanque_quand_on_joue_une_boule_beaucoup_trop_courte_il_est_coutume_de_dir"
       }
     },
     {
-      "id": "pig_003",
+      "id": "pig_433",
       "prompt": {
         "fr": "Si vous tapez 241543903 sur Google, vous verrez ______\n\n des personnes qui mettent leur tête dans un congélateur.",
         "en": "If you type 241543903 into Google, you will see ______\n\n people putting their heads in a freezer.",
         "es": "Si escribes 241543903 en Google, verás ______\n\n personas metiendo la cabeza en un congelador."
       },
       "meta": {
-        "wordKey": "241543903_tete_dans_un_congelateur"
+        "wordKey": "si_vous_tapez_241543903_sur_google_vous_verrez_des_personnes_qui_mettent_leur_te"
+      }
+    },
+    {
+      "id": "pig_434",
+      "prompt": {
+        "fr": "La tache claire située à la base de l’ongle s’appelle ______\n\n la lunule.",
+        "en": "The pale mark at the base of the nail is called ______\n\n the lunula.",
+        "es": "La mancha clara situada en la base de la uña se llama ______\n\n la lúnula."
+      },
+      "meta": {
+        "wordKey": "la_tache_claire_situee_a_la_base_de_l_ongle_s_appelle_la_lunule"
+      }
+    },
+    {
+      "id": "pig_435",
+      "prompt": {
+        "fr": "Le nom scientifique de la chair de poule est ______\n\n « la piloérection ».",
+        "en": "The scientific name for goosebumps is ______\n\n \"piloerection.\"",
+        "es": "El nombre científico de la piel de gallina es ______\n\n \"piloerección\"."
+      },
+      "meta": {
+        "wordKey": "le_nom_scientifique_de_la_chair_de_poule_est_la_piloerection"
+      }
+    },
+    {
+      "id": "pig_436",
+      "prompt": {
+        "fr": "À Madrid, le coiffeur Alberto Olmedo est connu car il ______\n\n coupe les cheveux au sabre et au chalumeau.",
+        "en": "In Madrid, hairdresser Alberto Olmedo is known because he ______\n\n cuts hair with a saber and a blowtorch.",
+        "es": "En Madrid, el peluquero Alberto Olmedo es conocido porque ______\n\n corta el pelo con un sable y un soplete."
+      },
+      "meta": {
+        "wordKey": "a_madrid_le_coiffeur_alberto_olmedo_est_connu_car_il_coupe_les_cheveux_au_sabre_"
       }
     }
   ]

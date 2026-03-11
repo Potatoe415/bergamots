@@ -8,6 +8,7 @@ import {
   loadRulesIfExists
 } from './shared/js/engine.js';
 
+
 const HUB_CONFIG_URL = '/hub-config.json';
 const BUZZER_SOUND_URL = '/audio/buzzer.mp3';
 

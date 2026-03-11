@@ -1,4 +1,4 @@
-:root {
+::root {
   --color-bg: #050816;
   --color-bg-soft: #0b1022;
   --color-surface: #111827;
@@ -35,8 +35,6 @@ body {
   background: radial-gradient(circle at top left, #FFF2E2 0, #f3d2a6 80%);
   -webkit-font-smoothing: antialiased;
 }
-
-
 
 img,
 picture,

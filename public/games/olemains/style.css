@@ -1,11 +1,9 @@
 /* --- Core Layout --- */
 :root { --nav-height: 60px; }
-body {
-  margin: 0;
-  background-color: #f4f4f9;
-  font-family: -apple-system, system-ui, sans-serif;
+
+.game-body {
   overflow-x: hidden;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }

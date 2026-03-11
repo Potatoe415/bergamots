@@ -1,6 +1,5 @@
 /**
- * Loads game configuration and words from a JSON file.
- * Throws explicit errors to prevent silent UI failures if assets are missing.
+ * Shared game engine utilities (copied from root `shared/js/engine.js`)
  */
 export async function loadGameData(jsonPath) {
   try {
@@ -65,18 +64,12 @@ function normalizeGameData(rawData) {
   throw new Error("Invalid game data schema: missing non-empty 'words' or 'cards' collection.");
 }
 
-/**
- * Ensures the JSON payload matches the expected schema before execution.
- */
 function validateGameData(data) {
   if (!data || !Array.isArray(data.words) || data.words.length === 0) {
     throw new Error("Invalid game data schema: 'words' array is missing or empty.");
   }
 }
-  
-/**
- * Selects a random word from the provided array and removes it to prevent duplicates.
- */
+
 export function pullRandomWord(wordsArray) {
   if (wordsArray.length === 0) {
     return null;
@@ -90,9 +83,6 @@ export function pullRandomWord(wordsArray) {
   return selectedWord;
 }
 
-/**
- * Updates the DOM. Isolated to keep logic and rendering separate.
- */
 export function renderWordToScreen(targetElementId, wordText) {
   const targetElement = document.getElementById(targetElementId);
 
@@ -103,16 +93,10 @@ export function renderWordToScreen(targetElementId, wordText) {
   targetElement.textContent = wordText;
 }
 
-/**
- * Returns the localized text for a word object, falling back to French then the base text field.
- */
 export function getWordText(wordObject, language) {
   return wordObject[language] || wordObject.fr || wordObject.text;
 }
 
-/**
- * Returns the taboo words for a given card and language, with safe fallbacks.
- */
 export function getTabooWords(wordObject, language) {
   if (!wordObject || !wordObject.meta || !wordObject.meta.taboo) {
     return [];
