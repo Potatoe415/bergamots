@@ -1,0 +1,45 @@
+{
+  "gameId": "pigeon_pigeon",
+  "title": "Pigeon Pigeon",
+  "version": 1,
+  "engine": "wordplayer",
+  "mode": "pigeon_pigeon",
+  "defaultLanguage": "fr",
+  "supportedLanguages": ["fr","en","es"],
+  "controls": ["next"],
+  "cards": [
+    {
+      "id": "pig_001",
+      "prompt": {
+        "fr": "Les écrevisses urinent ______\n\n par les antennes.",
+        "en": "Crayfish urinate ______\n\n through their antennae.",
+        "es": "Los cangrejos de río orinan ______\n\n por las antenas."
+      },
+      "meta": {
+        "wordKey": "ecrevisses_urinent_par_les_antennes"
+      }
+    },
+    {
+      "id": "pig_002",
+      "prompt": {
+        "fr": "À la pétanque, quand on joue une boule beaucoup trop courte, il est coutume de dire : ______\n\n « J’ai fait une palouf ».",
+        "en": "In pétanque, when you throw a boule much too short, people usually say: ______\n\n \"I made a palouf.\"",
+        "es": "En la petanca, cuando lanzas una bola demasiado corta, se suele decir: ______\n\n \"He hecho una palouf.\""
+      },
+      "meta": {
+        "wordKey": "jai_fait_une_palouf"
+      }
+    },
+    {
+      "id": "pig_003",
+      "prompt": {
+        "fr": "Si vous tapez 241543903 sur Google, vous verrez ______\n\n des personnes qui mettent leur tête dans un congélateur.",
+        "en": "If you type 241543903 into Google, you will see ______\n\n people putting their heads in a freezer.",
+        "es": "Si escribes 241543903 en Google, verás ______\n\n personas metiendo la cabeza en un congelador."
+      },
+      "meta": {
+        "wordKey": "241543903_tete_dans_un_congelateur"
+      }
+    }
+  ]
+}

@@ -4,8 +4,15 @@ const CONFIG = {
     enabledByDefault: false,
     secondsPerQuestion: 30
   },
-  revealDelayMs: 1200,
+  // Base delay before revealing the answer (mid tiers).
+  revealDelayMs: 2000,
+  // Extra-long delay for high tiers (>= 5k) to roughly match
+  // the selection sound length plus one extra second.
+  highTierRevealDelayMs: 4000,
   advanceDelayMs: 1450,
+  // When a guaranteed palier is reached, keep the
+  // answered question on screen a bit longer.
+  palierAdvanceDelayMs: 6000,
   audio: {
     enabled: true,
     musicBasePath: "./assets/music",
@@ -19,7 +26,7 @@ const CONFIG = {
       end: "end_game.ogg"
     },
     sounds: {
-      lock: "button_2.ogg",
+      lock: "accepted_5-N.ogg",
       correctEarly: "right_1-5.ogg",
       correctMid: "right_5-10.ogg",
       correctLate: "right_10-14.ogg",
@@ -32,7 +39,8 @@ const CONFIG = {
       phone: "tip_friend.ogg",
       fiftyFifty: "tip_x2_activate.ogg",
       swap: "tip_switch.ogg",
-      win: "winer.ogg"
+      win: "winer.ogg",
+      fireproof: "fireproof.ogg"
     }
   },
   languageFiles: {
@@ -60,6 +68,42 @@ const CONFIG = {
     { amount: 1000000, label: "1\u202f000\u202f000 €", safe: false }
   ]
 };
+
+// Temporary debug: surface the correct answer in the UI.
+const DEBUG_FLAGS = {
+  showCorrectAnswer: true
+};
+
+function getRevealDelayMs(roundIndex) {
+  const prize = CONFIG.prizeLadder[roundIndex];
+  if (!prize) {
+    return CONFIG.revealDelayMs;
+  }
+
+  if (prize.amount <= 1000) {
+    // Early questions: reveal instantly.
+    return 0;
+  }
+
+  if (prize.amount >= 5000) {
+    // High tiers: let the selection sound play out, then add ~1s.
+    return CONFIG.highTierRevealDelayMs;
+  }
+  return CONFIG.revealDelayMs;
+}
+
+function formatPrizeLabelByAmount(prize) {
+  if (!prize) {
+    return "";
+  }
+
+  if (prize.amount >= 1000 && prize.amount < 1000000) {
+    const thousands = Math.round(prize.amount / 1000);
+    return `${thousands}K`;
+  }
+
+  return prize.label;
+}
 
 const ANSWER_LABELS = ["A", "B", "C", "D"];
 const STORAGE_KEYS = {
@@ -288,7 +332,7 @@ function init() {
 function bindEvents() {
   elements.startGameButton.addEventListener("click", startGame);
   elements.toggleTimerButton.addEventListener("click", toggleTimerMode);
-  elements.homeShortcut.addEventListener("click", returnHome);
+  elements.homeShortcut.addEventListener("click", handleHomeShortcutClick);
   elements.restartShortcut.addEventListener("click", startGame);
   elements.playAgainButton.addEventListener("click", startGame);
   elements.backHomeButton.addEventListener("click", returnHome);
@@ -309,6 +353,14 @@ function bindEvents() {
     elements.ladderToggleButton.addEventListener("click", toggleLadderVisibility);
   }
   document.addEventListener("visibilitychange", handleVisibilityChange);
+}
+
+function handleHomeShortcutClick() {
+  if (elements.screens.start.classList.contains("active")) {
+    window.location.href = "/";
+    return;
+  }
+  returnHome();
 }
 
 function getCopy() {
@@ -533,9 +585,10 @@ function renderRound() {
   const prize = CONFIG.prizeLadder[state.currentRound];
   const nextPrize = CONFIG.prizeLadder[state.currentRound + 1];
   elements.questionCounter.textContent = `${roundNumber}/${CONFIG.totalRounds}`;
+  // Keep current prize with full amount formatting (e.g. "1 000 €").
   elements.currentPrize.textContent = prize.label;
   elements.guaranteedPrize.textContent = getGuaranteedPrizeLabel(state.currentRound - 1);
-  elements.nextPrize.textContent = nextPrize ? nextPrize.label : copy.champion;
+  elements.nextPrize.textContent = nextPrize ? formatPrizeLabelByAmount(nextPrize) : copy.champion;
   elements.questionText.textContent = state.currentQuestion.prompt;
   renderAnswerButtons();
   renderLadder();
@@ -549,7 +602,15 @@ function renderAnswerButtons() {
   state.currentQuestion.answers.forEach((answer, index) => {
     const fragment = elements.answerTemplate.content.cloneNode(true);
     const button = fragment.querySelector(".answer-button");
-    fragment.querySelector(".answer-prefix").textContent = `${ANSWER_LABELS[index]}:`;
+    const prefix = fragment.querySelector(".answer-prefix");
+    const isDebugCorrect = DEBUG_FLAGS.showCorrectAnswer && answer.isCorrect;
+
+    if (isDebugCorrect) {
+      prefix.textContent = "KARD";
+      button.classList.add("debug-correct-answer");
+    } else {
+      prefix.textContent = `${ANSWER_LABELS[index]}:`;
+    }
     fragment.querySelector(".answer-text").textContent = answer.text;
     button.dataset.index = String(index);
     button.disabled = answer.hidden;
@@ -596,15 +657,28 @@ async function handleAnswerSelection(answerIndex) {
   closeModals();
   lockAnswerButtons();
   markSelectedAnswer(answerIndex);
+  const currentPrize = CONFIG.prizeLadder[state.currentRound];
+  if (currentPrize && currentPrize.amount >= 5000) {
+    stopBackgroundAudio();
+  }
   playSound("lock");
-  await wait(CONFIG.revealDelayMs);
+  const revealDelayMs = getRevealDelayMs(state.currentRound);
+  if (revealDelayMs > 0) {
+    await wait(revealDelayMs);
+  }
   revealAnswerOutcome(answerIndex);
   if (selectedAnswer.isCorrect) {
+    const justClearedPrize = CONFIG.prizeLadder[state.currentRound];
+    const reachedPalier = Boolean(justClearedPrize && justClearedPrize.safe);
+    if (reachedPalier) {
+      playSound("fireproof");
+    }
     playSound("correct");
     setStatus(getCopy().correctAdvance);
     state.currentRound += 1;
     renderLadder();
-    await wait(CONFIG.advanceDelayMs);
+    const advanceDelay = reachedPalier ? CONFIG.palierAdvanceDelayMs : CONFIG.advanceDelayMs;
+    await wait(advanceDelay);
     loadRound();
   } else {
     playSound("wrong");
@@ -642,7 +716,8 @@ function finishGame(reason) {
   clearTimer();
   const reachedQuestion = Math.min(state.currentRound + (reason === "wrong" || reason === "timeout" ? 1 : 0), CONFIG.totalRounds);
   const guaranteedLabel = getGuaranteedPrizeLabel(state.currentRound - 1);
-  const wonLabel = reason === "win" ? CONFIG.prizeLadder[CONFIG.totalRounds - 1].label : guaranteedLabel;
+  const wonPrize = reason === "win" ? CONFIG.prizeLadder[CONFIG.totalRounds - 1] : null;
+  const wonLabel = reason === "win" ? formatPrizeLabelByAmount(wonPrize) : guaranteedLabel;
   switchScreen("result");
   renderLadder();
   if (reason === "win") {
@@ -900,7 +975,7 @@ function setStatus() {}
 function getGuaranteedPrizeLabel(roundIndex) {
   if (roundIndex < 0) return "0 €";
   const guaranteed = CONFIG.prizeLadder.slice(0, roundIndex + 1).filter((entry) => entry.safe).at(-1);
-  return guaranteed ? guaranteed.label : "0 €";
+  return guaranteed ? formatPrizeLabelByAmount(guaranteed) : "0 €";
 }
 
 function isGameScreenActive() {
@@ -1072,6 +1147,7 @@ function playSound(name) {
   const tier = getRoundAudioTier();
   const soundMap = {
     lock: "lock",
+    fireproof: "fireproof",
     correct: tier === "final" ? "correctFinal" : tier === "late" ? "correctLate" : tier === "mid" ? "correctMid" : "correctEarly",
     wrong: tier === "final" ? "wrongFinal" : tier === "early" ? "wrongEarly" : "wrongLate",
     timeout: "timeout",

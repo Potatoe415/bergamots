@@ -5,7 +5,7 @@
     "kind": "wordpack",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=pictionary",
-    "data": "/data/pictionary/words.json",
+    "data": "/data/pictionary/pictionary_words.json",
     "thumbnail": "/games/pictionary/assets/thumbnail.jpg"
   },
   {
@@ -14,7 +14,7 @@
     "kind": "wordpack",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=taboo",
-    "data": "/data/taboo/words.json",
+    "data": "/data/taboo/taboo_words.json",
     "thumbnail": "/games/taboo/assets/thumbnail.jpg"
   },
   {
@@ -23,7 +23,7 @@
     "kind": "wordpack",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=esquisse",
-    "data": "/data/esquisse/words.json",
+    "data": "/data/esquisse/esquisse_words.json",
     "thumbnail": "/games/esquisse/assets/thumbnail.jpg"
   },
   {
@@ -61,5 +61,14 @@
     "kind": "custom",
     "launch": "/games/millionaire/index.html",
     "thumbnail": "/games/millionaire/assets/thumbnail.jpg"
+  },
+  {
+    "id": "pigeonpigeon",
+    "title": "Pigeon Pigeon",
+    "kind": "wordpack",
+    "engine": "wordplayer",
+    "launch": "/wordplayer.html?game=pigeonpigeon",
+    "data": "/data/pigeonpigeon/pigeonpigeon_words.json",
+    "thumbnail": "/games/pigeonpigeon/assets/thumbnail.jpg"
   }
 ]

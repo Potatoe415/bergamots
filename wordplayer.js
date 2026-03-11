@@ -370,9 +370,21 @@ function hydrateUserInterface(gameEntry) {
   document.title = `${gameEntry.title} - Bergamots`;
 
   const bannerElement = document.getElementById(DOM.banner);
-  if (bannerElement && gameEntry.thumbnail) {
-    bannerElement.src = gameEntry.thumbnail;
+  if (!bannerElement || !gameEntry.thumbnail) {
+    return;
   }
+
+  bannerElement.src = gameEntry.thumbnail;
+
+  bannerElement.onerror = () => {
+    const currentSource = typeof bannerElement.src === 'string' ? bannerElement.src : '';
+    const hasTriedPngFallback = bannerElement.dataset.triedPngFallback === 'true';
+
+    if (!hasTriedPngFallback && currentSource.endsWith('.jpg')) {
+      bannerElement.dataset.triedPngFallback = 'true';
+      bannerElement.src = currentSource.replace(/\.jpg$/, '.png');
+    }
+  };
 }
 
 async function ensureRulesForCurrentLanguage() {

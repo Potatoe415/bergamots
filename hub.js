@@ -60,7 +60,18 @@ function createTileNode(game) {
   img.alt = `Miniature de ${game.title}`;
   img.loading = 'lazy';
 
-  img.onerror = () => { img.src = generateBlackFallbackSVG(); };
+  img.onerror = () => {
+    const currentSource = typeof img.src === 'string' ? img.src : '';
+    const hasTriedPngFallback = img.dataset.triedPngFallback === 'true';
+
+    if (!hasTriedPngFallback && currentSource.endsWith('.jpg')) {
+      img.dataset.triedPngFallback = 'true';
+      img.src = currentSource.replace(/\.jpg$/, '.png');
+      return;
+    }
+
+    img.src = generateBlackFallbackSVG();
+  };
 
   const heading = document.createElement('h2');
   heading.textContent = game.title;

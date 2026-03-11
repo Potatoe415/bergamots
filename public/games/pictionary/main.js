@@ -6,7 +6,7 @@ import {
   loadRulesIfExists
 } from '../../shared/js/engine.js';
 
-const CONFIG_PATH = '../../data/pictionary/words.json';
+const CONFIG_PATH = '../../data/pictionary/pictionary_words.json';
 const DISPLAY_TARGET_ID = 'word-display';
 const NEXT_BUTTON_ID = 'next-word-button';
 const GAME_ID = 'pictionary';

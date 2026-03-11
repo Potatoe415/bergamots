@@ -35,14 +35,14 @@ Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games a
 
 - **`public/`**: Static assets and game data (unprocessed, served at site root)
   - **`public/hub-config.json`**: Master list of games; hub fetches this to build the dashboard grid.
-  - **`public/data/<gameId>/words.json`**: Readonly word datasets for wordplayer (and any game that consumes them). One file per game; payload has `gameId`, `title`, `controls`, `words`.
+ - **`public/data/<gameId>/<gameId>_words.json`**: Readonly word datasets for wordplayer (and any game that consumes them). One file per game; payload has `gameId`, `title`, `controls`, `words`.
   - **`public/games/<id>/`**: One folder per standalone/custom game. Each has at least **`assets/`** with `thumbnail.jpg` (for hub tiles); custom games add their own `index.html`, JS, CSS.
   - **`public/assets/`**: Hub/global assets (e.g. main banner).
 
 - **`shared/css/`**: Shared styles (`base.css`, `wordplayer.css`).
 - **`shared/js/`**: Shared logic (`engine.js` for data loading, randomizers; `dom.js` if used).
 - **`index.html`** + **`hub.js`**: Hub entry; fetches `hub-config.json` and renders game tiles.
-- **`wordplayer.html`** + **`wordplayer.js`**: Shared word-based game engine. Reads `?game=<id>`, fetches `hub-config.json`, finds the matching wordpack entry, loads the game’s `data` URL (e.g. `/data/<id>/words.json`), then renders words and controls using multilingual fields from the JSON.
+- **`wordplayer.html`** + **`wordplayer.js`**: Shared word-based game engine. Reads `?game=<id>`, fetches `hub-config.json`, finds the matching wordpack entry, loads the game’s `data` URL (e.g. `/data/<id>/<id>_words.json`), then renders words and controls using multilingual fields from the JSON.
 
 ### How to add a new game (zero code)
 
@@ -52,13 +52,13 @@ Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games a
    - Put at least `thumbnail.jpg` in `public/games/<your-game-id>/assets/`.
 
 3. **For a wordplayer game (e.g. Pictionary, Taboo)**
-   - Add `public/data/<your-game-id>/words.json` with this shape:
+- Add `public/data/<your-game-id>/<your-game-id>_words.json` with this shape:
      - `gameId`, `title`, `controls` (e.g. `["next"]` or `["pass","validate"]`), `words` (array of objects with `id`, `text`, and optional `fr`/`en`/`es`).
    - Ensure `public/games/<your-game-id>/assets/thumbnail.jpg` exists for the hub tile.
 
 4. **Register in the hub**
    - Edit `public/hub-config.json` and add an entry:
-     - Wordpack (shared engine): `{ "id": "your-game-id", "title": "Your Game", "kind": "wordpack", "engine": "wordplayer", "launch": "/wordplayer.html?game=your-game-id", "data": "/data/your-game-id/words.json", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
+- Wordpack (shared engine): `{ "id": "your-game-id", "title": "Your Game", "kind": "wordpack", "engine": "wordplayer", "launch": "/wordplayer.html?game=your-game-id", "data": "/data/your-game-id/your-game-id_words.json", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
      - Custom (standalone): `{ "id": "your-game-id", "title": "Your Game", "kind": "custom", "launch": "/games/your-game-id/index.html", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
      - External: `{ "id": "your-game-id", "title": "Your Game", "kind": "external", "launch": "https://...", "thumbnail": "/games/your-game-id/assets/thumbnail.jpg" }`
 
