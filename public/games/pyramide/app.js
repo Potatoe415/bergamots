@@ -30,6 +30,7 @@ const els = {
   secretTitle: document.getElementById("secretTitle"),
   secretContent: document.getElementById("secretContent"),
   statusStrip: document.getElementById("statusStrip"),
+  langSelector: document.getElementById("lang-selector"),
   holdRevealTemplate: document.getElementById("holdRevealTemplate"),
 };
 
@@ -41,7 +42,7 @@ const state = {
   session: null,
   round: null,
   datasetMeta: null,
-  uiLocale: detectInitialLocale(SUPPORTED_LOCALES),
+  uiLocale: "fr",
 };
 
 const transientCleanups = [];
@@ -83,7 +84,7 @@ function formatPoints(points, locale = getLocale()) {
 }
 
 function setupInfoButton() {
-  const infoButton = document.getElementById("pyramide-info-button");
+  const infoButton = document.getElementById("rules-button");
   const modal = document.getElementById("pyramide-rules-modal");
   const titleEl = document.getElementById("pyramide-rules-title");
   const contentEl = document.getElementById("pyramide-rules-content");
@@ -109,14 +110,58 @@ function setupInfoButton() {
 
 function setupNavButtons() {
   const resetButton = document.getElementById("pyramide-reset-button");
-  if (!resetButton) return;
+  const backLink = document.querySelector(".back-button");
 
-  resetButton.addEventListener("click", handleResetClick);
+  if (resetButton) {
+    resetButton.addEventListener("click", handleResetClick);
+  }
+
+  if (backLink) {
+    backLink.addEventListener("click", (event) => {
+      if (state.screen !== SCREENS.SPLASH) {
+        event.preventDefault();
+        state.session = null;
+        state.round = null;
+        state.error = null;
+        state.screen = SCREENS.SPLASH;
+        render();
+      }
+    });
+  }
 }
 
 function handleResetClick() {
   if (!state.rawData) return;
   beginSession(getLocale());
+}
+
+function applyLocaleToSession(locale) {
+  if (!state.session || !state.rawData || !SUPPORTED_LOCALES.includes(locale)) return false;
+
+  const normalized = normalizeDeck(state.rawData, locale);
+  if (normalized.validDeck.length === 0) {
+    state.error = t("noValidDeck", { locale: locale.toUpperCase() }, locale);
+    state.screen = SCREENS.ERROR;
+    return false;
+  }
+
+  const byId = Object.fromEntries(normalized.validDeck.map((e) => [e.id, e]));
+  state.session.deck = state.session.deck.map((old) => byId[old.id] ?? old);
+  state.session.locale = locale;
+  state.datasetMeta = {
+    validCount: normalized.validDeck.length,
+    skippedCount: normalized.skipped.length,
+    skipped: normalized.skipped,
+    batchId: state.rawData.batch_id ?? null,
+  };
+
+  if (state.round?.enigma?.id && byId[state.round.enigma.id]) {
+    state.round.enigma = byId[state.round.enigma.id];
+  }
+
+  state.error = null;
+  state.screen = SCREENS.GAME;
+  return true;
 }
 
 function beginSession(locale) {
@@ -264,7 +309,7 @@ function validateEnigma(enigma) {
 
 function repairMojibake(value) {
   const text = String(value ?? "");
-  if (!/[]/.test(text)) return text;
+  if (!/[ï¿½ï¿½ï¿½]/.test(text)) return text;
 
   try {
     const bytes = Uint8Array.from(text, (char) => char.charCodeAt(0) & 0xff);
@@ -339,6 +384,20 @@ function updateLayoutMode() {
   els.publicStage.classList.toggle("is-splash", isSplash);
   els.secretStage.classList.add("is-hidden");
   els.statusStrip.classList.add("is-hidden");
+
+  const resetButton = document.getElementById("pyramide-reset-button");
+  const scoreDisplay = document.getElementById("score-display");
+  const infoButton = document.getElementById("rules-button");
+
+  if (resetButton) {
+    resetButton.style.display = isSplash ? "none" : "";
+  }
+  if (scoreDisplay) {
+    scoreDisplay.style.display = isSplash ? "none" : scoreDisplay.style.display;
+  }
+  if (infoButton) {
+    infoButton.style.display = isSplash ? "none" : "";
+  }
 }
 
 function renderStatus() {
@@ -371,21 +430,39 @@ function renderSplashScreen() {
   setStageTitles(t("splashTitle"), "");
 
   const shell = createElement("section", { className: "splash-shell" });
-  const splashLogo = createElement("div", { className: "splash-logo" });
   const splashImage = createElement("img", {
     className: "splash-image",
     src: "./data/images/splashscreen.jpg",
     alt: t("splashAlt"),
   });
-  const languageGrid = createElement("div", { className: "language-grid" });
 
-  splashLogo.append(splashImage);
-  languageGrid.append(
-    button(t("languageFr"), "primary-button", () => beginSession("fr")),
-    button(t("languageEn"), "success-button", () => beginSession("en")),
-    button(t("languageEs"), "danger-button", () => beginSession("es")),
+  shell.append(
+    splashImage,
+    button(t("splashStart"), "primary-button", () => beginSession(getLocale())),
   );
-  shell.append(splashLogo, languageGrid);
+
+  if (els.langSelector) {
+    const makeLangButton = (locale, label) => {
+      const element = document.createElement("button");
+      element.type = "button";
+      element.className = `lang-btn${getLocale() === locale ? " active" : ""}`;
+      element.textContent = label;
+      element.addEventListener("click", () => {
+        state.uiLocale = locale;
+        if (state.session) {
+          applyLocaleToSession(locale);
+        }
+        render();
+      });
+      return element;
+    };
+
+    els.langSelector.replaceChildren(
+      makeLangButton("fr", "FR"),
+      makeLangButton("en", "EN"),
+      makeLangButton("es", "ES"),
+    );
+  }
 
   renderPublic(shell);
   renderSecret();
@@ -696,25 +773,16 @@ function wordTurnLayout(keyword, betError) {
 
 function obeliskCard(obeliskState, interactive = false) {
   const card = createCard("article", "obelisk-card");
-  const label = createElement("span", { className: "obelisk-label", text: t("bricks") });
-  const preview = createElement("strong", {
-    className: "obelisk-preview",
-    text: obeliskState.reserved > 0 ? t("betPreview", { count: obeliskState.reserved }) : t("tapObelisk"),
-  });
   const meter = createElement("div", {
     className: `obelisk-counter${interactive ? " is-interactive" : ""}`,
     id: "obelisk",
-  });
-  const count = createElement("strong", {
-    className: "obelisk-count",
-    text: `${state.round.bricksRemaining}/${STARTING_BRICKS}`,
   });
   const availableTotal = obeliskState.remaining + obeliskState.reserved;
   const allowedMax = Math.min(MAX_BET, availableTotal);
 
   appendSelectableObeliskBricks(meter, obeliskState, allowedMax, interactive);
   appendObeliskBricks(meter, obeliskState.spent, "spent");
-  card.append(label, preview, meter, count);
+  card.append(meter);
 
   return card;
 }
@@ -817,7 +885,7 @@ function createHoldReveal({ label, value }) {
     pointerId = null;
     buttonEl.classList.remove("is-active");
     buttonEl.textContent = label;
-    valueEl.textContent = "";
+    valueEl.textContent = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
   };
 
   buttonEl.textContent = label;

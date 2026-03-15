@@ -3,6 +3,7 @@
   --border-hieroglyph: #9A5A4A;
   --logo-yellow: #FBE106;
   --logo-blue: #00AEEF;
+  --logo-blue-dark: #0088C4;
   --accent-red: #ED1C24;
   --ink-black: #1A1A1A;
   --card-bg: #F5F5DC;
@@ -29,7 +30,7 @@
 }
 
 .pyramide-body {
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   color: var(--ink-black);
   background-color: var(--bg-sand);
   background-image:
@@ -61,6 +62,8 @@ button:focus-visible {
   position: relative;
   min-height: 100vh;
   padding: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-shell::before {
@@ -151,11 +154,14 @@ button:focus-visible {
 .game-layout {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
   gap: 12px;
   padding: 10px;
   border: 8px solid var(--border-hieroglyph);
   background: rgba(245, 245, 220, 0.35);
   box-shadow: var(--shadow-hard-lg);
+  flex: 1;
+  min-height: 0;
 }
 
 .card {
@@ -173,6 +179,18 @@ button:focus-visible {
   padding: 14px;
 }
 
+.public-stage {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.public-stage .public-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .public-stage.is-splash {
   min-height: calc(100vh - 110px);
 }
@@ -181,6 +199,13 @@ button:focus-visible {
   min-height: calc(100vh - 150px);
   justify-content: center;
   align-items: center;
+}
+
+/* Splash screen: let content fill viewport without scrolling */
+.public-stage.is-splash .public-content {
+  flex: 1;
+  max-height: none;
+  overflow: hidden;
 }
 
 .splash-shell {
@@ -204,7 +229,7 @@ button:focus-visible {
   height: auto;
   max-height: 62vh;
   object-fit: contain;
-  border: var(--border-mid);
+  border: none;
   box-shadow: var(--shadow-hard);
 }
 
@@ -217,7 +242,7 @@ button:focus-visible {
 
 .team-strip {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
   gap: 10px;
 }
 
@@ -235,6 +260,20 @@ button:focus-visible {
   box-shadow: var(--shadow-hard);
 }
 
+.clue-card {
+  min-width: 400px;
+}
+
+.word-card {
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.obelisk-card {
+  box-shadow: none;
+}
+
 .team-chip,
 .clue-card,
 .word-card,
@@ -249,19 +288,35 @@ button:focus-visible {
 
 .team-chip {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
   padding: 14px 16px;
+  min-width: 150px;
 }
 
 .team-chip.active {
   background: var(--logo-yellow);
+  padding: 8px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .team-chip.inactive {
   background: var(--surface-muted);
   color: rgba(26, 26, 26, 0.55);
+}
+
+/* Team B: same blue as success-button; stronger blue when playing */
+.team-strip .team-chip:nth-child(2) {
+  background: var(--logo-blue);
+  color: var(--ink-black);
+}
+
+.team-strip .team-chip:nth-child(2).active {
+  background: var(--logo-blue-dark);
+  color: #fff;
 }
 
 .team-name,
@@ -276,7 +331,7 @@ button:focus-visible {
 .hold-button,
 .obelisk-preview,
 .obelisk-count {
-  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   text-transform: uppercase;
 }
 
@@ -317,7 +372,7 @@ button:focus-visible {
 .warning-box,
 .empty-state,
 .log-item {
-  font-family: "Times New Roman", Georgia, serif;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
 }
 
 .clue-text,
@@ -326,6 +381,15 @@ button:focus-visible {
 .helper-text,
 .text-block {
   margin: 0;
+}
+
+.clue-card .info-label {
+  display: inline-block;
+  margin: 0 8px 0 0;
+}
+
+.clue-card .clue-text {
+  display: inline;
 }
 
 .clue-text {
@@ -338,21 +402,48 @@ button:focus-visible {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: stretch;
   gap: 12px;
+  border: none;
 }
 
 .word-card {
+  min-width: 200px;
+  max-width: 100%;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.word-card > * {
   min-width: 0;
-  width: 100%;
-  display: grid;
-  gap: 10px;
+  max-width: 100%;
+  padding: 0;
+  text-align: left;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.word-card .word-display {
+  word-break: break-word;
+}
+
+.word-card .info-label {
+  margin: 0 0 4px 0;
 }
 
 .word-display {
-  padding: 12px 14px;
-  border: var(--border-mid);
-  background: #fffef6;
+  padding: 0;
+  border: none;
+  background: none;
   font-size: clamp(1.6rem, 6vw, 2.8rem);
   line-height: 1;
+}
+
+.word-card .word-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .helper-text,
@@ -362,12 +453,21 @@ button:focus-visible {
   line-height: 1.35;
 }
 
+.word-card .helper-text {
+  margin: 0;
+  margin-top: auto;
+  line-height: 1.2;
+  font-style: italic;
+}
+
 .obelisk-card {
   justify-self: end;
   display: grid;
-  justify-items: center;
-  gap: 10px;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 14px;
   padding: 12px;
+  border: none;
 }
 
 .obelisk-counter {
@@ -382,6 +482,18 @@ button:focus-visible {
   border-bottom-color: var(--obelisk-border-dark);
   background: linear-gradient(90deg, var(--brick-spent-edge), var(--brick-spent-center), var(--brick-spent-edge));
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.obelisk-card .obelisk-label,
+.obelisk-card .obelisk-preview,
+.obelisk-card .obelisk-count {
+  grid-column: 1;
+}
+
+.obelisk-card .obelisk-counter {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  justify-self: end;
 }
 
 .obelisk-counter .brick {
@@ -597,8 +709,6 @@ button:focus-visible {
   }
 
   .language-grid,
-  .team-strip,
-  .play-grid,
   .action-row,
   .summary-grid {
     grid-template-columns: 1fr;
@@ -611,5 +721,20 @@ button:focus-visible {
   .obelisk-counter {
     width: 50px;
     height: 280px;
+  }
+}
+
+.lang-btn {
+  font-size: 0.7rem;
+  padding: 1px 2px;
+}
+
+@media (max-width: 400px) {
+  .play-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .obelisk-card {
+    justify-self: start;
   }
 }
