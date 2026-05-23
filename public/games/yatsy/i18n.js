@@ -1,0 +1,234 @@
+(function attachYatzyI18n(global) {
+  const MESSAGES = {
+    en: {
+      meta: {
+        title: "Yatzy Online Duel"
+      },
+      splash: {
+        title: "Yatzy",
+        localLabel: "Local game",
+        soloGame: "Duo Game",
+        robotGame: "Against a Robot",
+        createGame: "Create Game",
+        createBusy: "Creating...",
+        waitingButton: "Waiting...",
+        shareLink: "Share Link",
+        cancelWaiting: "Cancel Waiting Room",
+        joinLabel: "Join with 3-letter code",
+        joinGame: "Join Game",
+        joinBusy: "Joining...",
+        codePlaceholder: "ABC",
+        settings: "Game settings",
+        backToHub: "Back to game hub",
+        reverseSelection: "Reverse dice selection",
+        language: "Language",
+        english: "English",
+        french: "French",
+        waitingStatus: "Code {code}. Waiting for Player 2...",
+        joiningStatus: "Joining {code}...",
+        restoringStatus: "Reconnecting to {code}...",
+        connectedStatus: "Connected to {code}.",
+        shareSuccess: "Link copied.",
+        shareError: "Unable to share the link.",
+        missingConfig: "Firebase is not configured yet.",
+        invalidCode: "Enter a valid 3-letter code.",
+        gameNotFound: "Game not found.",
+        gameExpired: "This game expired.",
+        gameInProgress: "This game is already in progress.",
+        sessionReplaced: "This seat was replaced by a new connection.",
+        roomClosed: "This game is no longer available.",
+        genericError: "Unable to connect right now."
+      },
+      controls: {
+        restart: "Restart",
+        leaveGame: "Leave",
+        cancel: "Cancel",
+        goBack: "Undo previous move",
+        confirm: "Confirm",
+        confirmSelection: "Confirm {score} in {category}",
+        roll: "ROLL"
+      },
+      labels: {
+        bonus: "BONUS"
+      },
+      winner: {
+        tie: "It's a tie!",
+        win: "{name} wins!",
+        useRestart: "Use Leave to return to the splash screen."
+      },
+      celebration: {
+        rolledFiveKind: "{playerName} rolled five {faceLabel}s"
+      },
+      players: {
+        player1: "Player 1",
+        player2: "Player 2"
+      },
+      categories: {
+        ones: "Ones",
+        twos: "Twos",
+        threes: "Threes",
+        fours: "Fours",
+        fives: "Fives",
+        sixes: "Sixes",
+        fullHouse: "Full House",
+        fourKind: "Four",
+        largeStraight: "Large Straight",
+        smallStraight: "Small Straight",
+        threeKind: "3 Dice Same",
+        min: "Minimum",
+        max: "Maximum",
+        luck: "Luck",
+        yatzy: "Yatzy"
+      },
+      categoryIcons: {
+        fullHouse: "FULL",
+        fourKind: "CARRE",
+        largeStraight: "SUITE",
+        min: "MIN",
+        max: "MAX",
+        yatzy: "YATZY"
+      },
+      faces: {
+        1: "one",
+        2: "two",
+        3: "three",
+        4: "four",
+        5: "five",
+        6: "six"
+      },
+      aria: {
+        categoryScore: "{category} score {score}",
+        playerCategoryScore: "{player} {category} score {score}",
+        dieWaiting: "Die {order}, waiting to be rolled",
+        dieShowing: "Die {order}, showing {value}, {state}"
+      },
+      diceState: {
+        kept: "kept",
+        free: "free"
+      }
+    },
+    fr: {
+      meta: {
+        title: "Duel Yatzy en ligne"
+      },
+      splash: {
+        title: "Yatzy",
+        localLabel: "Partie locale",
+        soloGame: "Partie à 2",
+        robotGame: "Contre un robot",
+        createGame: "Partie en ligne",
+        createBusy: "Creation...",
+        waitingButton: "En attente...",
+        shareLink: "Partager le lien",
+        cancelWaiting: "Annuler la salle",
+        joinLabel: "Rejoindre avec un code de 3 lettres",
+        joinGame: "Rejoindre",
+        joinBusy: "Connexion...",
+        codePlaceholder: "ABC",
+        settings: "Parametres",
+        backToHub: "Retour au hub",
+        reverseSelection: "Selection inverse des des",
+        language: "Langue",
+        english: "Anglais",
+        french: "Francais",
+        waitingStatus: "Code {code}. En attente du Joueur 2...",
+        joiningStatus: "Connexion a {code}...",
+        restoringStatus: "Reconnexion a {code}...",
+        connectedStatus: "Connecte a {code}.",
+        shareSuccess: "Lien copie.",
+        shareError: "Impossible de partager le lien.",
+        missingConfig: "Firebase n'est pas encore configure.",
+        invalidCode: "Entrez un code valide de 3 lettres.",
+        gameNotFound: "Partie introuvable.",
+        gameExpired: "Cette partie a expire.",
+        gameInProgress: "Cette partie est deja en cours.",
+        sessionReplaced: "Cette place a ete reprise par une nouvelle connexion.",
+        roomClosed: "Cette partie n'est plus disponible.",
+        genericError: "Connexion impossible pour le moment."
+      },
+      controls: {
+        restart: "Rejouer",
+        leaveGame: "Quitter",
+        cancel: "Annuler",
+        goBack: "Annuler le coup precedent",
+        confirm: "Confirmer",
+        confirmSelection: "Confirmer {score} dans {category}",
+        roll: "LANCER"
+      },
+      labels: {
+        bonus: "BONUS"
+      },
+      winner: {
+        tie: "Egalite !",
+        win: "{name} gagne !",
+        useRestart: "Utilisez Quitter pour revenir a l'accueil."
+      },
+      celebration: {
+        rolledFiveKind: "{playerName} a fait cinq {faceLabel}"
+      },
+      players: {
+        player1: "Joueur 1",
+        player2: "Joueur 2"
+      },
+      categories: {
+        ones: "As",
+        twos: "Deux",
+        threes: "Trois",
+        fours: "Quatre",
+        fives: "Cinq",
+        sixes: "Six",
+        fullHouse: "Full",
+        fourKind: "Carre",
+        largeStraight: "Suite",
+        smallStraight: "Petite suite",
+        threeKind: "Brelan",
+        min: "Minimum",
+        max: "Maximum",
+        luck: "Chance",
+        yatzy: "Yatzy"
+      },
+      categoryIcons: {
+        fullHouse: "FULL",
+        fourKind: "CARRE",
+        largeStraight: "SUITE",
+        min: "MIN",
+        max: "MAX",
+        yatzy: "YATZY"
+      },
+      faces: {
+        1: "un",
+        2: "deux",
+        3: "trois",
+        4: "quatre",
+        5: "cinq",
+        6: "six"
+      },
+      aria: {
+        categoryScore: "Score {score} pour {category}",
+        playerCategoryScore: "{player} {category} score {score}",
+        dieWaiting: "De {order}, en attente",
+        dieShowing: "De {order}, valeur {value}, {state}"
+      },
+      diceState: {
+        kept: "garde",
+        free: "libre"
+      }
+    }
+  };
+
+  function getMessage(language, key) {
+    return key.split(".").reduce((value, part) => value && value[part], MESSAGES[language] || MESSAGES.en);
+  }
+
+  function t(language, key, params = {}) {
+    const template = getMessage(language, key) ?? getMessage("en", key) ?? key;
+    return String(template).replace(/\{(\w+)\}/g, (_, name) => (
+      Object.prototype.hasOwnProperty.call(params, name) ? params[name] : `{${name}}`
+    ));
+  }
+
+  global.YATZY_I18N = {
+    messages: MESSAGES,
+    t
+  };
+}(window));

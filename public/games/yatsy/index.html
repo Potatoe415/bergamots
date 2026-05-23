@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yatzy Online Duel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <div class="app-shell">
+      <section class="splash-screen" id="splash-screen" aria-label="Game setup">
+        <div class="splash-card">
+          <div class="splash-topbar">
+            <a class="settings-button splash-back-button" id="splash-back-button" href="/" aria-label="Go back to game hub" title="Go back to game hub">
+              <span class="splash-back-icon" aria-hidden="true">←</span>
+            </a>
+            <button class="settings-button" id="settings-button" type="button" aria-label="Game settings" title="Game settings">
+              <span class="settings-icon" aria-hidden="true">⚙</span>
+            </button>
+          </div>
+          <h1 class="splash-title" id="splash-title">Yatzy</h1>
+          <section class="settings-panel" id="settings-panel" aria-label="Game settings">
+            <div class="settings-list" id="settings-list"></div>
+          </section>
+
+          <div class="splash-group">
+            <p class="splash-label" id="local-label">Local game</p>
+            <div class="splash-choice-row">
+              <button class="splash-choice" id="solo-game-button" type="button">Solo Game</button>
+              <button class="splash-choice" id="robot-game-button" type="button">With Robot</button>
+            </div>
+          </div>
+
+          <button class="splash-play" id="create-game-button" type="button">Create Game</button>
+          <button class="splash-share is-hidden" id="share-game-button" type="button">Partager le lien</button>
+          <button class="splash-cancel" id="cancel-create-button" type="button">Cancel Waiting Room</button>
+
+          <div class="splash-group">
+            <p class="splash-label" id="join-label">Join with 3-letter code</p>
+            <div class="splash-join-row">
+              <input class="splash-code-input" id="join-code-input" type="text" maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC" aria-label="3-letter game code">
+              <button class="splash-join-button" id="join-game-button" type="button">Join Game</button>
+            </div>
+          </div>
+
+          <p class="splash-status" id="splash-status" aria-live="polite"></p>
+          <p class="splash-error" id="splash-error" aria-live="polite"></p>
+
+          <div class="splash-group">
+            <p class="splash-label" id="language-label">Language</p>
+            <div class="splash-choice-row">
+              <button class="splash-choice splash-flag" id="lang-en" type="button" aria-label="English" title="English"><span class="flag-icon flag-en" aria-hidden="true"></span></button>
+              <button class="splash-choice splash-flag" id="lang-fr" type="button" aria-label="Francais" title="Francais"><span class="flag-icon flag-fr" aria-hidden="true"></span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="game-card" id="game-card" aria-label="Yatzy score board and controls">
+        <header class="game-header">
+          <div class="header-title">
+            <button class="home-button is-hidden" id="home-button" type="button" aria-label="Retour a l'accueil" title="Retour a l'accueil">
+              <span class="home-icon" aria-hidden="true"></span>
+            </button>
+            <h1 id="game-title">Yatzy</h1>
+            <button class="restart-button" id="restart-button" type="button">Restart</button>
+          </div>
+
+          <section class="score-summary" id="score-summary" aria-label="Current scores"></section>
+
+        </header>
+
+        <section class="scoreboard-panel">
+          <div class="scoreboard" id="scoreboard" aria-label="Score board"></div>
+        </section>
+
+        <section class="dice-section" aria-label="Dice tray">
+          <div class="dice-row" id="dice-row"></div>
+        </section>
+
+        <section class="controls-panel">
+          <button class="roll-button" id="roll-button" type="button">
+            <span class="roll-label" id="roll-label">LANCER</span>
+            <span class="roll-indicators" id="roll-indicators" aria-hidden="true"></span>
+          </button>
+          <button class="go-back-button is-hidden" id="go-back-button" type="button">
+            Go back
+          </button>
+        </section>
+
+        <div class="celebration-layer" id="celebration-layer" aria-hidden="true"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="robot.js"></script>
+  <script src="matchmaking.js"></script>
+  <script src="scoring.js"></script>
+  <script src="random.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

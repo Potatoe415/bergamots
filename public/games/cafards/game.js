@@ -6,7 +6,13 @@ const state={lang:"fr",players:[],piles:[[],[]],activePile:0,current:0,timerId:n
 const q=(s)=>document.querySelector(s), qa=(s)=>[...document.querySelectorAll(s)];
 function t(k,v={}){let s=(I18N[state.lang]&&I18N[state.lang][k])||I18N.fr[k]||k; Object.entries(v).forEach(([n,x])=>s=s.replace(`{${n}}`,x)); return s;}
 function vegLabel(key){const labels={fr:{tomate:"tomate",salade:"salade",poivron:"poivron","chou-fleur":"chou-fleur"},en:{tomate:"tomato",salade:"lettuce",poivron:"pepper","chou-fleur":"cauliflower"},es:{tomate:"tomate",salade:"lechuga",poivron:"pimiento","chou-fleur":"coliflor"}}; return labels[state.lang][key];}
-const shuffle=(cards)=>cards.sort(()=>Math.random()-0.5);
+const shuffle = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 function cacheDom(){el={setup:q("#setup"),game:q("#game"),playerCount:q("#playerCount"),deckSize:q("#deckSize"),winnersCount:q("#winnersCount"),timerEnabled:q("#timerEnabled"),timerSeconds:q("#timerSeconds"),startBtn:q("#startBtn"),backBtn:q("#backBtn"),timerLight:q("#timerLight"),timerText:q("#timerText"),pileA:q("#pileA"),pileB:q("#pileB"),pileAHit:q("#pileAHit"),pileBHit:q("#pileBHit"),pileACta:q("#pileACta"),pileBCta:q("#pileBCta"),pileShells:qa(".pile-shell"),players:q("#players"),cardTpl:q("#cardTpl"),langButtons:qa(".lang-btn"),i18nNodes:qa("[data-i18n]"),rulesBtn:q("#rulesBtn"),rulesModal:q("#rulesModal"),rulesClose:q("#rulesClose"),rulesFrame:q("#rulesFrame"),winnerOverlay:q("#winnerOverlay"),winnerText:q("#winnerText")};}
 function setSetupStatus(){/* no-op: status removed from splash UI */}
 function renderPileLabels(){}
