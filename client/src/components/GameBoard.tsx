@@ -138,7 +138,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       </header>
 
       {/* Grid — takes all remaining space between header and hand */}
-      <div className="flex-1 min-h-0 flex items-center justify-center px-2 py-1 overflow-hidden">
+      <div className="flex-1 min-h-0 flex items-start justify-center px-2 pt-1 overflow-hidden">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}

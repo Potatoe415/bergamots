@@ -5,16 +5,14 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Core game + Sea Monsters expansion + card sprites implemented. Frontend live on Vercel.
+Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser.
-Last_Action: Grid: wrap board in aspect-square max-h-full container so cells are always perfectly square
+Last_Action: Full deployment — VITE_SERVER_URL set on Vercel, frontend redeployed, room codes changed to 3 letters.
 Next_Actions:
-- Deploy Socket.io backend (server/) to Railway/Render/Fly.io for online multiplayer.
-- Set VITE_SERVER_URL env var on Vercel to point to deployed backend.
-- Play-test refresh mid-local-game (should restore board).
+- Play-test online multiplayer end-to-end at tranquil-woad.vercel.app.
+- Play-test pass-and-play mode.
 
 Open_Questions:
-- Deployment_Target (backend): Railway / Render / Fly.io — TBD
 - Competitive variant (Section 7.5): in scope?
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
@@ -31,3 +29,4 @@ Recent_Changes:
 - 2026-06-03 Deployment: frontend deployed to Vercel (tranquil-woad.vercel.app); vercel.json added.
 - 2026-06-03 Lobby: dashboard.jpg used as splash screen background with black/50 overlay.
 - 2026-06-03 Grid: board wrapped in aspect-square max-h-full so cells are always perfectly square.
+- 2026-06-03 Deploy: backend on Railway, VITE_SERVER_URL set on Vercel, room codes → 3 letters.
