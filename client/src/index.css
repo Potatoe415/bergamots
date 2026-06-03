@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ocean-950 text-white min-h-screen;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-ocean-900; }
+  ::-webkit-scrollbar-thumb { @apply bg-ocean-600 rounded-full; }
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-xl border-2 border-white/20 shadow-lg select-none cursor-pointer
+           transition-all duration-150 relative overflow-hidden;
+  }
+  .card-base:hover {
+    @apply scale-105 shadow-xl border-white/40;
+  }
+  .card-selected {
+    @apply ring-4 ring-white ring-offset-2 ring-offset-transparent scale-110 z-10;
+  }
+  .cell-highlight {
+    @apply ring-2 ring-yellow-300 ring-offset-1 ring-offset-ocean-950;
+  }
+  .btn {
+    @apply px-5 py-2.5 rounded-xl font-semibold transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ocean-500 hover:bg-ocean-400 text-white shadow-md hover:shadow-lg;
+  }
+  .btn-danger {
+    @apply btn bg-rose-600 hover:bg-rose-500 text-white;
+  }
+  .btn-ghost {
+    @apply btn border border-white/20 hover:bg-white/10 text-white/80 hover:text-white;
+  }
+  .input-field {
+    @apply bg-ocean-800 border border-ocean-600 rounded-lg px-3 py-2
+           text-white placeholder-ocean-500 focus:outline-none focus:border-ocean-400
+           transition-colors;
+  }
+}
