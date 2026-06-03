@@ -122,3 +122,7 @@ export interface WaitingPayload {
 export interface ErrorPayload {
   message: string;
 }
+
+export interface KickedPayload {
+  message: string;
+}

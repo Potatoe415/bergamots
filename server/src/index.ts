@@ -10,6 +10,7 @@ import {
   GameJoinedPayload,
   WaitingPayload,
   ErrorPayload,
+  KickedPayload,
   MonsterCount,
 } from '@tranquillity/shared';
 import {
@@ -116,11 +117,41 @@ io.on('connection', (socket: Socket) => {
 
     // Join existing room
     let room: Room | undefined;
+    let overridePlayerIndex: 0 | 1 | undefined;
+
     if (payload.roomId) {
       room = rooms.get(payload.roomId.toUpperCase());
       if (!room) { emitError(socket, `Room "${payload.roomId}" not found`); return; }
-      if (room.players.length >= 2) { emitError(socket, 'Room is full'); return; }
-      if (room.players.length === 0) { emitError(socket, 'Room has no host'); return; }
+
+      // Kick a player if the room is full or if the only player is disconnected.
+      // Priority: disconnected player 1 → any disconnected player → connected player 1 (the guest).
+      const shouldKick = room.players.length >= 2 ||
+        (room.players.length === 1 && !room.players[0].connected);
+
+      if (shouldKick) {
+        const toKick =
+          room.players.find(p => !p.connected && p.playerIndex === 1) ??
+          room.players.find(p => !p.connected) ??
+          room.players.find(p => p.playerIndex === 1);
+
+        if (!toKick) { emitError(socket, 'Room is full'); return; }
+
+        overridePlayerIndex = toKick.playerIndex;
+        const kickedSock = io.sockets.sockets.get(toKick.socketId);
+        if (kickedSock) {
+          const kickedPayload: KickedPayload = { message: 'You were replaced by another player.' };
+          kickedSock.emit('kicked', kickedPayload);
+        }
+        tokenToRoom.delete(toKick.sessionToken);
+        tokenToIndex.delete(toKick.sessionToken);
+        socketToToken.delete(toKick.socketId);
+        room.players = room.players.filter(p => p.sessionToken !== toKick.sessionToken);
+        console.log(`[kick] player ${toKick.playerIndex} (${toKick.name}) removed from room ${room.id}`);
+      }
+
+      if (room.players.length === 0 && overridePlayerIndex === undefined) {
+        emitError(socket, 'Room has no host'); return;
+      }
     } else {
       // Create new room — creator sets monster count
       const mc = ([0, 3, 4, 5] as MonsterCount[]).includes(payload.monsterCount as MonsterCount)
@@ -130,7 +161,7 @@ io.on('connection', (socket: Socket) => {
     }
 
     const sessionToken = generateId(16);
-    const playerIndex: 0 | 1 = room.players.length === 0 ? 0 : 1;
+    const playerIndex: 0 | 1 = overridePlayerIndex ?? (room.players.length === 0 ? 0 : 1);
 
     const player: ConnectedPlayer = {
       socketId: socket.id,
@@ -159,7 +190,7 @@ io.on('connection', (socket: Socket) => {
           phase: 'waiting',
           grid: Array.from({ length: 36 }, (_, i) => ({ position: i, card: null })),
           myHand: [],
-          myPlayerIndex: 0,
+          myPlayerIndex: playerIndex,
           players: [
             { id: player.socketId, name, handSize: 0, deckSize: 0, discardCount: 0, isCurrentPlayer: false },
             { id: '', name: '…', handSize: 0, deckSize: 0, discardCount: 0, isCurrentPlayer: false },
@@ -178,32 +209,27 @@ io.on('connection', (socket: Socket) => {
       return;
     }
 
-    // Two players ready — start game
-    const p0 = room.players[0];
-    const p1 = room.players[1];
-    room.gameState = initializeGame(room.id, { id: p0.sessionToken, name: p0.name }, { id: p1.sessionToken, name: p1.name }, room.monsterCount);
-
-    const joined: GameJoinedPayload = {
-      sessionToken,
-      playerIndex,
-      roomId: room.id,
-      gameState: buildClientState(room.gameState, playerIndex),
-    };
-    socket.emit('game_joined', joined);
-
-    // Also update player 0 with fresh game state
-    const p0Socket = io.sockets.sockets.get(p0.socketId);
-    if (p0Socket) {
-      const p0Joined: GameJoinedPayload = {
-        sessionToken: p0.sessionToken,
-        playerIndex: 0,
-        roomId: room.id,
-        gameState: buildClientState(room.gameState, 0),
-      };
-      p0Socket.emit('game_joined', p0Joined);
+    // Two players — start a new game or resume existing one
+    if (!room.gameState) {
+      const p0 = room.players.find(p => p.playerIndex === 0)!;
+      const p1 = room.players.find(p => p.playerIndex === 1)!;
+      room.gameState = initializeGame(room.id, { id: p0.sessionToken, name: p0.name }, { id: p1.sessionToken, name: p1.name }, room.monsterCount);
+      console.log(`[start] Room ${room.id} game started`);
+    } else {
+      console.log(`[resume] ${name} resumed room ${room.id} as player ${playerIndex}`);
     }
 
-    console.log(`[start] Room ${room.id} game started`);
+    // Notify both connected players
+    for (const p of room.players) {
+      if (!p.connected) continue;
+      const pJoined: GameJoinedPayload = {
+        sessionToken: p.sessionToken,
+        playerIndex: p.playerIndex,
+        roomId: room.id,
+        gameState: buildClientState(room.gameState!, p.playerIndex),
+      };
+      io.to(p.socketId).emit('game_joined', pJoined);
+    }
   });
 
   // ── play_card ──────────────────────────────────────────────────────────────

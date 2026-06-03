@@ -51,6 +51,7 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCa
             <div className="flex gap-2 justify-center text-black/80 text-xs font-semibold mb-2 drop-shadow-[0_0_2px_rgba(255,255,255,0.6)]">
               <span>{t('lobby.players')}</span><span>·</span><span>{t('lobby.cooperative')}</span><span>·</span><span>{t('lobby.duration')}</span>
             </div>
+            {errorMessage && <p className="text-red-300 text-sm text-center">{errorMessage}</p>}
             <button className="btn-primary lobby-btn-size py-4 text-lg" onClick={() => setMode('local')}>
               {t('lobby.local')}
             </button>

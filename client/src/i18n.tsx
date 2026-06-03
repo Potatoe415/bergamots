@@ -78,6 +78,7 @@ const en: Record<string, string> = {
   // App
   'app.waitingPartner': 'Room {code} — waiting for partner…',
   'app.connecting': 'Connecting…',
+  'app.kicked': 'You were replaced by another player.',
 };
 
 const fr: Record<string, string> = {
@@ -149,6 +150,7 @@ const fr: Record<string, string> = {
   // App
   'app.waitingPartner': 'Salle {code} — en attente d\'un partenaire…',
   'app.connecting': 'Connexion…',
+  'app.kicked': 'Vous avez été remplacé(e) par un autre joueur.',
 };
 
 const translations: Record<Lang, Record<string, string>> = { en, fr };

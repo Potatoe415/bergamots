@@ -164,13 +164,13 @@ describe('initializeGame', () => {
     expect(state.players[1].hand).toHaveLength(5);
   });
 
-  it('each player deck + hand totals 44 or 43 cards (including 1 start card)', () => {
+  it('each player deck + hand totals 43 cards (including 1 start card)', () => {
     const t0 = state.players[0].hand.length + state.players[0].deck.length;
     const t1 = state.players[1].hand.length + state.players[1].deck.length;
-    // total island+finish = 85, split 43+42; each adds 1 start → 44+43
-    expect([43, 44]).toContain(t0);
-    expect([43, 44]).toContain(t1);
-    expect(t0 + t1).toBe(87);
+    // 85 island+finish cards, Math.floor(85/2)=42 each; each adds 1 start → 43+43=86
+    expect(t0).toBe(43);
+    expect(t1).toBe(43);
+    expect(t0 + t1).toBe(86);
   });
 
   it('each player has exactly one start card in combined hand+deck', () => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { ClientGameState, GameJoinedPayload, WaitingPayload, ErrorPayload, GameState, MonsterCount } from '@tranquillity/shared';
+import type { ClientGameState, GameJoinedPayload, WaitingPayload, ErrorPayload, KickedPayload, GameState, MonsterCount } from '@tranquillity/shared';
 import { useT, LanguageSwitcher } from './i18n';
 import {
   initializeGame,
@@ -193,12 +193,26 @@ export default function App() {
       setOnline(prev => ({ ...prev, connectionStatus: 'error', error: 'Cannot connect to server' }));
     });
 
+    sock.on('kicked', (_payload: KickedPayload) => {
+      disconnectSocket();
+      localStorage.removeItem('tranquillity_token');
+      localStorage.removeItem('tranquillity_name');
+      setMode('lobby');
+      setLocal(null);
+      setOnline({
+        clientState: null, playerIndex: null, sessionToken: null,
+        roomCode: null, connectionStatus: 'error',
+        error: t('app.kicked'),
+      });
+    });
+
     return () => {
       sock.off('game_joined');
       sock.off('waiting');
       sock.off('game_state');
       sock.off('error');
       sock.off('connect_error');
+      sock.off('kicked');
     };
   }, []);
 
