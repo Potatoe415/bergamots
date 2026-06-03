@@ -23,7 +23,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
   const allPositions = displayRows.flat();
 
   return (
-    <div className="flex flex-col gap-0.5 w-full h-full">
+    <div className="flex flex-col gap-0.5 w-full h-full md:aspect-square md:w-auto">
       {/* Filled indicator */}
       <div className="shrink-0 text-xs text-white/40 mb-0.5 text-center">
         {grid.filter(c => c.card).length} / 36 cells filled
@@ -37,7 +37,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
           className="bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl"
           style={{ width: 'min(100cqw, 100cqh)', height: 'min(100cqw, 100cqh)' }}
         >
-          <div className="grid grid-cols-6 grid-rows-6 gap-0.5 h-full">
+          <div className="grid grid-cols-6 gap-0.5 md:grid-rows-6 md:h-full">
             {allPositions.map(pos => {
                 const cell = grid[pos];
                 const isLegal = selectedCard !== null && legalPositions.has(pos);
@@ -47,7 +47,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
                   <div
                     key={pos}
                     className={[
-                      'rounded-lg overflow-hidden flex items-center justify-center min-w-0',
+                      'aspect-square md:aspect-auto rounded-lg overflow-hidden flex items-center justify-center min-w-0',
                       'border transition-all duration-150',
                       cell.card && isLegal
                         ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'

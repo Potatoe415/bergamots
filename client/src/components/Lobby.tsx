@@ -30,10 +30,19 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
   const [monsterCount, setMonsterCount] = useState<MonsterCount>(0);
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ backgroundImage: 'url(/assets/dashboard.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-    >
+    <div className="lobby-bg min-h-screen flex items-center justify-center">
+      <style>{`
+        .lobby-bg {
+          background-image: url(/assets/dashboard-mobile.jpg);
+          background-size: cover;
+          background-position: center;
+        }
+        @media (min-width: 640px) {
+          .lobby-bg {
+            background-image: url(/assets/dashboard.jpg);
+          }
+        }
+      `}</style>
       {/* Central card */}
       <div className="bg-black/45 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-sm flex flex-col gap-4 mx-6">
 

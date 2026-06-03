@@ -111,7 +111,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   }
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
+    <div className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
       {/* Opponent info bar */}
       <header className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
