@@ -230,14 +230,37 @@ export default function App() {
     }
 
     const token = localStorage.getItem('tranquillity_token');
-    if (!token) return;
     const name = localStorage.getItem('tranquillity_name') ?? 'Player';
-    setOnline(prev => ({ ...prev, connectionStatus: 'connecting' }));
-    setMode('online');
     const sock = socketRef.current;
-    sock.connect();
-    sock.emit('join_game', { sessionToken: token, playerName: name });
+
+    if (token) {
+      setOnline(prev => ({ ...prev, connectionStatus: 'connecting' }));
+      setMode('online');
+      sock.connect();
+      sock.emit('join_game', { sessionToken: token, playerName: name });
+      return;
+    }
+
+    // Fallback: rejoin via URL ?room= if a name was previously stored
+    const urlRoom = new URLSearchParams(window.location.search).get('room')?.toUpperCase();
+    if (urlRoom && localStorage.getItem('tranquillity_name')) {
+      setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
+      setMode('online');
+      sock.connect();
+      sock.emit('join_game', { roomId: urlRoom, playerName: name });
+    }
   }, []);
+
+  // Sync URL ?room= param with current room code
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (online.roomCode) {
+      url.searchParams.set('room', online.roomCode);
+    } else {
+      url.searchParams.delete('room');
+    }
+    window.history.replaceState(null, '', url.toString());
+  }, [online.roomCode]);
 
   // Persist local state on every change
   useEffect(() => {
@@ -279,6 +302,9 @@ export default function App() {
     localStorage.removeItem('tranquillity_token');
     localStorage.removeItem('tranquillity_name');
     localStorage.removeItem('tranquillity_local');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('room');
+    window.history.replaceState(null, '', url.toString());
     setMode('lobby');
     setLocal(null);
     setOnline({
@@ -351,6 +377,12 @@ export default function App() {
                   ? t('app.waitingPartner', { code: online.roomCode })
                   : t('app.connecting')}
               </p>
+              <button
+                onClick={goToMenu}
+                className="mt-6 px-6 py-2 rounded-lg border border-ocean-400 text-ocean-300 hover:bg-ocean-800 transition-colors"
+              >
+                {t('app.cancel')}
+              </button>
             </div>
           </div>
         </>
