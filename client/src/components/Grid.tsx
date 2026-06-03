@@ -23,53 +23,58 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
   const allPositions = displayRows.flat();
 
   return (
-    // Always fill available height (h-full from flex-1 parent).
-    // On desktop, also constrain to square via aspect-square.
-    <div className="flex flex-col gap-0.5 w-full h-full md:aspect-square md:w-auto">
+    <div className="flex flex-col gap-0.5 w-full h-full">
       {/* Filled indicator */}
       <div className="shrink-0 text-xs text-white/40 mb-0.5 text-center">
         {grid.filter(c => c.card).length} / 36 cells filled
       </div>
 
-      {/* Grid */}
-      <div className="flex-1 min-h-0 bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
-        <div className="grid grid-cols-6 grid-rows-6 gap-0.5 h-full">
-          {allPositions.map(pos => {
-              const cell = grid[pos];
-              const isLegal = selectedCard !== null && legalPositions.has(pos);
-              const move = isLegal ? legalMoves.find(m => m.position === pos) : undefined;
+      {/* Grid — always square: container-type:size exposes cqw/cqh, then
+          min(100cqw,100cqh) picks the smaller dimension so the board is a
+          perfect square regardless of portrait vs landscape layout. */}
+      <div className="flex-1 min-h-0 min-w-0 [container-type:size] flex items-center justify-center">
+        <div
+          className="bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl"
+          style={{ width: 'min(100cqw, 100cqh)', height: 'min(100cqw, 100cqh)' }}
+        >
+          <div className="grid grid-cols-6 grid-rows-6 gap-0.5 h-full">
+            {allPositions.map(pos => {
+                const cell = grid[pos];
+                const isLegal = selectedCard !== null && legalPositions.has(pos);
+                const move = isLegal ? legalMoves.find(m => m.position === pos) : undefined;
 
-              return (
-                <div
-                  key={pos}
-                  className={[
-                    'aspect-auto rounded-lg overflow-hidden flex items-center justify-center min-w-0',
-                    'border transition-all duration-150',
-                    cell.card && isLegal
-                      ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
-                      : cell.card
-                      ? 'border-transparent'
-                      : isLegal
-                      ? 'border-yellow-400/70 bg-yellow-400/10 cursor-pointer cell-highlight animate-pulse-slow'
-                      : 'border-ocean-700/40 bg-ocean-800/30',
-                  ].join(' ')}
-                  onClick={() => isLegal && onCellClick(pos)}
-                >
-                  {cell.card ? (
-                    <CardComp card={cell.card} size="full" disabled />
-                  ) : isLegal ? (
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span className="text-yellow-300 text-xs">+</span>
-                      {move && move.discardCost > 0 && (
-                        <span className="text-[9px] text-red-300 font-bold">-{move.discardCost}</span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-ocean-700 text-xs opacity-30">·</span>
-                  )}
-                </div>
-              );
-          })}
+                return (
+                  <div
+                    key={pos}
+                    className={[
+                      'rounded-lg overflow-hidden flex items-center justify-center min-w-0',
+                      'border transition-all duration-150',
+                      cell.card && isLegal
+                        ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
+                        : cell.card
+                        ? 'border-transparent'
+                        : isLegal
+                        ? 'border-yellow-400/70 bg-yellow-400/10 cursor-pointer cell-highlight animate-pulse-slow'
+                        : 'border-ocean-700/40 bg-ocean-800/30',
+                    ].join(' ')}
+                    onClick={() => isLegal && onCellClick(pos)}
+                  >
+                    {cell.card ? (
+                      <CardComp card={cell.card} size="full" disabled />
+                    ) : isLegal ? (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span className="text-yellow-300 text-xs">+</span>
+                        {move && move.discardCost > 0 && (
+                          <span className="text-[9px] text-red-300 font-bold">-{move.discardCost}</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-ocean-700 text-xs opacity-30">·</span>
+                    )}
+                  </div>
+                );
+            })}
+          </div>
         </div>
       </div>
 

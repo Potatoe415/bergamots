@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Core game + Sea Monsters expansion + card sprites implemented. Frontend live on Vercel.
 Current_Goal: Playable 2-player Tranquillity card game in browser.
-Last_Action: Mobile layout — grid fills height (grid-rows-6 h-full), removes aspect-square overflow, hand always visible
+Last_Action: Grid: wrap board in aspect-square max-h-full container so cells are always perfectly square
 Next_Actions:
 - Deploy Socket.io backend (server/) to Railway/Render/Fly.io for online multiplayer.
 - Set VITE_SERVER_URL env var on Vercel to point to deployed backend.
@@ -30,4 +30,4 @@ Recent_Changes:
 - 2026-06-03 Session persistence: localStorage restore on refresh (local + online); server reconnect fix.
 - 2026-06-03 Deployment: frontend deployed to Vercel (tranquil-woad.vercel.app); vercel.json added.
 - 2026-06-03 Lobby: dashboard.jpg used as splash screen background with black/50 overlay.
-- 2026-06-03 Mobile: grid uses h-full+grid-rows-6 (no aspect-square), hand always anchored at bottom.
+- 2026-06-03 Grid: board wrapped in aspect-square max-h-full so cells are always perfectly square.
