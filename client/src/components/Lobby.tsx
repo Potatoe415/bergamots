@@ -30,7 +30,14 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
   const [monsterCount, setMonsterCount] = useState<MonsterCount>(0);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-6 relative"
+      style={{ backgroundImage: 'url(/assets/dashboard.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+    >
+      {/* Darkening overlay so text stays readable */}
+      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col items-center w-full">
       {/* Title */}
       <div className="text-center mb-10">
         <h1 className="text-5xl sm:text-6xl font-bold text-white font-display mb-2">
@@ -136,6 +143,7 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
           <button className="btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
         </div>
       )}
+      </div>
     </div>
   );
 }

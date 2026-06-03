@@ -51,6 +51,8 @@ export default function App() {
   // ── Local mode ─────────────────────────────────────────────────────────────
 
   function startLocal(p1Name: string, p2Name: string, monsterCount: MonsterCount = 0) {
+    localStorage.removeItem('tranquillity_token');
+    localStorage.removeItem('tranquillity_name');
     const gameState = initializeGame('LOCAL', { id: 'p0', name: p1Name }, { id: 'p1', name: p2Name }, monsterCount);
     setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null });
     setMode('local');
@@ -200,20 +202,50 @@ export default function App() {
     };
   }, []);
 
+  // Restore persisted session on mount
+  useEffect(() => {
+    const savedLocal = localStorage.getItem('tranquillity_local');
+    if (savedLocal) {
+      try {
+        setLocal(JSON.parse(savedLocal) as LocalState);
+        setMode('local');
+        return;
+      } catch {
+        localStorage.removeItem('tranquillity_local');
+      }
+    }
+
+    const token = localStorage.getItem('tranquillity_token');
+    if (!token) return;
+    const name = localStorage.getItem('tranquillity_name') ?? 'Player';
+    setOnline(prev => ({ ...prev, connectionStatus: 'connecting' }));
+    setMode('online');
+    const sock = socketRef.current;
+    sock.connect();
+    sock.emit('join_game', { sessionToken: token, playerName: name });
+  }, []);
+
+  // Persist local state on every change
+  useEffect(() => {
+    if (local) localStorage.setItem('tranquillity_local', JSON.stringify(local));
+  }, [local]);
+
   function createOnline(playerName: string, monsterCount: MonsterCount = 0) {
+    localStorage.removeItem('tranquillity_local');
+    localStorage.setItem('tranquillity_name', playerName);
     setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
     const sock = socketRef.current;
-    const savedToken = localStorage.getItem('tranquillity_token') ?? undefined;
     sock.connect();
-    sock.emit('join_game', { playerName, sessionToken: savedToken, monsterCount });
+    sock.emit('join_game', { playerName, monsterCount });
   }
 
   function joinOnline(roomCode: string, playerName: string) {
+    localStorage.removeItem('tranquillity_local');
+    localStorage.setItem('tranquillity_name', playerName);
     setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
     const sock = socketRef.current;
-    const savedToken = localStorage.getItem('tranquillity_token') ?? undefined;
     sock.connect();
-    sock.emit('join_game', { roomId: roomCode, playerName, sessionToken: savedToken });
+    sock.emit('join_game', { roomId: roomCode, playerName });
   }
 
   function onlinePlayCard(cardId: string, position: number, discardCardIds: string[]) {
@@ -231,6 +263,8 @@ export default function App() {
   function goToMenu() {
     disconnectSocket();
     localStorage.removeItem('tranquillity_token');
+    localStorage.removeItem('tranquillity_name');
+    localStorage.removeItem('tranquillity_local');
     setMode('lobby');
     setLocal(null);
     setOnline({

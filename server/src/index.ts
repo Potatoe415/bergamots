@@ -44,7 +44,7 @@ const tokenToIndex = new Map<string, 0 | 1>();   // token  → playerIndex
 const socketToToken = new Map<string, string>();  // sockId → token
 
 function createRoom(monsterCount: MonsterCount = 0): Room {
-  const id = generateId(4);
+  const id = generateId(3);
   const room: Room = { id, players: [], gameState: null, monsterCount };
   rooms.set(id, room);
   return room;
@@ -103,6 +103,10 @@ io.on('connection', (socket: Socket) => {
                 gameState: buildClientState(room.gameState, idx),
               };
               socket.emit('game_joined', joined);
+            } else {
+              // Game not started yet — tell the client to keep waiting
+              const waiting: WaitingPayload = { roomId, message: `Room code: ${roomId} — waiting for second player…` };
+              socket.emit('waiting', waiting);
             }
             return;
           }

@@ -23,15 +23,17 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
   const allPositions = displayRows.flat();
 
   return (
-    <div className="flex flex-col gap-0.5 w-full md:w-1/2">
+    // Mobile: full width, cells are aspect-square (height from width).
+    // Desktop (md+): fill available height as a square; grid-rows-6 makes cells square from height.
+    <div className="flex flex-col gap-0.5 w-full md:w-auto md:h-full md:aspect-square">
       {/* Filled indicator */}
-      <div className="text-xs text-white/40 mb-1 text-center">
+      <div className="shrink-0 text-xs text-white/40 mb-0.5 text-center">
         {grid.filter(c => c.card).length} / 36 cells filled
       </div>
 
       {/* Grid */}
-      <div className="bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl w-full">
-        <div className="grid grid-cols-6 gap-1">
+      <div className="flex-1 min-h-0 bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
+        <div className="grid grid-cols-6 md:grid-rows-6 gap-1 h-full">
           {allPositions.map(pos => {
               const cell = grid[pos];
               const isLegal = selectedCard !== null && legalPositions.has(pos);
@@ -41,7 +43,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
                 <div
                   key={pos}
                   className={[
-                    'aspect-square rounded-lg overflow-hidden flex items-center justify-center min-w-0',
+                    'aspect-square md:aspect-auto rounded-lg overflow-hidden flex items-center justify-center min-w-0',
                     'border transition-all duration-150',
                     cell.card && isLegal
                       ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
@@ -72,7 +74,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, star
       </div>
 
       {/* Start card indicator */}
-      <div className="mt-2 flex items-center gap-2">
+      <div className="shrink-0 mt-0.5 flex items-center gap-2">
         <div className={[
           'px-3 py-1 rounded-full text-xs font-semibold border',
           startCardPlayed

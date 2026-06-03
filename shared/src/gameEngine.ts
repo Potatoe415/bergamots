@@ -208,11 +208,13 @@ export function initializeGame(
   const { deck, startCards } = buildDeck();
   const monsters = buildMonsterCards(monsterCount);
 
-  // Split island+finish+monster cards between the two players
+  // Split island+finish+monster cards between the two players.
+  // Use Math.floor so both players get the same number of cards; if the
+  // total is odd one card remains unused (85 base cards → each gets 42).
   const combined = shuffle([...deck, ...monsters]);
-  const mid = Math.ceil(combined.length / 2);
-  const split0 = combined.slice(0, mid);
-  const split1 = combined.slice(mid);
+  const half = Math.floor(combined.length / 2);
+  const split0 = combined.slice(0, half);
+  const split1 = combined.slice(combined.length - half);
 
   // Draw initial hand of 5 BEFORE shuffling in the Start card (rule §3 step 5)
   const hand0 = split0.slice(0, 5);

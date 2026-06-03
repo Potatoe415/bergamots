@@ -111,7 +111,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
+    <div className="h-screen overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
       {/* Opponent info bar */}
       <header className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -125,20 +125,20 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
               <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
           </button>
-          <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
-          <span className="font-semibold text-white text-sm">{opponent.name}</span>
+          <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
+          <span className="font-semibold text-white text-sm">{me.name} {t('game.you')}</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex gap-4 text-xs text-ocean-400">
-            <span>{t('game.hand')}: <strong className="text-white">{opponent.handSize}</strong></span>
-            <span>{t('game.deck')}: <strong className="text-white">{opponent.deckSize}</strong></span>
+            <span title={t('game.hand')}>🤚 <strong className="text-white">{me.handSize}</strong></span>
+            <span title={t('game.deck')}>🃏 <strong className="text-white">{me.deckSize}</strong></span>
           </div>
           <LanguageSwitcher />
         </div>
       </header>
 
-      {/* Grid */}
-      <div className="flex justify-center px-2 pt-2 w-full">
+      {/* Grid — takes all remaining space; height drives the square size on desktop */}
+      <div className="flex-1 min-h-0 flex items-center justify-center px-2 py-2 overflow-hidden">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}
@@ -150,7 +150,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
 
       {/* finish_pending banner */}
       {phase === 'finish_pending' && (
-        <div className="bg-red-950/80 border-b border-red-800/60 px-4 py-2 text-center">
+        <div className="shrink-0 bg-red-950/80 border-b border-red-800/60 px-4 py-2 text-center">
           <span className="text-red-300 text-sm font-semibold">
             🐙 Finish card played — all Sea Monsters must be played before victory
           </span>
@@ -158,7 +158,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       )}
 
       {/* Status message */}
-      <div className="flex-1 flex items-center justify-center px-4 py-2">
+      <div className="shrink-0 flex items-center justify-center px-4 py-1">
         <p className={`text-sm font-medium ${isMyTurn ? 'text-emerald-400' : 'text-ocean-400'}`}>
           {message}
         </p>
@@ -166,7 +166,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
 
       {/* Action area */}
       {isMyTurn && uiMode === 'default' && !startDiscardState && (
-        <div className="px-4 pb-2 flex gap-2 justify-center flex-wrap">
+        <div className="shrink-0 px-4 pb-2 flex gap-2 justify-center flex-wrap">
           {selectedCard && (
             <button className="btn-ghost text-xs py-1.5" onClick={() => setSelectedCard(null)}>
               {t('game.deselect')}
@@ -182,7 +182,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
 
       {/* Discard-two selection bar */}
       {uiMode === 'selecting_discard_two' && (
-        <div className="bg-red-950/80 border-t border-red-800 px-4 py-2 text-center">
+        <div className="shrink-0 bg-red-950/80 border-t border-red-800 px-4 py-2 text-center">
           <p className="text-red-300 text-sm mb-2">{t('game.selectDiscard', { count: discardTwoSelected.size })}</p>
           <div className="flex gap-2 justify-center">
             <button className="btn-ghost text-sm py-1.5" onClick={() => { setUiMode('default'); setDiscardTwoSelected(new Set()); }}>
@@ -200,10 +200,16 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       )}
 
       {/* My hand */}
-      <div className="bg-ocean-900/80 border-t border-ocean-800 px-4 py-4">
-        <div className="flex items-center gap-2 mb-2">
-          <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
-          <span className="text-sm font-semibold text-white">{me.name} {t('game.you')}</span>
+      <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-4 py-3">
+        <div className="flex items-center justify-end gap-4 mb-2">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
+            <span className="text-sm font-semibold text-white">{opponent.name}</span>
+          </div>
+          <div className="flex gap-4 text-xs text-ocean-400">
+            <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>
+            <span title={t('game.deck')}>🃏 <strong className="text-white">{opponent.deckSize}</strong></span>
+          </div>
         </div>
         <Hand
           cards={myHand}
@@ -213,23 +219,10 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
           onSelect={handleCardClick}
           deckSize={me.deckSize}
           discardCount={me.discardCount}
+          forceSelectable={uiMode === 'selecting_discard_two'}
+          additionalSelectedIds={uiMode === 'selecting_discard_two' ? discardTwoSelected : undefined}
+          hideStats
         />
-        {/* Show discard-two selection state */}
-        {uiMode === 'selecting_discard_two' && (
-          <div className="mt-2 flex flex-wrap gap-1.5 justify-center">
-            {myHand.map(card => (
-              <div
-                key={card.id}
-                onClick={() => handleCardClick(card)}
-                className={`cursor-pointer rounded-lg border-2 transition-all ${
-                  discardTwoSelected.has(card.id) ? 'border-red-400 opacity-100' : 'border-transparent opacity-60'
-                }`}
-              >
-                {/* handled in Hand component styling via selected prop */}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Modals */}

@@ -50,7 +50,7 @@ const sizeMap = {
   sm:   { outer: 'w-14 h-14',   num: 'text-2xl' },
   md:   { outer: 'w-20 h-20',   num: 'text-3xl' },
   lg:   { outer: 'w-24 h-24',   num: 'text-4xl' },
-  full: { outer: 'w-full h-full', num: 'text-[clamp(0.6rem,2cqw,1.5rem)]' },
+  full: { outer: 'w-full h-full', num: 'text-[clamp(0.5rem,25cqw,1.5rem)]' },
 };
 
 export default function CardComp({ card, selected, dimmed, size = 'md', onClick, badge, disabled }: Props) {
