@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useT } from '../i18n';
 import type { MonsterCount } from '@tranquillity/shared';
 
@@ -12,6 +12,7 @@ interface Props {
   onlineRoomCode?: string;
   connectionStatus: 'idle' | 'connecting' | 'connected' | 'error';
   errorMessage?: string;
+  initialRoomCode?: string;
 }
 
 const DIFFICULTIES: { label: string; count: MonsterCount; desc: string }[] = [
@@ -21,7 +22,7 @@ const DIFFICULTIES: { label: string; count: MonsterCount; desc: string }[] = [
   { label: 'Hard',     count: 5,  desc: '5 monsters' },
 ];
 
-export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage }: Props) {
+export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode }: Props) {
   const t = useT();
   const [mode, setMode] = useState<'menu' | 'local' | 'create' | 'join'>('menu');
   const [p1, setP1] = useState('Player 1');
@@ -29,6 +30,14 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCa
   const [myName, setMyName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const [monsterCount, setMonsterCount] = useState<MonsterCount>(0);
+
+  // If a room code was passed in via URL, switch directly to join mode with code pre-filled
+  useEffect(() => {
+    if (initialRoomCode) {
+      setRoomCode(initialRoomCode);
+      setMode('join');
+    }
+  }, [initialRoomCode]);
 
   return (
     <div className="lobby-bg min-h-screen flex items-center justify-center">

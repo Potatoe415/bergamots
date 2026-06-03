@@ -143,7 +143,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       </div>
 
       {/* Grid — shrink-0 on mobile (natural square size), flex-1 on desktop */}
-      <div className="shrink-0 px-2 pt-0.5 md:flex-1 md:min-h-0 md:flex md:items-center md:justify-center">
+      <div className="shrink-0 px-2 pt-0.5 md:flex-1 md:min-h-0 md:grid md:place-items-center">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}
@@ -215,8 +215,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         </div>
       )}
 
-      {/* Spacer: absorbs leftover space so hand stays pinned to bottom */}
-      <div className="flex-1 min-h-0" />
+      {/* Spacer: absorbs leftover space on mobile so hand stays pinned to bottom. Hidden on desktop where grid is flex-1. */}
+      <div className="flex-1 min-h-0 md:hidden" />
 
       {/* My hand */}
       <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">
@@ -224,6 +224,11 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
             <span className="text-sm font-semibold text-white">{opponent.name}</span>
+            {gameState.roomId !== 'LOCAL' && (
+              <span className="text-xs font-bold text-yellow-400 tracking-widest bg-black/30 border border-yellow-500/30 rounded px-1.5 py-0.5 select-all">
+                {gameState.roomId}
+              </span>
+            )}
           </div>
           <div className="flex gap-4 text-xs text-ocean-400">
             <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>

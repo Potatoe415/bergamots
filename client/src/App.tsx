@@ -39,6 +39,9 @@ export default function App() {
   const t = useT();
   const [mode, setMode] = useState<AppMode>('lobby');
   const [local, setLocal] = useState<LocalState | null>(null);
+  const [lobbyInitialRoom, setLobbyInitialRoom] = useState<string | undefined>(
+    () => new URLSearchParams(window.location.search).get('room')?.toUpperCase() || undefined
+  );
   const [online, setOnline] = useState<OnlineState>({
     clientState: null,
     playerIndex: null,
@@ -241,13 +244,19 @@ export default function App() {
       return;
     }
 
-    // Fallback: rejoin via URL ?room= if a name was previously stored
+    // Fallback: rejoin via URL ?room=
     const urlRoom = new URLSearchParams(window.location.search).get('room')?.toUpperCase();
-    if (urlRoom && localStorage.getItem('tranquillity_name')) {
-      setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
-      setMode('online');
-      sock.connect();
-      sock.emit('join_game', { roomId: urlRoom, playerName: name });
+    if (urlRoom) {
+      if (localStorage.getItem('tranquillity_name')) {
+        // Name known → auto-join immediately
+        setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
+        setMode('online');
+        sock.connect();
+        sock.emit('join_game', { roomId: urlRoom, playerName: name });
+      } else {
+        // No name stored → show Lobby in join mode with code pre-filled
+        setLobbyInitialRoom(urlRoom);
+      }
     }
   }, []);
 
@@ -305,6 +314,7 @@ export default function App() {
     const url = new URL(window.location.href);
     url.searchParams.delete('room');
     window.history.replaceState(null, '', url.toString());
+    setLobbyInitialRoom(undefined);
     setMode('lobby');
     setLocal(null);
     setOnline({
@@ -328,11 +338,12 @@ export default function App() {
         <Lobby
           onStartLocal={startLocal}
           onCreateOnline={createOnline}
-          onJoinOnline={joinOnline}
+          onJoinOnline={(code, name) => { setLobbyInitialRoom(undefined); joinOnline(code, name); }}
           onCancelRoom={goToMenu}
           onlineRoomCode={online.roomCode ?? undefined}
           connectionStatus={online.connectionStatus}
           errorMessage={online.error ?? undefined}
+          initialRoomCode={lobbyInitialRoom}
         />
       </>
     );

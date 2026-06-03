@@ -20,7 +20,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick }: Pr
   return (
     // Mobile: full-width square (height driven by width).
     // Desktop: height-driven square (max height of flex-1 parent).
-    <div className="w-full aspect-square md:h-full md:w-auto bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
+    <div className="w-full aspect-square md:h-full md:max-h-full md:w-auto bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
       <div className="grid grid-cols-6 grid-rows-6 w-full h-full gap-0.5">
         {allPositions.map(pos => {
           const cell = grid[pos];

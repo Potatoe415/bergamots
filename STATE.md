@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser.
-Last_Action: URL ?room=ABC param — synced with room code; auto-rejoin on refresh via session token (primary) or URL+stored name (fallback).
+Last_Action: Room code badge next to opponent in GameBoard; ?room= URL opens Lobby join form pre-filled (auto-joins if name stored).
 Next_Actions:
 - Play-test online multiplayer end-to-end at tranquil-woad.vercel.app.
 - Play-test pass-and-play mode.
@@ -17,6 +17,7 @@ Open_Questions:
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
 Recent_Changes:
+- 2026-06-03 Layout: desktop grid spacer hidden on md+ — board now fills available height.
 - 2026-06-03 Sea Monsters: Lobby difficulty picker, GameBoard banner, TypeScript clean.
 - 2026-06-03 Session persistence: localStorage restore on refresh (local + online); server reconnect fix.
 - 2026-06-03 Deployment: frontend deployed to Vercel (tranquil-woad.vercel.app); vercel.json added.
@@ -26,3 +27,4 @@ Recent_Changes:
 - 2026-06-03 Lobby: Cancel button in waiting-for-partner state — disconnects socket, returns to main screen.
 - 2026-06-03 Rooms: open entry by code — kick guest (player 1) or disconnected player; resume mid-game on replacement.
 - 2026-06-03 URL: ?room=ABC param synced with room; auto-rejoin on refresh via token or URL+name fallback.
+- 2026-06-03 GameBoard: room code badge next to opponent; ?room= URL opens join form pre-filled.
