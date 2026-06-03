@@ -40,6 +40,19 @@
   .btn-ghost {
     @apply btn border border-white/20 hover:bg-white/10 text-white/80 hover:text-white;
   }
+  .lobby-btn-size {
+    @apply w-full;
+  }
+  .lobby-btn {
+    @apply w-full px-5 rounded-xl font-semibold transition-all duration-150
+           bg-black/70 hover:bg-black/85 text-white border border-white/10
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .lobby-btn-ghost {
+    @apply w-full px-5 rounded-xl font-semibold transition-all duration-150
+           bg-black/40 hover:bg-black/60 text-white/70 hover:text-white border border-white/10
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
   .input-field {
     @apply bg-ocean-800 border border-ocean-600 rounded-lg px-3 py-2
            text-white placeholder-ocean-500 focus:outline-none focus:border-ocean-400

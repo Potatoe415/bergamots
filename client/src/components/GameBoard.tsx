@@ -137,15 +137,31 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         </div>
       </header>
 
-      {/* Grid — takes all remaining space between header and hand */}
-      <div className="flex-1 min-h-0 flex items-start justify-center px-2 pt-1 overflow-hidden">
+      {/* Cells filled indicator */}
+      <div className="shrink-0 text-xs text-white/40 text-center pt-1">
+        {grid.filter(c => c.card).length} / 36
+      </div>
+
+      {/* Grid — shrink-0 on mobile (natural square size), flex-1 on desktop */}
+      <div className="shrink-0 px-2 pt-0.5 md:flex-1 md:min-h-0 md:flex md:items-center md:justify-center">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}
           selectedCard={selectedCard}
           onCellClick={handleCellClick}
-          startCardPlayed={gameState.startCardPlayed}
         />
+      </div>
+
+      {/* Start card indicator */}
+      <div className="shrink-0 px-4 pt-1 flex items-center gap-2">
+        <div className={[
+          'px-3 py-0.5 rounded-full text-xs font-semibold border',
+          gameState.startCardPlayed
+            ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'
+            : 'bg-ocean-800/50 border-ocean-700/40 text-ocean-400',
+        ].join(' ')}>
+          {gameState.startCardPlayed ? '⚓ Start played' : '⚓ Start pending'}
+        </div>
       </div>
 
       {/* finish_pending banner */}
@@ -198,6 +214,9 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
           </div>
         </div>
       )}
+
+      {/* Spacer: absorbs leftover space so hand stays pinned to bottom */}
+      <div className="flex-1 min-h-0" />
 
       {/* My hand */}
       <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">

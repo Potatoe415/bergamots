@@ -43,21 +43,20 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
           }
         }
       `}</style>
-      {/* Central card */}
-      <div className="bg-black/45 backdrop-blur-md border border-white/20 rounded-2xl shadow-2xl p-8 w-full max-w-sm flex flex-col gap-4 mx-6">
+      <div className="w-full max-w-sm flex flex-col gap-4 mx-6">
 
         {mode === 'menu' && (
           <>
-            <div className="flex gap-2 justify-center text-white/70 text-xs mb-2">
+            <div className="flex gap-2 justify-center text-black/80 text-xs font-semibold mb-2 drop-shadow-[0_0_2px_rgba(255,255,255,0.6)]">
               <span>{t('lobby.players')}</span><span>·</span><span>{t('lobby.cooperative')}</span><span>·</span><span>{t('lobby.duration')}</span>
             </div>
-            <button className="btn-primary py-4 text-lg" onClick={() => setMode('local')}>
+            <button className="btn-primary lobby-btn-size py-4 text-lg" onClick={() => setMode('local')}>
               {t('lobby.local')}
             </button>
-            <button className="btn-ghost py-4 text-lg" onClick={() => setMode('create')}>
+            <button className="lobby-btn py-4 text-lg" onClick={() => setMode('create')}>
               {t('lobby.createOnline')}
             </button>
-            <button className="btn-ghost py-4 text-lg" onClick={() => setMode('join')}>
+            <button className="lobby-btn py-4 text-lg" onClick={() => setMode('join')}>
               {t('lobby.joinOnline')}
             </button>
           </>
@@ -75,10 +74,10 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
               <input className="input-field" value={p2} onChange={e => setP2(e.target.value)} maxLength={20} />
             </label>
             <DifficultyPicker value={monsterCount} onChange={setMonsterCount} />
-            <button className="btn-primary py-3" onClick={() => onStartLocal(p1.trim() || 'Player 1', p2.trim() || 'Player 2', monsterCount)}>
+            <button className="lobby-btn py-3" onClick={() => onStartLocal(p1.trim() || 'Player 1', p2.trim() || 'Player 2', monsterCount)}>
               {t('lobby.startGame')}
             </button>
-            <button className="btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+            <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
           </>
         )}
 
@@ -93,7 +92,7 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
                 </label>
                 <DifficultyPicker value={monsterCount} onChange={setMonsterCount} />
                 <button
-                  className="btn-primary py-3"
+                  className="lobby-btn py-3"
                   disabled={connectionStatus === 'connecting'}
                   onClick={() => onCreateOnline(myName.trim() || 'Captain', monsterCount)}
                 >
@@ -110,7 +109,7 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
               </div>
             )}
             {errorMessage && <p className="text-red-300 text-sm text-center">{errorMessage}</p>}
-            <button className="btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+            <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
           </>
         )}
 
@@ -132,14 +131,14 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
               />
             </label>
             <button
-              className="btn-primary py-3"
+              className="lobby-btn py-3"
               disabled={connectionStatus === 'connecting' || roomCode.length < 4}
               onClick={() => onJoinOnline(roomCode, myName.trim() || 'Sailor')}
             >
               {connectionStatus === 'connecting' ? t('lobby.joining') : t('lobby.join')}
             </button>
             {errorMessage && <p className="text-red-300 text-sm text-center">{errorMessage}</p>}
-            <button className="btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+            <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
           </>
         )}
 
