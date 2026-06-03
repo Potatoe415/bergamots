@@ -137,8 +137,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         </div>
       </header>
 
-      {/* Grid — takes all remaining space; height drives the square size on desktop */}
-      <div className="flex-1 min-h-0 flex items-center justify-center px-2 py-2 overflow-hidden">
+      {/* Grid — takes all remaining space between header and hand */}
+      <div className="flex-1 min-h-0 flex items-center justify-center px-2 py-1 overflow-hidden">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}
@@ -158,7 +158,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       )}
 
       {/* Status message */}
-      <div className="shrink-0 flex items-center justify-center px-4 py-1">
+      <div className="shrink-0 flex items-center justify-center px-4 py-0.5">
         <p className={`text-sm font-medium ${isMyTurn ? 'text-emerald-400' : 'text-ocean-400'}`}>
           {message}
         </p>
@@ -166,7 +166,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
 
       {/* Action area */}
       {isMyTurn && uiMode === 'default' && !startDiscardState && (
-        <div className="shrink-0 px-4 pb-2 flex gap-2 justify-center flex-wrap">
+        <div className="shrink-0 px-4 pb-1 flex gap-2 justify-center flex-wrap">
           {selectedCard && (
             <button className="btn-ghost text-xs py-1.5" onClick={() => setSelectedCard(null)}>
               {t('game.deselect')}
@@ -200,8 +200,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       )}
 
       {/* My hand */}
-      <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-4 py-3">
-        <div className="flex items-center justify-end gap-4 mb-2">
+      <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">
+        <div className="flex items-center justify-end gap-4 mb-1">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
             <span className="text-sm font-semibold text-white">{opponent.name}</span>
