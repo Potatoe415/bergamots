@@ -83,6 +83,10 @@ export function isValidPlacement(grid: GridCell[], pos: number, value: number): 
   const rv = rightIslandValue(grid, pos);
   if (lv !== null && value <= lv) return false;
   if (rv !== null && value >= rv) return false;
+  // Positional bounds: pos slots to the left need strictly smaller values;
+  // (35-pos) slots to the right need strictly larger values (island values 1–80).
+  if (value <= pos) return false;       // need at least pos values below → value >= pos+1
+  if (value >= 46 + pos) return false;  // need at least 35-pos values above → value <= 45+pos
   return true;
 }
 

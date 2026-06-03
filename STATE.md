@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser.
-Last_Action: Full deployment — VITE_SERVER_URL set on Vercel, frontend redeployed, room codes changed to 3 letters.
+Last_Action: Lobby: Cancel button in waiting-for-partner state disconnects socket and returns to main screen.
 Next_Actions:
 - Play-test online multiplayer end-to-end at tranquil-woad.vercel.app.
 - Play-test pass-and-play mode.
@@ -30,3 +30,4 @@ Recent_Changes:
 - 2026-06-03 Lobby: dashboard.jpg used as splash screen background with black/50 overlay.
 - 2026-06-03 Grid: board wrapped in aspect-square max-h-full so cells are always perfectly square.
 - 2026-06-03 Deploy: backend on Railway, VITE_SERVER_URL set on Vercel, room codes → 3 letters.
+- 2026-06-03 Lobby: Cancel button in waiting-for-partner state — disconnects socket, returns to main screen.

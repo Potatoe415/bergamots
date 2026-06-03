@@ -68,9 +68,26 @@ describe('buildDeck', () => {
 // ── isValidPlacement ──────────────────────────────────────────────────────────
 
 describe('isValidPlacement', () => {
-  it('accepts any value on an empty grid', () => {
+  it('accepts a value within positional bounds on an empty grid', () => {
     const grid = emptyGrid();
     expect(isValidPlacement(grid, 10, 42)).toBe(true);
+  });
+
+  it('rejects a low value placed too far right on an empty grid', () => {
+    const grid = emptyGrid();
+    // value 3 needs 2 smaller values to its left; pos 17 requires 17 → invalid
+    expect(isValidPlacement(grid, 17, 3)).toBe(false);
+    // value 3 is only valid at positions 0–2
+    expect(isValidPlacement(grid, 0, 3)).toBe(true);
+    expect(isValidPlacement(grid, 2, 3)).toBe(true);
+    expect(isValidPlacement(grid, 3, 3)).toBe(false);
+  });
+
+  it('rejects a high value placed too far left on an empty grid', () => {
+    const grid = emptyGrid();
+    // value 78 needs 2 larger values to its right; pos 34 requires 1 → valid; pos 0 needs 35 → invalid (only values 79,80 exist)
+    expect(isValidPlacement(grid, 0, 78)).toBe(false);
+    expect(isValidPlacement(grid, 33, 78)).toBe(true);
   });
 
   it('rejects placing on an occupied cell', () => {

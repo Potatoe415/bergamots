@@ -8,6 +8,7 @@ interface Props {
   onStartLocal: (p1Name: string, p2Name: string, monsterCount: MonsterCount) => void;
   onCreateOnline: (playerName: string, monsterCount: MonsterCount) => void;
   onJoinOnline: (roomCode: string, playerName: string) => void;
+  onCancelRoom?: () => void;
   onlineRoomCode?: string;
   connectionStatus: 'idle' | 'connecting' | 'connected' | 'error';
   errorMessage?: string;
@@ -20,7 +21,7 @@ const DIFFICULTIES: { label: string; count: MonsterCount; desc: string }[] = [
   { label: 'Hard',     count: 5,  desc: '5 monsters' },
 ];
 
-export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onlineRoomCode, connectionStatus, errorMessage }: Props) {
+export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage }: Props) {
   const t = useT();
   const [mode, setMode] = useState<'menu' | 'local' | 'create' | 'join'>('menu');
   const [p1, setP1] = useState('Player 1');
@@ -109,7 +110,10 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
               </div>
             )}
             {errorMessage && <p className="text-red-300 text-sm text-center">{errorMessage}</p>}
-            <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+            {!onlineRoomCode
+              ? <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+              : <button className="lobby-btn-ghost py-2 text-sm" onClick={() => onCancelRoom?.()}>{t('lobby.cancelRoom')}</button>
+            }
           </>
         )}
 
@@ -126,13 +130,13 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onli
                 className="input-field uppercase tracking-widest text-center text-lg"
                 value={roomCode}
                 onChange={e => setRoomCode(e.target.value.toUpperCase())}
-                maxLength={6}
-                placeholder="ABCD"
+                maxLength={3}
+                placeholder="ABC"
               />
             </label>
             <button
               className="lobby-btn py-3"
-              disabled={connectionStatus === 'connecting' || roomCode.length < 4}
+              disabled={connectionStatus === 'connecting' || roomCode.length < 3}
               onClick={() => onJoinOnline(roomCode, myName.trim() || 'Sailor')}
             >
               {connectionStatus === 'connecting' ? t('lobby.joining') : t('lobby.join')}

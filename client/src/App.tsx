@@ -289,6 +289,7 @@ export default function App() {
           onStartLocal={startLocal}
           onCreateOnline={createOnline}
           onJoinOnline={joinOnline}
+          onCancelRoom={goToMenu}
           onlineRoomCode={online.roomCode ?? undefined}
           connectionStatus={online.connectionStatus}
           errorMessage={online.error ?? undefined}

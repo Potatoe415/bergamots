@@ -34,6 +34,7 @@ const en: Record<string, string> = {
   'lobby.join': 'Join',
   'lobby.captainPlaceholder': 'Captain…',
   'lobby.sailorPlaceholder': 'Sailor…',
+  'lobby.cancelRoom': '✕ Cancel',
   // GameBoard
   'game.hand': 'Hand',
   'game.deck': 'Deck',
@@ -104,6 +105,7 @@ const fr: Record<string, string> = {
   'lobby.join': 'Rejoindre',
   'lobby.captainPlaceholder': 'Capitaine…',
   'lobby.sailorPlaceholder': 'Marin…',
+  'lobby.cancelRoom': '✕ Annuler',
   // GameBoard
   'game.hand': 'Main',
   'game.deck': 'Pioche',
