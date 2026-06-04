@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 export type Lang = 'en' | 'fr';
 
@@ -84,6 +84,7 @@ const en: Record<string, string> = {
   'settings.title': 'Settings',
   'settings.soundOnMyTurn': 'Play a sound on my turn',
   'settings.restartGame': '↺ Restart game',
+  'settings.roomCode': 'Room code',
 };
 
 const fr: Record<string, string> = {
@@ -161,6 +162,7 @@ const fr: Record<string, string> = {
   'settings.title': 'Paramètres',
   'settings.soundOnMyTurn': 'Jouer un son à mon tour',
   'settings.restartGame': '↺ Recommencer la partie',
+  'settings.roomCode': 'Code de salle',
 };
 
 const translations: Record<Lang, Record<string, string>> = { en, fr };
@@ -197,24 +199,58 @@ export function useLang() {
   return { lang, setLang };
 }
 
+const LANGS: { code: Lang; label: string }[] = [
+  { code: 'en', label: 'English' },
+  { code: 'fr', label: 'Français' },
+];
+
 export function LanguageSwitcher() {
   const { lang, setLang } = useLang();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
 
   return (
-    <div className="flex items-center gap-1 text-xs font-medium tracking-wide">
+    <div ref={ref} className="relative">
       <button
-        className={`px-1.5 py-0.5 transition-colors ${lang === 'en' ? 'text-white' : 'text-ocean-500 hover:text-ocean-300'}`}
-        onClick={() => setLang('en')}
+        onClick={() => setOpen(o => !o)}
+        className="text-xs font-semibold tracking-widest uppercase text-ocean-300 hover:text-white transition-colors px-1.5 py-0.5 rounded"
+        aria-haspopup="listbox"
+        aria-expanded={open}
       >
-        EN
+        {lang}
       </button>
-      <span className="text-ocean-700">|</span>
-      <button
-        className={`px-1.5 py-0.5 transition-colors ${lang === 'fr' ? 'text-white' : 'text-ocean-500 hover:text-ocean-300'}`}
-        onClick={() => setLang('fr')}
-      >
-        FR
-      </button>
+      {open && (
+        <div
+          role="listbox"
+          className="absolute right-0 mt-1 w-32 bg-ocean-900 border border-ocean-700 rounded shadow-lg z-50 overflow-hidden"
+        >
+          {LANGS.map(({ code, label }) => (
+            <button
+              key={code}
+              role="option"
+              aria-selected={lang === code}
+              onClick={() => { setLang(code); setOpen(false); }}
+              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                lang === code
+                  ? 'text-white bg-ocean-700'
+                  : 'text-ocean-300 hover:bg-ocean-800 hover:text-white'
+              }`}
+            >
+              <span className="font-semibold uppercase text-xs tracking-wider mr-2">{code}</span>
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

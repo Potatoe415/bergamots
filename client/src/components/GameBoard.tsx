@@ -205,11 +205,6 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
             <span className="font-semibold text-white text-sm">{opponent.name}</span>
-            {gameState.roomId !== 'LOCAL' && (
-              <span className="text-xs font-bold text-yellow-400 tracking-widest bg-black/30 border border-yellow-500/30 rounded px-1.5 py-0.5 select-all">
-                {gameState.roomId}
-              </span>
-            )}
           </div>
           <div className="flex gap-4 text-xs text-ocean-400">
             <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>
@@ -382,7 +377,13 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       </div>
 
       {winner && <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />}
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onRestartGame={onRematch} />}
+      {showSettings && (
+        <SettingsPanel
+          onClose={() => setShowSettings(false)}
+          onRestartGame={onRematch}
+          roomCode={gameState.roomId !== 'LOCAL' ? gameState.roomId : undefined}
+        />
+      )}
     </div>
   );
 }

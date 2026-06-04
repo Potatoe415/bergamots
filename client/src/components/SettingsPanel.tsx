@@ -5,9 +5,10 @@ import { useT } from '../i18n';
 interface Props {
   onClose: () => void;
   onRestartGame?: () => void;
+  roomCode?: string;
 }
 
-export default function SettingsPanel({ onClose, onRestartGame }: Props) {
+export default function SettingsPanel({ onClose, onRestartGame, roomCode }: Props) {
   const t = useT();
   const { settings, update } = useSettings();
 
@@ -37,6 +38,15 @@ export default function SettingsPanel({ onClose, onRestartGame }: Props) {
         </div>
 
         <div className="flex flex-col gap-4">
+          {roomCode && (
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-white/80 text-sm">{t('settings.roomCode')}</span>
+              <span className="text-lg font-bold text-yellow-400 tracking-widest bg-black/30 border border-yellow-500/30 rounded px-2.5 py-0.5 select-all">
+                {roomCode}
+              </span>
+            </div>
+          )}
+
           <label className="flex items-center justify-between gap-3 cursor-pointer">
             <span className="text-white/80 text-sm">{t('settings.soundOnMyTurn')}</span>
             <Toggle
