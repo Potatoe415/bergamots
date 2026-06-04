@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useT } from '../i18n';
 import type { MonsterCount } from '@tranquillity/shared';
+import SettingsPanel from './SettingsPanel';
 
 export type GameMode = 'local' | 'online_create' | 'online_join';
 
@@ -22,9 +23,23 @@ const DIFFICULTIES: { label: string; count: MonsterCount; desc: string }[] = [
   { label: 'Hard',     count: 5,  desc: '5 monsters' },
 ];
 
+function clearBrowserData() {
+  localStorage.clear();
+  sessionStorage.clear();
+  document.cookie.split(';').forEach(c => {
+    const key = c.trim().split('=')[0];
+    document.cookie = `${key}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+  });
+  if ('caches' in window) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }
+  window.location.reload();
+}
+
 export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode }: Props) {
   const t = useT();
   const [mode, setMode] = useState<'menu' | 'local' | 'create' | 'join'>('menu');
+  const [showSettings, setShowSettings] = useState(false);
   const [p1, setP1] = useState('Player 1');
   const [p2, setP2] = useState('Player 2');
   const [myName, setMyName] = useState('');
@@ -157,6 +172,38 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCa
         )}
 
       </div>
+
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <button
+          onClick={clearBrowserData}
+          title="Reset — clear all sessions, cookies & local data"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
+          aria-label="Reset browser data"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+          Reset
+        </button>
+
+        <button
+          onClick={() => setShowSettings(true)}
+          title="Settings"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
+          aria-label="Open settings"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          Settings
+        </button>
+      </div>
+
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

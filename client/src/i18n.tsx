@@ -80,6 +80,10 @@ const en: Record<string, string> = {
   'app.connecting': 'Connecting…',
   'app.kicked': 'You were replaced by another player.',
   'app.cancel': 'Cancel',
+  // Settings
+  'settings.title': 'Settings',
+  'settings.soundOnMyTurn': 'Play a sound on my turn',
+  'settings.restartGame': '↺ Restart game',
 };
 
 const fr: Record<string, string> = {
@@ -153,6 +157,10 @@ const fr: Record<string, string> = {
   'app.connecting': 'Connexion…',
   'app.kicked': 'Vous avez été remplacé(e) par un autre joueur.',
   'app.cancel': 'Annuler',
+  // Settings
+  'settings.title': 'Paramètres',
+  'settings.soundOnMyTurn': 'Jouer un son à mon tour',
+  'settings.restartGame': '↺ Recommencer la partie',
 };
 
 const translations: Record<Lang, Record<string, string>> = { en, fr };

@@ -37,6 +37,7 @@ interface Room {
   players: ConnectedPlayer[];
   gameState: GameState | null;
   monsterCount: MonsterCount;
+  lastActivityAt: number; // ms since epoch — used for TTL cleanup
 }
 
 const rooms = new Map<string, Room>();
@@ -44,12 +45,36 @@ const tokenToRoom = new Map<string, string>();   // token  → roomId
 const tokenToIndex = new Map<string, 0 | 1>();   // token  → playerIndex
 const socketToToken = new Map<string, string>();  // sockId → token
 
+const ROOM_TTL_MS = 48 * 60 * 60 * 1000; // 48 hours
+
 function createRoom(monsterCount: MonsterCount = 0): Room {
   const id = generateId(3);
-  const room: Room = { id, players: [], gameState: null, monsterCount };
+  const room: Room = { id, players: [], gameState: null, monsterCount, lastActivityAt: Date.now() };
   rooms.set(id, room);
   return room;
 }
+
+function touchRoom(room: Room) {
+  room.lastActivityAt = Date.now();
+}
+
+function purgeExpiredRooms() {
+  const cutoff = Date.now() - ROOM_TTL_MS;
+  for (const [roomId, room] of rooms) {
+    if (room.lastActivityAt < cutoff) {
+      for (const p of room.players) {
+        tokenToRoom.delete(p.sessionToken);
+        tokenToIndex.delete(p.sessionToken);
+        socketToToken.delete(p.socketId);
+      }
+      rooms.delete(roomId);
+      console.log(`[cleanup] Room ${roomId} expired and removed`);
+    }
+  }
+}
+
+// Run cleanup every hour
+setInterval(purgeExpiredRooms, 60 * 60 * 1000);
 
 function emitGameState(io: Server, room: Room) {
   if (!room.gameState) return;
@@ -178,6 +203,8 @@ io.on('connection', (socket: Socket) => {
 
     console.log(`[join] ${name} → room ${room.id} as player ${playerIndex}`);
 
+    touchRoom(room);
+
     if (room.players.length === 1) {
       const waiting: WaitingPayload = { roomId: room.id, message: `Waiting for second player. Room code: ${room.id}` };
       socket.emit('waiting', waiting);
@@ -252,6 +279,7 @@ io.on('connection', (socket: Socket) => {
 
     if (!result.ok) { emitError(socket, result.error); return; }
     room.gameState = result.state;
+    touchRoom(room);
     emitGameState(io, room);
   });
 
@@ -268,6 +296,7 @@ io.on('connection', (socket: Socket) => {
     const result = applyDiscardTwo(room.gameState, playerIndex, payload.cardIds);
     if (!result.ok) { emitError(socket, result.error); return; }
     room.gameState = result.state;
+    touchRoom(room);
     emitGameState(io, room);
   });
 
@@ -284,6 +313,7 @@ io.on('connection', (socket: Socket) => {
     const result = applyContributeStartDiscard(room.gameState, playerIndex, payload.cardIds);
     if (!result.ok) { emitError(socket, result.error); return; }
     room.gameState = result.state;
+    touchRoom(room);
     emitGameState(io, room);
   });
 

@@ -12,15 +12,15 @@ interface Props {
   discardCount: number;
   forceSelectable?: boolean;
   additionalSelectedIds?: Set<string>;
+  nonSelectableIds?: Set<string>;
   hideStats?: boolean;
 }
 
-export default function Hand({ cards, selectedCardId, legalMoves, isMyTurn, onSelect, deckSize, discardCount, forceSelectable, additionalSelectedIds, hideStats }: Props) {
+export default function Hand({ cards, selectedCardId, legalMoves, isMyTurn, onSelect, deckSize, discardCount, forceSelectable, additionalSelectedIds, nonSelectableIds, hideStats }: Props) {
   const playableIds = new Set(legalMoves.map(m => m.cardId));
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      {/* Stats row */}
+    <div id="hand" className="flex flex-col items-center gap-3">
       {!hideStats && (
         <div className="flex gap-4 text-xs text-ocean-300">
           <span>🃏 Deck: <strong className="text-white">{deckSize}</strong></span>
@@ -29,7 +29,6 @@ export default function Hand({ cards, selectedCardId, legalMoves, isMyTurn, onSe
         </div>
       )}
 
-      {/* Cards — single row that scales to fill the available width */}
       {cards.length === 0 ? (
         <div className="text-ocean-500 text-sm italic py-4">Empty hand</div>
       ) : (
@@ -41,10 +40,14 @@ export default function Hand({ cards, selectedCardId, legalMoves, isMyTurn, onSe
           }}
         >
           {cards.map(card => {
-            const isPlayable = forceSelectable || (isMyTurn && playableIds.has(card.id));
+            const isExcluded = nonSelectableIds?.has(card.id) ?? false;
+            const isForced = !isExcluded && !!forceSelectable;
+            const isPlayable = isForced || (isMyTurn && playableIds.has(card.id));
             const isSelected = card.id === selectedCardId || (additionalSelectedIds?.has(card.id) ?? false);
+            const canClick = isForced || isMyTurn;
             const costs = legalMoves.filter(m => m.cardId === card.id).map(m => m.discardCost);
             const minCost = costs.length > 0 ? Math.min(...costs) : null;
+            const showDimmed = (isMyTurn || !!forceSelectable) && !isPlayable && !isSelected;
 
             return (
               <div key={card.id} className="aspect-square [container-type:inline-size]">
@@ -52,10 +55,10 @@ export default function Hand({ cards, selectedCardId, legalMoves, isMyTurn, onSe
                   card={card}
                   size="full"
                   selected={isSelected}
-                  dimmed={isMyTurn && !isPlayable && !isSelected}
+                  dimmed={showDimmed}
                   badge={isPlayable && !forceSelectable && minCost !== null && minCost > 0 ? `${minCost}` : undefined}
-                  onClick={() => isMyTurn && onSelect(card)}
-                  disabled={!isMyTurn || !isPlayable}
+                  onClick={() => onSelect(card)}
+                  disabled={!canClick || !isPlayable}
                 />
               </div>
             );

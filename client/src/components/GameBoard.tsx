@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
-import type { ClientGameState, Card, LegalMove } from '@tranquillity/shared';
+import React, { useState, useEffect, useRef } from 'react';
+import type { ClientGameState, Card, LegalMove, GridCell } from '@tranquillity/shared';
 import { useT, LanguageSwitcher } from '../i18n';
 import Grid from './Grid';
 import Hand from './Hand';
-import DiscardModal from './DiscardModal';
-import StartDiscardModal from './StartDiscardModal';
 import GameOver from './GameOver';
+import SettingsPanel from './SettingsPanel';
+import { useSettings } from '../settings';
+import { playTurnSound } from '../sounds';
 
 interface Props {
   gameState: ClientGameState;
@@ -14,37 +15,119 @@ interface Props {
   onContributeStartDiscard: (cardIds: string[]) => void;
   onRematch: () => void;
   onMenu: () => void;
-  showingDiscardSelect?: boolean; // for "discard two" selection mode
+  /** Local (pass-and-play): card opponent just placed, shown immediately on mount */
+  initialOpponentPlay?: { card: Card; position: number };
 }
 
 type UIMode = 'default' | 'selecting_discard_two';
 
-export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContributeStartDiscard, onRematch, onMenu }: Props) {
+export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContributeStartDiscard, onRematch, onMenu, initialOpponentPlay }: Props) {
   const t = useT();
+  const { settings } = useSettings();
+  const [showSettings, setShowSettings] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [pendingPlay, setPendingPlay] = useState<{ card: Card; position: number; cost: number } | null>(null);
   const [uiMode, setUiMode] = useState<UIMode>('default');
   const [discardTwoSelected, setDiscardTwoSelected] = useState<Set<string>>(new Set());
+  const [discardCostSelected, setDiscardCostSelected] = useState<Set<string>>(new Set());
+  const [startDiscardSelected, setStartDiscardSelected] = useState<Set<string>>(new Set());
 
   const { myHand, grid, legalMoves, canDiscardTwo, phase, currentPlayerIndex, myPlayerIndex, startDiscardState, winner, message } = gameState;
   const isMyTurn = currentPlayerIndex === myPlayerIndex && (phase === 'playing' || phase === 'finish_pending');
   const opponent = gameState.players[myPlayerIndex === 0 ? 1 : 0];
   const me = gameState.players[myPlayerIndex];
+  const movesForSelected: LegalMove[] = selectedCard ? legalMoves.filter(m => m.cardId === selectedCard.id) : [];
 
-  // Filter legal moves for selected card
-  const movesForSelected: LegalMove[] = selectedCard
-    ? legalMoves.filter(m => m.cardId === selectedCard.id)
-    : [];
+  // ── Opponent play preview ───────────────────────────────────────────────────
+  const [opponentPlay, setOpponentPlay] = useState<{ card: Card; position: number } | null>(
+    initialOpponentPlay ?? null
+  );
+  const prevGridRef = useRef<GridCell[]>(grid);
+  const prevIsMyTurnRef = useRef(isMyTurn);
 
-  function handleCardSelect(card: Card) {
-    if (!isMyTurn) return;
-    if (uiMode === 'selecting_discard_two') {
-      const next = new Set(discardTwoSelected);
-      if (next.has(card.id)) { next.delete(card.id); }
-      else if (next.size < 2) { next.add(card.id); }
-      setDiscardTwoSelected(next);
-      return;
+  // Local mode: initialOpponentPlay is set on mount — start auto-clear timer
+  useEffect(() => {
+    if (!initialOpponentPlay) return;
+    const timer = setTimeout(() => setOpponentPlay(null), 2000);
+    return () => clearTimeout(timer);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Online mode: detect opponent's card when the turn flips to us
+  useEffect(() => {
+    const wasMyTurn = prevIsMyTurnRef.current;
+    prevIsMyTurnRef.current = isMyTurn;
+    const prevGrid = prevGridRef.current;
+    prevGridRef.current = grid;
+
+    if (isMyTurn && !wasMyTurn) {
+      const newCell = grid.find((cell, i) => cell.card && !prevGrid[i]?.card);
+      if (newCell?.card) {
+        setOpponentPlay({ card: newCell.card, position: newCell.position });
+        const timer = setTimeout(() => setOpponentPlay(null), 2000);
+        return () => clearTimeout(timer);
+      }
     }
+  }, [isMyTurn, grid]);
+
+  // ── Sound on turn start ─────────────────────────────────────────────────────
+  const prevIsMyTurnSoundRef = useRef(isMyTurn);
+  useEffect(() => {
+    const was = prevIsMyTurnSoundRef.current;
+    prevIsMyTurnSoundRef.current = isMyTurn;
+    if (isMyTurn && !was && settings.soundOnMyTurn) playTurnSound();
+  }, [isMyTurn, settings.soundOnMyTurn]);
+
+  // ───────────────────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!startDiscardState?.isMyTurnToContribute) setStartDiscardSelected(new Set());
+  }, [startDiscardState?.isMyTurnToContribute]);
+
+  // Clear all selection state on every phase transition so stale `pendingPlay`,
+  // `selectedCard`, etc. from the playing phase never bleed into start_discard.
+  useEffect(() => {
+    setSelectedCard(null);
+    setPendingPlay(null);
+    setUiMode('default');
+    setDiscardCostSelected(new Set());
+    setDiscardTwoSelected(new Set());
+  }, [phase]);
+
+  function toggleDiscardCostCard(card: Card) {
+    if (!pendingPlay || card.id === pendingPlay.card.id || card.type === 'monster') return;
+    setDiscardCostSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(card.id)) { next.delete(card.id); return next; }
+      if (next.size < pendingPlay.cost) { next.add(card.id); return next; }
+      return prev;
+    });
+  }
+
+  function toggleStartDiscardCard(card: Card) {
+    if (!startDiscardState || card.type === 'monster') return;
+    const max = Math.min(startDiscardState.remaining, myHand.length);
+    setStartDiscardSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(card.id)) { next.delete(card.id); return next; }
+      if (next.size < max) { next.add(card.id); return next; }
+      return prev;
+    });
+  }
+
+  function toggleDiscardTwoCard(card: Card) {
+    const next = new Set(discardTwoSelected);
+    if (next.has(card.id)) { next.delete(card.id); }
+    else if (next.size < 2) { next.add(card.id); }
+    setDiscardTwoSelected(next);
+  }
+
+  function handleCardClick(card: Card) {
+    if (startDiscardState?.isMyTurnToContribute) { toggleStartDiscardCard(card); return; }
+    if (pendingPlay) { toggleDiscardCostCard(card); return; }
+    if (!isMyTurn) return;
+    if (uiMode === 'selecting_discard_two') { toggleDiscardTwoCard(card); return; }
+    if (card.type === 'start' && legalMoves.some(m => m.cardId === card.id && m.position === -1)) { setSelectedCard(null); onPlayCard(card.id, -1, []); return; }
+    if (card.type === 'finish' && legalMoves.some(m => m.cardId === card.id && m.position === -1)) { setSelectedCard(null); onPlayCard(card.id, -1, []); return; }
     setSelectedCard(prev => prev?.id === card.id ? null : card);
   }
 
@@ -52,20 +135,21 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     if (!selectedCard || !isMyTurn) return;
     const move = movesForSelected.find(m => m.position === pos);
     if (!move) return;
-
     if (move.discardCost === 0) {
       onPlayCard(selectedCard.id, pos, []);
       setSelectedCard(null);
     } else {
       setPendingPlay({ card: selectedCard, position: pos, cost: move.discardCost });
+      setDiscardCostSelected(new Set());
       setSelectedCard(null);
     }
   }
 
-  function handleDiscardConfirm(discardIds: string[]) {
-    if (!pendingPlay) return;
-    onPlayCard(pendingPlay.card.id, pendingPlay.position, discardIds);
+  function handleDiscardCostConfirm() {
+    if (!pendingPlay || discardCostSelected.size !== pendingPlay.cost) return;
+    onPlayCard(pendingPlay.card.id, pendingPlay.position, [...discardCostSelected]);
     setPendingPlay(null);
+    setDiscardCostSelected(new Set());
   }
 
   function handleDiscardTwoConfirm() {
@@ -76,45 +160,26 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     setUiMode('default');
   }
 
-  function enterDiscardTwoMode() {
-    setSelectedCard(null);
-    setDiscardTwoSelected(new Set());
-    setUiMode('selecting_discard_two');
-  }
+  const inSelectionMode = !!pendingPlay || uiMode === 'selecting_discard_two' || !!startDiscardState?.isMyTurnToContribute;
 
-  // Start card: if player has it and start not played → auto-highlight / force play
-  const hasUnplayedStart = !gameState.startCardPlayed && myHand.some(c => c.type === 'start');
-  const startMove = hasUnplayedStart ? legalMoves.find(m => legalMoves.find(lm => lm.position === -1)) : undefined;
-  // Actually find start move properly:
-  const startLegalMove = legalMoves.find(m => m.position === -1);
+  const monsterIds = new Set(myHand.filter(c => c.type === 'monster').map(c => c.id));
+  const handNonSelectableIds: Set<string> | undefined = pendingPlay
+    ? new Set([pendingPlay.card.id, ...monsterIds])
+    : startDiscardState?.isMyTurnToContribute ? monsterIds
+    : undefined;
 
-  function handleStartCardPlay(cardId: string) {
-    onPlayCard(cardId, -1, []);
-  }
+  const handAdditionalSelected = pendingPlay ? discardCostSelected
+    : uiMode === 'selecting_discard_two' ? discardTwoSelected
+    : startDiscardState?.isMyTurnToContribute ? startDiscardSelected
+    : undefined;
 
-  function handleFinishCardPlay(cardId: string) {
-    onPlayCard(cardId, -1, []);
-  }
-
-  // Auto-handle start/finish card click: when selected and position is -1
-  function handleCardClick(card: Card) {
-    if (!isMyTurn) return;
-    if (card.type === 'start' && legalMoves.some(m => m.cardId === card.id && m.position === -1)) {
-      handleStartCardPlay(card.id);
-      return;
-    }
-    if (card.type === 'finish' && legalMoves.some(m => m.cardId === card.id && m.position === -1)) {
-      handleFinishCardPlay(card.id);
-      return;
-    }
-    handleCardSelect(card);
-  }
+  const startDiscardMax = startDiscardState ? Math.min(startDiscardState.remaining, myHand.length) : 0;
 
   return (
-    <div className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
+    <div id="game-board" className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
       {/* Opponent info bar */}
-      <header className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header id="game-header" className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <button
             onClick={onMenu}
             title={t('game.backToMenu')}
@@ -125,13 +190,30 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
               <polyline points="9 22 9 12 15 12 15 22"/>
             </svg>
           </button>
-          <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
-          <span className="font-semibold text-white text-sm">{me.name} {t('game.you')}</span>
+          <button
+            onClick={() => setShowSettings(true)}
+            title={t('settings.title')}
+            className="text-ocean-400 hover:text-white transition-colors p-0.5"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
         </div>
         <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
+            <span className="font-semibold text-white text-sm">{opponent.name}</span>
+            {gameState.roomId !== 'LOCAL' && (
+              <span className="text-xs font-bold text-yellow-400 tracking-widest bg-black/30 border border-yellow-500/30 rounded px-1.5 py-0.5 select-all">
+                {gameState.roomId}
+              </span>
+            )}
+          </div>
           <div className="flex gap-4 text-xs text-ocean-400">
-            <span title={t('game.hand')}>🤚 <strong className="text-white">{me.handSize}</strong></span>
-            <span title={t('game.deck')}>🃏 <strong className="text-white">{me.deckSize}</strong></span>
+            <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>
+            <span title={t('game.deck')}>🃏 <strong className="text-white">{opponent.deckSize}</strong></span>
           </div>
           <LanguageSwitcher />
         </div>
@@ -142,13 +224,14 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         {grid.filter(c => c.card).length} / 36
       </div>
 
-      {/* Grid — shrink-0 on mobile (natural square size), flex-1 on desktop */}
-      <div className="shrink-0 px-2 pt-0.5 md:flex-1 md:min-h-0 md:grid md:place-items-center">
+      {/* Grid */}
+      <div id="game-canvas" className="flex-1 min-h-0 px-2 pt-0.5 grid place-items-center overflow-hidden">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}
           selectedCard={selectedCard}
           onCellClick={handleCellClick}
+          opponentPlayPosition={opponentPlay?.position}
         />
       </div>
 
@@ -180,8 +263,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         </p>
       </div>
 
-      {/* Action area */}
-      {isMyTurn && uiMode === 'default' && !startDiscardState && (
+      {/* Normal action area */}
+      {isMyTurn && uiMode === 'default' && !startDiscardState && !pendingPlay && (
         <div className="shrink-0 px-4 pb-1 flex gap-2 justify-center flex-wrap">
           {selectedCard && (
             <button className="btn-ghost text-xs py-1.5" onClick={() => setSelectedCard(null)}>
@@ -189,7 +272,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
             </button>
           )}
           {canDiscardTwo && (
-            <button className="btn-danger text-sm py-2" onClick={enterDiscardTwoMode}>
+            <button className="btn-danger text-sm py-2" onClick={() => { setSelectedCard(null); setDiscardTwoSelected(new Set()); setUiMode('selecting_discard_two'); }}>
               {t('game.discard2')}
             </button>
           )}
@@ -215,62 +298,91 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         </div>
       )}
 
-      {/* Spacer: absorbs leftover space on mobile so hand stays pinned to bottom. Hidden on desktop where grid is flex-1. */}
-      <div className="flex-1 min-h-0 md:hidden" />
+      {/* Discard cost bar — inline, replaces the fullscreen DiscardModal */}
+      {pendingPlay && (
+        <div className="shrink-0 bg-red-950/80 border-t border-red-800 px-4 py-2 text-center">
+          <p className="text-red-300 text-sm mb-2">
+            {t('discard.title')} — {t('discard.selected', { sel: discardCostSelected.size, req: pendingPlay.cost })}
+          </p>
+          <div className="flex gap-2 justify-center">
+            <button className="btn-ghost text-sm py-1.5" onClick={() => { setPendingPlay(null); setDiscardCostSelected(new Set()); }}>
+              {t('discard.cancel')}
+            </button>
+            <button
+              className="btn-danger text-sm py-1.5"
+              disabled={discardCostSelected.size !== pendingPlay.cost}
+              onClick={handleDiscardCostConfirm}
+            >
+              {t('discard.confirm')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Start discard contributing bar — inline, replaces the fullscreen StartDiscardModal */}
+      {startDiscardState?.isMyTurnToContribute && (
+        <div className="shrink-0 bg-amber-950/80 border-t border-amber-800 px-4 py-2 text-center">
+          <p className="text-amber-300 text-sm font-semibold mb-1">⚓ {t('startDiscard.title')}</p>
+          <p className="text-amber-200/70 text-xs mb-2">
+            {t('startDiscard.selectUp', { max: startDiscardMax, remaining: startDiscardState.remaining })}
+          </p>
+          <div className="flex items-center gap-3 justify-center">
+            <span className="text-amber-400/70 text-sm">
+              {t('startDiscard.contributing', { sel: startDiscardSelected.size, max: startDiscardMax })}
+            </span>
+            <button
+              className="btn-primary text-sm py-1.5"
+              onClick={() => { onContributeStartDiscard([...startDiscardSelected]); setStartDiscardSelected(new Set()); }}
+            >
+              {t('startDiscard.contributeBtn', {
+                n: startDiscardSelected.size,
+                card: startDiscardSelected.size !== 1 ? t('discard.cards') : t('discard.card'),
+              })}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Start discard waiting bar */}
+      {startDiscardState && !startDiscardState.isMyTurnToContribute && (
+        <div className="shrink-0 bg-ocean-800/60 border-t border-ocean-700 px-4 py-2 text-center">
+          <p className="text-ocean-300 text-sm">⚓ {t('startDiscard.waiting')}</p>
+          <div className="flex justify-center gap-4 text-xs text-ocean-400 mt-1">
+            <span>{t('startDiscard.theirContrib')}: <strong className="text-white">{startDiscardState.opponentContribution}</strong></span>
+            <span>{t('startDiscard.stillNeeded')}: <strong className="text-red-400">{startDiscardState.remaining}</strong></span>
+          </div>
+        </div>
+      )}
 
       {/* My hand */}
-      <div className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">
+      <div id="game-footer" className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">
         <div className="flex items-center justify-end gap-4 mb-1">
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
-            <span className="text-sm font-semibold text-white">{opponent.name}</span>
-            {gameState.roomId !== 'LOCAL' && (
-              <span className="text-xs font-bold text-yellow-400 tracking-widest bg-black/30 border border-yellow-500/30 rounded px-1.5 py-0.5 select-all">
-                {gameState.roomId}
-              </span>
-            )}
+            <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
+            <span className="text-sm font-semibold text-white">{me.name} {t('game.you')}</span>
           </div>
           <div className="flex gap-4 text-xs text-ocean-400">
-            <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>
-            <span title={t('game.deck')}>🃏 <strong className="text-white">{opponent.deckSize}</strong></span>
+            <span title={t('game.hand')}>🤚 <strong className="text-white">{me.handSize}</strong></span>
+            <span title={t('game.deck')}>🃏 <strong className="text-white">{me.deckSize}</strong></span>
           </div>
         </div>
         <Hand
           cards={myHand}
-          selectedCardId={uiMode === 'selecting_discard_two' ? null : selectedCard?.id ?? null}
-          legalMoves={uiMode === 'selecting_discard_two' ? [] : legalMoves}
+          selectedCardId={inSelectionMode ? null : selectedCard?.id ?? null}
+          legalMoves={inSelectionMode ? [] : legalMoves}
           isMyTurn={isMyTurn}
           onSelect={handleCardClick}
           deckSize={me.deckSize}
           discardCount={me.discardCount}
-          forceSelectable={uiMode === 'selecting_discard_two'}
-          additionalSelectedIds={uiMode === 'selecting_discard_two' ? discardTwoSelected : undefined}
+          forceSelectable={inSelectionMode}
+          additionalSelectedIds={handAdditionalSelected}
+          nonSelectableIds={handNonSelectableIds}
           hideStats
         />
       </div>
 
-      {/* Modals */}
-      {startDiscardState && (
-        <StartDiscardModal
-          hand={myHand}
-          startDiscard={startDiscardState}
-          onContribute={onContributeStartDiscard}
-        />
-      )}
-
-      {pendingPlay && (
-        <DiscardModal
-          cardToPlay={pendingPlay.card}
-          handWithoutPlayed={myHand.filter(c => c.id !== pendingPlay.card.id)}
-          requiredCount={pendingPlay.cost}
-          onConfirm={handleDiscardConfirm}
-          onCancel={() => setPendingPlay(null)}
-        />
-      )}
-
-      {winner && (
-        <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />
-      )}
+      {winner && <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />}
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} onRestartGame={onRematch} />}
     </div>
   );
 }

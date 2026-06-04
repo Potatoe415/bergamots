@@ -7,9 +7,10 @@ interface Props {
   legalMoves: LegalMove[];
   selectedCard: Card | null;
   onCellClick: (pos: number) => void;
+  opponentPlayPosition?: number;
 }
 
-export default function Grid({ grid, legalMoves, selectedCard, onCellClick }: Props) {
+export default function Grid({ grid, legalMoves, selectedCard, onCellClick, opponentPlayPosition }: Props) {
   const legalPositions = new Set(legalMoves.map(m => m.position));
 
   const rows: number[][] = Array.from({ length: 6 }, (_, rowIdx) =>
@@ -20,12 +21,13 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick }: Pr
   return (
     // Mobile: full-width square (height driven by width).
     // Desktop: height-driven square (max height of flex-1 parent).
-    <div className="w-full aspect-square md:h-full md:max-h-full md:w-auto bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
+    <div id="grid" className="aspect-square h-full max-h-full w-auto max-w-full bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
       <div className="grid grid-cols-6 grid-rows-6 w-full h-full gap-0.5">
         {allPositions.map(pos => {
           const cell = grid[pos];
           const isLegal = selectedCard !== null && legalPositions.has(pos);
           const move = isLegal ? legalMoves.find(m => m.position === pos) : undefined;
+          const isOpponentPlay = pos === opponentPlayPosition;
 
           return (
             <div
@@ -33,7 +35,9 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick }: Pr
               className={[
                 'rounded-lg overflow-hidden flex items-center justify-center min-w-0',
                 'border transition-all duration-150',
-                cell.card && isLegal
+                isOpponentPlay
+                  ? 'border-amber-400/80 ring-2 ring-amber-300/60 scale-105 animate-pulse'
+                  : cell.card && isLegal
                   ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
                   : cell.card
                   ? 'border-transparent'

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { ClientGameState, GameJoinedPayload, WaitingPayload, ErrorPayload, KickedPayload, GameState, MonsterCount } from '@tranquillity/shared';
+import type { ClientGameState, GameJoinedPayload, WaitingPayload, ErrorPayload, KickedPayload, GameState, MonsterCount, Card } from '@tranquillity/shared';
 import { useT, LanguageSwitcher } from './i18n';
 import {
   initializeGame,
@@ -22,6 +22,7 @@ interface LocalState {
   viewingAs: 0 | 1;
   showTransition: boolean;
   pendingPlayer: 0 | 1 | null; // player whose turn it will be after transition
+  pendingOpponentPlay: { card: Card; position: number } | null;
 }
 
 // ── Online state ──────────────────────────────────────────────────────────────
@@ -56,8 +57,9 @@ export default function App() {
   function startLocal(p1Name: string, p2Name: string, monsterCount: MonsterCount = 0) {
     localStorage.removeItem('tranquillity_token');
     localStorage.removeItem('tranquillity_name');
+    localStorage.removeItem('tranquillity_room');
     const gameState = initializeGame('LOCAL', { id: 'p0', name: p1Name }, { id: 'p1', name: p2Name }, monsterCount);
-    setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null });
+    setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null });
     setMode('local');
   }
 
@@ -73,19 +75,18 @@ export default function App() {
 
     const newState = result.state;
     const nextPlayer = newState.currentPlayerIndex;
+    const playedCard = local.gameState.players[local.viewingAs].hand.find(c => c.id === cardId) ?? null;
+    const opponentPlay = playedCard && position >= 0 ? { card: playedCard, position } : null;
 
-    // If game over, just update (no transition needed)
     if (newState.phase === 'won' || newState.phase === 'lost') {
       setLocal(prev => prev ? { ...prev, gameState: newState } : null);
       return;
     }
 
-    // If start_discard, current contributor is the active player — may stay on same player
     if (newState.phase === 'start_discard') {
       const contrib = newState.startDiscardState!.currentContributor;
       if (contrib !== local.viewingAs) {
-        // Need transition to other player
-        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: contrib, showTransition: true } : null);
+        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: contrib, showTransition: true, pendingOpponentPlay: null } : null);
       } else {
         setLocal(prev => prev ? { ...prev, gameState: newState } : null);
       }
@@ -93,7 +94,7 @@ export default function App() {
     }
 
     if (nextPlayer !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true } : null);
+      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: opponentPlay } : null);
     } else {
       setLocal(prev => prev ? { ...prev, gameState: newState } : null);
     }
@@ -113,7 +114,7 @@ export default function App() {
     }
 
     if (nextPlayer !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true } : null);
+      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: null } : null);
     } else {
       setLocal(prev => prev ? { ...prev, gameState: newState } : null);
     }
@@ -129,7 +130,7 @@ export default function App() {
     if (newState.phase === 'playing' || newState.phase === 'won' || newState.phase === 'lost') {
       const nextPlayer = newState.currentPlayerIndex;
       if (nextPlayer !== local.viewingAs) {
-        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true } : null);
+        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: null } : null);
       } else {
         setLocal(prev => prev ? { ...prev, gameState: newState } : null);
       }
@@ -139,7 +140,7 @@ export default function App() {
     // Still in start_discard
     const nextContrib = newState.startDiscardState!.currentContributor;
     if (nextContrib !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextContrib, showTransition: true } : null);
+      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextContrib, showTransition: true, pendingOpponentPlay: null } : null);
     } else {
       setLocal(prev => prev ? { ...prev, gameState: newState } : null);
     }
@@ -166,8 +167,8 @@ export default function App() {
     const sock = socketRef.current;
 
     sock.on('game_joined', (payload: GameJoinedPayload) => {
-      // Store session token in localStorage for reconnection
       localStorage.setItem('tranquillity_token', payload.sessionToken);
+      localStorage.setItem('tranquillity_room', payload.roomId);
       setOnline(prev => ({
         ...prev,
         clientState: payload.gameState,
@@ -233,28 +234,36 @@ export default function App() {
     }
 
     const token = localStorage.getItem('tranquillity_token');
+    const savedRoom = localStorage.getItem('tranquillity_room');
     const name = localStorage.getItem('tranquillity_name') ?? 'Player';
     const sock = socketRef.current;
 
-    if (token) {
+    // If the URL specifies a room different from the saved session, discard the
+    // old session so the URL room takes priority (avoids being redirected back).
+    const urlRoom = new URLSearchParams(window.location.search).get('room')?.toUpperCase();
+    if (urlRoom && savedRoom && urlRoom !== savedRoom) {
+      localStorage.removeItem('tranquillity_token');
+      localStorage.removeItem('tranquillity_room');
+    }
+
+    const activeToken = urlRoom && savedRoom && urlRoom !== savedRoom ? null : token;
+
+    if (activeToken) {
       setOnline(prev => ({ ...prev, connectionStatus: 'connecting' }));
       setMode('online');
       sock.connect();
-      sock.emit('join_game', { sessionToken: token, playerName: name });
+      sock.emit('join_game', { sessionToken: activeToken, playerName: name });
       return;
     }
 
-    // Fallback: rejoin via URL ?room=
-    const urlRoom = new URLSearchParams(window.location.search).get('room')?.toUpperCase();
+    // Rejoin via URL ?room= (no saved session, or session was for a different room)
     if (urlRoom) {
       if (localStorage.getItem('tranquillity_name')) {
-        // Name known → auto-join immediately
         setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
         setMode('online');
         sock.connect();
         sock.emit('join_game', { roomId: urlRoom, playerName: name });
       } else {
-        // No name stored → show Lobby in join mode with code pre-filled
         setLobbyInitialRoom(urlRoom);
       }
     }
@@ -311,6 +320,7 @@ export default function App() {
     localStorage.removeItem('tranquillity_token');
     localStorage.removeItem('tranquillity_name');
     localStorage.removeItem('tranquillity_local');
+    localStorage.removeItem('tranquillity_room');
     const url = new URL(window.location.href);
     url.searchParams.delete('room');
     window.history.replaceState(null, '', url.toString());
@@ -371,6 +381,7 @@ export default function App() {
         onContributeStartDiscard={localContributeStartDiscard}
         onRematch={localRematch}
         onMenu={goToMenu}
+        initialOpponentPlay={local.pendingOpponentPlay ?? undefined}
       />
     );
   }
