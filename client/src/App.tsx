@@ -7,6 +7,7 @@ import {
   applyPlayCard,
   applyDiscardTwo,
   applyContributeStartDiscard,
+  chooseBotAction,
 } from '@tranquillity/shared';
 import { getSocket, disconnectSocket } from './socket';
 import Lobby from './components/Lobby';
@@ -23,6 +24,19 @@ interface LocalState {
   showTransition: boolean;
   pendingPlayer: 0 | 1 | null; // player whose turn it will be after transition
   pendingOpponentPlay: { card: Card; position: number } | null;
+  vsBot: boolean; // when true, player 1 is an automated co-op bot
+}
+
+const BOT_NAME = 'Bot';
+const BOT_PLAYER_INDEX = 1 as const;
+const BOT_THINK_MS = 900;
+
+// Who must take the next action (contributor during start_discard, otherwise the
+// current player). Returns null when the game is over.
+function nextLocalActor(s: GameState): 0 | 1 | null {
+  if (s.phase === 'won' || s.phase === 'lost') return null;
+  if (s.phase === 'start_discard') return s.startDiscardState!.currentContributor;
+  return s.currentPlayerIndex;
 }
 
 // ── Online state ──────────────────────────────────────────────────────────────
@@ -54,12 +68,23 @@ export default function App() {
 
   // ── Local mode ─────────────────────────────────────────────────────────────
 
-  function startLocal(p1Name: string, p2Name: string, monsterCount: MonsterCount = 0) {
+  function clearOnlineStorage() {
     localStorage.removeItem('tranquillity_token');
     localStorage.removeItem('tranquillity_name');
     localStorage.removeItem('tranquillity_room');
+  }
+
+  function startLocal(p1Name: string, p2Name: string, monsterCount: MonsterCount = 0) {
+    clearOnlineStorage();
     const gameState = initializeGame('LOCAL', { id: 'p0', name: p1Name }, { id: 'p1', name: p2Name }, monsterCount);
-    setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null });
+    setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null, vsBot: false });
+    setMode('local');
+  }
+
+  function startBot(playerName: string, monsterCount: MonsterCount = 0) {
+    clearOnlineStorage();
+    const gameState = initializeGame('LOCAL', { id: 'p0', name: playerName }, { id: 'p1', name: BOT_NAME }, monsterCount);
+    setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null, vsBot: true });
     setMode('local');
   }
 
@@ -68,83 +93,66 @@ export default function App() {
     return buildClientState(local.gameState, local.viewingAs);
   }
 
+  // Commit a new local state, deciding whether a pass-and-play transition is
+  // needed. In bot mode the human always keeps viewing as player 0 and the bot
+  // effect drives player 1's turns — so no transition is ever shown.
+  function advanceLocal(newState: GameState, opponentPlay: { card: Card; position: number } | null) {
+    setLocal(prev => {
+      if (!prev) return null;
+      const actor = nextLocalActor(newState);
+      if (prev.vsBot || actor === null || actor === prev.viewingAs) {
+        return { ...prev, gameState: newState, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null };
+      }
+      return { ...prev, gameState: newState, showTransition: true, pendingPlayer: actor, pendingOpponentPlay: opponentPlay };
+    });
+  }
+
   function localPlayCard(cardId: string, position: number, discardCardIds: string[]) {
     if (!local) return;
     const result = applyPlayCard(local.gameState, local.viewingAs, cardId, position, discardCardIds);
     if (!result.ok) { alert(result.error); return; }
-
-    const newState = result.state;
-    const nextPlayer = newState.currentPlayerIndex;
     const playedCard = local.gameState.players[local.viewingAs].hand.find(c => c.id === cardId) ?? null;
     const opponentPlay = playedCard && position >= 0 ? { card: playedCard, position } : null;
-
-    if (newState.phase === 'won' || newState.phase === 'lost') {
-      setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-      return;
-    }
-
-    if (newState.phase === 'start_discard') {
-      const contrib = newState.startDiscardState!.currentContributor;
-      if (contrib !== local.viewingAs) {
-        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: contrib, showTransition: true, pendingOpponentPlay: null } : null);
-      } else {
-        setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-      }
-      return;
-    }
-
-    if (nextPlayer !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: opponentPlay } : null);
-    } else {
-      setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-    }
+    advanceLocal(result.state, opponentPlay);
   }
 
   function localDiscardTwo(cardIds: [string, string]) {
     if (!local) return;
     const result = applyDiscardTwo(local.gameState, local.viewingAs, cardIds);
     if (!result.ok) { alert(result.error); return; }
-
-    const newState = result.state;
-    const nextPlayer = newState.currentPlayerIndex;
-
-    if (newState.phase === 'won' || newState.phase === 'lost') {
-      setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-      return;
-    }
-
-    if (nextPlayer !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: null } : null);
-    } else {
-      setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-    }
+    advanceLocal(result.state, null);
   }
 
   function localContributeStartDiscard(cardIds: string[]) {
     if (!local) return;
     const result = applyContributeStartDiscard(local.gameState, local.viewingAs, cardIds);
     if (!result.ok) { alert(result.error); return; }
-
-    const newState = result.state;
-
-    if (newState.phase === 'playing' || newState.phase === 'won' || newState.phase === 'lost') {
-      const nextPlayer = newState.currentPlayerIndex;
-      if (nextPlayer !== local.viewingAs) {
-        setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextPlayer, showTransition: true, pendingOpponentPlay: null } : null);
-      } else {
-        setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-      }
-      return;
-    }
-
-    // Still in start_discard
-    const nextContrib = newState.startDiscardState!.currentContributor;
-    if (nextContrib !== local.viewingAs) {
-      setLocal(prev => prev ? { ...prev, gameState: newState, pendingPlayer: nextContrib, showTransition: true, pendingOpponentPlay: null } : null);
-    } else {
-      setLocal(prev => prev ? { ...prev, gameState: newState } : null);
-    }
+    advanceLocal(result.state, null);
   }
+
+  // Bot auto-play: whenever it is player 1's turn in a bot game, compute and
+  // apply the bot's action after a short "thinking" delay.
+  useEffect(() => {
+    if (!local || !local.vsBot) return;
+    if (nextLocalActor(local.gameState) !== BOT_PLAYER_INDEX) return;
+
+    const timer = setTimeout(() => {
+      setLocal(prev => {
+        if (!prev || !prev.vsBot) return prev;
+        if (nextLocalActor(prev.gameState) !== BOT_PLAYER_INDEX) return prev;
+        const action = chooseBotAction(prev.gameState, BOT_PLAYER_INDEX);
+        if (!action) return prev;
+        let result;
+        if (action.type === 'play') result = applyPlayCard(prev.gameState, BOT_PLAYER_INDEX, action.cardId, action.position, action.discardCardIds);
+        else if (action.type === 'discard_two') result = applyDiscardTwo(prev.gameState, BOT_PLAYER_INDEX, action.cardIds);
+        else result = applyContributeStartDiscard(prev.gameState, BOT_PLAYER_INDEX, action.cardIds);
+        if (!result.ok) return prev;
+        return { ...prev, gameState: result.state, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null };
+      });
+    }, BOT_THINK_MS);
+
+    return () => clearTimeout(timer);
+  }, [local]);
 
   function localHandleReady() {
     if (!local || local.pendingPlayer === null) return;
@@ -154,9 +162,9 @@ export default function App() {
   function localRematch() {
     if (!local) return;
     const gs = local.gameState;
-    const p0 = gs.players[0];
-    const p1 = gs.players[1];
-    startLocal(p0.name, p1.name);
+    const [p0, p1] = gs.players;
+    if (local.vsBot) startBot(p0.name, gs.monsterCount);
+    else startLocal(p0.name, p1.name, gs.monsterCount);
   }
 
   // ── Online mode ────────────────────────────────────────────────────────────
@@ -347,6 +355,7 @@ export default function App() {
         {langSwitcher}
         <Lobby
           onStartLocal={startLocal}
+          onStartBot={startBot}
           onCreateOnline={createOnline}
           onJoinOnline={(code, name) => { setLobbyInitialRoom(undefined); joinOnline(code, name); }}
           onCancelRoom={goToMenu}

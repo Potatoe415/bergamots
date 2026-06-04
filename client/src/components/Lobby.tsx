@@ -7,6 +7,7 @@ export type GameMode = 'local' | 'online_create' | 'online_join';
 
 interface Props {
   onStartLocal: (p1Name: string, p2Name: string, monsterCount: MonsterCount) => void;
+  onStartBot: (playerName: string, monsterCount: MonsterCount) => void;
   onCreateOnline: (playerName: string, monsterCount: MonsterCount) => void;
   onJoinOnline: (roomCode: string, playerName: string) => void;
   onCancelRoom?: () => void;
@@ -36,9 +37,9 @@ function clearBrowserData() {
   window.location.reload();
 }
 
-export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode }: Props) {
+export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode }: Props) {
   const t = useT();
-  const [mode, setMode] = useState<'menu' | 'local' | 'create' | 'join'>('menu');
+  const [mode, setMode] = useState<'menu' | 'local' | 'bot' | 'create' | 'join'>('menu');
   const [showSettings, setShowSettings] = useState(false);
   const [p1, setP1] = useState('Player 1');
   const [p2, setP2] = useState('Player 2');
@@ -79,6 +80,9 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCa
             <button className="btn-primary lobby-btn-size py-4 text-lg" onClick={() => setMode('local')}>
               {t('lobby.local')}
             </button>
+            <button className="lobby-btn py-4 text-lg" onClick={() => setMode('bot')}>
+              {t('lobby.vsBot')}
+            </button>
             <button className="lobby-btn py-4 text-lg" onClick={() => setMode('create')}>
               {t('lobby.createOnline')}
             </button>
@@ -101,6 +105,21 @@ export default function Lobby({ onStartLocal, onCreateOnline, onJoinOnline, onCa
             </label>
             <DifficultyPicker value={monsterCount} onChange={setMonsterCount} />
             <button className="lobby-btn py-3" onClick={() => onStartLocal(p1.trim() || 'Player 1', p2.trim() || 'Player 2', monsterCount)}>
+              {t('lobby.startGame')}
+            </button>
+            <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>
+          </>
+        )}
+
+        {mode === 'bot' && (
+          <>
+            <h2 className="text-xl font-bold text-white text-center">{t('lobby.vsBotGame')}</h2>
+            <label className="flex flex-col gap-1">
+              <span className="text-white/80 text-sm">{t('lobby.yourName')}</span>
+              <input className="input-field" value={myName} onChange={e => setMyName(e.target.value)} maxLength={20} placeholder={t('lobby.captainPlaceholder')} />
+            </label>
+            <DifficultyPicker value={monsterCount} onChange={setMonsterCount} />
+            <button className="lobby-btn py-3" onClick={() => onStartBot(myName.trim() || 'Player 1', monsterCount)}>
               {t('lobby.startGame')}
             </button>
             <button className="lobby-btn-ghost py-2 text-sm" onClick={() => setMode('menu')}>{t('lobby.back')}</button>

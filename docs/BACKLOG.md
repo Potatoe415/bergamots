@@ -5,6 +5,7 @@ Status: Living document. Always reflects current state.
 ---
 
 ## Now
+- [ ] Play-test "Play vs Bot" mode end-to-end.
 - [ ] Play-test local pass-and-play end-to-end.
 - [ ] Play-test online mode with two browser windows.
 
@@ -25,6 +26,7 @@ Status: Living document. Always reflects current state.
 - (none)
 
 ## Done
+- [x] Play vs Bot: co-op heuristic bot + lobby button + auto-play in local mode.
 - [x] Bootstrap context architecture.
 - [x] Phase 1: shared game engine with 32 unit tests (100% pass).
 - [x] Phase 2: Node.js + Socket.IO server with reconnection support.
