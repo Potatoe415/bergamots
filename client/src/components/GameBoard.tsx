@@ -20,6 +20,41 @@ interface Props {
 }
 
 type UIMode = 'default' | 'selecting_discard_two';
+type Translate = (key: string, vars?: Record<string, string | number>) => string;
+
+function getStatusMessage(gameState: ClientGameState, t: Translate): string {
+  const isMyTurn = gameState.currentPlayerIndex === gameState.myPlayerIndex;
+  const me = gameState.players[gameState.myPlayerIndex];
+  const opponent = gameState.players[gameState.myPlayerIndex === 0 ? 1 : 0];
+
+  switch (gameState.phase) {
+    case 'waiting':
+      return t('status.waiting');
+    case 'won':
+      return t('status.won');
+    case 'lost':
+      return t('status.lost');
+    case 'finish_pending':
+      return isMyTurn
+        ? t('status.finishMonsterMine')
+        : t('status.finishMonsterOther', { name: opponent.name });
+    case 'start_discard':
+      if (gameState.startDiscardState?.isMyTurnToContribute) {
+        return t('status.startDiscardMine', { remaining: gameState.startDiscardState.remaining });
+      }
+      return t('status.startDiscardOther', { name: opponent.name });
+    case 'playing':
+      if (isMyTurn) {
+        if (!gameState.startCardPlayed && me.handSize > 0 && gameState.myHand.some(c => c.type === 'start')) {
+          return t('status.mustPlayStart');
+        }
+        return t('status.yourTurn');
+      }
+      return t('status.waitingForPlay', { name: opponent.name });
+    default:
+      return gameState.message;
+  }
+}
 
 export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContributeStartDiscard, onRematch, onMenu, initialOpponentPlay }: Props) {
   const t = useT();
@@ -32,11 +67,12 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   const [discardCostSelected, setDiscardCostSelected] = useState<Set<string>>(new Set());
   const [startDiscardSelected, setStartDiscardSelected] = useState<Set<string>>(new Set());
 
-  const { myHand, grid, legalMoves, canDiscardTwo, phase, currentPlayerIndex, myPlayerIndex, startDiscardState, winner, message } = gameState;
+  const { myHand, grid, legalMoves, canDiscardTwo, phase, currentPlayerIndex, myPlayerIndex, startDiscardState, winner } = gameState;
   const isMyTurn = currentPlayerIndex === myPlayerIndex && (phase === 'playing' || phase === 'finish_pending');
   const opponent = gameState.players[myPlayerIndex === 0 ? 1 : 0];
   const me = gameState.players[myPlayerIndex];
   const movesForSelected: LegalMove[] = selectedCard ? legalMoves.filter(m => m.cardId === selectedCard.id) : [];
+  const statusMessage = getStatusMessage(gameState, t);
 
   // ── Opponent play preview ───────────────────────────────────────────────────
   const [opponentPlay, setOpponentPlay] = useState<{ card: Card; position: number } | null>(
@@ -238,7 +274,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
             ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-300'
             : 'bg-ocean-800/50 border-ocean-700/40 text-ocean-400',
         ].join(' ')}>
-          {gameState.startCardPlayed ? '⚓ Start played' : '⚓ Start pending'}
+          {gameState.startCardPlayed ? t('game.startPlayed') : t('game.startPending')}
         </div>
       </div>
 
@@ -246,7 +282,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       {phase === 'finish_pending' && (
         <div className="shrink-0 bg-red-950/80 border-b border-red-800/60 px-4 py-2 text-center">
           <span className="text-red-300 text-sm font-semibold">
-            🐙 Finish card played — all Sea Monsters must be played before victory
+            {t('game.finishPending')}
           </span>
         </div>
       )}
@@ -254,7 +290,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       {/* Status message */}
       <div className="shrink-0 flex items-center justify-center px-4 py-0.5">
         <p className={`text-sm font-medium ${isMyTurn ? 'text-emerald-400' : 'text-ocean-400'}`}>
-          {message}
+          {statusMessage}
         </p>
       </div>
 

@@ -17,11 +17,11 @@ interface Props {
   initialRoomCode?: string;
 }
 
-const DIFFICULTIES: { label: string; count: MonsterCount; desc: string }[] = [
-  { label: 'Standard', count: 0,  desc: 'No monsters' },
-  { label: 'Easy',     count: 3,  desc: '3 monsters' },
-  { label: 'Medium',   count: 4,  desc: '4 monsters' },
-  { label: 'Hard',     count: 5,  desc: '5 monsters' },
+const DIFFICULTIES: { labelKey: string; count: MonsterCount; monsterCount: number }[] = [
+  { labelKey: 'difficulty.standard', count: 0, monsterCount: 0 },
+  { labelKey: 'difficulty.easy',     count: 3, monsterCount: 3 },
+  { labelKey: 'difficulty.medium',   count: 4, monsterCount: 4 },
+  { labelKey: 'difficulty.hard',     count: 5, monsterCount: 5 },
 ];
 
 function clearBrowserData() {
@@ -195,9 +195,9 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
         <button
           onClick={clearBrowserData}
-          title="Reset — clear all sessions, cookies & local data"
+          title={t('lobby.resetTitle')}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
-          aria-label="Reset browser data"
+          aria-label={t('lobby.resetAria')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 6 5 6 21 6" />
@@ -205,35 +205,35 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
             <path d="M10 11v6M14 11v6" />
             <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
           </svg>
-          Reset
+          {t('lobby.reset')}
         </button>
 
         <button
           onClick={() => setShowSettings(true)}
-          title="Settings"
+          title={t('settings.title')}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
-          aria-label="Open settings"
+          aria-label={t('lobby.settingsAria')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
-          Settings
+          {t('settings.title')}
         </button>
 
         <a
           href="https://website.cdn77.luckyduckgames.com/downloads/October2021/ae6c8593a374f0938eeef5ab872f96ab.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          title="Rules"
+          title={t('lobby.rulesTitle')}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
-          aria-label="Open rules (PDF)"
+          aria-label={t('lobby.rulesAria')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
           </svg>
-          Rules
+          {t('lobby.rules')}
         </a>
       </div>
 
@@ -243,9 +243,11 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
 }
 
 function DifficultyPicker({ value, onChange }: { value: MonsterCount; onChange: (v: MonsterCount) => void }) {
+  const t = useT();
+
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-ocean-300 text-sm">Difficulty</span>
+      <span className="text-ocean-300 text-sm">{t('difficulty.title')}</span>
       <div className="grid grid-cols-4 gap-1.5">
         {DIFFICULTIES.map(d => (
           <button
@@ -259,8 +261,10 @@ function DifficultyPicker({ value, onChange }: { value: MonsterCount; onChange: 
                 : 'bg-ocean-800/60 border-ocean-700/40 text-ocean-400 hover:border-ocean-500/60',
             ].join(' ')}
           >
-            <div>{d.label}</div>
-            <div className={`text-[9px] mt-0.5 ${value === d.count ? 'text-ocean-200' : 'text-ocean-600'}`}>{d.desc}</div>
+            <div>{t(d.labelKey)}</div>
+            <div className={`text-[9px] mt-0.5 ${value === d.count ? 'text-ocean-200' : 'text-ocean-600'}`}>
+              {d.monsterCount === 0 ? t('difficulty.noMonsters') : t('difficulty.monsters', { count: d.monsterCount })}
+            </div>
           </button>
         ))}
       </div>
