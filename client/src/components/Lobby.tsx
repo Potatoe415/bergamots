@@ -220,6 +220,21 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
           </svg>
           Settings
         </button>
+
+        <a
+          href="https://website.cdn77.luckyduckgames.com/downloads/October2021/ae6c8593a374f0938eeef5ab872f96ab.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Rules"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
+          aria-label="Open rules (PDF)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+          Rules
+        </a>
       </div>
 
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
