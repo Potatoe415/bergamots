@@ -220,7 +220,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       </div>
 
       {/* Grid */}
-      <div id="game-canvas" className="flex-1 min-h-0 px-2 pt-0.5 grid place-items-center overflow-hidden">
+      <div id="game-canvas" className="flex-1 min-h-0 px-2 pt-0.5 grid place-items-center overflow-hidden [container-type:size]">
         <Grid
           grid={grid}
           legalMoves={movesForSelected}

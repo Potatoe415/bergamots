@@ -19,9 +19,8 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
   const allPositions = [...rows].reverse().flat();
 
   return (
-    // Mobile: full-width square (height driven by width).
-    // Desktop: height-driven square (max height of flex-1 parent).
-    <div id="grid" className="aspect-square h-full max-h-full w-auto max-w-full bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
+    // Square sized to the smaller of container width/height via container query units.
+    <div id="grid" className="w-[min(100cqw,100cqh)] aspect-square bg-ocean-900/60 rounded-2xl p-2 border border-ocean-700/50 shadow-2xl">
       <div className="grid grid-cols-6 grid-rows-6 w-full h-full gap-0.5">
         {allPositions.map(pos => {
           const cell = grid[pos];

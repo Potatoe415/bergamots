@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser.
-Last_Action: LanguageSwitcher redesigned — shows current lang code only; click opens a pop-up to select language.
+Last_Action: Bugfix: Grid mobile overflow — use container query units (min(100cqw,100cqh)) so grid is always a square that fits both viewport dimensions.
 Next_Actions:
 - Play-test online multiplayer end-to-end at tranquil-woad.vercel.app.
 - Play-test pass-and-play mode.
@@ -17,14 +17,11 @@ Open_Questions:
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
 Recent_Changes:
+- 2026-06-04 Bugfix: Grid mobile overflow — container query units min(100cqw,100cqh) make grid always square and within viewport.
 - 2026-06-04 UX: LanguageSwitcher — shows current lang code; click opens pop-up language picker.
 - 2026-06-04 UX: Room code moved from GameBoard header → settings pop-up (online games only).
-- 2026-06-04 UX: "Restart game" button in settings pop-up (GameBoard) — calls onRematch to start fresh with same players.
-- 2026-06-04 Bugfix: start_discard card selection — phase-change effect clears stale state; isMyTurnToContribute check prioritised over pendingPlay in handleCardClick.
-- 2026-06-04 Bugfix: URL ?room= now takes priority over saved session if rooms differ; tranquillity_room saved in localStorage.
-- 2026-06-04 Server: 48h room TTL — lastActivityAt tracked per room, purgeExpiredRooms runs every hour.
-- 2026-06-04 UX: settings gear button (next to reset) — pop-up with sound-on-turn toggle; persisted in localStorage.
-- 2026-06-04 UX: reset button (trash icon) on lobby splash — clears all browser storage/cookies/caches and reloads.
+- 2026-06-04 Layout: game-footer always visible — game-canvas flex-1 all viewports, Grid height-driven + max-w-full.
+- 2026-06-04 Bugfix: start_discard card selection — phase-change effect clears stale state; isMyTurnToContribute check prioritised over pendingPlay.
 - 2026-06-04 Layout: game-footer always visible — game-canvas flex-1 all viewports, Grid height-driven + max-w-full.
 - 2026-06-04 UX: opponent-play preview fixed for local mode — pendingOpponentPlay in LocalState bridges the pass-and-play remount.
 - 2026-06-03 Layout: desktop grid spacer hidden on md+ — board now fills available height.
