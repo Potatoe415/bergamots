@@ -84,5 +84,19 @@
     "kind": "custom",
     "launch": "/games/yatsy/index.html",
     "thumbnail": "/games/yatsy/assets/thumbnail-yatsy.jpg"
+  },
+  {
+    "id": "diceduel",
+    "title": "Dice Duel",
+    "kind": "custom",
+    "launch": "/games/diceduel/index.html",
+    "thumbnail": "/games/diceduel/assets/thumbnail.svg"
+  },
+  {
+    "id": "tranquil",
+    "title": "Tranquil",
+    "kind": "external",
+    "launch": "https://tranquil-woad.vercel.app/",
+    "thumbnail": "/games/tranquil/assets/thumbnail.webp"
   }
 ]
