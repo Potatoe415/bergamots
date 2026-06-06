@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser (local, online, and vs bot), with complete EN/FR UI coverage.
-Last_Action: Added win/lose sounds (ascending arpeggio / descending minor fall) and fade+spring-scale entrance animation to GameOver screen (sounds.ts + GameOver.tsx).
+Last_Action: Fixed TS2339 build error in GameOver.tsx — useSettings() returns { settings, update }; destructure settings first, then soundOnMyTurn from settings.
 Next_Actions:
 - Play-test monster card animation in all three modes (local, vs bot, online).
 - Play-test start_discard turn order in all three modes.
@@ -20,6 +20,7 @@ Open_Questions:
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
 Recent_Changes:
+- 2026-06-06 Bugfix: TS2339 in GameOver.tsx — destructure `settings` from useSettings(), then `soundOnMyTurn` from settings.
 - 2026-06-06 Feature: Win/lose sounds + entrance animation on GameOver screen (sounds.ts + GameOver.tsx).
 - 2026-06-06 UI: Room code now shown in 'waiting for second player' status bar (GameBoard.tsx + i18n.tsx).
 - 2026-06-06 Bugfix: monster card animation — setOpponentPlay fires immediately on current player's monster play (GameBoard.tsx); 🐙 emoji enlarged to text-3xl + fade-in-scale + red bg (Grid.tsx).

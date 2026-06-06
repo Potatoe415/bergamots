@@ -11,7 +11,8 @@ interface Props {
 
 export default function GameOver({ winner, onRematch, onMenu }: Props) {
   const t = useT();
-  const { soundOnMyTurn } = useSettings();
+  const { settings } = useSettings();
+  const { soundOnMyTurn } = settings;
   const won = winner === 'players';
   const [visible, setVisible] = useState(false);
 
