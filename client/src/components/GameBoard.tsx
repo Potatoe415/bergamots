@@ -96,9 +96,17 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     prevGridRef.current = grid;
 
     if (isMyTurn && !wasMyTurn) {
-      const newCell = grid.find((cell, i) => cell.card && !prevGrid[i]?.card);
-      if (newCell?.card) {
-        setOpponentPlay({ card: newCell.card, position: newCell.position });
+      // Regular card placed: a cell gained a card
+      const placedCell = grid.find((cell, i) => cell.card && !prevGrid[i]?.card);
+      if (placedCell?.card) {
+        setOpponentPlay({ card: placedCell.card, position: placedCell.position });
+        const timer = setTimeout(() => setOpponentPlay(null), 2000);
+        return () => clearTimeout(timer);
+      }
+      // Monster card played: a cell lost its card (monster removed it)
+      const clearedIdx = grid.findIndex((cell, i) => !cell.card && prevGrid[i]?.card);
+      if (clearedIdx >= 0) {
+        setOpponentPlay({ card: prevGrid[clearedIdx].card!, position: clearedIdx });
         const timer = setTimeout(() => setOpponentPlay(null), 2000);
         return () => clearTimeout(timer);
       }
@@ -210,6 +218,11 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     : undefined;
 
   const startDiscardMax = startDiscardState ? Math.min(startDiscardState.remaining, myHand.length) : 0;
+  // Each player must contribute enough cards to bring their own hand back to 5.
+  // Capped by remaining so it never exceeds what's left to discard.
+  const startDiscardMin = startDiscardState
+    ? Math.min(Math.max(0, myHand.length - 5), startDiscardState.remaining)
+    : 0;
 
   return (
     <div id="game-board" className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
@@ -263,6 +276,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
           selectedCard={selectedCard}
           onCellClick={handleCellClick}
           opponentPlayPosition={opponentPlay?.position}
+          pendingPlayCard={pendingPlay?.card}
+          pendingPlayPosition={pendingPlay?.position}
         />
       </div>
 
@@ -355,7 +370,9 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         <div className="shrink-0 bg-amber-950/80 border-t border-amber-800 px-4 py-2 text-center">
           <p className="text-amber-300 text-sm font-semibold mb-1">⚓ {t('startDiscard.title')}</p>
           <p className="text-amber-200/70 text-xs mb-2">
-            {t('startDiscard.selectUp', { max: startDiscardMax, remaining: startDiscardState.remaining })}
+            {startDiscardMin > 0
+              ? t('startDiscard.selectRange', { min: startDiscardMin, max: startDiscardMax, remaining: startDiscardState.remaining })
+              : t('startDiscard.selectUp', { max: startDiscardMax, remaining: startDiscardState.remaining })}
           </p>
           <div className="flex items-center gap-3 justify-center">
             <span className="text-amber-400/70 text-sm">
@@ -363,6 +380,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
             </span>
             <button
               className="btn-primary text-sm py-1.5"
+              disabled={startDiscardSelected.size < startDiscardMin}
               onClick={() => { onContributeStartDiscard([...startDiscardSelected]); setStartDiscardSelected(new Set()); }}
             >
               {t('startDiscard.contributeBtn', {

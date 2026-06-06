@@ -8,9 +8,13 @@ interface Props {
   selectedCard: Card | null;
   onCellClick: (pos: number) => void;
   opponentPlayPosition?: number;
+  /** Card being placed that still requires a discard-cost payment. Shown semi-transparently so
+   *  the player sees the card on the board before confirming the discard. */
+  pendingPlayCard?: Card;
+  pendingPlayPosition?: number;
 }
 
-export default function Grid({ grid, legalMoves, selectedCard, onCellClick, opponentPlayPosition }: Props) {
+export default function Grid({ grid, legalMoves, selectedCard, onCellClick, opponentPlayPosition, pendingPlayCard, pendingPlayPosition }: Props) {
   const legalPositions = new Set(legalMoves.map(m => m.position));
 
   const rows: number[][] = Array.from({ length: 6 }, (_, rowIdx) =>
@@ -27,6 +31,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
           const isLegal = selectedCard !== null && legalPositions.has(pos);
           const move = isLegal ? legalMoves.find(m => m.position === pos) : undefined;
           const isOpponentPlay = pos === opponentPlayPosition;
+          const isPendingPlay = pendingPlayCard !== undefined && pos === pendingPlayPosition;
 
           return (
             <div
@@ -34,7 +39,9 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
               className={[
                 'rounded-lg overflow-hidden flex items-center justify-center min-w-0',
                 'border transition-all duration-150',
-                isOpponentPlay
+                isPendingPlay
+                  ? 'border-yellow-400/70 ring-2 ring-yellow-400/50'
+                  : isOpponentPlay
                   ? 'border-amber-400/80 ring-2 ring-amber-300/60 scale-105 animate-pulse'
                   : cell.card && isLegal
                   ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
@@ -48,6 +55,12 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
             >
               {cell.card ? (
                 <CardComp card={cell.card} size="full" disabled />
+              ) : isPendingPlay ? (
+                <div className="opacity-50 w-full h-full">
+                  <CardComp card={pendingPlayCard!} size="full" disabled />
+                </div>
+              ) : isOpponentPlay ? (
+                <span className="text-xl leading-none select-none">🐙</span>
               ) : isLegal ? (
                 <div className="flex flex-col items-center gap-0.5">
                   <span className="text-yellow-300 text-xs">+</span>

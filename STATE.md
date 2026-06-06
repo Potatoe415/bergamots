@@ -7,11 +7,11 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser (local, online, and vs bot), with complete EN/FR UI coverage.
-Last_Action: Fixed missing French translations for lobby footer buttons, difficulty picker, start/finish indicators, and in-game turn/status prompts. Client build green.
+Last_Action: Fixed turn-order bug — after start_discard completes the engine now hands the turn to the OTHER player (not the Start-card player again). Also fixed UI: island-card placement now shows the card semi-transparently on the grid while the discard-cost bar is active, so discard always feels post-play.
 Next_Actions:
-- Play-test "Play vs Bot" mode (varied difficulties) for feel and stalls.
-- Play-test online multiplayer end-to-end at tranquil-woad.vercel.app.
-- Play-test pass-and-play mode.
+- Play-test start_discard turn order in all three modes (local, vs bot, online).
+- Play-test island card placement with discard cost — verify card appears on grid before discard prompt.
+- Deploy to Vercel/Railway and regression-test online multiplayer.
 
 Open_Questions:
 - Bot is greedy+feasibility-aware (no multi-turn search). Add look-ahead later if needed.
@@ -20,8 +20,9 @@ Open_Questions:
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
 Recent_Changes:
+- 2026-06-06 Bugfix: turn order — applyContributeStartDiscard nextPlayerIndex flipped to other player when remaining=0 (gameEngine.ts:556).
+- 2026-06-06 Bugfix: Grid now shows pending island card semi-transparently while discard-cost bar is active (Grid.tsx + GameBoard.tsx).
+- 2026-06-06 Bugfix: Bot end-game — bot defers finish card to human when human holds one; prevents silent auto-win.
+- 2026-06-06 Bugfix: start_discard hand size — engine trims excess after remaining=0, enforces per-player min contribution; bot and UI updated to match.
 - 2026-06-04 i18n: Lobby reset/settings/rules, difficulty picker, start/finish indicators, and turn/status prompts now render through EN/FR translations.
-- 2026-06-04 Bot: feasibility-aware play (gridFeasibility.ts) — avoids unfillable gaps, roomy placement, Sea-Monster grid repair; self-play-tuned, win rate up ~3-4×.
-- 2026-06-04 UX: Lobby footer — "Rules" link button next to Settings opens the rules PDF in a new tab.
 - 2026-06-04 Feature: Play vs Bot — co-op heuristic bot (chooseBotAction) + lobby button + setTimeout auto-play in local mode; human always views as player 0.
-- 2026-06-04 Bugfix: Grid mobile overflow — container query units min(100cqw,100cqh) make grid always square and within viewport.

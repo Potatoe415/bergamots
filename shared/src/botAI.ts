@@ -99,8 +99,10 @@ function contributeAction(state: GameState, idx: 0 | 1): BotAction {
   const sds = state.startDiscardState!;
   const hand = state.players[idx].hand;
   const available = hand.filter(c => c.type !== 'monster').length;
+  // Must contribute at least enough to bring own hand to ≤ 5 (engine enforces this).
+  const minRequired = Math.min(Math.max(0, hand.length - 5), sds.remaining);
   const fairShare = Math.max(1, Math.ceil(sds.remaining / 2));
-  const target = Math.min(sds.remaining, available, fairShare);
+  const target = Math.min(sds.remaining, available, Math.max(fairShare, minRequired));
   return { type: 'contribute', cardIds: chooseDiscards(hand, target) };
 }
 
@@ -125,7 +127,21 @@ export function chooseBotAction(state: GameState, idx: 0 | 1): BotAction | null 
   const startMove = moves.find(m => cards.get(m.cardId)?.type === 'start');
   if (startMove) return play(startMove.cardId, startMove.position);
   const finishMove = moves.find(m => cards.get(m.cardId)?.type === 'finish');
-  if (finishMove) return play(finishMove.cardId, -1);
+  if (finishMove) {
+    // Defer to the human player if they also hold a finish card — let them
+    // experience the winning moment rather than the bot ending the game silently.
+    const humanIdx: 0 | 1 = idx === 0 ? 1 : 0;
+    const humanHasFinish = state.players[humanIdx].hand.some(c => c.type === 'finish');
+    if (humanHasFinish) {
+      // Discard two non-finish, non-monster cards so the finish card is preserved.
+      const deferPool = hand.filter(c => c.type !== 'monster' && c.type !== 'finish');
+      if (deferPool.length >= 2) {
+        const ids = discardCandidates(deferPool);
+        return { type: 'discard_two', cardIds: [ids[0], ids[1]] };
+      }
+    }
+    return play(finishMove.cardId, -1);
+  }
 
   // finish_pending: only Sea Monster plays are legal — dump one to progress.
   if (state.phase === 'finish_pending') return play(moves[0].cardId, moves[0].position);

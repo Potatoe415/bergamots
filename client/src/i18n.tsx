@@ -102,6 +102,7 @@ const en: Record<string, string> = {
   'startDiscard.stillNeeded': 'Still needed',
   'startDiscard.together': 'Together you must discard 8 cards. Your partner contributed {n}.',
   'startDiscard.selectUp': 'Select up to {max} cards to contribute ({remaining} still needed).',
+  'startDiscard.selectRange': 'Select {min}–{max} cards to contribute — you must discard at least {min} to return to a 5-card hand ({remaining} still needed).',
   'startDiscard.contributing': 'Contributing {sel} / {max} max',
   'startDiscard.contributeBtn': 'Contribute {n} {card}',
   // App
@@ -209,6 +210,7 @@ const fr: Record<string, string> = {
   'startDiscard.stillNeeded': 'Encore nécessaire',
   'startDiscard.together': 'Ensemble vous devez défausser 8 cartes. Votre partenaire en a contribué {n}.',
   'startDiscard.selectUp': 'Choisissez jusqu\'à {max} cartes à contribuer ({remaining} encore nécessaires).',
+  'startDiscard.selectRange': 'Choisissez {min}–{max} cartes à contribuer — vous devez en défausser au moins {min} pour revenir à 5 cartes en main ({remaining} encore nécessaires).',
   'startDiscard.contributing': 'Contribution : {sel} / {max} max',
   'startDiscard.contributeBtn': 'Contribuer {n} {card}',
   // App

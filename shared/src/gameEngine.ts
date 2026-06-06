@@ -513,6 +513,14 @@ export function applyContributeStartDiscard(
   if (cardIds.length > sds.remaining) return { ok: false, error: `Cannot discard more than ${sds.remaining} cards` };
   if (cardIds.length > player.hand.length) return { ok: false, error: 'Not enough cards in hand' };
 
+  // Each player must contribute at least enough to bring their own hand to ≤ 5 cards.
+  // This prevents ending start_discard with an over-sized hand. The minimum is capped
+  // by remaining so it never exceeds what's left to discard (trim handles the residual).
+  const minContribution = Math.min(Math.max(0, player.hand.length - 5), sds.remaining);
+  if (cardIds.length < minContribution) {
+    return { ok: false, error: `Must contribute at least ${minContribution} card${minContribution !== 1 ? 's' : ''} to return to a 5-card hand` };
+  }
+
   const toDiscard = new Set(cardIds);
   for (const id of toDiscard) {
     const card = player.hand.find(c => c.id === id);
@@ -531,10 +539,24 @@ export function applyContributeStartDiscard(
   players[playerIndex] = player;
 
   if (newRemaining === 0) {
-    const p0 = drawUp(players[0]);
-    const p1 = drawUp(players[1]);
-    const nextPlayers: [PlayerState, PlayerState] = [p0, p1];
-    const nextPlayerIndex: 0 | 1 = state.currentPlayerIndex;
+    // Draw up to 5, then trim any excess above 5. Excess arises when a player
+    // contributed fewer cards than needed to reach ≤ 5 (e.g. remaining was 1 but
+    // the player still had 7 cards). Monsters cannot be discarded so non-monsters
+    // are removed first.
+    const finalizePlayer = (p: PlayerState): PlayerState => {
+      const drawn = drawUp(p);
+      if (drawn.hand.length <= 5) return drawn;
+      const excess = drawn.hand.length - 5;
+      const nonMonsters = drawn.hand.filter(c => c.type !== 'monster');
+      const monsters = drawn.hand.filter(c => c.type === 'monster');
+      const hand = [...monsters, ...nonMonsters.slice(excess)];
+      return { ...drawn, hand, discardCount: drawn.discardCount + excess };
+    };
+    const nextPlayers: [PlayerState, PlayerState] = [finalizePlayer(players[0]), finalizePlayer(players[1])];
+    // Playing the Start card counts as that player's turn action. After the
+    // shared discard ritual completes, it is the *other* player's turn next —
+    // not the Start-card player's turn again.
+    const nextPlayerIndex: 0 | 1 = state.currentPlayerIndex === 0 ? 1 : 0;
 
     let newState: GameState = {
       ...state,
