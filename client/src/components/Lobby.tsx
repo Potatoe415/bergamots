@@ -193,6 +193,9 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
       </div>
 
       <div className="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <span className="px-3 py-1.5 rounded-full bg-black/30 text-white/30 text-xs font-mono select-none">
+          v0.8
+        </span>
         <button
           onClick={clearBrowserData}
           title={t('lobby.resetTitle')}
