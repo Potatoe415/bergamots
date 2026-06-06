@@ -7,10 +7,10 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Fully deployed — frontend on Vercel, backend on Railway, online multiplayer live.
 Current_Goal: Playable 2-player Tranquillity card game in browser (local, online, and vs bot), with complete EN/FR UI coverage.
-Last_Action: Added v0.8 version label to the lobby bottom bar (Lobby.tsx).
+Last_Action: Added win/lose sounds (ascending arpeggio / descending minor fall) and fade+spring-scale entrance animation to GameOver screen (sounds.ts + GameOver.tsx).
 Next_Actions:
-- Play-test start_discard turn order in all three modes (local, vs bot, online).
-- Play-test island card placement with discard cost — verify card appears on grid before discard prompt.
+- Play-test monster card animation in all three modes (local, vs bot, online).
+- Play-test start_discard turn order in all three modes.
 - Deploy to Vercel/Railway and regression-test online multiplayer.
 
 Open_Questions:
@@ -20,10 +20,8 @@ Open_Questions:
 - Jagged Rocks / Storm & Compass expansions: in scope?
 
 Recent_Changes:
+- 2026-06-06 Feature: Win/lose sounds + entrance animation on GameOver screen (sounds.ts + GameOver.tsx).
+- 2026-06-06 UI: Room code now shown in 'waiting for second player' status bar (GameBoard.tsx + i18n.tsx).
+- 2026-06-06 Bugfix: monster card animation — setOpponentPlay fires immediately on current player's monster play (GameBoard.tsx); 🐙 emoji enlarged to text-3xl + fade-in-scale + red bg (Grid.tsx).
+- 2026-06-06 Bugfix: start_discard draw — changed drawUp(p,7) to drawExactly(p,2); Start player now gets 6 cards (not 7), other gets 7, per 2-player rules (gameEngine.ts).
 - 2026-06-06 UI: Added v0.8 version label to lobby bottom bar (Lobby.tsx).
-- 2026-06-06 Bugfix: turn order — applyContributeStartDiscard nextPlayerIndex flipped to other player when remaining=0 (gameEngine.ts:556).
-- 2026-06-06 Bugfix: Grid now shows pending island card semi-transparently while discard-cost bar is active (Grid.tsx + GameBoard.tsx).
-- 2026-06-06 Bugfix: Bot end-game — bot defers finish card to human when human holds one; prevents silent auto-win.
-- 2026-06-06 Bugfix: start_discard hand size — engine trims excess after remaining=0, enforces per-player min contribution; bot and UI updated to match.
-- 2026-06-04 i18n: Lobby reset/settings/rules, difficulty picker, start/finish indicators, and turn/status prompts now render through EN/FR translations.
-- 2026-06-04 Feature: Play vs Bot — co-op heuristic bot (chooseBotAction) + lobby button + setTimeout auto-play in local mode; human always views as player 0.

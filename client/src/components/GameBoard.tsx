@@ -29,7 +29,7 @@ function getStatusMessage(gameState: ClientGameState, t: Translate): string {
 
   switch (gameState.phase) {
     case 'waiting':
-      return t('status.waiting');
+      return t('status.waiting', { code: gameState.roomId });
     case 'won':
       return t('status.won');
     case 'lost':
@@ -180,6 +180,10 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     const move = movesForSelected.find(m => m.position === pos);
     if (!move) return;
     if (move.discardCost === 0) {
+      if (selectedCard.type === 'monster') {
+        setOpponentPlay({ card: selectedCard, position: pos });
+        setTimeout(() => setOpponentPlay(null), 700);
+      }
       onPlayCard(selectedCard.id, pos, []);
       setSelectedCard(null);
     } else {

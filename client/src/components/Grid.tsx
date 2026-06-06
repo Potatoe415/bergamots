@@ -42,7 +42,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
                 isPendingPlay
                   ? 'border-yellow-400/70 ring-2 ring-yellow-400/50'
                   : isOpponentPlay
-                  ? 'border-amber-400/80 ring-2 ring-amber-300/60 scale-105 animate-pulse'
+                  ? 'border-red-400/90 ring-2 ring-red-300/70 scale-110 bg-red-950/60 animate-pulse'
                   : cell.card && isLegal
                   ? 'border-red-500/80 ring-2 ring-red-400/60 cursor-pointer scale-95'
                   : cell.card
@@ -60,7 +60,7 @@ export default function Grid({ grid, legalMoves, selectedCard, onCellClick, oppo
                   <CardComp card={pendingPlayCard!} size="full" disabled />
                 </div>
               ) : isOpponentPlay ? (
-                <span className="text-xl leading-none select-none">🐙</span>
+                <span className="text-3xl leading-none select-none animate-fade-in-scale">🐙</span>
               ) : isLegal ? (
                 <div className="flex flex-col items-center gap-0.5">
                   <span className="text-yellow-300 text-xs">+</span>

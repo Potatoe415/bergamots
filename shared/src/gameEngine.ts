@@ -257,6 +257,17 @@ function drawUp(player: PlayerState, target = 5): PlayerState {
   };
 }
 
+// Draws exactly `count` cards from the deck (or fewer if the deck is smaller).
+function drawExactly(player: PlayerState, count: number): PlayerState {
+  const toDraw = Math.min(count, player.deck.length);
+  if (toDraw <= 0) return player;
+  return {
+    ...player,
+    hand: [...player.hand, ...player.deck.slice(0, toDraw)],
+    deck: player.deck.slice(toDraw),
+  };
+}
+
 // ── finish_pending resolver ───────────────────────────────────────────────────
 
 function anyHandHasMonster(state: GameState): boolean {
@@ -356,8 +367,11 @@ export function applyPlayCard(
     if (playerIndex === 0) p0 = { ...player };
     else p1 = { ...player };
 
-    p0 = drawUp(p0, 7);
-    p1 = drawUp(p1, 7);
+    // 2-player rule: each player draws exactly 2 extra cards before the
+    // collective discard of 8. "Draw up to 7" is wrong because the player
+    // who played the Start card only has 4 cards at this point (+2 = 6).
+    p0 = drawExactly(p0, 2);
+    p1 = drawExactly(p1, 2);
 
     const startDiscardState: StartDiscardState = {
       remaining: 8,
