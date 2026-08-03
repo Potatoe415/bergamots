@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Online backend migrated from Railway/Socket.IO to Vercel Serverless Functions + Supabase (reusing coinchapp's Supabase project/tables). Code complete and type-checked; not yet deployed/play-tested on the new backend — needs real Supabase env vars and a manual two-tab test.
 Current_Goal: Get the Supabase/Vercel backend live and verified (env vars filled in, deployed, two-browser play-test), then resume normal feature work.
-Last_Action: Replaced the single generic "Connecting…" full-screen loader (shown while creating/joining/resuming an online room) with a step-by-step progress stepper (`ConnectingScreen.tsx`): `useOnlineGame` now tracks `connectionKind`('create'|'join'|'resume') and `connectionStep`('auth'|'create_room'|'join_room'|'sync') through each flow, rendered as done/active/pending rows with i18n labels.
+Last_Action: Added tagged console logging across all 3 layers of the online connect/join/resume flow — `client/src/lib/log.ts` (logApp, used in supabase.ts/api.ts/useOnlineGame.ts), `api/_lib/log.ts` (logServer + logDb, used in join.ts/get-view.ts/auth.ts/repo.ts) — so each step (auth, create_room, join_room, sync) can be traced app→server→db in the browser console and Vercel function logs.
 Next_Actions:
 - Fill `.env.local` and `client/.env.local` with the real Supabase project values (same project as coinchapp) — see `docs/RUNBOOK.md`.
 - Add the same env vars to the Vercel project dashboard (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY).
@@ -23,6 +23,7 @@ Open_Questions:
 - No idle-turn timer/bot-takeover for online mode yet (coinchapp has one) — add only if disconnections prove to be a real problem.
 
 Recent_Changes:
+- 2026-08-03 Debug: Tagged app/server/db console logging for every step of connect/join/resume (client/src/lib/log.ts, api/_lib/log.ts).
 - 2026-08-03 UI: Multi-step "connecting" progress stepper for online create/join/resume (ConnectingScreen.tsx + useOnlineGame connectionKind/connectionStep).
 - 2026-08-03 Migration: Railway/Socket.IO → Vercel Serverless Functions + Supabase (shared project with coinchapp, `game_type='tranquillity'`, no new SQL migration needed). See docs/DECISIONS.md for rationale/trade-offs.
 - 2026-06-06 Bugfix: TS2339 in GameOver.tsx — destructure `settings` from useSettings(), then `soundOnMyTurn` from settings.

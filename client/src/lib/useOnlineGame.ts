@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ClientGameState, MonsterCount } from '@tranquillity/shared';
 import { ensureAnonAuth, supabase } from './supabase';
 import * as api from './api';
+import { logApp } from './log';
 
 /** Which multi-step connection flow is in progress, so the UI can render a
  *  progress stepper (e.g. "Authenticating" -> "Creating room" -> "Loading"). */
@@ -53,6 +54,7 @@ export function useOnlineGame() {
     if (!gameId) return;
     try {
       const view = await api.getView(gameId);
+      logApp('sync', 'game view fetched', { status: view.status, hasState: view.clientState !== null });
       setOnline((prev) => ({
         ...prev,
         roomCode: view.roomCode,
@@ -63,6 +65,7 @@ export function useOnlineGame() {
         error: null,
       }));
     } catch (e) {
+      logApp('sync', 'game view fetch failed', e);
       setOnline((prev) => ({ ...prev, connectionStatus: 'error', error: errorMessage(e) }));
     }
   }, []);
@@ -71,6 +74,7 @@ export function useOnlineGame() {
     if (channelRef.current) void supabase.removeChannel(channelRef.current);
     const gameId = gameIdRef.current;
     if (!gameId) return;
+    logApp('realtime', `subscribing to game-${gameId}`);
     channelRef.current = supabase
       .channel(`game-${gameId}`)
       .on(
@@ -80,6 +84,7 @@ export function useOnlineGame() {
       )
       .on('broadcast', { event: 'tick' }, () => void refetch())
       .subscribe((status) => {
+        logApp('realtime', `channel status: ${status}`);
         if (BAD_STATUSES.has(status)) setTimeout(() => resubscribeRef.current(), RESUBSCRIBE_DELAY_MS);
       });
   }, [refetch]);
@@ -90,6 +95,7 @@ export function useOnlineGame() {
 
   const attach = useCallback(
     (gameId: string, roomCode: string) => {
+      logApp('sync', `attaching to game ${gameId}`, { roomCode });
       gameIdRef.current = gameId;
       localStorage.setItem('tranquillity_gameId', gameId);
       localStorage.setItem('tranquillity_room', roomCode);
@@ -102,14 +108,17 @@ export function useOnlineGame() {
 
   const createRoom = useCallback(
     async (playerName: string, monsterCount: MonsterCount = 0) => {
+      logApp('auth', 'create room requested, authenticating…');
       localStorage.setItem('tranquillity_name', playerName);
       setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'create', connectionStep: 'auth', error: null }));
       try {
         await ensureAnonAuth();
+        logApp('create_room', 'authenticated, calling /api/join to create room…');
         setOnline((prev) => ({ ...prev, connectionStep: 'create_room' }));
         const res = await api.createRoom(playerName, monsterCount);
         attach(res.gameId, res.roomCode);
       } catch (e) {
+        logApp('create_room', 'create room failed', e);
         setOnline((prev) => ({ ...prev, connectionStatus: 'error', connectionStep: null, error: errorMessage(e) }));
       }
     },
@@ -118,14 +127,17 @@ export function useOnlineGame() {
 
   const joinRoom = useCallback(
     async (roomCode: string, playerName: string) => {
+      logApp('auth', 'join room requested, authenticating…', { roomCode });
       localStorage.setItem('tranquillity_name', playerName);
       setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'join', connectionStep: 'auth', error: null }));
       try {
         await ensureAnonAuth();
+        logApp('join_room', 'authenticated, calling /api/join to join room…');
         setOnline((prev) => ({ ...prev, connectionStep: 'join_room' }));
         const res = await api.joinRoom(roomCode, playerName);
         attach(res.gameId, res.roomCode);
       } catch (e) {
+        logApp('join_room', 'join room failed', e);
         setOnline((prev) => ({ ...prev, connectionStatus: 'error', connectionStep: null, error: errorMessage(e) }));
       }
     },
@@ -136,10 +148,12 @@ export function useOnlineGame() {
   useEffect(() => {
     const savedGameId = localStorage.getItem('tranquillity_gameId');
     if (!savedGameId) return;
+    logApp('auth', 'resuming saved session, authenticating…', { gameId: savedGameId });
     gameIdRef.current = savedGameId;
     setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'resume', connectionStep: 'auth' }));
     void (async () => {
       await ensureAnonAuth();
+      logApp('sync', 'authenticated, resubscribing and fetching game view…');
       setOnline((prev) => ({ ...prev, connectionStep: 'sync' }));
       resubscribe();
       await refetch();

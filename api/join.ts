@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { initializeGame, type MonsterCount } from '@tranquillity/shared';
 import { getUserId } from './_lib/auth';
 import { getServiceClient } from './_lib/supabaseAdmin';
+import { logServer } from './_lib/log';
 import { findGameByCode, isSeatLive, loadGame, persistGame, randomRoomCode, seatOf, touchGame, GAME_TYPE } from './_lib/repo';
 
 const ALLOWED_MONSTER_COUNTS: MonsterCount[] = [0, 3, 4, 5];
@@ -38,19 +39,23 @@ async function startGameForFullRoom(gameId: string): Promise<void> {
  *  free seat, or (if full) take over a stale/disconnected seat. */
 async function handleJoin(uid: string, roomCode: string, name: string, res: VercelResponse): Promise<void> {
   const normalized = roomCode.trim().toUpperCase();
+  logServer('join_room', 'handling join request', { uid, roomCode: normalized, name });
   if (!ROOM_CODE_REGEX.test(normalized)) {
+    logServer('join_room', 'rejected: invalid room code format');
     res.status(400).json({ error: 'invalid_room_code' });
     return;
   }
 
   const loaded = await findGameByCode(normalized);
   if (!loaded) {
+    logServer('join_room', `rejected: room ${normalized} not found`);
     res.status(404).json({ error: 'room_not_found' });
     return;
   }
 
   const existingSeat = seatOf(uid, loaded.players);
   if (existingSeat !== null) {
+    logServer('join_room', `caller already holds seat ${existingSeat}, resuming`);
     res.status(200).json({ gameId: loaded.game.id, roomCode: normalized, seat: existingSeat });
     return;
   }
@@ -58,6 +63,7 @@ async function handleJoin(uid: string, roomCode: string, name: string, res: Verc
   const supabase = getServiceClient();
 
   if (loaded.players.length === 0) {
+    logServer('join_room', 'rejected: room has no host');
     res.status(400).json({ error: 'room_has_no_host' });
     return;
   }
@@ -66,9 +72,11 @@ async function handleJoin(uid: string, roomCode: string, name: string, res: Verc
     const now = Date.now();
     const stale = loaded.players.find((p) => !isSeatLive(loaded.players, p.seat, now));
     if (!stale) {
+      logServer('join_room', 'rejected: room full and both seats live');
       res.status(409).json({ error: 'room_full' });
       return;
     }
+    logServer('join_room', `taking over stale seat ${stale.seat}`);
     await supabase
       .from('game_players')
       .update({ user_id: uid, display_name: name, last_seen_at: new Date().toISOString() })
@@ -80,6 +88,7 @@ async function handleJoin(uid: string, roomCode: string, name: string, res: Verc
   }
 
   const freeSeat: 0 | 1 = loaded.players[0].seat === 0 ? 1 : 0;
+  logServer('join_room', `taking free seat ${freeSeat}`);
   await supabase.from('game_players').insert({
     game_id: loaded.game.id,
     seat: freeSeat,
@@ -89,16 +98,19 @@ async function handleJoin(uid: string, roomCode: string, name: string, res: Verc
     team: freeSeat === 0 ? 'A' : 'B',
   });
   await startGameForFullRoom(loaded.game.id);
+  logServer('join_room', `room ${normalized} now full, join complete`);
   res.status(200).json({ gameId: loaded.game.id, roomCode: normalized, seat: freeSeat });
 }
 
 /** Create a brand-new room with the caller as seat 0. */
 async function handleCreate(uid: string, name: string, monsterCount: unknown, res: VercelResponse): Promise<void> {
+  logServer('create_room', 'handling create room request', { uid, name });
   const supabase = getServiceClient();
   const mc = sanitizeMonsterCount(monsterCount);
 
   let code = randomRoomCode();
   for (let attempt = 0; attempt < 5 && (await findGameByCode(code)); attempt++) code = randomRoomCode();
+  logServer('create_room', `assigned room code ${code}`);
 
   const { data: gameRow, error: gameError } = await supabase
     .from('games')
@@ -106,6 +118,7 @@ async function handleCreate(uid: string, name: string, monsterCount: unknown, re
     .select('id')
     .single();
   if (gameError || !gameRow) {
+    logServer('create_room', 'failed to insert game row', gameError);
     res.status(500).json({ error: 'create_failed' });
     return;
   }
@@ -115,11 +128,13 @@ async function handleCreate(uid: string, name: string, monsterCount: unknown, re
     .from('game_players')
     .insert({ game_id: gameId, seat: 0, user_id: uid, display_name: name, is_bot: false, team: 'A' });
   if (seatError) {
+    logServer('create_room', `failed to insert seat 0 for game ${gameId}, rolling back`, seatError);
     await supabase.from('games').delete().eq('id', gameId);
     res.status(500).json({ error: 'create_failed' });
     return;
   }
 
+  logServer('create_room', `room ${code} created`, { gameId });
   res.status(200).json({ gameId, roomCode: code, seat: 0 });
 }
 
@@ -131,6 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
   const uid = await getUserId(req.headers);
   if (!uid) {
+    logServer('auth', 'POST /api/join rejected: not authenticated');
     res.status(401).json({ error: 'not_authenticated' });
     return;
   }
