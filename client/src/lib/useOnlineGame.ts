@@ -3,6 +3,7 @@ import type { ClientGameState, MonsterCount } from '@tranquillity/shared';
 import { ensureAnonAuth, supabase } from './supabase';
 import * as api from './api';
 import { logApp } from './log';
+import { predictContributeStartDiscard, predictDiscardTwo, predictPlayCard } from './optimisticMove';
 
 /** Which multi-step connection flow is in progress, so the UI can render a
  *  progress stepper (e.g. "Authenticating" -> "Creating room" -> "Loading"). */
@@ -48,12 +49,21 @@ export function useOnlineGame() {
   const gameIdRef = useRef<string | null>(null);
   const channelRef = useRef<Channel | null>(null);
   const resubscribeRef = useRef<() => void>(() => {});
+  // Guards against a refetch overwriting a locally-predicted move with a
+  // snapshot taken before that move reached the database.
+  const moveSeqRef = useRef(0);
+  const movesInFlightRef = useRef(0);
 
   const refetch = useCallback(async () => {
     const gameId = gameIdRef.current;
     if (!gameId) return;
+    const seq = moveSeqRef.current;
     try {
       const view = await api.getView(gameId);
+      if (movesInFlightRef.current > 0 || moveSeqRef.current !== seq) {
+        logApp('sync', 'game view discarded (own move is fresher)');
+        return;
+      }
       logApp('sync', 'game view fetched', { status: view.status, hasState: view.clientState !== null });
       setOnline((prev) => ({
         ...prev,
@@ -188,49 +198,60 @@ export function useOnlineGame() {
     void channelRef.current?.send({ type: 'broadcast', event: 'tick', payload: {} });
   }, []);
 
-  const playCard = useCallback(
-    async (cardId: string, position: number, discardCardIds: string[]) => {
+  /** Show the predicted result of my move immediately, then reconcile with the
+   *  authoritative state returned by the server (or re-sync if it rejects it). */
+  const sendMove = useCallback(
+    async (
+      predict: (state: ClientGameState) => ClientGameState | null,
+      send: (gameId: string) => Promise<api.MoveResponse>,
+    ) => {
       const gameId = gameIdRef.current;
       if (!gameId) return;
+      moveSeqRef.current += 1;
+      movesInFlightRef.current += 1;
+      setOnline((prev) => {
+        const predicted = prev.clientState && predict(prev.clientState);
+        return predicted ? { ...prev, clientState: predicted } : prev;
+      });
       try {
-        const res = await api.playCard(gameId, cardId, position, discardCardIds);
+        const res = await send(gameId);
         setOnline((prev) => ({ ...prev, clientState: res.clientState }));
         notifyPeer();
       } catch (e) {
         setOnline((prev) => ({ ...prev, error: errorMessage(e) }));
+        void refetch(); // drop the prediction, the server did not accept the move
+      } finally {
+        movesInFlightRef.current -= 1;
       }
     },
-    [notifyPeer],
+    [notifyPeer, refetch],
+  );
+
+  const playCard = useCallback(
+    (cardId: string, position: number, discardCardIds: string[]) =>
+      void sendMove(
+        (state) => predictPlayCard(state, cardId, position, discardCardIds),
+        (gameId) => api.playCard(gameId, cardId, position, discardCardIds),
+      ),
+    [sendMove],
   );
 
   const discardTwo = useCallback(
-    async (cardIds: [string, string]) => {
-      const gameId = gameIdRef.current;
-      if (!gameId) return;
-      try {
-        const res = await api.discardTwo(gameId, cardIds);
-        setOnline((prev) => ({ ...prev, clientState: res.clientState }));
-        notifyPeer();
-      } catch (e) {
-        setOnline((prev) => ({ ...prev, error: errorMessage(e) }));
-      }
-    },
-    [notifyPeer],
+    (cardIds: [string, string]) =>
+      void sendMove(
+        (state) => predictDiscardTwo(state, cardIds),
+        (gameId) => api.discardTwo(gameId, cardIds),
+      ),
+    [sendMove],
   );
 
   const contributeStartDiscard = useCallback(
-    async (cardIds: string[]) => {
-      const gameId = gameIdRef.current;
-      if (!gameId) return;
-      try {
-        const res = await api.contributeStartDiscard(gameId, cardIds);
-        setOnline((prev) => ({ ...prev, clientState: res.clientState }));
-        notifyPeer();
-      } catch (e) {
-        setOnline((prev) => ({ ...prev, error: errorMessage(e) }));
-      }
-    },
-    [notifyPeer],
+    (cardIds: string[]) =>
+      void sendMove(
+        (state) => predictContributeStartDiscard(state, cardIds),
+        (gameId) => api.contributeStartDiscard(gameId, cardIds),
+      ),
+    [sendMove],
   );
 
   const leave = useCallback(() => {
