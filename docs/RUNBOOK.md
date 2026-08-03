@@ -92,3 +92,13 @@ poll (`client/src/lib/useOnlineGame.ts`) is a safety net either way.
 
 **"room_full" when it shouldn't be:** a seat is only reclaimable once its
 `last_seen_at` is older than `PRESENCE_STALE_MS` (30s) — see `api/_lib/repo.ts`.
+
+**500 on any `/api/*` call, logs say `Cannot find module '.../node_modules/@tranquillity/shared/src/index.ts'`:**
+`shared` must be pre-compiled to plain JS — Vercel's serverless Node runtime
+resolves `@tranquillity/shared` through the real npm-workspace symlink and
+`package.json`'s `main` field, and cannot execute a raw `.ts` file the way
+Vite/esbuild can for the client. `npm run build -w shared` (already wired
+into `vercel.json`'s `buildCommand` and the root `dev`/`dev:api` scripts)
+must run — and succeed — before `api/*` or the client are built. Check with
+`vercel logs <deployment-url>` (or `vercel logs <deployment-url> --json` for
+the untruncated message).

@@ -5,14 +5,13 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Online backend migrated from Railway/Socket.IO to Vercel Serverless Functions + Supabase (reusing coinchapp's Supabase project/tables). Code complete and type-checked; not yet deployed/play-tested on the new backend — needs real Supabase env vars and a manual two-tab test.
-Current_Goal: Get the Supabase/Vercel backend live and verified (env vars filled in, deployed, two-browser play-test), then resume normal feature work.
-Last_Action: Added tagged console logging across all 3 layers of the online connect/join/resume flow — `client/src/lib/log.ts` (logApp, used in supabase.ts/api.ts/useOnlineGame.ts), `api/_lib/log.ts` (logServer + logDb, used in join.ts/get-view.ts/auth.ts/repo.ts) — so each step (auth, create_room, join_room, sync) can be traced app→server→db in the browser console and Vercel function logs.
+Status: Online backend migrated from Railway/Socket.IO to Vercel Serverless Functions + Supabase (reusing coinchapp's Supabase project/tables). Env vars are set on Vercel; root-caused and fixed the "create room" 500; awaiting a fresh deploy + two-tab play-test.
+Current_Goal: Confirm the new Vercel deployment actually creates/joins rooms end-to-end (two browser tabs), then resume normal feature work.
+Last_Action: Root-caused the "create room" 500 via `vercel logs` (the Cursor↔Vercel MCP integration turned out to be scoped to the `coinchapp` project only — unblocked by running `vercel login` locally instead): `shared/package.json`'s `main` pointed at raw `./src/index.ts`, which Vercel's Node function runtime cannot `require()` at deploy time (unlike Vite, which transpiles it for the client, masking the issue locally). Fixed by compiling `shared` to CommonJS (`shared/tsconfig.json` + a `build` script; `main`/`types` now point to `dist/`), wired into `vercel.json`'s `buildCommand` and the root `dev`/`dev:api`/`install:all` scripts. Verified: `shared` build, client build, `api` type-check, and `shared` unit tests all pass locally against the latest synced tree (which also picked up a separate session's connecting-screen UI + debug logging work).
 Next_Actions:
-- Fill `.env.local` and `client/.env.local` with the real Supabase project values (same project as coinchapp) — see `docs/RUNBOOK.md`.
-- Add the same env vars to the Vercel project dashboard (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY).
+- Push already done — wait for Vercel's auto-deploy to finish, then retest "Create a room" in the browser.
+- If it still 500s, re-check with `vercel logs <latest-deployment-url>` (CLI is now logged in locally; run `vercel ls` in `tranquil/` to find the latest URL).
 - Manually play-test online mode with two browser tabs: create room, join by code, play a few cards, reload one tab (session resume), test seat takeover after 30s idle.
-- Deploy to Vercel and confirm `/api/*` isn't shadowed by the SPA rewrite in `vercel.json`.
 - Re-play-test local/vs-bot modes (unaffected by this migration, but not re-verified since).
 
 Open_Questions:
@@ -23,9 +22,7 @@ Open_Questions:
 - No idle-turn timer/bot-takeover for online mode yet (coinchapp has one) — add only if disconnections prove to be a real problem.
 
 Recent_Changes:
+- 2026-08-03 Bugfix: "create room" 500 — `shared` package now compiled to CommonJS (`shared/dist`) instead of shipping raw `.ts` as `main`, which Vercel's Node function runtime couldn't `require()`. Build wired into `vercel.json` + root dev scripts.
 - 2026-08-03 Debug: Tagged app/server/db console logging for every step of connect/join/resume (client/src/lib/log.ts, api/_lib/log.ts).
 - 2026-08-03 UI: Multi-step "connecting" progress stepper for online create/join/resume (ConnectingScreen.tsx + useOnlineGame connectionKind/connectionStep).
 - 2026-08-03 Migration: Railway/Socket.IO → Vercel Serverless Functions + Supabase (shared project with coinchapp, `game_type='tranquillity'`, no new SQL migration needed). See docs/DECISIONS.md for rationale/trade-offs.
-- 2026-06-06 Bugfix: TS2339 in GameOver.tsx — destructure `settings` from useSettings(), then `soundOnMyTurn` from settings.
-- 2026-06-06 Feature: Win/lose sounds + entrance animation on GameOver screen (sounds.ts + GameOver.tsx).
-- 2026-06-06 UI: Room code now shown in 'waiting for second player' status bar (GameBoard.tsx + i18n.tsx).
