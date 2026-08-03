@@ -13,6 +13,7 @@ import { useOnlineGame } from './lib/useOnlineGame';
 import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
 import PassAndPlayTransition from './components/PassAndPlayTransition';
+import ConnectingScreen from './components/ConnectingScreen';
 
 type AppMode = 'lobby' | 'local' | 'online';
 
@@ -292,22 +293,12 @@ export default function App() {
       return (
         <>
           {langSwitcher}
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-4xl mb-4 animate-spin">🌊</div>
-              <p className="text-ocean-300">
-                {online.roomCode
-                  ? t('app.waitingPartner', { code: online.roomCode })
-                  : t('app.connecting')}
-              </p>
-              <button
-                onClick={goToMenu}
-                className="mt-6 px-6 py-2 rounded-lg border border-ocean-400 text-ocean-300 hover:bg-ocean-800 transition-colors"
-              >
-                {t('app.cancel')}
-              </button>
-            </div>
-          </div>
+          <ConnectingScreen
+            kind={online.connectionKind}
+            step={online.connectionStep}
+            roomCode={online.roomCode}
+            onCancel={goToMenu}
+          />
         </>
       );
     }

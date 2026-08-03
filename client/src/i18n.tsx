@@ -110,6 +110,10 @@ const en: Record<string, string> = {
   'app.connecting': 'Connecting…',
   'app.kicked': 'You were replaced by another player.',
   'app.cancel': 'Cancel',
+  'app.step.auth': 'Signing in',
+  'app.step.create_room': 'Creating room',
+  'app.step.join_room': 'Joining room',
+  'app.step.sync': 'Loading game',
   // Settings
   'settings.title': 'Settings',
   'settings.soundOnMyTurn': 'Play a sound on my turn',
@@ -218,6 +222,10 @@ const fr: Record<string, string> = {
   'app.connecting': 'Connexion…',
   'app.kicked': 'Vous avez été remplacé(e) par un autre joueur.',
   'app.cancel': 'Annuler',
+  'app.step.auth': 'Connexion en cours',
+  'app.step.create_room': 'Création de la salle',
+  'app.step.join_room': 'Connexion à la salle',
+  'app.step.sync': 'Chargement de la partie',
   // Settings
   'settings.title': 'Paramètres',
   'settings.soundOnMyTurn': 'Jouer un son à mon tour',

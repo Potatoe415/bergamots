@@ -3,14 +3,28 @@ import type { ClientGameState, MonsterCount } from '@tranquillity/shared';
 import { ensureAnonAuth, supabase } from './supabase';
 import * as api from './api';
 
+/** Which multi-step connection flow is in progress, so the UI can render a
+ *  progress stepper (e.g. "Authenticating" -> "Creating room" -> "Loading"). */
+export type ConnectionKind = 'create' | 'join' | 'resume' | null;
+export type ConnectionStep = 'auth' | 'create_room' | 'join_room' | 'sync' | null;
+
 export interface OnlineGameState {
   clientState: ClientGameState | null;
   roomCode: string | null;
   connectionStatus: 'idle' | 'connecting' | 'connected' | 'error';
+  connectionKind: ConnectionKind;
+  connectionStep: ConnectionStep;
   error: string | null;
 }
 
-const IDLE_STATE: OnlineGameState = { clientState: null, roomCode: null, connectionStatus: 'idle', error: null };
+const IDLE_STATE: OnlineGameState = {
+  clientState: null,
+  roomCode: null,
+  connectionStatus: 'idle',
+  connectionKind: null,
+  connectionStep: null,
+  error: null,
+};
 
 /** Safety-net poll: catches any missed tick even if the realtime channel and
  *  its reconnection logic both fail silently. */
@@ -44,6 +58,8 @@ export function useOnlineGame() {
         roomCode: view.roomCode,
         clientState: view.clientState,
         connectionStatus: 'connected',
+        connectionKind: null,
+        connectionStep: null,
         error: null,
       }));
     } catch (e) {
@@ -77,7 +93,7 @@ export function useOnlineGame() {
       gameIdRef.current = gameId;
       localStorage.setItem('tranquillity_gameId', gameId);
       localStorage.setItem('tranquillity_room', roomCode);
-      setOnline((prev) => ({ ...prev, roomCode, connectionStatus: 'connected', error: null }));
+      setOnline((prev) => ({ ...prev, roomCode, connectionStep: 'sync', error: null }));
       resubscribe();
       void refetch();
     },
@@ -87,13 +103,14 @@ export function useOnlineGame() {
   const createRoom = useCallback(
     async (playerName: string, monsterCount: MonsterCount = 0) => {
       localStorage.setItem('tranquillity_name', playerName);
-      setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', error: null }));
+      setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'create', connectionStep: 'auth', error: null }));
       try {
         await ensureAnonAuth();
+        setOnline((prev) => ({ ...prev, connectionStep: 'create_room' }));
         const res = await api.createRoom(playerName, monsterCount);
         attach(res.gameId, res.roomCode);
       } catch (e) {
-        setOnline((prev) => ({ ...prev, connectionStatus: 'error', error: errorMessage(e) }));
+        setOnline((prev) => ({ ...prev, connectionStatus: 'error', connectionStep: null, error: errorMessage(e) }));
       }
     },
     [attach],
@@ -102,13 +119,14 @@ export function useOnlineGame() {
   const joinRoom = useCallback(
     async (roomCode: string, playerName: string) => {
       localStorage.setItem('tranquillity_name', playerName);
-      setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', error: null }));
+      setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'join', connectionStep: 'auth', error: null }));
       try {
         await ensureAnonAuth();
+        setOnline((prev) => ({ ...prev, connectionStep: 'join_room' }));
         const res = await api.joinRoom(roomCode, playerName);
         attach(res.gameId, res.roomCode);
       } catch (e) {
-        setOnline((prev) => ({ ...prev, connectionStatus: 'error', error: errorMessage(e) }));
+        setOnline((prev) => ({ ...prev, connectionStatus: 'error', connectionStep: null, error: errorMessage(e) }));
       }
     },
     [attach],
@@ -119,9 +137,10 @@ export function useOnlineGame() {
     const savedGameId = localStorage.getItem('tranquillity_gameId');
     if (!savedGameId) return;
     gameIdRef.current = savedGameId;
-    setOnline((prev) => ({ ...prev, connectionStatus: 'connecting' }));
+    setOnline((prev) => ({ ...prev, connectionStatus: 'connecting', connectionKind: 'resume', connectionStep: 'auth' }));
     void (async () => {
       await ensureAnonAuth();
+      setOnline((prev) => ({ ...prev, connectionStep: 'sync' }));
       resubscribe();
       await refetch();
     })();
