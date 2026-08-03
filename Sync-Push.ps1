@@ -21,21 +21,61 @@ if ($Force) {
 
 Write-Host "=== OUTGOING SYNCHRONIZATION (PUSH) ===" -ForegroundColor Cyan
 
-# Add and commit locally
+# The commit both sides last agreed on, captured before this run's own
+# commit/fetch move HEAD (see Sync-Pull.ps1 for the same assumption).
+$baseRef = git rev-parse HEAD
+
+# Add and commit locally first, so local deletions are captured as real 'D'
+# entries in git history instead of just "file missing from disk".
 git add -A
 git commit -m "Sync from $env:COMPUTERNAME ($env:USERNAME)"
 
 # Fetch remote state
 git fetch origin main
 
-# If diverging with origin/main, resolve by date
-$diffs = git diff --name-only origin/main | Where-Object { $_ -ne "" }
+# Returns a map of path -> status ('A' added, 'D' deleted, 'M' modified)
+# between $baseRef and $Target.
+function Get-StatusMap([string]$Target) {
+    $map = @{}
+    foreach ($line in (git diff --name-status $baseRef $Target)) {
+        if ($line -match "^(\w)\s+(.+)$") { $map[$matches[2]] = $matches[1] }
+    }
+    return $map
+}
+
+$remoteChanges = Get-StatusMap "origin/main"  # what another machine pushed since $baseRef
+$localChanges = Get-StatusMap "HEAD"           # what this push just committed since $baseRef
+
+# If another machine pushed in the meantime, resolve by merging changes —
+# but never let a file this machine intentionally deleted get resurrected
+# just because it still exists, unmodified, on the remote (that silent
+# resurrection was the bug that broke the client/socket.ts removal earlier).
+$allFiles = @($remoteChanges.Keys) + @($localChanges.Keys) | Select-Object -Unique
 $divergentUpdates = 0
-foreach ($file in $diffs) {
+
+foreach ($file in $allFiles) {
+    $remoteStatus = $remoteChanges[$file]
+    $localStatus = $localChanges[$file]
+
+    if (-not $remoteStatus) { continue }   # remote didn't touch it since $baseRef
+    if ($localStatus -eq 'D') { continue } # we just deleted it — keep it deleted
+
+    if ($remoteStatus -eq 'D' -and -not $localStatus) {
+        # Deleted on the remote by someone else, untouched here: apply it.
+        if (Test-Path $file) {
+            Write-Host "  -> [IMPORT] Removed upstream: $file" -ForegroundColor Yellow
+            Remove-Item -Force $file
+        }
+        $divergentUpdates++
+        continue
+    }
+
+    # Both sides touched the same existing file (not a deletion on either
+    # side): fall back to the previous last-write-wins heuristic.
     $localTime = if (Test-Path $file) { (Get-Item $file).LastWriteTimeUtc } else { [DateTime]::MinValue }
     $remoteTimeRaw = git log -1 --format=%cI origin/main -- $file
     $remoteTime = if ($remoteTimeRaw) { [DateTimeOffset]::Parse($remoteTimeRaw).UtcDateTime } else { [DateTime]::MinValue }
-    
+
     if ($remoteTime -gt $localTime) {
         Write-Host "  -> [IMPORT] Remote is newer: $file" -ForegroundColor Yellow
         git checkout origin/main -- $file
