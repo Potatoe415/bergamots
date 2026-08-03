@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import type { ClientGameState, GameJoinedPayload, WaitingPayload, ErrorPayload, KickedPayload, GameState, MonsterCount, Card } from '@tranquillity/shared';
+import React, { useState, useEffect } from 'react';
+import type { ClientGameState, GameState, MonsterCount, Card } from '@tranquillity/shared';
 import { useT, LanguageSwitcher } from './i18n';
 import {
   initializeGame,
@@ -9,7 +9,7 @@ import {
   applyContributeStartDiscard,
   chooseBotAction,
 } from '@tranquillity/shared';
-import { getSocket, disconnectSocket } from './socket';
+import { useOnlineGame } from './lib/useOnlineGame';
 import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
 import PassAndPlayTransition from './components/PassAndPlayTransition';
@@ -39,17 +39,6 @@ function nextLocalActor(s: GameState): 0 | 1 | null {
   return s.currentPlayerIndex;
 }
 
-// ── Online state ──────────────────────────────────────────────────────────────
-
-interface OnlineState {
-  clientState: ClientGameState | null;
-  playerIndex: 0 | 1 | null;
-  sessionToken: string | null;
-  roomCode: string | null;
-  connectionStatus: 'idle' | 'connecting' | 'connected' | 'error';
-  error: string | null;
-}
-
 export default function App() {
   const t = useT();
   const [mode, setMode] = useState<AppMode>('lobby');
@@ -57,32 +46,27 @@ export default function App() {
   const [lobbyInitialRoom, setLobbyInitialRoom] = useState<string | undefined>(
     () => new URLSearchParams(window.location.search).get('room')?.toUpperCase() || undefined
   );
-  const [online, setOnline] = useState<OnlineState>({
-    clientState: null,
-    playerIndex: null,
-    sessionToken: null,
-    roomCode: null,
-    connectionStatus: 'idle',
-    error: null,
-  });
+  const {
+    online,
+    createRoom,
+    joinRoom,
+    playCard: onlinePlayCard,
+    discardTwo: onlineDiscardTwo,
+    contributeStartDiscard: onlineContributeStartDiscard,
+    leave: leaveOnline,
+  } = useOnlineGame();
 
   // ── Local mode ─────────────────────────────────────────────────────────────
 
-  function clearOnlineStorage() {
-    localStorage.removeItem('tranquillity_token');
-    localStorage.removeItem('tranquillity_name');
-    localStorage.removeItem('tranquillity_room');
-  }
-
   function startLocal(p1Name: string, p2Name: string, monsterCount: MonsterCount = 0) {
-    clearOnlineStorage();
+    leaveOnline();
     const gameState = initializeGame('LOCAL', { id: 'p0', name: p1Name }, { id: 'p1', name: p2Name }, monsterCount);
     setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null, vsBot: false });
     setMode('local');
   }
 
   function startBot(playerName: string, monsterCount: MonsterCount = 0) {
-    clearOnlineStorage();
+    leaveOnline();
     const gameState = initializeGame('LOCAL', { id: 'p0', name: playerName }, { id: 'p1', name: BOT_NAME }, monsterCount);
     setLocal({ gameState, viewingAs: 0, showTransition: false, pendingPlayer: null, pendingOpponentPlay: null, vsBot: true });
     setMode('local');
@@ -168,113 +152,46 @@ export default function App() {
   }
 
   // ── Online mode ────────────────────────────────────────────────────────────
+  // Connection/session/realtime plumbing lives in useOnlineGame (Supabase).
+  // This component only decides *when* to switch into 'online' mode and
+  // handles the one-time resume-from-URL / resume-from-localStorage flows.
 
-  const socketRef = useRef(getSocket());
-
-  useEffect(() => {
-    const sock = socketRef.current;
-
-    sock.on('game_joined', (payload: GameJoinedPayload) => {
-      localStorage.setItem('tranquillity_token', payload.sessionToken);
-      localStorage.setItem('tranquillity_room', payload.roomId);
-      setOnline(prev => ({
-        ...prev,
-        clientState: payload.gameState,
-        playerIndex: payload.playerIndex,
-        sessionToken: payload.sessionToken,
-        roomCode: payload.roomId,
-        connectionStatus: 'connected',
-        error: null,
-      }));
-      setMode('online');
-    });
-
-    sock.on('waiting', (payload: WaitingPayload) => {
-      setOnline(prev => ({ ...prev, roomCode: payload.roomId, connectionStatus: 'connected' }));
-    });
-
-    sock.on('game_state', (payload: ClientGameState) => {
-      setOnline(prev => ({ ...prev, clientState: payload }));
-    });
-
-    sock.on('error', (payload: ErrorPayload) => {
-      setOnline(prev => ({ ...prev, error: payload.message, connectionStatus: 'error' }));
-    });
-
-    sock.on('connect_error', () => {
-      setOnline(prev => ({ ...prev, connectionStatus: 'error', error: 'Cannot connect to server' }));
-    });
-
-    sock.on('kicked', (_payload: KickedPayload) => {
-      disconnectSocket();
-      localStorage.removeItem('tranquillity_token');
-      localStorage.removeItem('tranquillity_name');
-      setMode('lobby');
-      setLocal(null);
-      setOnline({
-        clientState: null, playerIndex: null, sessionToken: null,
-        roomCode: null, connectionStatus: 'error',
-        error: t('app.kicked'),
-      });
-    });
-
-    return () => {
-      sock.off('game_joined');
-      sock.off('waiting');
-      sock.off('game_state');
-      sock.off('error');
-      sock.off('connect_error');
-      sock.off('kicked');
-    };
-  }, []);
-
-  // Restore persisted session on mount
+  // Restore a local (pass-and-play) session on mount.
   useEffect(() => {
     const savedLocal = localStorage.getItem('tranquillity_local');
-    if (savedLocal) {
-      try {
-        setLocal(JSON.parse(savedLocal) as LocalState);
-        setMode('local');
-        return;
-      } catch {
-        localStorage.removeItem('tranquillity_local');
-      }
+    if (!savedLocal) return;
+    try {
+      setLocal(JSON.parse(savedLocal) as LocalState);
+      setMode('local');
+    } catch {
+      localStorage.removeItem('tranquillity_local');
     }
+  }, []);
 
-    const token = localStorage.getItem('tranquillity_token');
+  // Resume a saved online session, or auto-join via a ?room= URL param.
+  useEffect(() => {
+    if (localStorage.getItem('tranquillity_local')) return; // local mode took over above
+
+    const savedGameId = localStorage.getItem('tranquillity_gameId');
     const savedRoom = localStorage.getItem('tranquillity_room');
-    const name = localStorage.getItem('tranquillity_name') ?? 'Player';
-    const sock = socketRef.current;
-
-    // If the URL specifies a room different from the saved session, discard the
-    // old session so the URL room takes priority (avoids being redirected back).
     const urlRoom = new URLSearchParams(window.location.search).get('room')?.toUpperCase();
-    if (urlRoom && savedRoom && urlRoom !== savedRoom) {
-      localStorage.removeItem('tranquillity_token');
-      localStorage.removeItem('tranquillity_room');
-    }
 
-    const activeToken = urlRoom && savedRoom && urlRoom !== savedRoom ? null : token;
-
-    if (activeToken) {
-      setOnline(prev => ({ ...prev, connectionStatus: 'connecting' }));
+    if (savedGameId && (!urlRoom || urlRoom === savedRoom)) {
+      // useOnlineGame's own mount effect resumes this session; just switch view.
       setMode('online');
-      sock.connect();
-      sock.emit('join_game', { sessionToken: activeToken, playerName: name });
       return;
     }
 
-    // Rejoin via URL ?room= (no saved session, or session was for a different room)
     if (urlRoom) {
-      if (localStorage.getItem('tranquillity_name')) {
-        setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
+      const name = localStorage.getItem('tranquillity_name');
+      if (name) {
         setMode('online');
-        sock.connect();
-        sock.emit('join_game', { roomId: urlRoom, playerName: name });
+        void joinRoom(urlRoom, name);
       } else {
         setLobbyInitialRoom(urlRoom);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sync URL ?room= param with current room code
@@ -295,50 +212,25 @@ export default function App() {
 
   function createOnline(playerName: string, monsterCount: MonsterCount = 0) {
     localStorage.removeItem('tranquillity_local');
-    localStorage.setItem('tranquillity_name', playerName);
-    setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
-    const sock = socketRef.current;
-    sock.connect();
-    sock.emit('join_game', { playerName, monsterCount });
+    setMode('online');
+    void createRoom(playerName, monsterCount);
   }
 
   function joinOnline(roomCode: string, playerName: string) {
     localStorage.removeItem('tranquillity_local');
-    localStorage.setItem('tranquillity_name', playerName);
-    setOnline(prev => ({ ...prev, connectionStatus: 'connecting', error: null }));
-    const sock = socketRef.current;
-    sock.connect();
-    sock.emit('join_game', { roomId: roomCode, playerName });
-  }
-
-  function onlinePlayCard(cardId: string, position: number, discardCardIds: string[]) {
-    socketRef.current.emit('play_card', { cardId, position, discardCardIds });
-  }
-
-  function onlineDiscardTwo(cardIds: [string, string]) {
-    socketRef.current.emit('discard_two', { cardIds });
-  }
-
-  function onlineContributeStartDiscard(cardIds: string[]) {
-    socketRef.current.emit('contribute_start_discard', { cardIds });
+    setMode('online');
+    void joinRoom(roomCode, playerName);
   }
 
   function goToMenu() {
-    disconnectSocket();
-    localStorage.removeItem('tranquillity_token');
-    localStorage.removeItem('tranquillity_name');
+    leaveOnline();
     localStorage.removeItem('tranquillity_local');
-    localStorage.removeItem('tranquillity_room');
     const url = new URL(window.location.href);
     url.searchParams.delete('room');
     window.history.replaceState(null, '', url.toString());
     setLobbyInitialRoom(undefined);
     setMode('lobby');
     setLocal(null);
-    setOnline({
-      clientState: null, playerIndex: null, sessionToken: null,
-      roomCode: null, connectionStatus: 'idle', error: null,
-    });
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
