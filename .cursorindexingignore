@@ -1,0 +1,16 @@
+# Lockfiles: committed but rarely useful for semantic indexing
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Generated / heavy
+coverage/
+reports/
+*.min.js
+*.map
+
+# Large static game datasets: not useful for semantic code search
+public/data/**/*.json
+public/games/**/questions_*.json
+public/games/**/black_stories_*.json
