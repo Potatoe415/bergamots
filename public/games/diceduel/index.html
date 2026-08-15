@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dice Duel</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="theme-color" content="#5c8a66">
+</head>
+<body>
+    <div id="app">
+        <!-- ÉCRAN D'ACCUEIL -->
+        <div id="screen-home" class="screen active">
+            <h1>Dice Duel</h1>
+            <p class="subtitle">La chance sourit aux audacieux</p>
+            <div class="menu-actions">
+                <button id="btn-pvp" class="btn-primary">Joueur vs Joueur</button>
+                <button id="btn-pve" class="btn-primary">Joueur vs Bot</button>
+                <button id="btn-resume" class="btn-secondary hidden">Reprendre la partie</button>
+            </div>
+            <div class="rules-preview">
+                <h2>Règles du jeu</h2>
+                <ul>
+                    <li>12 PV chacun. 3 lancers par tour.</li>
+                    <li>Gardez des dés pour faire des combinaisons (Paires, Brelans, Suites...).</li>
+                    <li><strong>Dé Caché :</strong> Le 1er dé gardé est masqué à l'adversaire.</li>
+                    <li><strong>Pacte de Sang :</strong> Sacrifiez 2 PV pour doubler vos dégâts (après le 2e lancer).</li>
+                    <li><strong>Rage :</strong> 0 dégât = 1 Rage. 3 Rage = 2 dégâts garantis.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ÉCRAN INTERSTITIEL -->
+        <div id="screen-interstitial" class="screen">
+            <div class="interstitial-content">
+                <h2 id="interstitial-msg">Passez le téléphone au Joueur 2</h2>
+                <button id="btn-ready" class="btn-primary">Je suis prêt</button>
+            </div>
+        </div>
+
+        <!-- ÉCRAN DE JEU -->
+        <div id="screen-game" class="screen">
+            <!-- HUD Adversaire (Haut) -->
+            <div id="hud-p2" class="hud top-hud">
+                <div class="player-info">
+                    <span class="player-name" id="name-p2">Joueur 2</span>
+                    <div class="health-bar"><div class="health-fill" id="hp-fill-p2"></div></div>
+                    <span class="hp-text" id="hp-text-p2">12/12</span>
+                    <div class="status-icons">
+                        <span class="shield-icon hidden" id="shield-p2">🛡️</span>
+                        <span class="blood-icon hidden" id="blood-p2">🩸x2</span>
+                        <div class="rage-meter" id="rage-p2">
+                            <span class="rage-dot"></span><span class="rage-dot"></span><span class="rage-dot"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dice-container" id="dice-p2">
+                    <!-- Dés de P2 générés ici -->
+                </div>
+            </div>
+
+            <!-- Centre : Informations / Log -->
+            <div id="game-center">
+                <div class="duel-arena">
+                    <div class="character-slot" id="slot-p1">
+                        <img id="char-p1" src="assets/p1_idle.svg" alt="Char P1">
+                        <div class="damage-popup" id="damage-p1"></div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="character-slot" id="slot-p2">
+                        <img id="char-p2" src="assets/p2_idle.svg" alt="Char P2">
+                        <div class="damage-popup" id="damage-p2"></div>
+                    </div>
+                </div>
+                <div id="turn-indicator">Tour de Joueur 1</div>
+                <div id="action-log">Que le meilleur gagne !</div>
+            </div>
+
+            <!-- HUD Joueur Actif (Bas) -->
+            <div id="hud-p1" class="hud bottom-hud">
+                <div class="dice-container" id="dice-p1">
+                    <!-- Dés de P1 générés ici -->
+                </div>
+                <div class="player-info">
+                    <div class="status-icons">
+                        <span class="shield-icon hidden" id="shield-p1">🛡️</span>
+                        <span class="blood-icon hidden" id="blood-p1">🩸x2</span>
+                        <div class="rage-meter" id="rage-p1">
+                            <span class="rage-dot"></span><span class="rage-dot"></span><span class="rage-dot"></span>
+                        </div>
+                    </div>
+                    <span class="player-name" id="name-p1">Joueur 1</span>
+                    <div class="health-bar"><div class="health-fill" id="hp-fill-p1"></div></div>
+                    <span class="hp-text" id="hp-text-p1">12/12</span>
+                </div>
+            </div>
+
+            <!-- Contrôles du tour -->
+            <div id="controls">
+                <button id="btn-roll" class="btn-action">Lancer (<span id="rolls-left">3</span>)</button>
+                <button id="btn-blood" class="btn-danger hidden">Pacte de Sang</button>
+                <button id="btn-end-turn" class="btn-secondary hidden">Terminer</button>
+            </div>
+        </div>
+
+        <!-- ÉCRAN RÉSOLUTION / GAME OVER -->
+        <div id="screen-resolution" class="screen">
+            <h2 id="resolution-title">Résolution</h2>
+            <div id="resolution-details"></div>
+            <button id="btn-next-phase" class="btn-primary">Continuer</button>
+        </div>
+    </div>
+    
+    <script src="js/storage.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

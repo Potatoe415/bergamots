@@ -98,5 +98,12 @@
     "kind": "external",
     "launch": "https://tranquil-woad.vercel.app/",
     "thumbnail": "/games/tranquil/assets/thumbnail.webp"
+  },
+  {
+    "id": "coinchapp",
+    "title": "Coinche Mobile",
+    "kind": "external",
+    "launch": "http://coinchapp.vercel.app/",
+    "thumbnail": "/games/coinchapp/assets/thumbnail.png"
   }
 ]

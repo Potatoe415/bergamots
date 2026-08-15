@@ -1,0 +1,570 @@
+:root {
+    /* Palette Organique / Ghibli */
+    --bg-color: #f4f1ea;
+    --text-primary: #3d4a3e;
+    --text-secondary: #6b7a6c;
+    
+    --primary-color: #5c8a66; /* Vert forêt doux */
+    --primary-light: #88af91;
+    --primary-dark: #3a5c41;
+    
+    --accent-color: #d17c54; /* Terre cuite / Orange doux */
+    --accent-hover: #e38d65;
+    
+    --danger-color: #b54a4a; /* Rouge sang mat */
+    --danger-light: #d66b6b;
+    
+    --shield-color: #4a8cb5; /* Bleu ciel doux */
+    
+    --card-bg: #ffffff;
+    --dice-bg: #fffcf5;
+    --dice-kept: #e9f0ea;
+    --dice-hidden: #3d4a3e;
+    
+    --shadow-soft: 0 4px 12px rgba(61, 74, 62, 0.15);
+    --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 50px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    touch-action: manipulation; /* Anti-zoom double tap */
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    overflow: hidden; /* Empêche le scroll élastique */
+    overscroll-behavior: none;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    width: 100vw;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Screens --- */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    background-color: var(--bg-color);
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* --- Home Screen --- */
+#screen-home {
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    text-align: center;
+}
+
+#screen-home h1 {
+    font-size: 3rem;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.rules-preview {
+    margin-top: 48px;
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    text-align: left;
+    max-width: 400px;
+}
+
+.rules-preview h2 {
+    color: var(--primary-color);
+    margin-bottom: 12px;
+    font-size: 1.2rem;
+}
+
+.rules-preview ul {
+    list-style-type: none;
+    font-size: 0.9rem;
+}
+
+.rules-preview li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.rules-preview li::before {
+    content: "•";
+    color: var(--accent-color);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* --- Buttons --- */
+button {
+    font-family: inherit;
+    border: none;
+    padding: 16px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 48px; /* Accessibilité */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+button:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #e0e6e1;
+    color: var(--text-primary);
+}
+
+.btn-action {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+button:disabled {
+    background-color: #ccc;
+    color: #888;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* --- Game Screen --- */
+#screen-game {
+    justify-content: space-between;
+}
+
+.hud {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.top-hud {
+    background: linear-gradient(to bottom, rgba(92, 138, 102, 0.1), transparent);
+    border-bottom-left-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+    padding-top: calc(16px + env(safe-area-inset-top));
+}
+
+.bottom-hud {
+    background: linear-gradient(to top, rgba(92, 138, 102, 0.1), transparent);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.player-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    flex-grow: 1;
+}
+
+.health-bar {
+    width: 120px;
+    height: 12px;
+    background-color: #d1d9d2;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    box-shadow: var(--shadow-inset);
+}
+
+.health-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 100%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+
+.hp-text {
+    font-size: 0.9rem;
+    font-weight: bold;
+    width: 40px;
+    text-align: right;
+}
+
+.status-icons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.character-container {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 8px;
+}
+
+.character-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+/* --- Duel Arena --- */
+.duel-arena {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.character-slot {
+    position: relative;
+    width: 100px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.character-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    transform-origin: bottom center;
+}
+
+.vs-badge {
+    background-color: var(--accent-color);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    box-shadow: var(--shadow-soft);
+    z-index: 5;
+    animation: vsPulse 2s ease-in-out infinite;
+}
+
+@keyframes vsPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+.damage-popup {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--danger-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.char-bounce { animation: bounce 0.6s ease infinite; }
+.char-hit { animation: shake 0.4s ease; }
+.char-attack-p1 { animation: attackP1 0.6s ease; }
+.char-attack-p2 { animation: attackP2 0.6s ease; }
+.char-rolling { animation: jitter 0.2s ease infinite; }
+
+@keyframes jitter {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    50% { transform: translate(-1px, -1px) rotate(1deg); }
+    100% { transform: translate(1px, -1px) rotate(-1deg); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes attackP1 {
+    0% { transform: translateX(0) scale(1) rotate(0); }
+    25% { transform: translateX(120px) scale(1.5) rotate(15deg); }
+    100% { transform: translateX(0) scale(1) rotate(0); }
+}
+
+@keyframes attackP2 {
+    0% { transform: translateX(0) scale(1) rotate(0); }
+    25% { transform: translateX(-120px) scale(1.5) rotate(-15deg); }
+    100% { transform: translateX(0) scale(1) rotate(0); }
+}
+
+/* Effet de mort imminente */
+.flicker {
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+.show-damage {
+    animation: fadeUp 1s ease forwards;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 0; transform: translate(-50%, 0); }
+    20% { opacity: 1; transform: translate(-50%, -20px); }
+    100% { opacity: 0; transform: translate(-50%, -40px); }
+}
+
+.rage-meter {
+    display: flex;
+    gap: 4px;
+}
+
+.rage-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ccc;
+    transition: background-color 0.3s;
+}
+
+.rage-dot.filled {
+    background-color: var(--danger-color);
+}
+
+.shield-icon, .blood-icon {
+    font-size: 1.2rem;
+    animation: popIn 0.3s ease;
+}
+
+/* --- Dice --- */
+.dice-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    min-height: 64px;
+}
+
+.die {
+    width: 56px;
+    height: 56px;
+    background-color: var(--dice-bg);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.die.kept {
+    background-color: var(--dice-kept);
+    transform: translateY(-4px);
+    border: 2px solid var(--primary-color);
+}
+
+.die.hidden-die {
+    background-color: var(--dice-hidden);
+    color: white;
+    border: 2px solid var(--primary-dark);
+}
+
+.die.rolling {
+    animation: shake 0.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.die:active {
+    transform: scale(0.9);
+}
+
+/* --- Game Center --- */
+#game-center {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 24px;
+}
+
+#turn-indicator {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+#action-log {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    min-height: 24px;
+}
+
+/* --- Controls --- */
+#controls {
+    padding: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    background-color: var(--card-bg);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    z-index: 20;
+}
+
+#controls button {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* --- Interstitial & Resolution --- */
+#screen-interstitial, #screen-resolution {
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    text-align: center;
+    background-color: rgba(244, 241, 234, 0.95);
+    backdrop-filter: blur(4px);
+}
+
+.interstitial-content, #screen-resolution {
+    background: var(--card-bg);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    width: 90%;
+    max-width: 400px;
+}
+
+#screen-interstitial h2, #screen-resolution h2 {
+    color: var(--primary-dark);
+    margin-bottom: 24px;
+}
+
+#resolution-details {
+    margin-bottom: 24px;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+.res-line {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.res-line:last-child {
+    border-bottom: none;
+}
+
+.damage-text { color: var(--danger-color); font-weight: bold; }
+.heal-text { color: var(--primary-color); font-weight: bold; }
+
+/* Animations */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.damage-anim {
+    animation: flashRed 0.5s ease;
+}
+
+@keyframes flashRed {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(181, 74, 74, 0.3); }
+}

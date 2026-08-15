@@ -1,0 +1,39 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond Organique -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4f1ea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9f0ea;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="2" dy="2" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <rect width="400" height="300" fill="url(#grad1)" rx="16" />
+  
+  <!-- Dé Principal (Clair) -->
+  <rect x="80" y="80" width="100" height="100" rx="12" fill="#fff" filter="url(#shadow)" transform="rotate(-10 130 130)" />
+  <circle cx="105" cy="105" r="8" fill="#5c8a66" transform="rotate(-10 130 130)" />
+  <circle cx="155" cy="155" r="8" fill="#5c8a66" transform="rotate(-10 130 130)" />
+  <circle cx="130" cy="130" r="8" fill="#5c8a66" transform="rotate(-10 130 130)" />
+
+  <!-- Dé Caché (Sombre) -->
+  <rect x="200" y="110" width="100" height="100" rx="12" fill="#3d4a3e" filter="url(#shadow)" transform="rotate(15 250 160)" />
+  <text x="250" y="175" font-family="Arial" font-size="60" font-weight="bold" fill="white" text-anchor="middle" transform="rotate(15 250 160)">?</text>
+
+  <!-- Texte -->
+  <text x="200" y="260" font-family="Segoe UI, sans-serif" font-size="42" font-weight="bold" fill="#3a5c41" text-anchor="middle" filter="url(#shadow)">DICE DUEL</text>
+  
+  <!-- Décoration Ghibli (Petite feuille) -->
+  <path d="M340 40 Q360 40 370 70 Q340 80 340 40" fill="#88af91" transform="rotate(-20 355 55)" />
+  <line x1="340" y1="40" x2="360" y2="70" stroke="#3a5c41" stroke-width="1" transform="rotate(-20 355 55)" />
+</svg>
