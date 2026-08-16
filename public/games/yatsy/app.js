@@ -98,6 +98,7 @@ let undoScoreTimeoutId = null;
 let robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
 let robotQueuedScoreCategory = null;
 let remoteSyncPromise = Promise.resolve();
+let pendingRemoteSyncCount = 0;
 let scoringAnimationInFlight = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
 
@@ -1294,6 +1295,16 @@ function handleMatchStateChange(payload) {
       return;
     }
 
+    // While one of our own actions (die toggle/roll) is still being written
+    // to the DB, an incoming refetch can carry a stale snapshot from before
+    // that write. Applying it would visibly un-select a die the player just
+    // picked. Local state stays authoritative for our own turn until every
+    // pending write has settled; the tick broadcast that follows the last
+    // write will bring the listener back in sync.
+    if (pendingRemoteSyncCount > 0 && isLocalPlayersTurn()) {
+      return;
+    }
+
     const previousDiceValues = state.dice.map((die) => die.value);
     const previousPlayerIndex = state.currentPlayerIndex;
     hydrateFromRemoteGameState(state, payload.gameState);
@@ -1622,11 +1633,23 @@ function syncOnlineGameState() {
     return remoteSyncPromise;
   }
 
-  remoteSyncPromise = MATCHMAKING
-    .updateGameState(state.session.gameCode, serializeGameState())
+  const gameCode = state.session.gameCode;
+  pendingRemoteSyncCount += 1;
+
+  // Chain onto the previous send instead of firing in parallel: quick,
+  // repeated die clicks must reach the server in the order they happened,
+  // otherwise an earlier request finishing last could overwrite a later one.
+  // serializeGameState() is read lazily inside the .then, so it always picks
+  // up the freshest local state at send time, not at click time.
+  remoteSyncPromise = remoteSyncPromise
+    .catch(() => {})
+    .then(() => MATCHMAKING.updateGameState(gameCode, serializeGameState()))
     .catch(() => {
       // The listener remains authoritative. If one sync fails, the next local
       // state change will attempt to publish again.
+    })
+    .finally(() => {
+      pendingRemoteSyncCount -= 1;
     });
 
   return remoteSyncPromise;
