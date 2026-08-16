@@ -46,3 +46,23 @@ Context: User asked to reuse the same Vercel+Supabase system as `dev-projects/co
 Rationale: `coinchapp`'s security boundary ("browser never touches Postgres for game rows") requires a server-side authority; Bergamots had no backend, so Vercel Serverless Functions under `api/` take on that role while the existing vanilla-JS Yatzy frontend and its room-code + seat-token capability model are kept unchanged (no React/Next.js rewrite, no new auth system — YAGNI). Since the whole hub previously deployed as one static site, moving hosting entirely to Vercel avoids splitting the hub across two hosting providers.
 Consequences: `firebase.json`/`.firebaserc` removed; Firebase Hosting and the Firebase Realtime Database are no longer used by this repo (the Firebase project itself is not deleted — that is a separate manual decision, flagged to the user). New required env vars on Vercel: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`. A new Supabase project must be created and the migration run before Yatzy online multiplayer works again.
 Alternatives_Rejected: Rewriting Yatzy in Next.js/React to mirror `coinchapp`'s Server Actions exactly — rejected to avoid introducing a UI framework for one game in an otherwise framework-free hub. Adopting Supabase anonymous auth (`user_id`-based seats) like `coinchapp` — rejected, since the existing room-code + resume-token capability model already solves Yatzy's 2-seat, no-accounts use case without an auth system. Splitting hosting (hub on Firebase Hosting, Yatzy API on a separate Vercel project) — rejected in favor of one hosting provider for the whole hub.
+
+---
+
+## 2026-08-16 — Reuse coinchapp's Supabase project (renamed `multigames-db`) instead of a dedicated one
+
+Decision: Yatzy uses the same Supabase project as `coinchapp` (renamed `multigames-db` by the user), not a new dedicated Supabase project. Yatzy's tables are namespaced (`yatzy_games`, `yatzy_game_events`) to avoid colliding with coinchapp's `games`/`game_players`/`game_events`.
+Context: User explicitly asked to reuse the same DB as `coinchapp` rather than provisioning a separate Supabase project, and provided the project URL + public (`sb_publishable_...`) key.
+Rationale: One shared Supabase project across the user's apps is simpler to manage (one dashboard, one bill) than one project per app; RLS + table namespacing fully isolate Yatzy's data from coinchapp's, so sharing the project has no security cost.
+Consequences: `public/games/yatsy/supabase-config.js` and the Vercel `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` env vars point at `multigames-db`. Any future schema change must keep checking for name collisions with coinchapp's tables/cron jobs/realtime publications in that same project. Verified end-to-end in production (create/join/delete against `https://bergamots.vercel.app/api/yatsy/games`).
+Alternatives_Rejected: Provisioning a fresh, dedicated Supabase project for Yatzy — rejected per explicit user instruction to reuse the existing one.
+
+---
+
+## 2026-08-16 — Confirm Firebase project can be fully decommissioned
+
+Decision: Confirmed to the user that their Firebase project (Hosting + Realtime Database) can be deleted entirely; no game in this repo depends on it anymore.
+Context: User asked for an explicit go/no-go before deleting Firebase, after the Yatzy migration to Supabase.
+Rationale: Repo-wide search (SDK imports, `initializeApp`, `firebaseConfig`, `firebasejs` CDN URLs) found zero remaining references outside historical docs/comments; Firebase was only ever used by Yatzy per the original `docs/PRODUCT.md` constraint, and that constraint's implementation is now Supabase.
+Consequences: `docs/PRODUCT.md`/`docs/BACKLOG.md` updated to drop the last Firebase mentions; a stale comment in `public/games/olemains/gameState.js` was fixed. Deleting the Firebase project is the user's own action, not performed by an agent.
+Alternatives_Rejected: None — this was a verification, not a design choice.

@@ -6,7 +6,7 @@ Status: Living document. Never edit autonomously — confirm with user first.
 
 Stack_Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3. No UI framework (no React/Vue/Angular). Vite as dev server and bundler.
 Stack_Backend: Vercel Serverless Functions (`api/yatsy/games/*`, Node.js) act as the server-side authority for Yatzy matchmaking/real-time state sync, backed by Supabase Postgres. The rest of the site remains static.
-Database: No general-purpose database. Game content is static JSON shipped in `public/data/` and `public/hub-config.json`. Supabase (Postgres) stores only ephemeral Yatzy room state (see `docs/DATA_MODEL.md`).
+Database: No general-purpose database. Game content is static JSON shipped in `public/data/` and `public/hub-config.json`. Supabase (Postgres) stores only ephemeral Yatzy room state (see `docs/DATA_MODEL.md`), using the shared `multigames-db` Supabase project (also used by `coinchapp`), with Yatzy's tables namespaced (`yatzy_*`) to avoid collisions.
 Runtime: Node.js for tooling (Vite, ESLint, Prettier, CI) and for the `api/yatsy/games/*` serverless functions. Browser runtime for the app itself.
 Package_Manager: npm
 Hosting: Vercel, serving the Vite build output (`dist/`) plus the `api/yatsy/games/*` serverless functions from the same project.
@@ -14,7 +14,7 @@ Authentication: None. Anonymous by default.
 Authorization: None. Yatzy multiplayer access is gated only by a 3-letter room code plus a per-seat resume token (no auth), enforced server-side by `api/yatsy/games/*` plus Supabase RLS blocking all direct client access.
 Security: No secrets committed. `.env*` files are ignored (see `.env.example`). Supabase client config (`public/games/yatsy/supabase-config.js`, URL + anon key) is public, not a secret — protected by Row Level Security, not secrecy. `SUPABASE_SERVICE_ROLE_KEY` is server-only, set as a Vercel env var, never committed.
 Testing: No automated test suite currently. CI enforces lint, format-check, and build only.
-Deployment: GitHub Actions CI (`.github/workflows/ci.yml`) runs `npm run lint`, `npm run format:check`, `npm run build` on push/PR to `main`/`master`. Deployment to Firebase Hosting is manual/external to this repo (not wired into CI).
+Deployment: GitHub Actions CI (`.github/workflows/ci.yml`) runs `npm run lint`, `npm run format:check`, `npm run build` on push/PR to `main`/`master` (does not deploy). Actual deployment is Vercel's own Git integration: every push to `main` auto-deploys to production (`https://bergamots.vercel.app`), independent of the GitHub Actions CI.
 
 Conventions:
 - Language: English for code, filenames, comments, and docs. In-game copy is multilingual (FR/EN/ES) via JSON fields.
