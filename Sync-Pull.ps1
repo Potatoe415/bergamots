@@ -2,6 +2,8 @@ param(
     [switch]$Force
 )
 
+. "$PSScriptRoot\Sync-Log.ps1"
+
 # Git Checks
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Write-Error "Git is not installed or not in system PATH."; exit 1 }
 if ((git rev-parse --is-inside-work-tree 2>$null) -ne "true") { Write-Error "This folder is not a Git repository. Run 'git init'."; exit 1 }
@@ -10,6 +12,7 @@ git ls-remote origin -h HEAD >$null 2>&1; if ($LASTEXITCODE -ne 0) { Write-Error
 
 if ($Force) {
     Write-Host "=== FORCE PULLING FROM GITHUB ===" -ForegroundColor Red
+    Write-GitHistoryLog -Action "PULL"
     Write-Host "Fetching from GitHub..."
     git fetch origin main
     git reset --hard origin/main
@@ -20,6 +23,7 @@ if ($Force) {
 }
 
 Write-Host "=== INCOMING SYNCHRONIZATION (PULL) ===" -ForegroundColor Cyan
+Write-GitHistoryLog -Action "PULL"
 
 # Fetch remote state
 Write-Host "Fetching from GitHub..."

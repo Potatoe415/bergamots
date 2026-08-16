@@ -2,6 +2,8 @@ param(
     [switch]$Force
 )
 
+. "$PSScriptRoot\Sync-Log.ps1"
+
 # Git Checks
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { Write-Error "Git is not installed or not in system PATH."; exit 1 }
 if ((git rev-parse --is-inside-work-tree 2>$null) -ne "true") { Write-Error "This folder is not a Git repository. Run 'git init'."; exit 1 }
@@ -10,6 +12,7 @@ git ls-remote origin -h HEAD >$null 2>&1; if ($LASTEXITCODE -ne 0) { Write-Error
 
 if ($Force) {
     Write-Host "=== FORCE PUSHING TO GITHUB ===" -ForegroundColor Red
+    Write-GitHistoryLog -Action "PUSH"
     git add -A
     git commit -m "Sync from $env:COMPUTERNAME ($env:USERNAME) [FORCE]" >$null 2>&1
     git push -f origin main
@@ -20,6 +23,7 @@ if ($Force) {
 }
 
 Write-Host "=== OUTGOING SYNCHRONIZATION (PUSH) ===" -ForegroundColor Cyan
+Write-GitHistoryLog -Action "PUSH"
 
 # Add and commit locally
 git add -A

@@ -7,10 +7,11 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Active project. Yatzy multiplayer fully migrated from Firebase to Vercel + Supabase (shared `multigames-db` project with `coinchapp`) and verified end-to-end in production. All info files (`docs/*`, `STATE.md`) audited and aligned with this reality; no remaining Firebase references outside historical decision/migration-note entries.
 Current_Goal: Keep evolving the Bergamots game hub now that hosting is on Vercel and Yatzy is on Supabase.
-Last_Action: `Sync-Push.bat`/`Sync-Pull.bat` (+ `.ps1`) reappeared untracked in the working tree; flagged to user that this reverses the 2026-08-15 retirement decision (risks: blind `git add -A`, mtime-based "last write wins" conflict resolution, unreviewed pushes to `main`). User chose to reintroduce them anyway; logged as a new decision in `docs/DECISIONS.md`. Committing the 4 files next.
+Last_Action: Added `Sync-Log.ps1` (shared helper, dot-sourced by both) so `Sync-Push.ps1`/`Sync-Pull.ps1` each append a line to root `GitHistory.txt` (timestamp | PUSH/PULL | `$env:COMPUTERNAME`) — lets the user tell which of their 2-3 computers did the last push/pull. `GitHistory.txt` is untracked and gets created/committed automatically via the scripts' `git add -A`, so it propagates to other machines on the next push.
 Next_Actions:
 - User to delete/decommission the Firebase project (Hosting + Realtime Database) whenever ready — confirmed safe, no other game depends on it.
 - Be aware Sync-Push/Pull use mtime-based conflict resolution, not real git merge — double-check important changes weren't silently overwritten after each sync.
+- `GitHistory.txt` PULL entries only reach other machines once that computer next runs a Push — inherent limitation of the file-based sync approach (no server), flagged to user.
 - Pick the first real item for `docs/BACKLOG.md` Now.
 - Confirm with user whether to keep or delete `refactor.py` (one-off, already-applied migration script left at repo root).
 - Decide on automated testing / error-handling conventions (see `docs/TECH.md` Open_Questions).
@@ -23,8 +24,8 @@ Open_Questions:
 - Deployment_Target: Vercel (confirmed live, `bergamots` project, Git-integration auto-deploy on push to `main`).
 
 Recent_Changes:
+- 2026-08-16 Added `Sync-Log.ps1` + `GitHistory.txt` logging (date/time, PUSH or PULL, computer name) to `Sync-Push.ps1`/`Sync-Pull.ps1`, so the user can identify which machine did the last sync.
 - 2026-08-16 Reintroduced Sync-Push/Pull tooling (user's explicit choice, reversing the 2026-08-15 retirement) — see `docs/DECISIONS.md`.
 - 2026-08-16 Docs audit: fixed the last stale Firebase reference in `docs/TECH.md` (Deployment), added the shared-`multigames-db` detail to `docs/TECH.md` Database, logged 2 new decisions in `docs/DECISIONS.md` (shared Supabase project reuse; Firebase decommission confirmation).
 - 2026-08-16 Verification: confirmed Firebase is unused outside Yatzy (repo-wide search); updated `docs/PRODUCT.md`/`docs/BACKLOG.md` accordingly; user cleared to delete their Firebase project.
 - 2026-08-16 Deploy: linked repo to existing Vercel `bergamots` project, set `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` env vars, committed+pushed the migration, verified create/join/delete against production Supabase (`multigames-db`, shared with coinchapp).
-- 2026-08-15 Migration: Yatzy multiplayer moved from Firebase Realtime Database to Supabase Postgres (`api/yatsy/games/*`, `supabase/migrations/0001_yatzy.sql`); hub hosting target changed from Firebase Hosting to Vercel (`firebase.json`/`.firebaserc` removed, `.env.example` added).
