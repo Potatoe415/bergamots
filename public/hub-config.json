@@ -3,6 +3,7 @@
     "id": "pictionary",
     "title": "Pictionary",
     "kind": "wordpack",
+    "category": "mots",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=pictionary",
     "data": "/data/pictionary/pictionary_words.json",
@@ -12,6 +13,7 @@
     "id": "taboo",
     "title": "Taboo",
     "kind": "wordpack",
+    "category": "mots",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=taboo",
     "data": "/data/taboo/taboo_words.json",
@@ -21,6 +23,7 @@
     "id": "esquisse",
     "title": "Esquisse",
     "kind": "wordpack",
+    "category": "mots",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=esquisse",
     "data": "/data/esquisse/esquisse_words.json",
@@ -30,6 +33,7 @@
     "id": "blackstories",
     "title": "Black Stories",
     "kind": "custom",
+    "category": "cartes",
     "launch": "/games/blackstories/index.html",
     "thumbnail": "/games/blackstories/assets/thumbnail.jpg"
   },
@@ -37,6 +41,7 @@
     "id": "olemains",
     "title": "Olé Mains",
     "kind": "custom",
+    "category": "autres",
     "launch": "/games/olemains/index.html",
     "data": "/data/olemains/words.json",
     "thumbnail": "/games/olemains/assets/thumbnail.jpg"
@@ -45,6 +50,7 @@
     "id": "easyfrog",
     "title": "Easy Frog",
     "kind": "external",
+    "category": "autres",
     "launch": "https://easyfrog.web.app/",
     "thumbnail": "/games/easyfrog/assets/thumbnail.jpg"
   },
@@ -52,6 +58,7 @@
     "id": "cafards",
     "title": "Salade de Cafards",
     "kind": "custom",
+    "category": "cartes",
     "launch": "/games/cafards/index.html",
     "thumbnail": "/games/cafards/assets/background.jpg"
   },
@@ -59,6 +66,7 @@
     "id": "millionaire",
     "title": "Qui veut gagner des millions ?",
     "kind": "custom",
+    "category": "autres",
     "launch": "/games/millionaire/index.html",
     "thumbnail": "/games/millionaire/assets/thumbnail.jpg"
   },
@@ -66,6 +74,7 @@
     "id": "pigeonpigeon",
     "title": "Pigeon Pigeon",
     "kind": "wordpack",
+    "category": "mots",
     "engine": "wordplayer",
     "launch": "/wordplayer.html?game=pigeonpigeon",
     "data": "/data/pigeonpigeon/pigeonpigeon_words.json",
@@ -75,6 +84,7 @@
     "id": "pyramide",
     "title": "Pyramide",
     "kind": "custom",
+    "category": "mots",
     "launch": "/games/pyramide/index.html",
     "thumbnail": "/games/pyramide/data/images/thumbnail.jpg"
   },
@@ -82,6 +92,7 @@
     "id": "yatsy",
     "title": "Yatzy",
     "kind": "custom",
+    "category": "autres",
     "launch": "/games/yatsy/index.html",
     "thumbnail": "/games/yatsy/assets/thumbnail-yatsy.jpg"
   },
@@ -89,6 +100,7 @@
     "id": "diceduel",
     "title": "Dice Duel",
     "kind": "custom",
+    "category": "autres",
     "launch": "/games/diceduel/index.html",
     "thumbnail": "/games/diceduel/assets/thumbnail.svg"
   },
@@ -96,6 +108,7 @@
     "id": "tranquil",
     "title": "Tranquil",
     "kind": "external",
+    "category": "autres",
     "launch": "https://tranquil-woad.vercel.app/",
     "thumbnail": "/games/tranquil/assets/thumbnail.webp"
   },
@@ -103,6 +116,7 @@
     "id": "coinchapp",
     "title": "Coinche Mobile",
     "kind": "external",
+    "category": "cartes",
     "launch": "http://coinchapp.vercel.app/",
     "thumbnail": "/games/coinchapp/assets/thumbnail.png"
   }

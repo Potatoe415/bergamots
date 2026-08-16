@@ -1,46 +1,133 @@
 const CONFIG_URL = '/hub-config.json';
-const DOM_ID = 'games-grid';
+const GRID_ID = 'games-grid';
+const TABS_ID = 'category-tabs';
+const LANG_SWITCHER_ID = 'lang-switcher';
+const LANG_STORAGE_KEY = 'bergamots-lang';
+
+const LANGS = ['fr', 'en', 'es'];
+const CATEGORY_ORDER = ['cartes', 'mots', 'autres'];
+const CATEGORY_LABELS = {
+  fr: { cartes: 'Cartes', mots: 'Mots', autres: 'Autres' },
+  en: { cartes: 'Cards', mots: 'Words', autres: 'Other' },
+  es: { cartes: 'Cartas', mots: 'Palabras', autres: 'Otros' }
+};
+
+const state = {
+  games: [],
+  category: 'cartes',
+  lang: readStoredLang()
+};
 
 document.addEventListener('DOMContentLoaded', initializeDashboard);
 
 async function initializeDashboard() {
-  const gridElement = document.getElementById(DOM_ID);
-  
+  const gridElement = document.getElementById(GRID_ID);
+
   if (!gridElement) {
-    throw new Error(`Élément DOM manquant : '${DOM_ID}'`);
+    throw new Error(`Élément DOM manquant : '${GRID_ID}'`);
   }
 
   try {
     const response = await fetch(CONFIG_URL);
-    
+
     if (!response.ok) {
       throw new Error(`Erreur HTTP ${response.status} lors de la lecture du fichier de configuration.`);
     }
-    
-    const gamesConfig = await response.json();
-    renderGames(gamesConfig, gridElement);
-    
+
+    state.games = await response.json();
+    renderLangSwitcher();
+    renderCategoryTabs();
+    renderGames();
   } catch (error) {
     gridElement.innerHTML = '<p>Erreur critique : Impossible de charger la liste des jeux.</p>';
     console.error("Échec de l'initialisation du Dashboard :", error);
   }
 }
 
-function renderGames(gamesArray, containerElement) {
-  containerElement.innerHTML = '';
-  
-  if (!Array.isArray(gamesArray) || gamesArray.length === 0) {
-    containerElement.innerHTML = '<p>Aucun jeu disponible dans la configuration.</p>';
+function readStoredLang() {
+  try {
+    const stored = localStorage.getItem(LANG_STORAGE_KEY);
+    return LANGS.includes(stored) ? stored : 'fr';
+  } catch {
+    return 'fr';
+  }
+}
+
+function selectLang(lang) {
+  state.lang = lang;
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+  } catch {
+    // Storage unavailable (private mode, etc.) — language just won't persist.
+  }
+  renderLangSwitcher();
+  renderCategoryTabs();
+}
+
+function selectCategory(category) {
+  state.category = category;
+  renderCategoryTabs();
+  renderGames();
+}
+
+function renderLangSwitcher() {
+  const wrap = document.getElementById(LANG_SWITCHER_ID);
+  if (!wrap) return;
+
+  wrap.innerHTML = '';
+  wrap.classList.remove('is-open');
+
+  const activeFlag = createLangFlagButton(state.lang, true);
+  activeFlag.addEventListener('click', () => wrap.classList.toggle('is-open'));
+  wrap.appendChild(activeFlag);
+
+  LANGS.filter((lang) => lang !== state.lang).forEach((lang) => {
+    const optionFlag = createLangFlagButton(lang, false);
+    optionFlag.addEventListener('click', () => selectLang(lang));
+    wrap.appendChild(optionFlag);
+  });
+}
+
+function createLangFlagButton(lang, isActive) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `lang-flag flag-${lang} ${isActive ? 'lang-flag--active' : 'lang-flag--option'}`;
+  button.setAttribute('aria-label', lang.toUpperCase());
+  return button;
+}
+
+function renderCategoryTabs() {
+  const nav = document.getElementById(TABS_ID);
+  if (!nav) return;
+
+  const labels = CATEGORY_LABELS[state.lang];
+  nav.innerHTML = '';
+
+  CATEGORY_ORDER.forEach((category) => {
+    const isActive = category === state.category;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `category-tab category-tab--${category}${isActive ? ' is-active' : ''}`;
+    button.textContent = labels[category];
+    button.addEventListener('click', () => selectCategory(category));
+    nav.appendChild(button);
+  });
+}
+
+function renderGames() {
+  const gridElement = document.getElementById(GRID_ID);
+  const gamesInCategory = state.games.filter((game) => game.category === state.category);
+
+  gridElement.innerHTML = '';
+
+  if (gamesInCategory.length === 0) {
+    gridElement.innerHTML = '<p>Aucun jeu disponible dans cette catégorie.</p>';
     return;
   }
 
   const fragment = document.createDocumentFragment();
-  
-  gamesArray.forEach(game => {
-    fragment.appendChild(createTileNode(game));
-  });
-  
-  containerElement.appendChild(fragment);
+  gamesInCategory.forEach((game) => fragment.appendChild(createTileNode(game)));
+  gridElement.appendChild(fragment);
 }
 
 function createTileNode(game) {
@@ -53,13 +140,32 @@ function createTileNode(game) {
     anchor.rel = 'noopener noreferrer';
   }
 
-  const article = document.createElement('article');
+  const media = document.createElement('div');
+  media.className = 'game-tile__media';
 
   const img = document.createElement('img');
+  img.className = 'game-tile__thumb';
   img.src = game.thumbnail || '';
   img.alt = `Miniature de ${game.title}`;
   img.loading = 'lazy';
+  attachThumbnailFallback(img);
 
+  const overlay = document.createElement('div');
+  overlay.className = 'game-tile__overlay';
+
+  const title = document.createElement('div');
+  title.className = 'game-tile__title';
+  title.textContent = game.title;
+
+  media.appendChild(img);
+  media.appendChild(overlay);
+  media.appendChild(title);
+  anchor.appendChild(media);
+
+  return anchor;
+}
+
+function attachThumbnailFallback(img) {
   img.onerror = () => {
     const currentSource = typeof img.src === 'string' ? img.src : '';
     const hasTriedPngFallback = img.dataset.triedPngFallback === 'true';
@@ -72,15 +178,6 @@ function createTileNode(game) {
 
     img.src = generateBlackFallbackSVG();
   };
-
-  const heading = document.createElement('h2');
-  heading.textContent = game.title;
-
-  article.appendChild(img);
-  article.appendChild(heading);
-  anchor.appendChild(article);
-
-  return anchor;
 }
 
 function isExternalLaunch(launchUrl) {

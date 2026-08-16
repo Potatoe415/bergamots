@@ -76,3 +76,13 @@ Context: The four files reappeared untracked in the working tree (not restored f
 Rationale: User's explicit choice, made with the risks stated up front.
 Consequences: `Sync-Push.bat`/`Sync-Pull.bat`/`Sync-Push.ps1`/`Sync-Pull.ps1` are tracked again. The date-based "last write wins" merge behavior is back in use for this repo; anyone using it should be aware a file can be silently overwritten in either direction if local/remote timestamps don't reflect true recency (e.g. right after a fresh clone or checkout).
 Alternatives_Rejected: Plain `git pull`/`git push` (the 2026-08-15 replacement) — user preferred the one-click scripts despite the risks. Deleting the reappeared files — rejected by user.
+
+---
+
+## 2026-08-16 — Add `category` field to `HubGameEntry`, redesign the hub with tabs + language switcher
+
+Decision: Applied the visual redesign staged in `temp-design/` (a design-tool mockup, `Bergamots Accueil.dc.html`) to the real hub: rewrote `index.html`/`hub.css`/`hub.js`, added a `category` (`cartes`/`mots`/`autres`) field to every entry in `public/hub-config.json`, added a FR/EN/ES flag language switcher (persisted in `localStorage`), and replaced `public/assets/banner-games-hub.jpg` with the new banner image supplied in `temp-design/assets/banner-bergamots-2.jpg`.
+Context: User asked to "apply the design from temp-design". The mockup fully specified markup, colors, category tabs, and a new banner, so no clarifying questions were needed; mapped each of the 14 existing games to a category by reading the mockup's own `GAMES` grouping.
+Rationale: The mockup is a complete, unambiguous spec (inline styles + logic) authored against this exact repo's assets (`public/games/*/assets/thumbnail.*`), so reproducing it as real CSS classes + a small state-driven `hub.js` was the most direct path; adding `category` to the config (rather than hardcoding the grouping in JS) keeps the "config over code" principle from `docs/TECH.md`.
+Consequences: `docs/DATA_MODEL.md` updated (`HubGameEntry.category`, new constraint: every entry needs a valid category or it silently won't render under any tab). Game titles/thumbnails are unchanged; only tab labels translate per language, matching the mockup (game names themselves aren't translated). The `temp-design/` folder itself (design-tool working directory, untracked) was left in place, not deleted — flagged to the user since it isn't `.gitignore`d.
+Alternatives_Rejected: Hardcoding the category grouping inside `hub.js` instead of the config — rejected, would violate the existing "adding a game requires zero hub.js changes" convention.

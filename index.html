@@ -5,17 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bergamots</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/shared/css/base.css">
   <link rel="stylesheet" href="./hub.css">
 </head>
 <body>
-  <header class="hub-header">
-    <img src="./assets/banner-games-hub.jpg" alt="Bergamots Banner" class="main-banner">
-  </header>
+  <div class="hub-shell">
+    <header class="hub-header">
+      <img src="./assets/banner-games-hub.jpg" alt="Bergamots" class="main-banner">
+      <div class="lang-switcher" id="lang-switcher"></div>
+    </header>
 
-  <main id="games-grid" class="games-grid">
-    <p>Chargement des jeux...</p>
-  </main>
+    <main class="hub-main">
+      <nav class="category-tabs" id="category-tabs"></nav>
+
+      <div id="games-grid" class="games-grid">
+        <p>Chargement des jeux...</p>
+      </div>
+    </main>
+  </div>
 
   <script type="module" src="./hub.js"></script>
 </body>

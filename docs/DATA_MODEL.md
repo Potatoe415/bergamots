@@ -35,6 +35,7 @@ Fields:
 | id | string | Yes | kebab-case, matches `public/games/<id>/` folder |
 | title | string | Yes | Display name on the hub tile |
 | kind | string | Yes | `wordpack` \| `custom` \| `external` |
+| category | string | Yes | `cartes` \| `mots` \| `autres` — which hub tab the tile appears under |
 | engine | string | wordpack only | e.g. `wordplayer` |
 | launch | string | Yes | Relative path or external URL to open |
 | data | string | wordpack only | Path to the game's word JSON |
@@ -47,6 +48,7 @@ Relationships:
 Constraints:
 - `id` must be unique across the array.
 - `thumbnail` file must exist at build time for the tile to render correctly.
+- `category` must be one of `cartes` / `mots` / `autres`; `hub.js` renders only the games matching the currently selected tab (no fallback bucket), so every entry needs a valid value.
 
 Access_Rules:
 - Public, read-only, fetched client-side by `hub.js` and `wordplayer.js`.
