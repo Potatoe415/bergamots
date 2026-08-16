@@ -7,7 +7,7 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Active project. Yatzy multiplayer fully migrated from Firebase to Vercel + Supabase (shared `multigames-db` project with `coinchapp`) and verified end-to-end in production. All info files (`docs/*`, `STATE.md`) audited and aligned with this reality; no remaining Firebase references outside historical decision/migration-note entries.
 Current_Goal: Keep evolving the Bergamots game hub now that hosting is on Vercel and Yatzy is on Supabase.
-Last_Action: User confirmed the "Game on!" board-game banner (forest scene with cards/dice/scrabble tiles/backgammon) is the one they want, and attached it directly — replaced `public/assets/banner-games-hub.jpg` with that exact file (was flip-flopping due to an external sync tool during the session) and deleted the now-superseded `banner-games-hub-old.jpg` backup. Verified with `npm run build`. Before this, re-grouped hub categories per user's explicit list: `cartesdes` ("Cartes & dés": Coinche Mobile, Yatzy, Dice Duel), `mots` (Pictionary, Taboo, Esquisse, Pigeon Pigeon, Pyramide, Olé Mains), `autres` (Black Stories, Salade de Cafards, Easy Frog, Millionaire, Tranquil) — updated `public/hub-config.json`, `hub.js`, `hub.css`, `docs/DATA_MODEL.md`.
+Last_Action: Made the hub banner responsive: added `public/assets/banner-games-hub-mobile.jpg` (user-supplied crop) and switched `index.html`'s banner `<img>` to a `<picture>` with a `(max-width: 599px)` `<source>` pointing to it, keeping the existing `public/assets/banner-games-hub.jpg` ("Game on!") for wider viewports. Verified both breakpoints via CDP viewport emulation + screenshots and `npm run build`. Before this: confirmed the "Game on!" banner as final (deleted the stale `-old.jpg` backup) and re-grouped hub categories (`cartesdes`/`mots`/`autres`, see `docs/DECISIONS.md`).
 Next_Actions:
 - User to delete/decommission the Firebase project (Hosting + Realtime Database) whenever ready — confirmed safe, no other game depends on it.
 - Be aware Sync-Push/Pull use mtime-based conflict resolution, not real git merge — double-check important changes weren't silently overwritten after each sync.
@@ -24,6 +24,7 @@ Open_Questions:
 - Deployment_Target: Vercel (confirmed live, `bergamots` project, Git-integration auto-deploy on push to `main`).
 
 Recent_Changes:
+- 2026-08-16 Hub banner is now responsive: `<picture>`/`<source>` in `index.html` swaps to a dedicated mobile crop (`banner-games-hub-mobile.jpg`) under 600px, desktop keeps `banner-games-hub.jpg`.
 - 2026-08-16 Locked in the final hub banner ("Game on!" board-game scene, user-supplied file) after it kept changing mid-session via an external sync tool; removed the stale backup copy.
 - 2026-08-16 Re-grouped hub categories per user request (`cartesdes`/`mots`/`autres` re-split; see Last_Action) and added `temp-design/` to `.gitignore`.
 - 2026-08-16 Redesigned the hub (`index.html`/`hub.css`/`hub.js`) from the `temp-design/` mockup: language flag switcher, category tabs, new tile look, new banner; added `category` to `public/hub-config.json` and `docs/DATA_MODEL.md`.
