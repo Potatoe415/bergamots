@@ -33,7 +33,7 @@
     "id": "blackstories",
     "title": "Black Stories",
     "kind": "custom",
-    "category": "cartes",
+    "category": "autres",
     "launch": "/games/blackstories/index.html",
     "thumbnail": "/games/blackstories/assets/thumbnail.jpg"
   },
@@ -41,7 +41,7 @@
     "id": "olemains",
     "title": "Olé Mains",
     "kind": "custom",
-    "category": "autres",
+    "category": "mots",
     "launch": "/games/olemains/index.html",
     "data": "/data/olemains/words.json",
     "thumbnail": "/games/olemains/assets/thumbnail.jpg"
@@ -58,7 +58,7 @@
     "id": "cafards",
     "title": "Salade de Cafards",
     "kind": "custom",
-    "category": "cartes",
+    "category": "autres",
     "launch": "/games/cafards/index.html",
     "thumbnail": "/games/cafards/assets/background.jpg"
   },
@@ -92,7 +92,7 @@
     "id": "yatsy",
     "title": "Yatzy",
     "kind": "custom",
-    "category": "autres",
+    "category": "cartesdes",
     "launch": "/games/yatsy/index.html",
     "thumbnail": "/games/yatsy/assets/thumbnail-yatsy.jpg"
   },
@@ -100,7 +100,7 @@
     "id": "diceduel",
     "title": "Dice Duel",
     "kind": "custom",
-    "category": "autres",
+    "category": "cartesdes",
     "launch": "/games/diceduel/index.html",
     "thumbnail": "/games/diceduel/assets/thumbnail.svg"
   },
@@ -116,7 +116,7 @@
     "id": "coinchapp",
     "title": "Coinche Mobile",
     "kind": "external",
-    "category": "cartes",
+    "category": "cartesdes",
     "launch": "http://coinchapp.vercel.app/",
     "thumbnail": "/games/coinchapp/assets/thumbnail.png"
   }

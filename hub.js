@@ -5,16 +5,16 @@ const LANG_SWITCHER_ID = 'lang-switcher';
 const LANG_STORAGE_KEY = 'bergamots-lang';
 
 const LANGS = ['fr', 'en', 'es'];
-const CATEGORY_ORDER = ['cartes', 'mots', 'autres'];
+const CATEGORY_ORDER = ['cartesdes', 'mots', 'autres'];
 const CATEGORY_LABELS = {
-  fr: { cartes: 'Cartes', mots: 'Mots', autres: 'Autres' },
-  en: { cartes: 'Cards', mots: 'Words', autres: 'Other' },
-  es: { cartes: 'Cartas', mots: 'Palabras', autres: 'Otros' }
+  fr: { cartesdes: 'Cartes & dés', mots: 'Mots', autres: 'Autres' },
+  en: { cartesdes: 'Cards & Dice', mots: 'Words', autres: 'Other' },
+  es: { cartesdes: 'Cartas y dados', mots: 'Palabras', autres: 'Otros' }
 };
 
 const state = {
   games: [],
-  category: 'cartes',
+  category: 'cartesdes',
   lang: readStoredLang()
 };
 

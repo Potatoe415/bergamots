@@ -7,8 +7,9 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Active project. Yatzy multiplayer fully migrated from Firebase to Vercel + Supabase (shared `multigames-db` project with `coinchapp`) and verified end-to-end in production. All info files (`docs/*`, `STATE.md`) audited and aligned with this reality; no remaining Firebase references outside historical decision/migration-note entries.
 Current_Goal: Keep evolving the Bergamots game hub now that hosting is on Vercel and Yatzy is on Supabase.
-Last_Action: Applied the `temp-design/` mockup redesign to the real hub: rewrote `index.html`/`hub.css`/`hub.js` (FR/EN/ES language flag switcher persisted in `localStorage`, Cartes/Mots/Autres category tabs, portrait tile cards with gradient-overlay titles, Baloo 2 + Quicksand fonts), added a `category` field to all 14 entries in `public/hub-config.json`, and replaced `public/assets/banner-games-hub.jpg` with the new banner from `temp-design/assets/banner-bergamots-2.jpg`. Verified with `npm run build` and a browser check (all 3 tabs filter correctly, flag menu opens/closes).
+Last_Action: Re-grouped hub categories per user's explicit list: renamed `cartes` to `cartesdes` ("Cartes & dés": Coinche Mobile, Yatzy, Dice Duel), moved Olé Mains into `mots` (now: Pictionary, Taboo, Esquisse, Pigeon Pigeon, Pyramide, Olé Mains), and put Black Stories + Salade de Cafards into `autres` (now: Black Stories, Salade de Cafards, Easy Frog, Millionaire, Tranquil) — updated `public/hub-config.json`, `hub.js` (labels FR/EN/ES), `hub.css`, `docs/DATA_MODEL.md`. Verified with `npm run build` and a browser check of all 3 tabs. Also added `temp-design/` to `.gitignore` per user request. Noted for the user: `public/assets/banner-games-hub.jpg` changed content again outside this session (now a "Game on!" board-game banner) and left a stray untracked `banner-games-hub-old.jpg` backup — likely the design tool's live sync; not yet resolved whether to delete the backup.
 Next_Actions:
+- Ask user whether to delete the untracked `public/assets/banner-games-hub-old.jpg` backup file.
 - User to delete/decommission the Firebase project (Hosting + Realtime Database) whenever ready — confirmed safe, no other game depends on it.
 - Be aware Sync-Push/Pull use mtime-based conflict resolution, not real git merge — double-check important changes weren't silently overwritten after each sync.
 - `GitHistory.txt` PULL entries only reach other machines once that computer next runs a Push — inherent limitation of the file-based sync approach (no server), flagged to user.
@@ -24,8 +25,8 @@ Open_Questions:
 - Deployment_Target: Vercel (confirmed live, `bergamots` project, Git-integration auto-deploy on push to `main`).
 
 Recent_Changes:
-- 2026-08-16 Redesigned the hub (`index.html`/`hub.css`/`hub.js`) from the `temp-design/` mockup: language flag switcher, Cartes/Mots/Autres category tabs, new tile look, new banner; added `category` to `public/hub-config.json` and `docs/DATA_MODEL.md`.
+- 2026-08-16 Re-grouped hub categories per user request (`cartesdes`/`mots`/`autres` re-split; see Last_Action) and added `temp-design/` to `.gitignore`.
+- 2026-08-16 Redesigned the hub (`index.html`/`hub.css`/`hub.js`) from the `temp-design/` mockup: language flag switcher, category tabs, new tile look, new banner; added `category` to `public/hub-config.json` and `docs/DATA_MODEL.md`.
 - 2026-08-16 Fixed Yatzy multiplayer die-selection race: serialized outgoing `updateGameState` writes (chained, no longer parallel) and made `handleMatchStateChange` skip remote hydration while a local write is pending during the local player's own turn, so a fast click no longer gets silently reverted by a stale refetch.
 - 2026-08-16 Added `Sync-Log.ps1` + `GitHistory.txt` logging (date/time, PUSH or PULL, computer name, Windows username) to `Sync-Push.ps1`/`Sync-Pull.ps1`, so the user can identify which machine/login did the last sync.
 - 2026-08-16 Reintroduced Sync-Push/Pull tooling (user's explicit choice, reversing the 2026-08-15 retirement) — see `docs/DECISIONS.md`.
-- 2026-08-16 Docs audit: fixed the last stale Firebase reference in `docs/TECH.md` (Deployment), added the shared-`multigames-db` detail to `docs/TECH.md` Database, logged 2 new decisions in `docs/DECISIONS.md` (shared Supabase project reuse; Firebase decommission confirmation).
