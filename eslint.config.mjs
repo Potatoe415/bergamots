@@ -29,9 +29,9 @@ export default [
     }
   },
 
-  // Node config files (Vite config, tooling)
+  // Node config files (Vite config, tooling) + Vercel serverless functions
   {
-    files: ["vite.config.js", "**/*.cjs"],
+    files: ["vite.config.js", "**/*.cjs", "api/**/*.js"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",

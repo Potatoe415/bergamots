@@ -1,14 +1,17 @@
 (function attachYatzyMatchmaking(global) {
-  const FIREBASE_VERSION = "9.23.0";
+  const SUPABASE_JS_URL = "https://esm.sh/@supabase/supabase-js@2";
+  const API_BASE = "/api/yatsy/games";
   const GAME_TTL_MS = 10800000;
   const PURGE_AFTER_MS = ((global.YATZY_CONFIG?.matchmaking?.purgeAfterHours) || 48) * 60 * 60 * 1000;
   const CODE_LENGTH = 3;
-  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const TOKEN_BYTES = 16;
+  const POLL_INTERVAL_MS = 15000;
 
-  let sdkPromise = null;
-  let activeListener = null;
+  let supabaseClientPromise = null;
+  let activeChannel = null;
+  let activePollTimer = null;
+  let activeVisibilityHandler = null;
   let activeCode = "";
+  let activeSession = null;
 
   function createMatchmakingError(code, message) {
     const error = new Error(message);
@@ -24,197 +27,149 @@
       .slice(0, CODE_LENGTH);
   }
 
-  function isExpired(record) {
-    return !record || !record.createdAt || (Date.now() - record.createdAt) > GAME_TTL_MS;
-  }
+  async function request(method, path, body) {
+    const response = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined
+    });
 
-  function randomCode() {
-    let code = "";
+    const payload = await response.json().catch(() => null);
 
-    for (let index = 0; index < CODE_LENGTH; index += 1) {
-      const randomIndex = Math.floor(Math.random() * LETTERS.length);
-      code += LETTERS[randomIndex];
+    if (!response.ok) {
+      const errorInfo = payload?.error || {};
+      throw createMatchmakingError(
+        errorInfo.code || "server-error",
+        errorInfo.message || "Matchmaking request failed."
+      );
     }
 
-    return code;
+    return payload;
   }
 
-  function randomSeatToken() {
-    const bytes = new Uint8Array(TOKEN_BYTES);
-    global.crypto.getRandomValues(bytes);
-    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-  }
-
-  async function loadSdk() {
-    if (sdkPromise) {
-      return sdkPromise;
+  async function loadSupabaseClient() {
+    if (supabaseClientPromise) {
+      return supabaseClientPromise;
     }
 
-    sdkPromise = Promise.all([
-      import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`),
-      import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-database.js`)
-    ]).then(([appSdk, databaseSdk]) => {
-      if (!global.firebaseConfig) {
+    supabaseClientPromise = import(SUPABASE_JS_URL).then(({ createClient }) => {
+      if (!global.supabaseConfig) {
         throw createMatchmakingError(
           "missing-config",
-          "window.firebaseConfig must be defined before matchmaking is used."
+          "window.supabaseConfig must be defined before matchmaking is used."
         );
       }
 
-      const app = appSdk.getApps().length
-        ? appSdk.getApp()
-        : appSdk.initializeApp(global.firebaseConfig);
-
-      return {
-        database: databaseSdk.getDatabase(app),
-        ref: databaseSdk.ref,
-        get: databaseSdk.get,
-        set: databaseSdk.set,
-        update: databaseSdk.update,
-        remove: databaseSdk.remove,
-        onValue: databaseSdk.onValue,
-        off: databaseSdk.off
-      };
+      return createClient(global.supabaseConfig.url, global.supabaseConfig.anonKey);
     });
 
-    return sdkPromise;
+    return supabaseClientPromise;
   }
 
-  async function readGameRecord(code) {
-    const sdk = await loadSdk();
-    const snapshot = await sdk.get(sdk.ref(sdk.database, `games/${code}`));
-    return {
-      sdk,
-      exists: snapshot.exists(),
-      value: snapshot.val()
-    };
-  }
-
-  async function cleanupExpiredRecord(sdk, code, record) {
-    if (!record || !isExpired(record)) {
-      return false;
+  async function fetchAuthorizedState(code, sessionSeat) {
+    if (sessionSeat?.role && sessionSeat?.resumeToken) {
+      return request("POST", `/${code}/resume`, {
+        role: sessionSeat.role,
+        resumeToken: sessionSeat.resumeToken
+      });
     }
 
-    await sdk.remove(sdk.ref(sdk.database, `games/${code}`));
-    return true;
-  }
-
-  async function purgeOldGames(sdk, olderThanMs = PURGE_AFTER_MS) {
-    const snapshot = await sdk.get(sdk.ref(sdk.database, "games"));
-
-    if (!snapshot.exists()) {
-      return;
-    }
-
-    const games = snapshot.val();
-    const now = Date.now();
-    const removals = Object.entries(games)
-      .filter(([, record]) => record?.createdAt && (now - record.createdAt) > olderThanMs)
-      .map(([code]) => sdk.remove(sdk.ref(sdk.database, `games/${code}`)));
-
-    await Promise.all(removals);
+    return request("GET", `/${code}`);
   }
 
   function stopListening() {
-    if (typeof activeListener === "function") {
-      activeListener();
+    if (activeChannel) {
+      activeChannel.unsubscribe();
+      activeChannel = null;
     }
 
-    activeListener = null;
+    if (activePollTimer) {
+      clearInterval(activePollTimer);
+      activePollTimer = null;
+    }
+
+    if (activeVisibilityHandler) {
+      document.removeEventListener("visibilitychange", activeVisibilityHandler);
+      activeVisibilityHandler = null;
+    }
+
     activeCode = "";
+    activeSession = null;
   }
 
   async function startListening(code, callbacks = {}, sessionSeat = null) {
-    const sdk = await loadSdk();
-    const gameRef = sdk.ref(sdk.database, `games/${code}`);
-    let started = false;
-
     stopListening();
     activeCode = code;
+    activeSession = sessionSeat;
 
-    activeListener = sdk.onValue(gameRef, async (snapshot) => {
-      const record = snapshot.val();
+    let started = false;
 
-      if (!snapshot.exists()) {
-        callbacks.gameClosedCallback?.({ code, reason: "missing" });
-        return;
-      }
+    async function refetch() {
+      let record;
 
-      if (await cleanupExpiredRecord(sdk, code, record)) {
-        callbacks.gameClosedCallback?.({ code, reason: "expired" });
-        return;
-      }
+      try {
+        record = await fetchAuthorizedState(code, sessionSeat);
+      } catch (error) {
+        if (error.code === "game-not-found") {
+          stopListening();
+          callbacks.gameClosedCallback?.({ code, reason: "missing" });
+          return;
+        }
 
-      if (sessionSeat?.role && sessionSeat?.resumeToken) {
-        const currentSeatToken = record?.seats?.[sessionSeat.role]?.token || null;
+        if (error.code === "game-expired") {
+          stopListening();
+          callbacks.gameClosedCallback?.({ code, reason: "expired" });
+          return;
+        }
 
-        if (!currentSeatToken || currentSeatToken !== sessionSeat.resumeToken) {
+        if (error.code === "resume-denied") {
           stopListening();
           callbacks.gameClosedCallback?.({ code, reason: "replaced" });
           return;
         }
+
+        return; // Transient/network error: the next tick or poll will retry.
       }
 
-      const payload = {
-        code,
-        createdAt: record.createdAt,
-        status: record.status,
-        gameState: record.gameState || null
-      };
-
-      callbacks.stateChangeCallback?.(payload);
+      callbacks.stateChangeCallback?.(record);
 
       if (record.status === "playing" && !started) {
         started = true;
-        callbacks.startGameCallback?.(payload);
+        callbacks.startGameCallback?.(record);
       }
-    });
+    }
+
+    activeVisibilityHandler = () => {
+      if (document.visibilityState === "visible") {
+        refetch();
+      }
+    };
+    document.addEventListener("visibilitychange", activeVisibilityHandler);
+    activePollTimer = setInterval(refetch, POLL_INTERVAL_MS);
+
+    const supabase = await loadSupabaseClient();
+    activeChannel = supabase
+      .channel(`yatzy-game-${code}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "yatzy_game_events", filter: `game_code=eq.${code}` },
+        refetch
+      )
+      .on("broadcast", { event: "tick" }, refetch)
+      .subscribe();
+
+    await refetch();
   }
 
   async function createGame(callbacks = {}) {
-    const sdk = await loadSdk();
+    const data = await request("POST", "");
 
-    for (let attempt = 0; attempt < 250; attempt += 1) {
-      const code = randomCode();
-      const gameRef = sdk.ref(sdk.database, `games/${code}`);
-      const snapshot = await sdk.get(gameRef);
-      const creatorToken = randomSeatToken();
+    await startListening(data.code, callbacks, {
+      role: "creator",
+      resumeToken: data.resumeToken
+    });
 
-      if (snapshot.exists()) {
-        const existing = snapshot.val();
-
-        if (!isExpired(existing)) {
-          continue;
-        }
-      }
-
-      await sdk.set(gameRef, {
-        createdAt: Date.now(),
-        status: "waiting",
-        gameState: null,
-        seats: {
-          creator: {
-            token: creatorToken
-          },
-          joiner: {
-            token: null
-          }
-        }
-      });
-
-      await startListening(code, callbacks, {
-        role: "creator",
-        resumeToken: creatorToken
-      });
-      return {
-        code,
-        role: "creator",
-        localPlayerIndex: 0,
-        resumeToken: creatorToken
-      };
-    }
-
-    throw createMatchmakingError("code-exhausted", "Unable to reserve a free game code.");
+    return data;
   }
 
   async function joinGame(code, callbacks = {}) {
@@ -224,56 +179,14 @@
       throw createMatchmakingError("invalid-code", "Game code must contain exactly 3 letters.");
     }
 
-    const { sdk, exists, value } = await readGameRecord(normalizedCode);
-
-    if (!exists) {
-      throw createMatchmakingError("game-not-found", "Game not found.");
-    }
-
-    if (await cleanupExpiredRecord(sdk, normalizedCode, value)) {
-      throw createMatchmakingError("game-expired", "Game expired.");
-    }
-
-    if (value.status === "waiting") {
-      const joinerToken = randomSeatToken();
-
-      await sdk.update(sdk.ref(sdk.database, `games/${normalizedCode}`), {
-        status: "playing",
-        "seats/joiner/token": joinerToken
-      });
-
-      await startListening(normalizedCode, callbacks, {
-        role: "joiner",
-        resumeToken: joinerToken
-      });
-
-      return {
-        code: normalizedCode,
-        role: "joiner",
-        localPlayerIndex: 1,
-        resumeToken: joinerToken
-      };
-    }
-
-    const activePlayerIndex = value?.gameState?.currentPlayerIndex === 0 ? 0 : 1;
-    const replacementRole = activePlayerIndex === 0 ? "creator" : "joiner";
-    const replacementToken = randomSeatToken();
-
-    await sdk.update(sdk.ref(sdk.database, `games/${normalizedCode}`), {
-      [`seats/${replacementRole}/token`]: replacementToken
-    });
+    const data = await request("POST", `/${normalizedCode}/join`);
 
     await startListening(normalizedCode, callbacks, {
-      role: replacementRole,
-      resumeToken: replacementToken
+      role: data.role,
+      resumeToken: data.resumeToken
     });
 
-    return {
-      code: normalizedCode,
-      role: replacementRole,
-      localPlayerIndex: activePlayerIndex,
-      resumeToken: replacementToken
-    };
+    return data;
   }
 
   async function resumeGame(code, role, resumeToken, callbacks = {}) {
@@ -287,30 +200,14 @@
       throw createMatchmakingError("resume-denied", "Missing resume credentials.");
     }
 
-    const { sdk, exists, value } = await readGameRecord(normalizedCode);
+    const data = await request("POST", `/${normalizedCode}/resume`, { role, resumeToken });
 
-    if (!exists) {
-      throw createMatchmakingError("game-not-found", "Game not found.");
-    }
+    await startListening(normalizedCode, callbacks, { role, resumeToken });
 
-    if (await cleanupExpiredRecord(sdk, normalizedCode, value)) {
-      throw createMatchmakingError("game-expired", "Game expired.");
-    }
-
-    const seatToken = value?.seats?.[role]?.token || null;
-
-    if (!seatToken || seatToken !== resumeToken) {
-      throw createMatchmakingError("resume-denied", "This seat belongs to another player.");
-    }
-
-    await startListening(normalizedCode, callbacks, {
-      role,
-      resumeToken
-    });
     return {
-      code: normalizedCode,
-      status: value.status,
-      gameState: value.gameState || null
+      code: data.code,
+      status: data.status,
+      gameState: data.gameState
     };
   }
 
@@ -321,31 +218,29 @@
       throw createMatchmakingError("missing-code", "A game code is required.");
     }
 
-    const sdk = await loadSdk();
-    await sdk.set(
-      sdk.ref(sdk.database, `games/${normalizedCode}/gameState`),
-      JSON.parse(JSON.stringify(stateObject))
-    );
+    if (!activeSession || normalizedCode !== activeCode) {
+      throw createMatchmakingError("resume-denied", "No active session for this game.");
+    }
+
+    await request("PUT", `/${normalizedCode}/state`, {
+      role: activeSession.role,
+      resumeToken: activeSession.resumeToken,
+      gameState: JSON.parse(JSON.stringify(stateObject))
+    });
+
+    activeChannel?.send({ type: "broadcast", event: "tick", payload: {} });
   }
 
   async function leaveGame(options = {}) {
     const code = activeCode;
     stopListening();
 
-    const sdk = await loadSdk();
-
     if (code) {
-      const { exists, value } = await readGameRecord(code);
-
-      if (exists) {
-        if (options.deleteCurrent || value.status === "waiting") {
-          await sdk.remove(sdk.ref(sdk.database, `games/${code}`));
-        }
-      }
+      await request("DELETE", `/${code}`, { deleteCurrent: !!options.deleteCurrent });
     }
 
     if (options.purgeOlderThanMs) {
-      await purgeOldGames(sdk, options.purgeOlderThanMs);
+      await request("POST", "/purge", { olderThanMs: options.purgeOlderThanMs });
     }
   }
 

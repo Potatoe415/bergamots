@@ -1,9 +1,9 @@
-const CACHE_NAME = "yatzy-offline-v10";
+const CACHE_NAME = "yatzy-offline-v11";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./config.js",
-  "./firebase-config.js",
+  "./supabase-config.js",
   "./i18n.js",
   "./robot.js",
   "./matchmaking.js",
