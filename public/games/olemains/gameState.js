@@ -14,7 +14,7 @@ export class GameState {
 
   /**
    * Load game data from JSON file
-   * Uses an absolute path so it works both locally and on Firebase.
+   * Uses an absolute path so it works both locally and when deployed.
    * @param {string} url - Path to words.json
    * @returns {Promise<void>}
    */

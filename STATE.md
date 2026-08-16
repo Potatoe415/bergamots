@@ -5,14 +5,11 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project. Yatzy multiplayer + hub hosting migrated from Firebase to Vercel + Supabase (code done; Supabase project creation, migration run, and Vercel project/env setup are manual follow-ups — see Next_Actions).
-Current_Goal: Finish the Firebase to Vercel + Supabase migration (provision Supabase + Vercel, then verify end-to-end) and keep evolving the Bergamots game hub.
-Last_Action: Implemented the Yatzy Firebase to Vercel+Supabase migration: added `api/yatsy/games/*` serverless functions + `supabase/migrations/0001_yatzy.sql`, rewrote `public/games/yatsy/matchmaking.js` against the new API (same public interface, no `app.js`/`robot.js` changes), replaced `firebase-config.js` with `supabase-config.js`, removed `firebase.json`/`.firebaserc`, updated `docs/RUNBOOK.md`/`docs/DATA_MODEL.md`, logged the decision in `docs/DECISIONS.md`.
+Status: Active project. Yatzy multiplayer fully migrated from Firebase to Vercel + Supabase and verified end-to-end in production (create/join/delete all return 200 on `https://bergamots.vercel.app`). Firebase is confirmed unused by every other game — safe for the user to decommission their Firebase project.
+Current_Goal: Keep evolving the Bergamots game hub now that hosting is on Vercel and Yatzy is on Supabase.
+Last_Action: Verified the migration live in production (SUPABASE_SERVICE_ROLE_KEY set on Vercel, `supabase/migrations/0001_yatzy.sql` run against the shared `multigames-db` project); updated `docs/PRODUCT.md` (user-approved) and `docs/BACKLOG.md` to drop remaining Firebase mentions; fixed a stale Firebase comment in `public/games/olemains/gameState.js`.
 Next_Actions:
-- Create the Supabase project, run `supabase/migrations/0001_yatzy.sql`, fill in real values in `public/games/yatsy/supabase-config.js`.
-- Create/link the Vercel project for this repo, set `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` env vars, connect the production domain, retire the Firebase Hosting site.
-- Confirm with user whether to also decommission the Firebase project itself (Realtime Database), not just stop using it.
-- Confirm with user on the exact `docs/TECH.md` diff for this migration (pending approval, per file ownership rules).
+- User to delete/decommission the Firebase project (Hosting + Realtime Database) whenever ready — confirmed safe, no other game depends on it.
 - Pick the first real item for `docs/BACKLOG.md` Now.
 - Confirm with user whether to keep or delete `refactor.py` (one-off, already-applied migration script left at repo root).
 - Decide on automated testing / error-handling conventions (see `docs/TECH.md` Open_Questions).
@@ -21,11 +18,12 @@ Next_Actions:
 Open_Questions:
 - Project_Name: Bergamots (confirmed from README/package.json)
 - Target_Users: Confirmed in `docs/PRODUCT.md` (party-game groups, remote Yatzy players)
-- Stack: Vanilla JS + Vite; Yatzy now backed by Supabase Postgres via `api/yatsy/games/*` (see `docs/DATA_MODEL.md`). `docs/TECH.md` Stack_Backend/Database/Hosting/Security sections still describe the old Firebase setup, pending user-approved update.
-- Deployment_Target: Moving to Vercel (whole hub); Firebase Hosting config removed from the repo. Actual Vercel project/domain setup still to be done manually.
+- Stack: Vanilla JS + Vite; Yatzy backed by Supabase Postgres via `api/yatsy/games/*` (see `docs/DATA_MODEL.md`, `docs/TECH.md`, both updated and confirmed).
+- Deployment_Target: Vercel (confirmed live, `bergamots` project, Git-integration auto-deploy on push to `main`).
 
 Recent_Changes:
+- 2026-08-16 Verification: confirmed Firebase is unused outside Yatzy (repo-wide search); updated `docs/PRODUCT.md`/`docs/BACKLOG.md` accordingly; user cleared to delete their Firebase project.
+- 2026-08-16 Deploy: linked repo to existing Vercel `bergamots` project, set `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` env vars, committed+pushed the migration, verified create/join/delete against production Supabase (`multigames-db`, shared with coinchapp).
 - 2026-08-15 Migration: Yatzy multiplayer moved from Firebase Realtime Database to Supabase Postgres (`api/yatsy/games/*`, `supabase/migrations/0001_yatzy.sql`); hub hosting target changed from Firebase Hosting to Vercel (`firebase.json`/`.firebaserc` removed, `.env.example` added).
 - 2026-08-15 Bootstrap: created `AGENTS.md` context architecture, populated `docs/*` from existing legacy docs.
 - 2026-08-15 Cleanup: deleted `Sync-Push.ps1`, `Sync-Pull.ps1`, `Sync-Push.bat`, `Sync-Pull.bat`, `SYNC-HISTORY.md` (old cross-machine sync-flow tooling).
-- 2026-08-15 Cleanup: deleted `spectre_fonctionnel.md`, `spectre_technique.md`, `docs/ai/cursor.md` (content migrated, now superseded).

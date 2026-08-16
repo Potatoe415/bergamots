@@ -17,7 +17,7 @@ Core_Features:
 - Wordplayer engine (`wordplayer.html` + `wordplayer.js` + `shared/js/engine.js`): shared word-guessing game shell used by Pictionary, Taboo, Esquisse, Pigeon Pigeon. Config: timer choice → play (show/hide word, validate/pass) → end stats.
 - Olé Mains: word-guessing game with deck selection, countdown, successive word reveal, final scoring (1 point validated / 0 passed).
 - Black Stories: dark riddles. Read title/short riddle → think → reveal full solution. History navigation (previous/random next), multilingual, per-story illustrations.
-- Yatzy (`public/games/yatsy/`): dice poker. Roll (max 3) → keep dice → pick a scoring category. Automatic scoring (Full, Square, Straights), +35 upper-section bonus above 63, Yatzy handling (5 identical dice). Online multiplayer via 3-letter room codes backed by Firebase Realtime Database.
+- Yatzy (`public/games/yatsy/`): dice poker. Roll (max 3) → keep dice → pick a scoring category. Automatic scoring (Full, Square, Straights), +35 upper-section bonus above 63, Yatzy handling (5 identical dice). Online multiplayer via 3-letter room codes backed by Supabase Postgres (via `api/yatsy/games/*` Vercel serverless functions).
 - Other custom games with their own data/rules: Millionaire (quiz), Salade de Cafards, Pyramide, and others under `public/games/`.
 - Multilingual support (FR/EN/ES) for rules and word/question content, driven by JSON fields rather than code.
 
@@ -35,7 +35,7 @@ Success_Criteria:
 
 Constraints:
 - Vanilla HTML/CSS/JavaScript only; no heavy UI framework (see `docs/TECH.md`).
-- Firebase is used only for Yatzy multiplayer state, not for any other feature.
+- Supabase (via Vercel serverless functions) is used only for Yatzy multiplayer state, not for any other feature.
 
 Open_Questions:
 - None currently tracked. Add here before making product-scope decisions autonomously.
