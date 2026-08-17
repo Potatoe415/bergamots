@@ -230,7 +230,7 @@ function createTileNode(game) {
   anchor.href = determineTargetUrl(game);
   anchor.className = 'game-tile';
 
-  if (isExternalLaunch(game.launch)) {
+  if (isExternalLaunch(game.launch) && !game.sameTab) {
     anchor.target = '_blank';
     anchor.rel = 'noopener noreferrer';
   }

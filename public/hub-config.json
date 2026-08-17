@@ -118,7 +118,8 @@
     "kind": "external",
     "category": "cartesdes",
     "launch": "https://coinchapp.vercel.app/",
-    "thumbnail": "/games/coinchapp/assets/thumbnail.png"
+    "thumbnail": "/games/coinchapp/assets/thumbnail.png",
+    "sameTab": true
   },
   {
     "id": "bouilla",
@@ -126,6 +127,7 @@
     "kind": "external",
     "category": "cartesdes",
     "launch": "https://coinchapp.vercel.app/bouilla",
-    "thumbnail": "/games/coinchapp/assets/thumbnail-bouilla.png"
+    "thumbnail": "/games/coinchapp/assets/thumbnail-bouilla.png",
+    "sameTab": true
   }
 ]

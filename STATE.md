@@ -7,8 +7,9 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Active project. Yatzy multiplayer fully migrated from Firebase to Vercel + Supabase (shared `multigames-db` project with `coinchapp`) and verified end-to-end in production. All info files (`docs/*`, `STATE.md`) audited and aligned with this reality; no remaining Firebase references outside historical decision/migration-note entries.
 Current_Goal: Keep evolving the Bergamots game hub now that hosting is on Vercel and Yatzy is on Supabase.
-Last_Action: Fixed the hub's hero banner looking pixelated on high-DPI phones (e.g. Google Pixel 8, DPR ~2.6). Root cause: `public/assets/banner-games-hub.jpg`/`-mobile.jpg` were only 1024x204px (the source used when the "Game on!" redesign was applied), forcing the browser to upscale ~2x on dense screens. User supplied a proper high-res source (`temp-design/assets/Gemini_Generated_Image_rb5adtrb5adtrb5a.jpg`, 4640x928, gitignored staging folder) without baked-in text; re-encoded both banner files at 4000x800 via ffmpeg (`-q:v 6`, ~540KB each) into `public/assets/`. Moved the "Game on!" title out of the image into real HTML/CSS: new `<h1 class="banner-title" data-id="hub-banner-title">` in `index.html`, centered absolutely over `.hub-header` in `hub.css`, styled with the new Google Font `Caveat` (added to the font `<link>`). Verified via CDP-driven browser emulation (412x915 viewport, DPR 2.625 = Pixel 8) that the image now downscales (no upscale) and the title stays centered without colliding with the lang-switcher flag.
+Last_Action: Coinche/Bouilla hub tiles now open in the same tab instead of a new one, for a "continuity" feel when leaving the hub. Added a `"sameTab": true` field to the `coinche`/`bouilla` entries in `public/hub-config.json`, and `hub.js`'s `createTileNode()` now only sets `target="_blank"` for external launches when that flag is absent (`isExternalLaunch(game.launch) && !game.sameTab`). Easy Frog/Tranquil (the other two `external` tiles) keep opening in a new tab — unchanged, not requested. Verified with `node --check hub.js`, a JSON parse check on `hub-config.json`, and `npm run build`.
 Next_Actions:
+- User to confirm Coinche/Bouilla now load in the same tab (no popup) and that back-to-hub still works from there.
 - User to confirm the hero banner now looks sharp on their Pixel 8 (and that "Game on!" placement/font style is to their taste).
 - User to manually confirm Black Stories' new splash screen and settings-panel language chips, and Dice Duel's new back/settings buttons on the home screen, look right.
 - User to manually confirm both coinchapp hub tiles (Coinche + Bouilla) now show a working top-left "back to hub" button that lands on `bergamots.vercel.app`.
@@ -30,8 +31,8 @@ Open_Questions:
 - Deployment_Target: Vercel (confirmed live, `bergamots` project, Git-integration auto-deploy on push to `main`).
 
 Recent_Changes:
+- 2026-08-17 Coinche/Bouilla hub tiles now navigate in the same tab (`sameTab` flag in `hub-config.json`) instead of opening a new one, for launch continuity.
 - 2026-08-17 Replaced hub hero banner with a proper high-res (4000x800) image and moved "Game on!" out of the image into HTML/CSS (`Caveat` font) to fix pixelation on high-DPI phones.
 - 2026-08-17 Bumped Yatzy's `sw.js` `CACHE_NAME` (v11→v12) to fix a stale service-worker cache that broke the splash for returning users after recent `app.js`/`index.html`/`i18n.js` edits.
 - 2026-08-17 Standardized "splash screen: back top-left / settings top-right" across every game; fixed the real gaps (Black Stories, Dice Duel) plus coinchapp's Coinche/Bouilla back-to-hub links.
 - 2026-08-17 Yatzy: added full ES (Spanish) translation to `i18n.js`; removed in-splash language selector (language now driven solely by hub's `bergamots-lang`).
-- 2026-08-17 Hub-chosen language (`bergamots-lang`) now seeds the starting language of every launched game (internal + `coinchapp`), overriding each game's own memory.
