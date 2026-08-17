@@ -105,6 +105,15 @@ const STORAGE_KEYS = {
   usedQuestionsPrefix: "millionaire_used_questions_v1"
 };
 
+function readHubLanguage() {
+  try {
+    const stored = localStorage.getItem("bergamots-lang");
+    return ["fr", "en", "es"].includes(stored) ? stored : "fr";
+  } catch {
+    return "fr";
+  }
+}
+
 const I18N = {
   fr: {
     htmlLang: "fr", brandEyebrow: "Defi quiz TV", brandTitle: "Qui veut gagner des millions ?", ladderEyebrow: "Progression", ladderTitle: "Echelle en 15 paliers",
@@ -291,7 +300,7 @@ const state = {
   timerEnabled: CONFIG.timer.enabledByDefault,
   timeRemaining: CONFIG.timer.secondsPerQuestion,
   timerId: null,
-  language: "fr",
+  language: readHubLanguage(),
   lifelines: { fiftyFifty: true, audience: true, phone: true, swap: true },
   ladderVisible: false,
   audio: {

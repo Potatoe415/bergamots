@@ -282,8 +282,9 @@ function bindEvents() {
 }
 
 async function init() {
+  const hubLang = localStorage.getItem("bergamots-lang");
   const savedLang = localStorage.getItem("blackstories_lang");
-  setLangUI(savedLang || "fr");
+  setLangUI(hubLang || savedLang || "fr");
 
   bindEvents();
   await loadAll();

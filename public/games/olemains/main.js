@@ -10,6 +10,15 @@ import { buildDeckMenu, readTimerInput, updateHUD, showGameOver, showWord, showS
 import { isValidGameData } from './validation.js';
 import { loadRulesIfExists } from '../../shared/js/engine.js';
 
+function readHubLanguage() {
+  try {
+    const stored = localStorage.getItem('bergamots-lang');
+    return ['fr', 'en', 'es'].includes(stored) ? stored : 'fr';
+  } catch {
+    return 'fr';
+  }
+}
+
 class OlemainsGame {
   constructor() {
     this.gameState = new GameState();
@@ -22,6 +31,9 @@ class OlemainsGame {
    * Initialize the game
    */
   async init() {
+    document.documentElement.lang = readHubLanguage();
+    this.gameState.language = document.documentElement.lang;
+
     this.setupEventListeners();
     await this.initRulesSupport();
     

@@ -93,12 +93,21 @@ const LANGUAGE_FLAGS = [
   { code: 'es', flag: '🇪🇸' }
 ];
 
+function readHubLanguage() {
+  try {
+    const stored = localStorage.getItem('bergamots-lang');
+    return LANGUAGE_FLAGS.some((entry) => entry.code === stored) ? stored : 'fr';
+  } catch {
+    return 'fr';
+  }
+}
+
 const gameState = {
   allWords: [],
   availableWords: [],
   score: 0,
   controls: [],
-  currentLanguage: 'fr',
+  currentLanguage: readHubLanguage(),
   currentWord: null,
   phase: 'setup',
   timerEnabled: false,

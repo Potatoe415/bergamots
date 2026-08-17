@@ -10,6 +10,7 @@ export class GameState {
     this.timeLeft = 60;
     this.currentDeck = null;
     this.deckColor = null;
+    this.language = 'fr';
   }
 
   /**
@@ -58,7 +59,8 @@ export class GameState {
     if (this.currentWords.length === 0) {
       return null;
     }
-    return this.currentWords.pop().fr;
+    const word = this.currentWords.pop();
+    return word[this.language] || word.fr;
   }
 
   /**

@@ -47,6 +47,7 @@ let LOWER_CATEGORIES = [];
 let robotEngine = null;
 const persistedRuleSettings = readPersistedRuleSettings();
 const persistedReverseDiceSelection = readPersistedReverseDiceSelection();
+const initialSetupLanguage = readHubLanguage();
 initializeRuntimeDefinitions(buildDefaultRuleSettings());
 if (persistedRuleSettings) {
   initializeRuntimeDefinitions(persistedRuleSettings);
@@ -265,7 +266,7 @@ function createInitialState() {
     screen: "splash",
     setup: {
       mode: "solo",
-      language: "fr",
+      language: initialSetupLanguage,
       settingsOpen: false,
       reverseDiceSelection: persistedReverseDiceSelection,
       rules: cloneRuleSettings(persistedRuleSettings || buildDefaultRuleSettings())
@@ -988,6 +989,19 @@ function readPersistedReverseDiceSelection() {
     return Boolean(JSON.parse(raw));
   } catch (error) {
     return false;
+  }
+}
+
+function readHubLanguage() {
+  if (!window.localStorage) {
+    return "fr";
+  }
+
+  try {
+    const stored = window.localStorage.getItem("bergamots-lang");
+    return stored === "en" || stored === "fr" ? stored : "fr";
+  } catch (error) {
+    return "fr";
   }
 }
 

@@ -6,6 +6,15 @@ const MAX_BET = 8;
 const SUPPORTED_LOCALES = ["fr", "en", "es"];
 const { detectInitialLocale, translate } = window.PYRAMIDE_I18N;
 
+function readHubLocale() {
+  try {
+    const stored = localStorage.getItem("bergamots-lang");
+    return SUPPORTED_LOCALES.includes(stored) ? stored : "fr";
+  } catch {
+    return "fr";
+  }
+}
+
 const PHASES = {
   SETUP: "SETUP",
   WORD_LOOP: "WORD_LOOP",
@@ -42,7 +51,7 @@ const state = {
   session: null,
   round: null,
   datasetMeta: null,
-  uiLocale: "fr",
+  uiLocale: readHubLocale(),
 };
 
 const transientCleanups = [];

@@ -35,6 +35,7 @@ async function initializeDashboard() {
     }
 
     state.games = await response.json();
+    persistLang(state.lang);
     renderLangSwitcher();
     renderCategoryTabs();
     renderGames();
@@ -53,13 +54,17 @@ function readStoredLang() {
   }
 }
 
-function selectLang(lang) {
-  state.lang = lang;
+function persistLang(lang) {
   try {
     localStorage.setItem(LANG_STORAGE_KEY, lang);
   } catch {
     // Storage unavailable (private mode, etc.) — language just won't persist.
   }
+}
+
+function selectLang(lang) {
+  state.lang = lang;
+  persistLang(lang);
   renderLangSwitcher();
   renderCategoryTabs();
 }
@@ -187,12 +192,17 @@ function isExternalLaunch(launchUrl) {
 
 function determineTargetUrl(game) {
   if (game.launch) {
-    return game.launch;
+    return isExternalLaunch(game.launch) ? appendLangParam(game.launch, state.lang) : game.launch;
   }
   if (game.type === 'custom' && game.indexPath) {
     return game.indexPath;
   }
   return `./wordplayer.html?game=${game.id}`;
+}
+
+function appendLangParam(url, lang) {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}lang=${lang}`;
 }
 
 function generateBlackFallbackSVG() {
