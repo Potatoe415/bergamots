@@ -103,6 +103,7 @@
     activeSession = sessionSeat;
 
     let started = false;
+    let lastKnownVersion = -1;
 
     async function refetch() {
       let record;
@@ -129,6 +130,22 @@
         }
 
         return; // Transient/network error: the next tick or poll will retry.
+      }
+
+      // refetch() is triggered from four independent sources (poll timer,
+      // tab visibility, the postgres_changes INSERT, and the broadcast
+      // "tick"), so several requests can be in flight at once with no
+      // ordering guarantee. Without this check, a slower response landing
+      // after a fresher one would silently roll the UI back to older dice/
+      // turn data. `version` only ever increases server-side, so any
+      // response carrying a version we've already moved past is stale and
+      // gets discarded here instead of being applied.
+      if (Number.isInteger(record.version) && record.version < lastKnownVersion) {
+        return;
+      }
+
+      if (Number.isInteger(record.version)) {
+        lastKnownVersion = record.version;
       }
 
       callbacks.stateChangeCallback?.(record);

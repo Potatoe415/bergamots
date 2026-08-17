@@ -1295,13 +1295,16 @@ function handleMatchStateChange(payload) {
       return;
     }
 
-    // While one of our own actions (die toggle/roll) is still being written
-    // to the DB, an incoming refetch can carry a stale snapshot from before
-    // that write. Applying it would visibly un-select a die the player just
-    // picked. Local state stays authoritative for our own turn until every
-    // pending write has settled; the tick broadcast that follows the last
-    // write will bring the listener back in sync.
-    if (pendingRemoteSyncCount > 0 && isLocalPlayersTurn()) {
+    // While one of our own actions (die toggle/roll/score) is still being
+    // written to the DB, an incoming refetch can carry a stale snapshot from
+    // before that write. Applying it would visibly un-select a die, or even
+    // revert a just-committed turn, since scoring flips currentPlayerIndex
+    // locally before the write goes out (so isLocalPlayersTurn() alone can't
+    // be used as the guard here). Local state stays authoritative for our
+    // own pending action regardless of whose turn it now looks like; the
+    // tick broadcast that follows the last write brings the listener back
+    // in sync once every pending write has settled.
+    if (pendingRemoteSyncCount > 0) {
       return;
     }
 
