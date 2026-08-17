@@ -107,6 +107,113 @@
         free: "free"
       }
     },
+    es: {
+      meta: {
+        title: "Duelo Yatzy en linea"
+      },
+      splash: {
+        title: "Yatzy",
+        localLabel: "Partida local",
+        soloGame: "Partida 2 jugadores",
+        robotGame: "Contra el robot",
+        createGame: "Partida en linea",
+        createBusy: "Creando...",
+        waitingButton: "En espera...",
+        shareLink: "Compartir enlace",
+        cancelWaiting: "Cancelar sala",
+        joinLabel: "Unirse con codigo de 3 letras",
+        joinGame: "Unirse",
+        joinBusy: "Conectando...",
+        codePlaceholder: "ABC",
+        settings: "Configuracion",
+        backToHub: "Volver al hub",
+        reverseSelection: "Seleccion inversa de dados",
+        language: "Idioma",
+        english: "Ingles",
+        french: "Frances",
+        waitingStatus: "Codigo {code}. Esperando al Jugador 2...",
+        joiningStatus: "Conectando a {code}...",
+        restoringStatus: "Reconectando a {code}...",
+        connectedStatus: "Conectado a {code}.",
+        shareSuccess: "Enlace copiado.",
+        shareError: "No se pudo compartir el enlace.",
+        missingConfig: "El multijugador en linea aun no esta configurado.",
+        invalidCode: "Introduce un codigo valido de 3 letras.",
+        gameNotFound: "Partida no encontrada.",
+        gameExpired: "Esta partida ha expirado.",
+        gameInProgress: "Esta partida ya esta en curso.",
+        sessionReplaced: "Tu lugar fue tomado por una nueva conexion.",
+        roomClosed: "Esta partida ya no esta disponible.",
+        genericError: "No se puede conectar ahora mismo."
+      },
+      controls: {
+        restart: "Reiniciar",
+        leaveGame: "Salir",
+        cancel: "Cancelar",
+        goBack: "Deshacer jugada anterior",
+        confirm: "Confirmar",
+        confirmSelection: "Confirmar {score} en {category}",
+        roll: "LANZAR"
+      },
+      labels: {
+        bonus: "BONUS"
+      },
+      winner: {
+        tie: "Empate!",
+        win: "{name} gana!",
+        useRestart: "Usa Salir para volver al inicio."
+      },
+      celebration: {
+        rolledFiveKind: "{playerName} ha sacado cinco {faceLabel}"
+      },
+      players: {
+        player1: "Jugador 1",
+        player2: "Jugador 2"
+      },
+      categories: {
+        ones: "Unos",
+        twos: "Doses",
+        threes: "Treses",
+        fours: "Cuatros",
+        fives: "Cincos",
+        sixes: "Seises",
+        fullHouse: "Full House",
+        fourKind: "Poker",
+        largeStraight: "Escalera",
+        smallStraight: "Escalera corta",
+        threeKind: "Trio",
+        min: "Minimo",
+        max: "Maximo",
+        luck: "Suerte",
+        yatzy: "Yatzy"
+      },
+      categoryIcons: {
+        fullHouse: "FULL",
+        fourKind: "POKER",
+        largeStraight: "SCALA",
+        min: "MIN",
+        max: "MAX",
+        yatzy: "YATZY"
+      },
+      faces: {
+        1: "uno",
+        2: "dos",
+        3: "tres",
+        4: "cuatro",
+        5: "cinco",
+        6: "seis"
+      },
+      aria: {
+        categoryScore: "Puntuacion {score} para {category}",
+        playerCategoryScore: "{player} {category} puntuacion {score}",
+        dieWaiting: "Dado {order}, esperando ser lanzado",
+        dieShowing: "Dado {order}, mostrando {value}, {state}"
+      },
+      diceState: {
+        kept: "guardado",
+        free: "libre"
+      }
+    },
     fr: {
       meta: {
         title: "Duel Yatzy en ligne"

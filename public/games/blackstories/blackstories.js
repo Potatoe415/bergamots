@@ -29,8 +29,12 @@ const els = {
   storyId: document.getElementById("storyId"),
   langBtns: Array.from(document.querySelectorAll(".langBtn")),
   illusWrap: document.getElementById("illusWrap"),
-illusImg: document.getElementById("illusImg"),
-
+  illusImg: document.getElementById("illusImg"),
+  settingsButton: document.getElementById("settingsButton"),
+  settingsPanel: document.getElementById("settingsPanel"),
+  splashScreen: document.getElementById("splashScreen"),
+  gameContainer: document.getElementById("gameContainer"),
+  startButton: document.getElementById("startButton"),
 };
 
 const FILES = {
@@ -260,6 +264,15 @@ function resetHistoryAndStart() {
   renderByIndex(first);
 }
 
+function toggleSettingsPanel() {
+  els.settingsPanel.classList.toggle("is-visible");
+}
+
+function startGame() {
+  els.splashScreen.classList.add("hidden");
+  els.gameContainer.classList.remove("hidden");
+}
+
 function bindEvents() {
   els.langBtns.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -267,6 +280,9 @@ function bindEvents() {
       resetHistoryAndStart();
     });
   });
+
+  els.settingsButton.addEventListener("click", toggleSettingsPanel);
+  els.startButton.addEventListener("click", startGame);
 
   els.revealBox.addEventListener("click", () => setReveal(!revealed));
 

@@ -80,10 +80,56 @@ body {
 
 /* --- Home Screen --- */
 #screen-home {
+    position: relative;
     justify-content: center;
     align-items: center;
     padding: 24px;
     text-align: center;
+}
+
+.back-button,
+.settings-button {
+    position: absolute;
+    top: calc(16px + env(safe-area-inset-top));
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+    text-decoration: none;
+    z-index: 5;
+}
+
+.back-button {
+    left: 16px;
+}
+
+.settings-button {
+    right: 16px;
+}
+
+.settings-panel {
+    display: none;
+    position: absolute;
+    top: calc(68px + env(safe-area-inset-top));
+    right: 16px;
+    z-index: 5;
+    width: min(90vw, 340px);
+    text-align: left;
+}
+
+.settings-panel.is-visible {
+    display: block;
+}
+
+.settings-panel .rules-preview {
+    margin-top: 0;
 }
 
 #screen-home h1 {

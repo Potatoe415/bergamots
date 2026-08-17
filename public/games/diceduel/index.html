@@ -11,22 +11,26 @@
     <div id="app">
         <!-- ÉCRAN D'ACCUEIL -->
         <div id="screen-home" class="screen active">
+            <a href="/" class="back-button" id="home-back-button" aria-label="Retour au hub" title="Retour au hub">←</a>
+            <button id="settings-button" class="settings-button" type="button" aria-label="Paramètres" title="Paramètres">⚙</button>
+            <section id="settings-panel" class="settings-panel" aria-label="Paramètres">
+                <div class="rules-preview">
+                    <h2>Règles du jeu</h2>
+                    <ul>
+                        <li>12 PV chacun. 3 lancers par tour.</li>
+                        <li>Gardez des dés pour faire des combinaisons (Paires, Brelans, Suites...).</li>
+                        <li><strong>Dé Caché :</strong> Le 1er dé gardé est masqué à l'adversaire.</li>
+                        <li><strong>Pacte de Sang :</strong> Sacrifiez 2 PV pour doubler vos dégâts (après le 2e lancer).</li>
+                        <li><strong>Rage :</strong> 0 dégât = 1 Rage. 3 Rage = 2 dégâts garantis.</li>
+                    </ul>
+                </div>
+            </section>
             <h1>Dice Duel</h1>
             <p class="subtitle">La chance sourit aux audacieux</p>
             <div class="menu-actions">
                 <button id="btn-pvp" class="btn-primary">Joueur vs Joueur</button>
                 <button id="btn-pve" class="btn-primary">Joueur vs Bot</button>
                 <button id="btn-resume" class="btn-secondary hidden">Reprendre la partie</button>
-            </div>
-            <div class="rules-preview">
-                <h2>Règles du jeu</h2>
-                <ul>
-                    <li>12 PV chacun. 3 lancers par tour.</li>
-                    <li>Gardez des dés pour faire des combinaisons (Paires, Brelans, Suites...).</li>
-                    <li><strong>Dé Caché :</strong> Le 1er dé gardé est masqué à l'adversaire.</li>
-                    <li><strong>Pacte de Sang :</strong> Sacrifiez 2 PV pour doubler vos dégâts (après le 2e lancer).</li>
-                    <li><strong>Rage :</strong> 0 dégât = 1 Rage. 3 Rage = 2 dégâts garantis.</li>
-                </ul>
             </div>
         </div>
 

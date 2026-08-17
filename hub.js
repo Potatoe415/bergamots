@@ -1,3 +1,5 @@
+import { APP_VERSION } from './version.js';
+
 const CONFIG_URL = '/hub-config.json';
 const GRID_ID = 'games-grid';
 const TABS_ID = 'category-tabs';
@@ -5,20 +7,34 @@ const LANG_SWITCHER_ID = 'lang-switcher';
 const LANG_STORAGE_KEY = 'bergamots-lang';
 
 const LANGS = ['fr', 'en', 'es'];
-const CATEGORY_ORDER = ['cartesdes', 'mots', 'autres'];
+const CATEGORY_ORDER = ['tous', 'cartesdes', 'mots', 'autres'];
 const CATEGORY_LABELS = {
-  fr: { cartesdes: 'Cartes & dés', mots: 'Mots', autres: 'Autres' },
-  en: { cartesdes: 'Cards & Dice', mots: 'Words', autres: 'Other' },
-  es: { cartesdes: 'Cartas y dados', mots: 'Palabras', autres: 'Otros' }
+  fr: { tous: 'Tous', cartesdes: 'Cartes & dés', mots: 'Mots', autres: 'Autres' },
+  en: { tous: 'All', cartesdes: 'Cards & Dice', mots: 'Words', autres: 'Other' },
+  es: { tous: 'Todos', cartesdes: 'Cartas y dados', mots: 'Palabras', autres: 'Otros' }
 };
+
+const PINNED_GAME_IDS = ['coinche', 'bouilla'];
+const SLIDE_DURATION_MS = 220;
+const SWIPE_THRESHOLD_PX = 50;
 
 const state = {
   games: [],
-  category: 'cartesdes',
+  category: 'tous',
   lang: readStoredLang()
 };
 
-document.addEventListener('DOMContentLoaded', initializeDashboard);
+document.addEventListener('DOMContentLoaded', () => {
+  renderVersionBadge();
+  initializeDashboard();
+});
+
+function renderVersionBadge() {
+  const badge = document.createElement('div');
+  badge.className = 'app-version';
+  badge.textContent = APP_VERSION;
+  document.body.appendChild(badge);
+}
 
 async function initializeDashboard() {
   const gridElement = document.getElementById(GRID_ID);
@@ -39,6 +55,7 @@ async function initializeDashboard() {
     renderLangSwitcher();
     renderCategoryTabs();
     renderGames();
+    setupSwipeNavigation();
   } catch (error) {
     gridElement.innerHTML = '<p>Erreur critique : Impossible de charger la liste des jeux.</p>';
     console.error("Échec de l'initialisation du Dashboard :", error);
@@ -70,9 +87,12 @@ function selectLang(lang) {
 }
 
 function selectCategory(category) {
+  if (category === state.category) return;
+
+  const direction = CATEGORY_ORDER.indexOf(category) > CATEGORY_ORDER.indexOf(state.category) ? 'left' : 'right';
   state.category = category;
   renderCategoryTabs();
-  renderGames();
+  renderGames(direction);
 }
 
 function renderLangSwitcher() {
@@ -119,20 +139,90 @@ function renderCategoryTabs() {
   });
 }
 
-function renderGames() {
+function renderGames(direction) {
   const gridElement = document.getElementById(GRID_ID);
-  const gamesInCategory = state.games.filter((game) => game.category === state.category);
 
-  gridElement.innerHTML = '';
+  const applyContent = () => {
+    const gamesInCategory = state.category === 'tous'
+      ? state.games
+      : state.games.filter((game) => game.category === state.category);
 
-  if (gamesInCategory.length === 0) {
-    gridElement.innerHTML = '<p>Aucun jeu disponible dans cette catégorie.</p>';
+    gridElement.innerHTML = '';
+
+    if (gamesInCategory.length === 0) {
+      gridElement.innerHTML = '<p>Aucun jeu disponible dans cette catégorie.</p>';
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    sortWithPinnedFirst(gamesInCategory).forEach((game) => fragment.appendChild(createTileNode(game)));
+    gridElement.appendChild(fragment);
+  };
+
+  if (!direction) {
+    applyContent();
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-  gamesInCategory.forEach((game) => fragment.appendChild(createTileNode(game)));
-  gridElement.appendChild(fragment);
+  slideGridContent(gridElement, direction, applyContent);
+}
+
+function slideGridContent(gridElement, direction, applyContent) {
+  const exitClass = direction === 'left' ? 'games-grid--out-to-left' : 'games-grid--out-to-right';
+  const enterFromClass = direction === 'left' ? 'games-grid--out-to-right' : 'games-grid--out-to-left';
+
+  gridElement.classList.add(exitClass);
+
+  setTimeout(() => {
+    applyContent();
+    gridElement.classList.remove(exitClass);
+    gridElement.classList.add('games-grid--no-transition', enterFromClass);
+
+    requestAnimationFrame(() => {
+      gridElement.classList.remove('games-grid--no-transition');
+      requestAnimationFrame(() => {
+        gridElement.classList.remove(enterFromClass);
+      });
+    });
+  }, SLIDE_DURATION_MS);
+}
+
+function setupSwipeNavigation() {
+  let touchStartX = null;
+  let touchStartY = null;
+
+  document.body.addEventListener('touchstart', (event) => {
+    const touch = event.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  document.body.addEventListener('touchend', (event) => {
+    if (touchStartX === null) return;
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    touchStartX = null;
+    touchStartY = null;
+
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD_PX || Math.abs(deltaX) < Math.abs(deltaY)) return;
+
+    const currentIndex = CATEGORY_ORDER.indexOf(state.category);
+    const targetIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+
+    if (targetIndex < 0 || targetIndex >= CATEGORY_ORDER.length) return;
+
+    selectCategory(CATEGORY_ORDER[targetIndex]);
+  }, { passive: true });
+}
+
+function sortWithPinnedFirst(games) {
+  const pinned = PINNED_GAME_IDS
+    .map((id) => games.find((game) => game.id === id))
+    .filter(Boolean);
+  const rest = games.filter((game) => !PINNED_GAME_IDS.includes(game.id));
+  return [...pinned, ...rest];
 }
 
 function createTileNode(game) {

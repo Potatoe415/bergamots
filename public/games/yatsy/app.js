@@ -73,9 +73,6 @@ const elements = {
   joinGameButton: document.getElementById("join-game-button"),
   splashStatus: document.getElementById("splash-status"),
   splashError: document.getElementById("splash-error"),
-  languageLabel: document.getElementById("language-label"),
-  langEn: document.getElementById("lang-en"),
-  langFr: document.getElementById("lang-fr"),
   splashBackButton: document.getElementById("splash-back-button"),
   settingsButton: document.getElementById("settings-button"),
   settingsPanel: document.getElementById("settings-panel"),
@@ -117,8 +114,6 @@ elements.joinCodeInput.addEventListener("keydown", (event) => {
     handleJoinGame();
   }
 });
-elements.langEn.addEventListener("click", () => handleLanguageSelection("en"));
-elements.langFr.addEventListener("click", () => handleLanguageSelection("fr"));
 if (elements.splashBackButton) {
   elements.splashBackButton.addEventListener("click", navigateToHub);
 }
@@ -399,13 +394,6 @@ function renderSplash() {
   elements.soloGameButton.textContent = t("splash.soloGame");
   elements.robotGameButton.textContent = t("splash.robotGame");
   elements.joinLabel.textContent = t("splash.joinLabel");
-  elements.languageLabel.textContent = t("splash.language");
-  elements.langEn.setAttribute("aria-label", t("splash.english"));
-  elements.langFr.setAttribute("aria-label", t("splash.french"));
-  elements.langEn.setAttribute("title", t("splash.english"));
-  elements.langFr.setAttribute("title", t("splash.french"));
-  elements.langEn.classList.toggle("is-selected", state.setup.language === "en");
-  elements.langFr.classList.toggle("is-selected", state.setup.language === "fr");
   elements.joinCodeInput.placeholder = t("splash.codePlaceholder");
   elements.joinCodeInput.value = state.session.joinCode;
   if (elements.settingsButton) {
@@ -999,7 +987,7 @@ function readHubLanguage() {
 
   try {
     const stored = window.localStorage.getItem("bergamots-lang");
-    return stored === "en" || stored === "fr" ? stored : "fr";
+    return stored === "en" || stored === "fr" || stored === "es" ? stored : "fr";
   } catch (error) {
     return "fr";
   }

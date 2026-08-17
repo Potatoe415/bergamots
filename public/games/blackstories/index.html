@@ -17,15 +17,28 @@
     </div>
 
     <div class="controls">
-      <div class="langWrap" role="group" aria-label="Langue">
-        <button class="chip langBtn" data-lang="fr" type="button">FR</button>
-        <button class="chip langBtn" data-lang="en" type="button">EN</button>
-        <button class="chip langBtn" data-lang="es" type="button">ES</button>
-      </div>
+      <button id="settingsButton" class="settings-button" type="button" aria-label="Paramètres" title="Paramètres">
+        <span class="settings-icon" aria-hidden="true">⚙</span>
+      </button>
+      <section id="settingsPanel" class="settings-panel" aria-label="Paramètres">
+        <div class="langWrap" role="group" aria-label="Langue">
+          <button class="chip langBtn" data-lang="fr" type="button">FR</button>
+          <button class="chip langBtn" data-lang="en" type="button">EN</button>
+          <button class="chip langBtn" data-lang="es" type="button">ES</button>
+        </div>
+      </section>
     </div>
   </header>
 
-  <main class="container">
+  <section id="splashScreen" class="splash-screen" aria-label="Écran d’accueil">
+    <div class="splashCard">
+      <h1 class="splashTitle">Black Stories</h1>
+      <p class="splashSubtitle">Lis l’énigme, réfléchis à l’histoire qui se cache derrière, puis touche la carte pour révéler la solution complète.</p>
+      <button id="startButton" class="btn primary splashStart" type="button">Commencer</button>
+    </div>
+  </section>
+
+  <main id="gameContainer" class="container hidden">
     <section class="card">
       <div class="metaRow">
         <div class="pill" id="storyCounter">—</div>

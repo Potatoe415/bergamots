@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-pvp').addEventListener('click', () => startGame('PVP'));
     document.getElementById('btn-pve').addEventListener('click', () => startGame('PVE'));
     document.getElementById('btn-resume').addEventListener('click', resumeGame);
+    document.getElementById('settings-button').addEventListener('click', () => {
+        document.getElementById('settings-panel').classList.toggle('is-visible');
+    });
 
     // Événements Jeu
     UI.elements.btnRoll.addEventListener('click', () => {

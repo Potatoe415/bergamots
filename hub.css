@@ -139,6 +139,10 @@
   color: #5a3a22;
 }
 
+.category-tab--tous.is-active {
+  border-bottom-color: #5a3a22;
+}
+
 .category-tab--cartesdes.is-active {
   border-bottom-color: #c8663f;
 }
@@ -159,6 +163,21 @@
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.games-grid--out-to-left {
+  transform: translateX(-28px);
+  opacity: 0;
+}
+
+.games-grid--out-to-right {
+  transform: translateX(28px);
+  opacity: 0;
+}
+
+.games-grid--no-transition {
+  transition: none;
 }
 
 /* --- Game tile --- */
@@ -224,4 +243,17 @@
   color: #fff;
   line-height: 1.12;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+/* --- Version badge: discreet, stays on top while scrolling --- */
+.app-version {
+  position: fixed;
+  bottom: 8px;
+  right: 10px;
+  z-index: 999;
+  font-family: 'Quicksand', system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(90, 58, 34, 0.4);
+  pointer-events: none;
+  user-select: none;
 }
