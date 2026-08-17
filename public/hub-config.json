@@ -114,7 +114,7 @@
   },
   {
     "id": "coinche",
-    "title": "Coinche Mobile",
+    "title": "Coinche",
     "kind": "external",
     "category": "cartesdes",
     "launch": "https://coinchapp.vercel.app/",
