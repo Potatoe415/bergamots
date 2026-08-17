@@ -100,6 +100,7 @@ let robotQueuedScoreCategory = null;
 let remoteSyncPromise = Promise.resolve();
 let pendingRemoteSyncCount = 0;
 let scoringAnimationInFlight = false;
+let remoteApplyInFlight = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
 
 elements.soloGameButton.addEventListener("click", () => handleLocalStart("solo"));
@@ -1304,16 +1305,84 @@ function handleMatchStateChange(payload) {
     // own pending action regardless of whose turn it now looks like; the
     // tick broadcast that follows the last write brings the listener back
     // in sync once every pending write has settled.
-    if (pendingRemoteSyncCount > 0) {
+    // Also skip while an animation is already in flight, local or remote:
+    // awaiting the flight animation below opens a window where a second,
+    // newer refetch could otherwise interleave and apply out of order, or
+    // collide with the local player's own in-progress scoring animation.
+    // Dropping it here is safe — the tick broadcast after every write plus
+    // the poll timer guarantee a follow-up refetch once this one finishes.
+    if (pendingRemoteSyncCount > 0 || remoteApplyInFlight || scoringAnimationInFlight) {
       return;
     }
 
-    const previousDiceValues = state.dice.map((die) => die.value);
-    const previousPlayerIndex = state.currentPlayerIndex;
-    hydrateFromRemoteGameState(state, payload.gameState);
-    maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIndex);
-    render();
+    applyRemoteGameState(payload.gameState);
   }
+}
+
+// Mirrors the local roll/score visuals (same dimmed "not-rollable" look and
+// the same dice-spin / flight-to-scorecell animations already used for the
+// robot's turn) so the remote player's moves are visible and clearly not the
+// local player's own input, instead of the board silently jumping to a new
+// state.
+async function applyRemoteGameState(remoteState) {
+  remoteApplyInFlight = true;
+  const previousDiceValues = state.dice.map((die) => die.value);
+  const previousScores = state.scores.map((scorecard) => ({ ...scorecard }));
+  const previousPlayerIndex = state.currentPlayerIndex;
+
+  // hydrateFromRemoteGameState() reads targetState.players (via
+  // applyWinnerFromScores) when the incoming state ends the game, so it
+  // must be seeded here even though this object is otherwise just a
+  // staging area for the fields hydrate actually writes.
+  const nextFields = { players: state.players };
+  hydrateFromRemoteGameState(nextFields, remoteState);
+
+  const scoreEvent = findRemoteScoreEvent(previousScores, nextFields.scores);
+  if (scoreEvent) {
+    await playRemoteScoreAnimation(scoreEvent);
+  }
+
+  const rolledRemotely = !scoreEvent
+    && previousPlayerIndex === nextFields.currentPlayerIndex
+    && nextFields.dice.some((die, index) => die.value !== previousDiceValues[index]);
+
+  Object.assign(state, nextFields);
+  state.animateDiceOnRender = rolledRemotely;
+  maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIndex);
+  render();
+
+  if (rolledRemotely) {
+    state.animateDiceOnRender = false;
+  }
+
+  remoteApplyInFlight = false;
+}
+
+async function playRemoteScoreAnimation(scoreEvent) {
+  scoringAnimationInFlight = true;
+  render();
+
+  try {
+    await animateDiceIntoScoreCell(scoreEvent.playerIndex, scoreEvent.categoryKey);
+  } finally {
+    scoringAnimationInFlight = false;
+  }
+}
+
+function findRemoteScoreEvent(previousScores, nextScores) {
+  for (let playerIndex = 0; playerIndex < nextScores.length; playerIndex += 1) {
+    const previousCard = previousScores[playerIndex] || {};
+    const nextCard = nextScores[playerIndex] || {};
+    const filledCategory = CATEGORIES.find((category) => (
+      previousCard[category.key] === null && nextCard[category.key] !== null
+    ));
+
+    if (filledCategory) {
+      return { playerIndex, categoryKey: filledCategory.key };
+    }
+  }
+
+  return null;
 }
 
 function maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIndex) {

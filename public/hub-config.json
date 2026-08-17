@@ -113,11 +113,19 @@
     "thumbnail": "/games/tranquil/assets/thumbnail.webp"
   },
   {
-    "id": "coinchapp",
+    "id": "coinche",
     "title": "Coinche Mobile",
     "kind": "external",
     "category": "cartesdes",
-    "launch": "http://coinchapp.vercel.app/",
+    "launch": "https://coinchapp.vercel.app/",
     "thumbnail": "/games/coinchapp/assets/thumbnail.png"
+  },
+  {
+    "id": "bouilla",
+    "title": "Bouilla",
+    "kind": "external",
+    "category": "cartesdes",
+    "launch": "https://coinchapp.vercel.app/bouilla",
+    "thumbnail": "/games/coinchapp/assets/thumbnail-bouilla.png"
   }
 ]
