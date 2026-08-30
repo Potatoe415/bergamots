@@ -1,19 +1,12 @@
-::root {
-  --color-bg: #050816;
-  --color-bg-soft: #0b1022;
-  --color-surface: #111827;
-  --color-border-subtle: #1f2937;
-  --color-accent: #38bdf8;
-  --color-accent-soft: rgba(56, 189, 248, 0.08);
-  --color-text: #e5e7eb;
-  --color-text-muted: #9ca3af;
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.55);
-  --radius-lg: 18px;
-  --radius-full: 999px;
-  --transition-fast: 150ms ease-out;
-  --transition-normal: 220ms ease-out;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Segoe UI", sans-serif;
+/* The former token block was a dark theme (near-black surfaces, light grey
+   text) left over from an earlier design, and it was spelled `::root`, so it
+   never applied. The site has since moved to the light background below, which
+   means restoring the block as-is would have painted light grey text on beige.
+   Only `--font-sans` still had a live consumer, so only it survives. */
+:root {
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    sans-serif;
 }
 
 *,
@@ -31,8 +24,7 @@ body {
 body {
   min-height: 100vh;
   font-family: var(--font-sans);
-  color: var(--color-text);
-  background: radial-gradient(circle at top left, #FFF2E2 0, #f3d2a6 80%);
+  background: radial-gradient(circle at top left, #fff2e2 0, #f3d2a6 80%);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -56,4 +48,3 @@ a {
   color: inherit;
   text-decoration: none;
 }
-
