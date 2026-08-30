@@ -20,13 +20,16 @@ Core_Features:
 - Yatzy (`public/games/yatsy/`): dice poker. Roll (max 3) → keep dice → pick a scoring category. Automatic scoring (Full, Square, Straights), +35 upper-section bonus above 63, Yatzy handling (5 identical dice). Online multiplayer via 3-letter room codes backed by Supabase Postgres (via `api/yatsy/games/*` Vercel serverless functions).
 - Other custom games with their own data/rules: Millionaire (quiz), Salade de Cafards, Pyramide, and others under `public/games/`.
 - Multilingual support (FR/EN/ES) for rules and word/question content, driven by JSON fields rather than code.
+- Admin stats page (`public/admin/`, reachable at `/admin`): password-protected page ranking games by how many times they were launched from the hub. Read-only; it cannot edit any content.
 
 Out_Of_Scope:
-- Centralized user accounts / authentication (anonymous by default).
+- Centralized user accounts / authentication for players (anonymous by default). The admin stats page is the one exception: it is gated by a single shared password, with no account, session, or user record.
 - Persistent scores/progress across sessions (scores are per game session; Yatzy game state persists only for the lifetime of a room, up to 48h TTL for purge).
+- Visitor-level analytics: launch counts are aggregate only, with no IP, user agent, or session identifier stored.
 
 User_Roles:
 - Player: no distinct roles or permissions; anonymous by default.
+- Admin: whoever knows `ADMIN_PASSWORD`. Grants read-only access to the launch stats and nothing else.
 - Yatzy room creator/joiner: implicit roles (`creator` / `joiner`) tied to a room code and a resume token, not to an account.
 
 Success_Criteria:
@@ -35,7 +38,8 @@ Success_Criteria:
 
 Constraints:
 - Vanilla HTML/CSS/JavaScript only; no heavy UI framework (see `docs/TECH.md`).
-- Supabase (via Vercel serverless functions) is used only for Yatzy multiplayer state, not for any other feature.
+- Supabase (via Vercel serverless functions) is used only for Yatzy multiplayer state and hub launch counters, not for any other feature. Game content stays in static JSON.
+- Everything must stay on free tiers (Vercel Hobby, Supabase free). No paid feature may be introduced without explicit approval.
 
 Open_Questions:
 - None currently tracked. Add here before making product-scope decisions autonomously.

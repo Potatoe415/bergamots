@@ -5,18 +5,43 @@ Status: Living document. Always reflects current state.
 ---
 
 ## Now
-- [ ] TBD — add next task here.
+- [ ] Deploy the Yatzy endpoint hardening and verify online play end to end in production (create, join, leave, resume, reclaim a seat by code).
+- [ ] Run `supabase/migrations/0002_events.sql` on `multigames-db` and set `ADMIN_PASSWORD` on Vercel, then confirm `/admin` shows real launch counts.
 
 ## Next
+Audit action plan, in order (audit run 2026-08-30, priorities 1 to 5; priorities 1 to 4 are done):
+- [ ] Priority 5, remaining part — delete the dead weight. All of it was audited and confirmed unreferenced on 2026-08-30; the user chose to review it personally before anything is removed, so nothing has been deleted. Total ≈ 16.9 MB, all of it currently shipped to production:
+  - `old1.jpg` (211 KB), `old2.jpg` (7.7 MB) and `old3.jpg` (empty file) sit at the repo root, which `AGENTS.md` forbids. Zero references.
+  - `public/assets/banner-games-hub-old.jpg` (3.8 MB). Zero references.
+  - `public/games/millionaire/questions_{en,es,fr}.json` (5.0 MB, 207,000 lines). All three share the SHA-256 of `assets/data/fr_millionaire.json`, so the "EN" and "ES" files hold French questions; the game only ever loads `./assets/data/*.json` via `CONFIG.languageFiles`.
+  - `shared/js/dom.js` and `public/shared/js/dom.js` — byte-identical, and *neither* is imported by anything. Olé Mains has its own local `public/games/olemains/dom.js`, which is what its `./dom.js` imports resolve to.
+  - `public/games/easyfrog/style.css` — Easy Frog is `kind: "external"` in `hub-config.json` (launches at `easyfrog.web.app`); only its thumbnail is used, and nothing loads this stylesheet.
+  - Note: `git rm` will not shrink an existing clone, since the blobs stay in history. The win is the working tree and the deployed bundle.
+- [ ] Ship a genuinely lighter mobile banner. `public/assets/banner-games-hub-mobile.jpg` is byte-identical to `banner-games-hub.jpg` (same SHA-256, 554,461 bytes), so the `srcset` in `index.html` is a placebo — phones download the full-size image. Needs a real resized asset; generating one would mean adding an image dependency such as `sharp`, which is the user's call.
+- [ ] Decide on a single source for `engine.js`. `shared/js/engine.js` and `public/shared/js/engine.js` differ **only in JSDoc comments** — the executable code is identical, so this is duplication rather than the silent fork it first looked like. The split is structural: `wordplayer.js` is bundled by Vite from the repo root, while games under `public/` are served verbatim and cannot reach the root `shared/`. Consolidating means pointing `wordplayer.js` at `public/shared/js/engine.js`. Reviewed on 2026-08-30 and deliberately left as-is.
+- [ ] Prettier ratchet: `public/games/**` is excluded from `format:check` on purpose. When you next work on a game, drop it from `.prettierignore` and run `npm run format` so it stays formatted. Yatzy is the one to do first — it is actively developed but currently unformatted (2077 lines).
+- [ ] Clear the 16 remaining lint warnings, then add `--max-warnings 0` so drift cannot accumulate silently. Mostly dead code (`detectInitialLocale`, `calculateMinMaxDelta`, `handleLanguageSelection`, `isStraight`, `vegLabel`) and 7 unused `catch (error)` bindings in `public/games/yatsy/app.js` that should be bare `catch {}`. Left untouched on purpose: `AGENTS.md` says flag pre-existing dead code, do not delete it.
 - [ ] Decide whether to add automated tests for `scoring.js` (Yatzy) and `shared/js/engine.js`.
 - [ ] Decide whether to formalize a shared error-handling/logging convention (see `docs/TECH.md` Open_Questions).
 
 ## Later
+- [ ] Split the oversized modules flagged by the audit: `public/games/yatsy/app.js` (1759 lines), `public/games/millionaire/app.js` (1067), `public/games/pyramide/app.js` (850), `wordplayer.js` (734) — project limit is 300. Follow the split already used in `diceduel` and `olemains`.
+- [ ] Serve `@supabase/supabase-js` from the npm dependency instead of the unpinned runtime CDN import in `public/games/yatsy/matchmaking.js` (`https://esm.sh/...`, no SRI).
+- [ ] Accessibility pass on the hub: `role="tablist"`/`aria-selected` on category tabs, keyboard support and `aria-expanded` on the language switcher (its closed options are invisible but still tab-focusable), `:focus-visible` styles, `prefers-reduced-motion`, and update `<html lang>` when the language changes.
 - [ ] Deduplicate the rules-modal loading logic repeated across several games (`docs/TECH.md` Open_Questions).
+- [ ] Extend the admin page if needed: hub visits, per-language split, daily trend, live event feed (all deliberately left out of the first version).
+- [ ] Finish the "bergamots" to "muchogames" rename (repo, Vercel project, `yatzy_*` tables); only `muchogames_events` uses the new name so far.
 
 ## Blocked
 - [ ] TBD
 
 ## Done
+- [x] 2026-08-30 — Priority 5, code part: cleaned up the dead design tokens in `public/shared/css/base.css`. The audit's "change `::root` to `:root`" was measured in the browser first and turned out to be harmful — it would have painted light grey text on the beige background of the hub and `wordplayer.html`. Kept `--font-sans` only (which fixes `body` falling back to Times New Roman) and dropped the 13 other tokens, none of which had a live consumer. See `docs/DECISIONS.md`. The deletion part is still open above, at the user's request.
+- [x] 2026-08-30 — Priority 4 of the audit action plan: CI is a real gate for the first time, `npm run check` exits 0. Repointed the ESLint globs at `public/**` and the repo root (1207 errors → 0 errors, 16 warnings; 1164 were phantom `no-undef` from a glob aimed at the non-existent `apps/**`), added `.prettierignore` and `endOfLine: "auto"`, formatted the 52 files of the maintained surface while excluding `public/games/**` behind a documented ratchet, and switched CI to `npm ci`. Fixed 4 real defects found along the way in `millionaire/app.js` (2 duplicate keys, 8 useless escapes, 1 narrow no-break space). Scope chosen by the user over a full 101-file sweep — see `docs/DECISIONS.md`.
+- [x] 2026-08-30 — Priority 3 of the audit action plan (minimum scope, as asked): `sendError` now logs 5xx detail as one-line JSON and returns a generic message, all 8 serverless handlers are wrapped in `withErrorHandling`, and a malformed body yields a 400 instead of a 500. Client-side error reporting deliberately skipped — see `docs/DECISIONS.md`.
+- [x] 2026-08-30 — Priority 2 of the audit action plan: added `vercel.json` security headers (strict CSP on `/admin`, `SAMEORIGIN` framing, `no-store` on `/api/*`), split admin auth into `POST /api/admin/login` issuing a 1h HMAC-signed token verified with `timingSafeEqual`, throttled login and `/api/track` in memory, and documented `ADMIN_PASSWORD` in `.env.example`.
+- [x] 2026-08-30 — Priority 1 of the audit action plan: closed the destructive Yatzy API surface. Removed the unauthenticated bulk-purge endpoint, required a seat token on `DELETE` and on seat reclaim via `join`, bounded `gameState` writes to 64 KB, and escaped the winner banner render.
+- [x] 2026-08-30 — Full technical audit (security, UI/UX, architecture, maintainability). Score 4.75/10, verdict "production-ready under conditions"; the 5 priorities are tracked under Next.
 - [x] 2026-08-15 — Bootstrapped agent context architecture (`AGENTS.md` + `docs/`), migrated legacy specs, removed old sync-flow scripts.
+- [x] 2026-08-30 — Added a password-protected admin stats page (`/admin`) showing the game launch ranking, backed by the new `muchogames_events` Supabase table, `api/track.js`, and `api/admin/stats.js`.
 - [x] 2026-08-16 — Migrated Yatzy multiplayer from Firebase Realtime Database to Supabase Postgres (shared `multigames-db` project) via new `api/yatsy/games/*` Vercel functions; moved hub hosting from Firebase Hosting to Vercel (auto-deploy via Git integration, superseding the old "wire Firebase Hosting into CI" item). Verified end-to-end in production.
