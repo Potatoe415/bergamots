@@ -139,10 +139,11 @@ Relationships:
 
 Constraints:
 - Append-only: rows are never updated or deleted by the app. No TTL and no purge job (unlike `yatzy_games`), because the counts are the point.
-- `api/admin/stats.js` reads at most 10 000 rows per request (`MAX_ROWS`); beyond that the ranking silently undercounts.
+- `api/admin/stats.js` reads at most 10 000 rows per request (`MAX_ROWS`); beyond that the ranking and the trend silently undercount. Since 2026-08-30 that cap applies to the selected range window (7, 30 or 182 days) rather than to all history, so it is reached far less easily.
+- Reads filter on `created_at >= start of the requested range`, served by `muchogames_events_created_at_idx`. Aggregation (ranking and per-day totals) happens in JavaScript inside the function, not in SQL — deliberate at this volume, since it avoids a view or an RPC and therefore a migration.
 
 Access_Rules:
-- Row Level Security enabled with zero policies, same as `yatzy_games`: the browser can neither read nor write this table. Writes go through `POST /api/track` (public, unauthenticated). Reads go through `POST /api/admin/stats`, which requires the `ADMIN_PASSWORD` env var to match the posted password.
+- Row Level Security enabled with zero policies, same as `yatzy_games`: the browser can neither read nor write this table. Writes go through `POST /api/track` (public, unauthenticated, throttled in memory to 60 events per minute per IP). Reads go through `POST /api/admin/stats`, which requires a short-lived HMAC-signed token obtained from `POST /api/admin/login`; the password itself is only ever posted to the login endpoint, never replayed on reads.
 - `POST /api/track` being public means anyone who finds the URL can insert junk rows and inflate the counters. Accepted trade-off (see `docs/DECISIONS.md` 2026-08-30).
 
 Sensitive_Data:
@@ -161,8 +162,8 @@ Sensitive_Data:
 
 ## Access Model
 
-Roles: None (anonymous) for players. Yatzy uses ad-hoc `creator` / `joiner` seat roles scoped to a single room code. A single implicit `admin` role exists, defined solely by knowing the `ADMIN_PASSWORD` value — there is no admin account, session, or user record.
-Rules: All static JSON is public and read-only. Yatzy room reads/writes go exclusively through `api/yatsy/games/*` (Vercel serverless functions using the Supabase service-role key); those functions validate the room code + per-seat resume token before returning or mutating state. Direct client access to `yatzy_games` is blocked outright by Row Level Security (no policies), regardless of what the client knows. The same RLS pattern protects `muchogames_events`: writes via the public `api/track.js`, reads via `api/admin/stats.js` behind the shared admin password.
+Roles: None (anonymous) for players. Yatzy uses ad-hoc `creator` / `joiner` seat roles scoped to a single room code. A single implicit `admin` role exists, defined solely by knowing the `ADMIN_PASSWORD` value — there is no admin account or user record. Since 2026-08-30 there is a session, but a stateless one: a self-contained token carrying its own expiry and an HMAC over it, so nothing is persisted server-side.
+Rules: All static JSON is public and read-only. Yatzy room reads/writes go exclusively through `api/yatsy/games/*` (Vercel serverless functions using the Supabase service-role key); those functions validate the room code + per-seat resume token before returning or mutating state. Direct client access to `yatzy_games` is blocked outright by Row Level Security (no policies), regardless of what the client knows. The same RLS pattern protects `muchogames_events`: writes via the public `api/track.js`, reads via `api/admin/stats.js` behind a short-lived HMAC-signed token that `api/admin/login.js` issues in exchange for the shared admin password.
 
 ---
 
@@ -197,3 +198,9 @@ Impact: The Access Model section above is now actually enforced for every mutati
 Change: No schema change. Reading the launch ranking now requires a short-lived HMAC-signed token obtained from the new `POST /api/admin/login`, instead of replaying `ADMIN_PASSWORD` on every `POST /api/admin/stats` call. Writes through the still-public `api/track.js` are throttled in memory (60 events per minute per IP).
 Reason: The password was stored in the browser's `sessionStorage` and re-sent on every read, and the write path was unbounded - a concern because `multigames-db` is shared with coinchapp. See `docs/DECISIONS.md` 2026-08-30.
 Impact: `ADMIN_PASSWORD` doubles as the token signing key, so rotating it invalidates live admin sessions. Row growth in `muchogames_events` is now rate-bounded per IP, though the throttle is per serverless instance and therefore best-effort.
+
+## 2026-08-30 - Read `muchogames_events` by range instead of all history
+
+Change: No schema change. `POST /api/admin/stats` now takes a `range` of `7d`, `30d` or `6m`, filters on `created_at`, and returns a zero-filled per-day series alongside the ranking. `totalLaunches` counts the selected window rather than all history.
+Reason: The admin page gained a period selector and a daily trend chart, modelled on the `nodali` project's analytics page. See `docs/DECISIONS.md` 2026-08-30.
+Impact: `created_at` went from being written and never read to carrying the whole feature, which is what `muchogames_events_created_at_idx` was already there for. The `MAX_ROWS` cap of 10 000 now bounds a range window instead of all history, so it is safer than before. Days are bucketed in UTC, so for a UTC+1/+2 audience a launch after local midnight is attributed to the previous day. Nothing visitor-shaped was added: still no IP, user agent, session id, device or country, so `Sensitive_Data: None` still holds for this entity.
