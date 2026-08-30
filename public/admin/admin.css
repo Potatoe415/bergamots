@@ -108,9 +108,142 @@ body {
   color: #7a4a12;
 }
 
+.admin-metric-caption {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #8a6a45;
+  font-weight: 500;
+}
+
 .admin-actions {
   display: flex;
   gap: 8px;
+}
+
+.admin-section-title {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #7a4a12;
+  margin: 24px 0 10px;
+}
+
+.admin-range {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(122, 74, 18, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.admin-range-option {
+  border: none;
+  border-radius: 9px;
+  padding: 7px 13px;
+  background: transparent;
+  color: #8a6a45;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.admin-range-option:hover {
+  color: #7a4a12;
+}
+
+.admin-range-option.is-active {
+  background: #e08b2f;
+  color: #fff;
+}
+
+.admin-range-option:focus-visible {
+  outline: 2px solid #e08b2f;
+  outline-offset: 1px;
+}
+
+.admin-trend {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-trend-y {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 128px;
+  text-align: right;
+  font-size: 0.7rem;
+  color: #8a6a45;
+}
+
+.admin-trend-plot {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-trend-canvas {
+  position: relative;
+  height: 128px;
+}
+
+.admin-trend-canvas svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.admin-trend-grid {
+  stroke: rgba(122, 74, 18, 0.15);
+  stroke-width: 1;
+}
+
+.admin-trend-line {
+  fill: none;
+  stroke: #e08b2f;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.admin-trend-marker {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #7a4a12;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.admin-trend-tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #7a4a12;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.admin-trend-x {
+  position: relative;
+  height: 16px;
+  margin-top: 6px;
+}
+
+.admin-trend-x span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.68rem;
+  color: #8a6a45;
+  white-space: nowrap;
 }
 
 .admin-ranking {

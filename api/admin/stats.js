@@ -8,10 +8,17 @@ import {
 import { getServiceClient } from "../_lib/supabase.js";
 
 const MAX_ROWS = 10000;
+const RANGE_DAYS = { "7d": 7, "30d": 30, "6m": 182 };
+const DEFAULT_RANGE = "30d";
 
 /**
- * Returns the game launch ranking. Gated by the short-lived token issued by
- * api/admin/login.js, so the password itself is never replayed on every read.
+ * Returns the game launch ranking plus a daily trend, over the requested range.
+ * Gated by the short-lived token issued by api/admin/login.js, so the password
+ * itself is never replayed on every read.
+ *
+ * Days are bucketed in UTC. The hub's audience is in UTC+1/+2, so a launch
+ * after midnight local time lands on the previous day. Accepted: the trend is
+ * meant to show shape, not to be an accounting record.
  */
 async function handler(req, res) {
   if (req.method !== "POST") {
@@ -35,10 +42,17 @@ async function handler(req, res) {
     return;
   }
 
+  // An unknown range falls back to the default rather than erroring: the only
+  // caller is our own page, which sends one of the three known values.
+  const range = RANGE_DAYS[body.range] ? body.range : DEFAULT_RANGE;
+  const days = RANGE_DAYS[range];
+  const start = startOfDayUtc(-(days - 1));
+
   const { data, error } = await getServiceClient()
     .from("muchogames_events")
-    .select("game_id")
+    .select("game_id, created_at")
     .eq("type", "game_launch")
+    .gte("created_at", start.toISOString())
     .limit(MAX_ROWS);
 
   if (error) {
@@ -47,8 +61,10 @@ async function handler(req, res) {
   }
 
   sendJson(res, 200, {
+    range,
     totalLaunches: data.length,
-    ranking: rankByGame(data)
+    ranking: rankByGame(data),
+    dailyTrend: buildDailyTrend(data, start, days)
   });
 }
 
@@ -64,4 +80,44 @@ function rankByGame(rows) {
   return [...launchesByGame.entries()]
     .map(([gameId, launches]) => ({ gameId, launches }))
     .sort((first, second) => second.launches - first.launches);
+}
+
+// Zero-filled so the chart gets one point per day and never has to guess where
+// the gaps are.
+function buildDailyTrend(rows, start, days) {
+  const launchesByDay = new Map();
+
+  for (let offset = 0; offset < days; offset += 1) {
+    launchesByDay.set(dayKey(addUtcDays(start, offset)), 0);
+  }
+
+  rows.forEach(({ created_at: createdAt }) => {
+    const key = dayKey(new Date(createdAt));
+
+    if (launchesByDay.has(key)) {
+      launchesByDay.set(key, launchesByDay.get(key) + 1);
+    }
+  });
+
+  return [...launchesByDay.entries()].map(([date, launches]) => ({
+    date,
+    launches
+  }));
+}
+
+function startOfDayUtc(dayOffset) {
+  const date = new Date();
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + dayOffset);
+  return date;
+}
+
+function addUtcDays(date, days) {
+  const shifted = new Date(date);
+  shifted.setUTCDate(shifted.getUTCDate() + days);
+  return shifted;
+}
+
+function dayKey(date) {
+  return date.toISOString().slice(0, 10);
 }

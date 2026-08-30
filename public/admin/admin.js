@@ -1,3 +1,5 @@
+import { renderTrendChart } from "./trend-chart.js";
+
 const LOGIN_ENDPOINT = "/api/admin/login";
 const STATS_ENDPOINT = "/api/admin/stats";
 const HUB_CONFIG_URL = "/hub-config.json";
@@ -7,7 +9,15 @@ const TOKEN_STORAGE_KEY = "muchogames-admin-token";
 const OFFLINE_MESSAGE =
   "Impossible de joindre le serveur. Les fonctions /api ne tournent pas sous `npm run dev`.";
 
+// Must stay in sync with RANGE_DAYS in api/admin/stats.js.
+const RANGE_CAPTIONS = {
+  "7d": "sur les 7 derniers jours",
+  "30d": "sur les 30 derniers jours",
+  "6m": "sur les 6 derniers mois"
+};
+
 const titlesByGameId = new Map();
+let selectedRange = "30d";
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -21,6 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", () => {
       loadStats(readStoredToken());
     });
+  document
+    .getElementById("admin-range-switch")
+    .addEventListener("click", selectRange);
 
   const storedToken = readStoredToken();
 
@@ -73,7 +86,7 @@ async function loadStats(token) {
     const response = await fetch(STATS_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token })
+      body: JSON.stringify({ token, range: selectedRange })
     });
 
     if (!response.ok) {
@@ -115,21 +128,52 @@ async function readErrorMessage(response) {
   }
 }
 
+function selectRange(event) {
+  const option = event.target.closest(".admin-range-option");
+
+  if (!option) return;
+
+  selectedRange = option.dataset.range;
+  loadStats(readStoredToken());
+}
+
+function markActiveRange(range) {
+  document.querySelectorAll(".admin-range-option").forEach((option) => {
+    const isActive = option.dataset.range === range;
+    option.classList.toggle("is-active", isActive);
+    option.setAttribute("aria-pressed", String(isActive));
+  });
+}
+
 function render(stats) {
   document.getElementById("admin-login").hidden = true;
   document.getElementById("admin-dashboard").hidden = false;
   document.getElementById("admin-total-launches").textContent =
     stats.totalLaunches;
 
+  // The server decides the effective range, so trust its echo over our request.
+  selectedRange = stats.range;
+  document.getElementById("admin-range-caption").textContent =
+    RANGE_CAPTIONS[stats.range] || "";
+  markActiveRange(stats.range);
+
+  renderTrendChart(
+    document.getElementById("admin-trend"),
+    stats.dailyTrend || []
+  );
+  renderRanking(stats.ranking);
+}
+
+function renderRanking(ranking) {
   const list = document.getElementById("admin-ranking");
   list.innerHTML = "";
 
-  document.getElementById("admin-empty").hidden = stats.ranking.length > 0;
+  document.getElementById("admin-empty").hidden = ranking.length > 0;
 
-  const topCount = stats.ranking[0]?.launches || 1;
+  const topCount = ranking[0]?.launches || 1;
   const fragment = document.createDocumentFragment();
 
-  stats.ranking.forEach((entry, index) => {
+  ranking.forEach((entry, index) => {
     fragment.appendChild(createRankingRow(entry, index + 1, topCount));
   });
 

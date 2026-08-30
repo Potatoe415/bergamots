@@ -72,6 +72,11 @@
             >
               —
             </p>
+            <p
+              class="admin-metric-caption"
+              id="admin-range-caption"
+              data-id="admin-range-caption"
+            ></p>
           </div>
           <div class="admin-actions">
             <button
@@ -93,6 +98,47 @@
           </div>
         </header>
 
+        <div
+          class="admin-range"
+          id="admin-range-switch"
+          data-id="admin-range-switch"
+          role="group"
+          aria-label="Période affichée"
+        >
+          <button
+            class="admin-range-option"
+            type="button"
+            data-range="7d"
+            data-id="admin-range-7d"
+          >
+            7 jours
+          </button>
+          <button
+            class="admin-range-option"
+            type="button"
+            data-range="30d"
+            data-id="admin-range-30d"
+          >
+            30 jours
+          </button>
+          <button
+            class="admin-range-option"
+            type="button"
+            data-range="6m"
+            data-id="admin-range-6m"
+          >
+            6 mois
+          </button>
+        </div>
+
+        <h2 class="admin-section-title">Tendance quotidienne</h2>
+        <div
+          class="admin-trend"
+          id="admin-trend"
+          data-id="admin-trend-chart"
+        ></div>
+
+        <h2 class="admin-section-title">Classement des jeux</h2>
         <ol
           class="admin-ranking"
           id="admin-ranking"
