@@ -1,8 +1,14 @@
-import { sendError, sendJson } from "../../_lib/http.js";
+import { sendError, sendJson, withErrorHandling } from "../../_lib/http.js";
 import { getServiceClient } from "../../_lib/supabase.js";
-import { MAX_CODE_ATTEMPTS, insertTick, isExpired, randomCode, randomSeatToken } from "../../_lib/yatzyGames.js";
+import {
+  MAX_CODE_ATTEMPTS,
+  insertTick,
+  isExpired,
+  randomCode,
+  randomSeatToken
+} from "../../_lib/yatzyGames.js";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     sendError(res, "method-not-allowed", "Use POST to create a game.");
     return;
@@ -62,3 +68,5 @@ export default async function handler(req, res) {
 
   sendError(res, "code-exhausted", "Unable to reserve a free game code.");
 }
+
+export default withErrorHandling(handler);

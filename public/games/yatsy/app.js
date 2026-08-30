@@ -667,14 +667,22 @@ function buildWinnerBanner() {
 
   const totals = PLAYER_META.map((_, playerIndex) => calculateGrandTotal(state.scores[playerIndex]));
   const isTie = totals[0] === totals[1];
-  const headline = isTie ? t("winner.tie") : t("winner.win", { name: state.winner });
 
-  card.innerHTML = `
-    <h2>${headline}</h2>
-    <p>${state.players[0].name}: ${totals[0]}</p>
-    <p>${state.players[1].name}: ${totals[1]}</p>
-    <p>${t("winner.useRestart")}</p>
-  `;
+  // textContent rather than innerHTML: player names travel through the synced
+  // game state, so a peer could otherwise inject markup into this card.
+  const headline = document.createElement("h2");
+  headline.textContent = isTie ? t("winner.tie") : t("winner.win", { name: state.winner });
+  card.appendChild(headline);
+
+  PLAYER_META.forEach((_, playerIndex) => {
+    const scoreLine = document.createElement("p");
+    scoreLine.textContent = `${state.players[playerIndex].name}: ${totals[playerIndex]}`;
+    card.appendChild(scoreLine);
+  });
+
+  const hint = document.createElement("p");
+  hint.textContent = t("winner.useRestart");
+  card.appendChild(hint);
 
   overlay.appendChild(card);
   return overlay;
@@ -1037,10 +1045,7 @@ function handleLocalStart(mode) {
 }
 
 async function handleWaitingCancel() {
-  await leaveCurrentGame({
-    deleteCurrent: true,
-    purgeOlderThanMs: MATCHMAKING?.PURGE_AFTER_MS
-  });
+  await leaveCurrentGame({ deleteCurrent: true });
   clearDeepLinkFromUrl();
   resetGame({
     screen: "splash",
@@ -1150,7 +1155,11 @@ async function handleJoinGame() {
   render();
 
   try {
-    const joinedGame = await MATCHMAKING.joinGame(code, createMatchmakingCallbacks());
+    const joinedGame = await MATCHMAKING.joinGame(
+      code,
+      createMatchmakingCallbacks(),
+      readSeatCredentialsFor(code)
+    );
     state.session.gameCode = joinedGame.code;
     state.session.role = joinedGame.role || "joiner";
     state.session.localPlayerIndex = joinedGame.localPlayerIndex ?? 1;
@@ -1547,6 +1556,18 @@ function clearPersistedOnlineSession() {
   }
 
   window.localStorage.removeItem(STORAGE_KEY);
+}
+
+// A room that is already playing has both seats taken, so joining it by code
+// only works for a player reclaiming the seat they already hold.
+function readSeatCredentialsFor(code) {
+  const persisted = readPersistedOnlineSession();
+
+  if (!persisted || persisted.gameCode !== code) {
+    return null;
+  }
+
+  return { role: persisted.role, resumeToken: persisted.resumeToken };
 }
 
 function scheduleRobotTurnIfNeeded() {

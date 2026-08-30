@@ -2,7 +2,6 @@
   const SUPABASE_JS_URL = "https://esm.sh/@supabase/supabase-js@2";
   const API_BASE = "/api/yatsy/games";
   const GAME_TTL_MS = 10800000;
-  const PURGE_AFTER_MS = ((global.YATZY_CONFIG?.matchmaking?.purgeAfterHours) || 48) * 60 * 60 * 1000;
   const CODE_LENGTH = 3;
   const POLL_INTERVAL_MS = 15000;
 
@@ -189,14 +188,21 @@
     return data;
   }
 
-  async function joinGame(code, callbacks = {}) {
+  // `seat` lets a player who already holds credentials for this room reclaim
+  // their own seat. Without it, joining a room that is already playing is
+  // refused, since both seats are taken.
+  async function joinGame(code, callbacks = {}, seat = null) {
     const normalizedCode = normalizeCode(code);
 
     if (normalizedCode.length !== CODE_LENGTH) {
       throw createMatchmakingError("invalid-code", "Game code must contain exactly 3 letters.");
     }
 
-    const data = await request("POST", `/${normalizedCode}/join`);
+    const credentials = seat?.role && seat?.resumeToken
+      ? { role: seat.role, resumeToken: seat.resumeToken }
+      : undefined;
+
+    const data = await request("POST", `/${normalizedCode}/join`, credentials);
 
     await startListening(normalizedCode, callbacks, {
       role: data.role,
@@ -250,20 +256,20 @@
 
   async function leaveGame(options = {}) {
     const code = activeCode;
+    const seat = activeSession;
     stopListening();
 
     if (code) {
-      await request("DELETE", `/${code}`, { deleteCurrent: !!options.deleteCurrent });
-    }
-
-    if (options.purgeOlderThanMs) {
-      await request("POST", "/purge", { olderThanMs: options.purgeOlderThanMs });
+      await request("DELETE", `/${code}`, {
+        deleteCurrent: !!options.deleteCurrent,
+        role: seat?.role,
+        resumeToken: seat?.resumeToken
+      });
     }
   }
 
   global.YATZY_MATCHMAKING = {
     GAME_TTL_MS,
-    PURGE_AFTER_MS,
     normalizeCode,
     createGame,
     joinGame,

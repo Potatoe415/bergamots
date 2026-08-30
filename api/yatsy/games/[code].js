@@ -1,6 +1,16 @@
-import { readJsonBody, sendError, sendJson } from "../../_lib/http.js";
+import {
+  readJsonBody,
+  sendError,
+  sendJson,
+  withErrorHandling
+} from "../../_lib/http.js";
 import { getServiceClient } from "../../_lib/supabase.js";
-import { CODE_LENGTH, isExpired, normalizeCode } from "../../_lib/yatzyGames.js";
+import {
+  CODE_LENGTH,
+  isExpired,
+  normalizeCode,
+  seatTokenColumn
+} from "../../_lib/yatzyGames.js";
 
 async function handleGet(req, res, supabase, code) {
   const { data, error } = await supabase
@@ -38,7 +48,7 @@ async function handleDelete(req, res, supabase, code) {
 
   const { data, error } = await supabase
     .from("yatzy_games")
-    .select("status")
+    .select("status, creator_token, joiner_token")
     .eq("code", code)
     .maybeSingle();
 
@@ -52,6 +62,16 @@ async function handleDelete(req, res, supabase, code) {
     return;
   }
 
+  // Only a seated player may destroy a room. Without this, knowing a 3-letter
+  // code was enough to wipe any game in progress.
+  const column = seatTokenColumn(body.role);
+  const seatToken = column ? data[column] : null;
+
+  if (!seatToken || seatToken !== body.resumeToken) {
+    sendError(res, "resume-denied", "This seat belongs to another player.");
+    return;
+  }
+
   if (body.deleteCurrent || data.status === "waiting") {
     await supabase.from("yatzy_games").delete().eq("code", code);
     sendJson(res, 200, { code, removed: true });
@@ -61,7 +81,7 @@ async function handleDelete(req, res, supabase, code) {
   sendJson(res, 200, { code, removed: false });
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const code = normalizeCode(req.query.code);
 
   if (code.length !== CODE_LENGTH) {
@@ -83,3 +103,5 @@ export default async function handler(req, res) {
 
   sendError(res, "method-not-allowed", "Use GET or DELETE.");
 }
+
+export default withErrorHandling(handler);

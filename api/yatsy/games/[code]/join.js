@@ -1,8 +1,20 @@
-import { sendError, sendJson } from "../../../_lib/http.js";
+import {
+  readJsonBody,
+  sendError,
+  sendJson,
+  withErrorHandling
+} from "../../../_lib/http.js";
 import { getServiceClient } from "../../../_lib/supabase.js";
-import { CODE_LENGTH, insertTick, isExpired, normalizeCode, randomSeatToken } from "../../../_lib/yatzyGames.js";
+import {
+  CODE_LENGTH,
+  insertTick,
+  isExpired,
+  normalizeCode,
+  randomSeatToken,
+  seatTokenColumn
+} from "../../../_lib/yatzyGames.js";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     sendError(res, "method-not-allowed", "Use POST to join a game.");
     return;
@@ -15,11 +27,12 @@ export default async function handler(req, res) {
     return;
   }
 
+  const body = await readJsonBody(req);
   const supabase = getServiceClient();
 
   const { data, error } = await supabase
     .from("yatzy_games")
-    .select("created_at, status, version, game_state")
+    .select("created_at, status, version, creator_token, joiner_token")
     .eq("code", code)
     .maybeSingle();
 
@@ -45,7 +58,11 @@ export default async function handler(req, res) {
     const joinerToken = randomSeatToken();
     const { error: updateError } = await supabase
       .from("yatzy_games")
-      .update({ status: "playing", joiner_token: joinerToken, version: nextVersion })
+      .update({
+        status: "playing",
+        joiner_token: joinerToken,
+        version: nextVersion
+      })
       .eq("code", code);
 
     if (updateError) {
@@ -64,30 +81,25 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Game already playing: reconnect by replacing whichever seat is not the
-  // current turn's seat, mirroring the pre-migration "replace inactive seat"
-  // behavior.
-  const activePlayerIndex = data.game_state?.currentPlayerIndex === 0 ? 0 : 1;
-  const replacementRole = activePlayerIndex === 0 ? "creator" : "joiner";
-  const replacementToken = randomSeatToken();
-  const tokenColumn = replacementRole === "creator" ? "creator_token" : "joiner_token";
+  // Game already playing: both seats are taken, so the only legitimate caller
+  // is a player reclaiming their own seat. They must prove it with the token
+  // they were given on create/join. Previously this branch handed a fresh token
+  // to any caller and rotated the sitting player's one, which let anyone
+  // holding the 3-letter code hijack a seat and kick the real player out.
+  const column = seatTokenColumn(body.role);
+  const seatToken = column ? data[column] : null;
 
-  const { error: replaceError } = await supabase
-    .from("yatzy_games")
-    .update({ [tokenColumn]: replacementToken, version: nextVersion })
-    .eq("code", code);
-
-  if (replaceError) {
-    sendError(res, "server-error", replaceError.message);
+  if (!seatToken || seatToken !== body.resumeToken) {
+    sendError(res, "game-in-progress", "This game is already in progress.");
     return;
   }
 
-  await insertTick(supabase, code, nextVersion);
-
   sendJson(res, 200, {
     code,
-    role: replacementRole,
-    localPlayerIndex: activePlayerIndex,
-    resumeToken: replacementToken
+    role: body.role,
+    localPlayerIndex: body.role === "creator" ? 0 : 1,
+    resumeToken: seatToken
   });
 }
+
+export default withErrorHandling(handler);

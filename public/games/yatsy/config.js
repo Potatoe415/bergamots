@@ -7,9 +7,6 @@ window.YATZY_CONFIG = {
     threshold: 63,
     points: 35
   },
-  matchmaking: {
-    purgeAfterHours: 24000
-  },
   robot: {
     minStepDelayMs: 1000,
     rollDelayMs: 1000,

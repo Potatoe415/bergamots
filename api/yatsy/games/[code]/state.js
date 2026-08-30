@@ -1,8 +1,34 @@
-import { readJsonBody, sendError, sendJson } from "../../../_lib/http.js";
+import {
+  readJsonBody,
+  sendError,
+  sendJson,
+  withErrorHandling
+} from "../../../_lib/http.js";
 import { getServiceClient } from "../../../_lib/supabase.js";
-import { CODE_LENGTH, insertTick, normalizeCode, seatTokenColumn } from "../../../_lib/yatzyGames.js";
+import {
+  CODE_LENGTH,
+  insertTick,
+  normalizeCode,
+  seatTokenColumn
+} from "../../../_lib/yatzyGames.js";
 
-export default async function handler(req, res) {
+// A real Yatzy state serializes to a few KB. The cap stops a seated player from
+// using their own room as unbounded storage in the shared Supabase project.
+const MAX_GAME_STATE_BYTES = 65536;
+
+function isAcceptableGameState(gameState) {
+  if (gameState === null || gameState === undefined) {
+    return true;
+  }
+
+  if (typeof gameState !== "object" || Array.isArray(gameState)) {
+    return false;
+  }
+
+  return JSON.stringify(gameState).length <= MAX_GAME_STATE_BYTES;
+}
+
+async function handler(req, res) {
   if (req.method !== "PUT") {
     sendError(res, "method-not-allowed", "Use PUT to update game state.");
     return;
@@ -17,6 +43,15 @@ export default async function handler(req, res) {
 
   const body = await readJsonBody(req);
   const { role, resumeToken, gameState } = body;
+
+  if (!isAcceptableGameState(gameState)) {
+    sendError(
+      res,
+      "invalid-state",
+      "gameState must be a JSON object under 64 KB."
+    );
+    return;
+  }
 
   const supabase = getServiceClient();
 
@@ -59,3 +94,5 @@ export default async function handler(req, res) {
 
   sendJson(res, 200, { code, version: nextVersion });
 }
+
+export default withErrorHandling(handler);

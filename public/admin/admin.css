@@ -1,0 +1,181 @@
+body {
+  background: radial-gradient(circle at top left, #fff2e2 0, #f3d2a6 80%);
+  color: #3b2a17;
+  font-family: "Quicksand", system-ui, sans-serif;
+}
+
+.admin-shell {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.admin-title {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 20px;
+  color: #7a4a12;
+}
+
+.admin-card {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(122, 74, 18, 0.15);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(122, 74, 18, 0.12);
+  padding: 22px;
+}
+
+.admin-login form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(122, 74, 18, 0.25);
+  border-radius: 12px;
+  background: #fff;
+  color: inherit;
+}
+
+.admin-input:focus-visible {
+  outline: 2px solid #e08b2f;
+  outline-offset: 1px;
+}
+
+.admin-button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 12px;
+  background: #e08b2f;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 150ms ease-out;
+}
+
+.admin-button:hover {
+  filter: brightness(1.07);
+}
+
+.admin-button--ghost {
+  background: transparent;
+  color: #7a4a12;
+  border: 1px solid rgba(122, 74, 18, 0.3);
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.admin-error {
+  margin: 12px 0 0;
+  color: #b3261e;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.admin-metric-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8a6a45;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-metric-value {
+  margin: 2px 0 0;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #7a4a12;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-ranking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-ranking-row {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-ranking-rank {
+  font-weight: 700;
+  color: #8a6a45;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.admin-ranking-name {
+  font-weight: 600;
+  margin: 0 0 5px;
+  font-size: 0.95rem;
+}
+
+.admin-ranking-bar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(122, 74, 18, 0.12);
+  overflow: hidden;
+}
+
+.admin-ranking-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #e08b2f, #f0b45f);
+}
+
+.admin-ranking-count {
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #7a4a12;
+}
+
+.admin-empty {
+  margin: 0;
+  color: #8a6a45;
+  font-weight: 500;
+}
+
+.admin-back {
+  display: inline-block;
+  margin-top: 22px;
+  font-weight: 600;
+  color: #7a4a12;
+}
+
+.admin-back:hover {
+  text-decoration: underline;
+}
