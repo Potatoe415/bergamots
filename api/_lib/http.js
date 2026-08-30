@@ -69,13 +69,23 @@ export function withErrorHandling(handler) {
 }
 
 export async function readJsonBody(req) {
-  if (req.body && typeof req.body === "object") {
-    return req.body;
+  let body;
+
+  try {
+    // On Vercel's Node runtime `req.body` is a getter that parses eagerly and
+    // throws on malformed JSON, so the access itself has to be guarded.
+    body = req.body;
+  } catch {
+    return {};
   }
 
-  if (typeof req.body === "string" && req.body.length > 0) {
+  if (body && typeof body === "object") {
+    return body;
+  }
+
+  if (typeof body === "string" && body.length > 0) {
     try {
-      return JSON.parse(req.body);
+      return JSON.parse(body);
     } catch {
       // Treat an unparseable body as empty: each handler already validates what
       // it needs and answers 400, which beats a 500 on malformed input.
