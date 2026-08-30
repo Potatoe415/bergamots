@@ -5,8 +5,11 @@ Status: Living document. Always reflects current state.
 ---
 
 ## Now
-- [ ] Deploy the Yatzy endpoint hardening and verify online play end to end in production (create, join, leave, resume, reclaim a seat by code).
-- [ ] Run `supabase/migrations/0002_events.sql` on `multigames-db` and set `ADMIN_PASSWORD` on Vercel, then confirm `/admin` shows real launch counts.
+- [ ] Run `supabase/migrations/0002_events.sql` on `multigames-db` (Supabase dashboard → SQL Editor → paste → Run; idempotent). Blocking: `/api/track` returns 500 on every hub tile click until the table exists, confirmed live.
+- [ ] Set `ADMIN_PASSWORD` on Vercel (Production), then redeploy so it takes effect. Blocking: `/api/admin/login` answers 500 until then.
+- [ ] Verify Yatzy online play with two real devices (create, join, leave, resume, reclaim a seat by code). The API-level guard is already verified live; the browser flow is not.
+- [ ] Decide on the GitHub branch-protection rule: the 2026-08-30 push reported "Bypassed rule violations — Changes must be made through a pull request". Either adopt PRs or remove the rule.
+- [ ] Make the "admin not configured" case diagnosable: `api/admin/login.js` sends it as `server-error`, so the 5xx redaction hides the reason from the operator. A 4xx or a dedicated `not-configured` code would surface it without leaking anything.
 
 ## Next
 Audit action plan, in order (audit run 2026-08-30, priorities 1 to 5; priorities 1 to 4 are done):
