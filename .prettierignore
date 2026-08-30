@@ -1,0 +1,23 @@
+# Build output and generated files
+dist/
+.vercel/
+node_modules/
+package-lock.json
+
+# Protocol and living documents: hand-written prose and tables. DECISIONS.md is
+# append-only, so table realignment would rewrite past entries for no gain.
+**/*.md
+
+# Game content, not code: question banks and wordpacks.
+# Reformatting these produced ~500k changed lines for zero readability gain.
+public/data/**/*_words.json
+public/data/olemains/words.json
+
+# Game code, excluded on purpose so that `format:check` can be a real CI gate
+# today instead of staying red forever. These 79 files were never formatted;
+# sweeping them all at once would bury every real diff.
+# Ratchet: when you next work on a game, drop it from this list, run
+# `npm run format`, and it stays formatted from then on. For example:
+#   public/games/**
+#   !public/games/yatsy/**
+public/games/**

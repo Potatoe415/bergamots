@@ -6,20 +6,19 @@ import {
   getTabooWords,
   applyCategoryColorToElement,
   loadRulesIfExists
-} from './shared/js/engine.js';
+} from "./shared/js/engine.js";
 
-
-const HUB_CONFIG_URL = '/hub-config.json';
-const BUZZER_SOUND_URL = '/audio/buzzer.mp3';
+const HUB_CONFIG_URL = "/hub-config.json";
+const BUZZER_SOUND_URL = "/audio/buzzer.mp3";
 
 const DOM = {
-  wordDisplay: 'word-display',
-  controlsContainer: 'controls-container',
-  banner: 'game-banner',
-  score: 'score-display',
-  langSelector: 'lang-selector',
-  timerDisplay: 'timer-display',
-  customTimerInput: 'custom-timer-input'
+  wordDisplay: "word-display",
+  controlsContainer: "controls-container",
+  banner: "game-banner",
+  score: "score-display",
+  langSelector: "lang-selector",
+  timerDisplay: "timer-display",
+  customTimerInput: "custom-timer-input"
 };
 
 const TIMER_PRESETS = [0, 45, 60];
@@ -29,76 +28,78 @@ const CUSTOM_TIMER_DEFAULT = 90;
 
 const LANG_LABELS = {
   fr: {
-    ready: 'Prêt ?',
-    finished: 'Partie Terminée !',
-    next: 'Mot Suivant',
-    pass: 'Passer',
-    validate: 'Valider',
-    start: 'Démarrer',
-    noTimer: 'Sans minuteur',
-    loading: 'Chargement...',
+    ready: "Prêt ?",
+    finished: "Partie Terminée !",
+    next: "Mot Suivant",
+    pass: "Passer",
+    validate: "Valider",
+    start: "Démarrer",
+    noTimer: "Sans minuteur",
+    loading: "Chargement...",
     errorNoGame: "Erreur : Aucun jeu sélectionné dans l'URL.",
-    errorGameNotFound: 'Jeu non trouvé ou non pris en charge : {GAME_ID}',
-    errorLoadFailed: 'Impossible de charger : {GAME_ID}',
-    statsPoints: 'Points :',
-    statsSkipped: 'Passés :',
-    statsSuccessRate: 'Taux de réussite :',
-    statsAvgTime: 'Temps moyen par carte :',
-    restartKeep: 'Relancer',
-    restartAll: 'Tout re-mélanger'
+    errorGameNotFound: "Jeu non trouvé ou non pris en charge : {GAME_ID}",
+    errorLoadFailed: "Impossible de charger : {GAME_ID}",
+    statsPoints: "Points :",
+    statsSkipped: "Passés :",
+    statsSuccessRate: "Taux de réussite :",
+    statsAvgTime: "Temps moyen par carte :",
+    restartKeep: "Relancer",
+    restartAll: "Tout re-mélanger"
   },
   en: {
-    ready: 'Ready?',
-    finished: 'Game Over!',
-    next: 'Next Word',
-    pass: 'Skip',
-    validate: 'Validate',
-    start: 'Start',
-    noTimer: 'No timer',
-    loading: 'Loading...',
-    errorNoGame: 'Error: No game selected in the URL.',
-    errorGameNotFound: 'Game not found or unsupported: {GAME_ID}',
-    errorLoadFailed: 'Unable to load: {GAME_ID}',
-    statsPoints: 'Points:',
-    statsSkipped: 'Skipped:',
-    statsSuccessRate: 'Success rate:',
-    statsAvgTime: 'Avg time per card:',
-    restartKeep: 'Restart',
-    restartAll: 'Reshuffle all cards'
+    ready: "Ready?",
+    finished: "Game Over!",
+    next: "Next Word",
+    pass: "Skip",
+    validate: "Validate",
+    start: "Start",
+    noTimer: "No timer",
+    loading: "Loading...",
+    errorNoGame: "Error: No game selected in the URL.",
+    errorGameNotFound: "Game not found or unsupported: {GAME_ID}",
+    errorLoadFailed: "Unable to load: {GAME_ID}",
+    statsPoints: "Points:",
+    statsSkipped: "Skipped:",
+    statsSuccessRate: "Success rate:",
+    statsAvgTime: "Avg time per card:",
+    restartKeep: "Restart",
+    restartAll: "Reshuffle all cards"
   },
   es: {
-    ready: '¿Listo?',
-    finished: '¡Juego Terminado!',
-    next: 'Siguiente',
-    pass: 'Saltar',
-    validate: 'Validar',
-    start: 'Empezar',
-    noTimer: 'Sin tiempo',
-    loading: 'Cargando...',
-    errorNoGame: 'Error: Ningún juego seleccionado en la URL.',
-    errorGameNotFound: 'Juego no encontrado o no compatible: {GAME_ID}',
-    errorLoadFailed: 'No se puede cargar: {GAME_ID}',
-    statsPoints: 'Puntos:',
-    statsSkipped: 'Saltados:',
-    statsSuccessRate: 'Tasa de acierto:',
-    statsAvgTime: 'Tiempo medio por carta:',
-    restartKeep: 'Reiniciar',
-    restartAll: 'Barajar todas las cartas'
+    ready: "¿Listo?",
+    finished: "¡Juego Terminado!",
+    next: "Siguiente",
+    pass: "Saltar",
+    validate: "Validar",
+    start: "Empezar",
+    noTimer: "Sin tiempo",
+    loading: "Cargando...",
+    errorNoGame: "Error: Ningún juego seleccionado en la URL.",
+    errorGameNotFound: "Juego no encontrado o no compatible: {GAME_ID}",
+    errorLoadFailed: "No se puede cargar: {GAME_ID}",
+    statsPoints: "Puntos:",
+    statsSkipped: "Saltados:",
+    statsSuccessRate: "Tasa de acierto:",
+    statsAvgTime: "Tiempo medio por carta:",
+    restartKeep: "Reiniciar",
+    restartAll: "Barajar todas las cartas"
   }
 };
 
 const LANGUAGE_FLAGS = [
-  { code: 'fr', flag: '🇫🇷' },
-  { code: 'en', flag: '🇬🇧' },
-  { code: 'es', flag: '🇪🇸' }
+  { code: "fr", flag: "🇫🇷" },
+  { code: "en", flag: "🇬🇧" },
+  { code: "es", flag: "🇪🇸" }
 ];
 
 function readHubLanguage() {
   try {
-    const stored = localStorage.getItem('bergamots-lang');
-    return LANGUAGE_FLAGS.some((entry) => entry.code === stored) ? stored : 'fr';
+    const stored = localStorage.getItem("bergamots-lang");
+    return LANGUAGE_FLAGS.some((entry) => entry.code === stored)
+      ? stored
+      : "fr";
   } catch {
-    return 'fr';
+    return "fr";
   }
 }
 
@@ -109,7 +110,7 @@ const gameState = {
   controls: [],
   currentLanguage: readHubLanguage(),
   currentWord: null,
-  phase: 'setup',
+  phase: "setup",
   timerEnabled: false,
   timerDuration: 60,
   timerRemaining: 0,
@@ -153,12 +154,12 @@ function recordCardResult(points) {
 
 function computeStatsSnapshot() {
   const totalCards = gameState.statsSuccess + gameState.statsSkipped;
-  const successRate = totalCards === 0
-    ? 0
-    : Math.round((gameState.statsSuccess / totalCards) * 100);
-  const avgSeconds = totalCards === 0
-    ? 0
-    : gameState.statsTotalTimeMs / totalCards / 1000;
+  const successRate =
+    totalCards === 0
+      ? 0
+      : Math.round((gameState.statsSuccess / totalCards) * 100);
+  const avgSeconds =
+    totalCards === 0 ? 0 : gameState.statsTotalTimeMs / totalCards / 1000;
 
   return {
     points: gameState.score,
@@ -179,7 +180,7 @@ function getDefiChance() {
 function updateDefiClass(isActive) {
   const el = document.getElementById(DOM.wordDisplay);
   if (!el) return;
-  el.classList.toggle('defi-active', isActive);
+  el.classList.toggle("defi-active", isActive);
 }
 
 function rollDefiForCurrentCard() {
@@ -197,21 +198,21 @@ function rollDefiForCurrentCard() {
 
 function normalizeControls(rawControls) {
   if (!Array.isArray(rawControls) || rawControls.length === 0) {
-    return ['next'];
+    return ["next"];
   }
 
   const normalized = new Set();
 
   rawControls.forEach((raw) => {
     const value = String(raw).toLowerCase();
-    if (value === 'next') normalized.add('next');
-    if (value === 'skip' || value === 'pass') normalized.add('pass');
-    if (value === 'success' || value === 'validate') normalized.add('success');
-    if (value === 'failed' || value === 'fail') normalized.add('failed');
+    if (value === "next") normalized.add("next");
+    if (value === "skip" || value === "pass") normalized.add("pass");
+    if (value === "success" || value === "validate") normalized.add("success");
+    if (value === "failed" || value === "fail") normalized.add("failed");
   });
 
   if (normalized.size === 0) {
-    return ['next'];
+    return ["next"];
   }
 
   return Array.from(normalized);
@@ -229,7 +230,7 @@ function playBuzzer() {
   }
 }
 
-const MASK_TEXT = '************';
+const MASK_TEXT = "************";
 
 function maskCurrentWord() {
   if (!gameState.currentWord || gameState.isCurrentWordHidden) {
@@ -246,7 +247,7 @@ function maskCurrentWord() {
 }
 
 function onWordCardDoubleActivate() {
-  if (gameState.phase !== 'playing' || !gameState.currentWord) {
+  if (gameState.phase !== "playing" || !gameState.currentWord) {
     return;
   }
 
@@ -264,7 +265,7 @@ function attachWordCardHideHandlers() {
     return;
   }
 
-  cardElement.addEventListener('dblclick', onWordCardDoubleActivate);
+  cardElement.addEventListener("dblclick", onWordCardDoubleActivate);
 }
 
 function renderEndScreen() {
@@ -293,16 +294,16 @@ function renderEndControls() {
   if (!container) return;
 
   const labels = getCurrentLabels();
-  container.innerHTML = '';
+  container.innerHTML = "";
 
   const restartKeepBtn = createActionButton(
     labels.restartKeep,
-    'btn-restart-keep',
+    "btn-restart-keep",
     restartSessionKeepRemaining
   );
   const restartAllBtn = createActionButton(
     labels.restartAll,
-    'btn-restart-all',
+    "btn-restart-all",
     restartSessionReshuffleAll
   );
 
@@ -310,7 +311,7 @@ function renderEndControls() {
   container.appendChild(restartAllBtn);
 }
 
-document.addEventListener('DOMContentLoaded', initializeWordPlayer);
+document.addEventListener("DOMContentLoaded", initializeWordPlayer);
 
 async function fetchHubConfig() {
   const response = await fetch(HUB_CONFIG_URL);
@@ -323,13 +324,13 @@ async function fetchHubConfig() {
 function findWordpackGame(gamesList, gameId) {
   if (!Array.isArray(gamesList)) return null;
   const game = gamesList.find((g) => g.id === gameId);
-  if (!game || game.kind !== 'wordpack' || !game.data) return null;
+  if (!game || game.kind !== "wordpack" || !game.data) return null;
   return game;
 }
 
 async function initializeWordPlayer() {
   const urlParams = new URLSearchParams(window.location.search);
-  const gameId = urlParams.get('game');
+  const gameId = urlParams.get("game");
 
   document.documentElement.lang = gameState.currentLanguage;
 
@@ -348,7 +349,7 @@ async function initializeWordPlayer() {
     const gameEntry = findWordpackGame(gamesList, gameId);
 
     if (!gameEntry) {
-      const message = labels.errorGameNotFound.replace('{GAME_ID}', gameId);
+      const message = labels.errorGameNotFound.replace("{GAME_ID}", gameId);
       handleFatalError(message);
       return;
     }
@@ -358,10 +359,11 @@ async function initializeWordPlayer() {
     gameState.allWords = [...gameConfiguration.words];
     gameState.availableWords = [...gameState.allWords];
     gameState.controls = normalizeControls(gameConfiguration.controls);
-    gameState.percentChanceDefi = Number(gameConfiguration.percentChanceDefi) || 0;
+    gameState.percentChanceDefi =
+      Number(gameConfiguration.percentChanceDefi) || 0;
     gameState.timerEnabled =
-      typeof gameConfiguration.timer === 'string' &&
-      gameConfiguration.timer.toUpperCase() === 'ON';
+      typeof gameConfiguration.timer === "string" &&
+      gameConfiguration.timer.toUpperCase() === "ON";
 
     gameState.currentGameId = gameEntry.id;
     await ensureRulesForCurrentLanguage();
@@ -371,7 +373,7 @@ async function initializeWordPlayer() {
     renderSetupScreen();
   } catch (error) {
     console.error(error);
-    const message = labels.errorLoadFailed.replace('{GAME_ID}', gameId);
+    const message = labels.errorLoadFailed.replace("{GAME_ID}", gameId);
     handleFatalError(message);
   }
 }
@@ -387,12 +389,14 @@ function hydrateUserInterface(gameEntry) {
   bannerElement.src = gameEntry.thumbnail;
 
   bannerElement.onerror = () => {
-    const currentSource = typeof bannerElement.src === 'string' ? bannerElement.src : '';
-    const hasTriedPngFallback = bannerElement.dataset.triedPngFallback === 'true';
+    const currentSource =
+      typeof bannerElement.src === "string" ? bannerElement.src : "";
+    const hasTriedPngFallback =
+      bannerElement.dataset.triedPngFallback === "true";
 
-    if (!hasTriedPngFallback && currentSource.endsWith('.jpg')) {
-      bannerElement.dataset.triedPngFallback = 'true';
-      bannerElement.src = currentSource.replace(/\.jpg$/, '.png');
+    if (!hasTriedPngFallback && currentSource.endsWith(".jpg")) {
+      bannerElement.dataset.triedPngFallback = "true";
+      bannerElement.src = currentSource.replace(/\.jpg$/, ".png");
     }
   };
 }
@@ -418,7 +422,7 @@ async function ensureRulesForCurrentLanguage() {
 }
 
 function toggleRulesButtonVisibility() {
-  const button = document.getElementById('rules-button');
+  const button = document.getElementById("rules-button");
   const language = gameState.currentLanguage;
 
   if (!button) {
@@ -429,11 +433,11 @@ function toggleRulesButtonVisibility() {
     Object.prototype.hasOwnProperty.call(gameState.rulesByLanguage, language) &&
     Boolean(gameState.rulesByLanguage[language]);
 
-  button.style.display = hasRules ? 'flex' : 'none';
+  button.style.display = hasRules ? "flex" : "none";
 
   if (hasRules && !button.dataset.bound) {
-    button.addEventListener('click', openRulesModal);
-    button.dataset.bound = 'true';
+    button.addEventListener("click", openRulesModal);
+    button.dataset.bound = "true";
   }
 }
 
@@ -442,11 +446,11 @@ function initLanguageSelector() {
   if (!selectorElement) return;
 
   LANGUAGE_FLAGS.forEach(({ code, flag }) => {
-    const button = document.createElement('button');
+    const button = document.createElement("button");
     button.textContent = flag;
-    button.className = `lang-btn${code === gameState.currentLanguage ? ' active' : ''}`;
+    button.className = `lang-btn${code === gameState.currentLanguage ? " active" : ""}`;
     button.dataset.lang = code;
-    button.addEventListener('click', () => handleLanguageChange(code));
+    button.addEventListener("click", () => handleLanguageChange(code));
     selectorElement.appendChild(button);
   });
 }
@@ -456,11 +460,11 @@ function handleLanguageChange(language) {
 
   document.documentElement.lang = language;
 
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === language);
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.lang === language);
   });
 
-  if (gameState.phase === 'setup') {
+  if (gameState.phase === "setup") {
     ensureRulesForCurrentLanguage().then(() => {
       renderSetupScreen();
     });
@@ -476,7 +480,7 @@ function handleLanguageChange(language) {
 
 function getRulesModalTitle() {
   const labels = getCurrentLabels();
-  return labels && labels.ready ? 'Règles du jeu' : 'Rules';
+  return labels && labels.ready ? "Règles du jeu" : "Rules";
 }
 
 function openRulesModal() {
@@ -487,40 +491,40 @@ function openRulesModal() {
     return;
   }
 
-  const existing = document.querySelector('.rules-modal-backdrop');
+  const existing = document.querySelector(".rules-modal-backdrop");
   if (existing) {
     existing.remove();
   }
 
-  const backdrop = document.createElement('div');
-  backdrop.className = 'rules-modal-backdrop';
+  const backdrop = document.createElement("div");
+  backdrop.className = "rules-modal-backdrop";
 
-  const dialog = document.createElement('div');
-  dialog.className = 'rules-modal';
+  const dialog = document.createElement("div");
+  dialog.className = "rules-modal";
 
-  const header = document.createElement('header');
-  const title = document.createElement('div');
-  title.className = 'rules-modal-title';
+  const header = document.createElement("header");
+  const title = document.createElement("div");
+  title.className = "rules-modal-title";
   title.textContent = getRulesModalTitle();
 
-  const closeButton = document.createElement('button');
-  closeButton.className = 'rules-modal-close';
-  closeButton.type = 'button';
-  closeButton.innerHTML = '&times;';
-  closeButton.addEventListener('click', () => closeRulesModal(backdrop));
+  const closeButton = document.createElement("button");
+  closeButton.className = "rules-modal-close";
+  closeButton.type = "button";
+  closeButton.innerHTML = "&times;";
+  closeButton.addEventListener("click", () => closeRulesModal(backdrop));
 
   header.appendChild(title);
   header.appendChild(closeButton);
 
-  const content = document.createElement('div');
-  content.className = 'rules-modal-content';
+  const content = document.createElement("div");
+  content.className = "rules-modal-content";
   content.innerHTML = rulesHtml;
 
   dialog.appendChild(header);
   dialog.appendChild(content);
   backdrop.appendChild(dialog);
 
-  backdrop.addEventListener('click', (event) => {
+  backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) {
       closeRulesModal(backdrop);
     }
@@ -530,7 +534,8 @@ function openRulesModal() {
 }
 
 function closeRulesModal(backdropElement) {
-  const target = backdropElement || document.querySelector('.rules-modal-backdrop');
+  const target =
+    backdropElement || document.querySelector(".rules-modal-backdrop");
   if (target && target.parentNode) {
     target.parentNode.removeChild(target);
   }
@@ -558,7 +563,7 @@ function renderCurrentCard() {
   } else {
     const tabooItems = tabooWords
       .map((taboo) => `<li class="taboo-item">${taboo}</li>`)
-      .join('');
+      .join("");
 
     container.innerHTML = `
       <div class="word-main-term-wrapper">
@@ -576,51 +581,55 @@ function renderCurrentCard() {
 }
 
 function renderSetupScreen() {
-  gameState.phase = 'setup';
+  gameState.phase = "setup";
   const labels = getCurrentLabels();
 
   renderWordToScreen(DOM.wordDisplay, labels.ready);
 
   const container = document.getElementById(DOM.controlsContainer);
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
 
   if (gameState.timerEnabled) {
-    const timerGroup = document.createElement('div');
-    timerGroup.className = 'timer-selector';
+    const timerGroup = document.createElement("div");
+    timerGroup.className = "timer-selector";
 
-    TIMER_PRESETS.forEach(seconds => {
-      const btn = document.createElement('button');
-      const isActive = seconds === gameState.timerDuration && !isCustomValue(gameState.timerDuration);
-      btn.className = `timer-option${isActive ? ' active' : ''}`;
+    TIMER_PRESETS.forEach((seconds) => {
+      const btn = document.createElement("button");
+      const isActive =
+        seconds === gameState.timerDuration &&
+        !isCustomValue(gameState.timerDuration);
+      btn.className = `timer-option${isActive ? " active" : ""}`;
       btn.dataset.seconds = String(seconds);
       btn.textContent = seconds === 0 ? labels.noTimer : `${seconds}s`;
-      btn.addEventListener('click', () => selectTimerPreset(seconds));
+      btn.addEventListener("click", () => selectTimerPreset(seconds));
       timerGroup.appendChild(btn);
     });
 
-    const customWrap = document.createElement('span');
-    customWrap.className = 'custom-timer-wrap';
+    const customWrap = document.createElement("span");
+    customWrap.className = "custom-timer-wrap";
 
-    const customInput = document.createElement('input');
-    customInput.type = 'number';
+    const customInput = document.createElement("input");
+    customInput.type = "number";
     customInput.id = DOM.customTimerInput;
     customInput.min = CUSTOM_TIMER_MIN;
     customInput.max = CUSTOM_TIMER_MAX;
     customInput.value = customInputValue();
-    customInput.addEventListener('input', () => onCustomTimerInput());
-    customInput.addEventListener('focus', () => onCustomTimerInput());
+    customInput.addEventListener("input", () => onCustomTimerInput());
+    customInput.addEventListener("focus", () => onCustomTimerInput());
 
-    const customLabel = document.createElement('span');
-    customLabel.className = 'custom-timer-suffix';
-    customLabel.textContent = 's';
+    const customLabel = document.createElement("span");
+    customLabel.className = "custom-timer-suffix";
+    customLabel.textContent = "s";
     customWrap.appendChild(customInput);
     customWrap.appendChild(customLabel);
     timerGroup.appendChild(customWrap);
 
     container.appendChild(timerGroup);
   }
-  container.appendChild(createActionButton(labels.start, 'btn-start', startGame));
+  container.appendChild(
+    createActionButton(labels.start, "btn-start", startGame)
+  );
 }
 
 function isCustomValue(seconds) {
@@ -656,9 +665,9 @@ function selectTimerPreset(seconds) {
 }
 
 function updatePresetActiveState() {
-  document.querySelectorAll('.timer-option').forEach(btn => {
+  document.querySelectorAll(".timer-option").forEach((btn) => {
     const presetSeconds = parseInt(btn.dataset.seconds, 10);
-    btn.classList.toggle('active', presetSeconds === gameState.timerDuration);
+    btn.classList.toggle("active", presetSeconds === gameState.timerDuration);
   });
 }
 
@@ -671,7 +680,7 @@ function startGame() {
 }
 
 function startNewSessionWithCurrentWords() {
-  gameState.phase = 'playing';
+  gameState.phase = "playing";
   gameState.score = 0;
   resetStats();
   updateScoreDisplay();
@@ -684,54 +693,53 @@ function renderControls(controlsArray) {
   const containerElement = document.getElementById(DOM.controlsContainer);
   if (!containerElement) return;
 
-  containerElement.innerHTML = '';
+  containerElement.innerHTML = "";
   const labels = getCurrentLabels();
 
-  const hasNext = controlsArray.includes('next');
-  const hasPass = controlsArray.includes('pass');
-  const hasSuccess = controlsArray.includes('success');
-  const hasFailed = controlsArray.includes('failed');
+  const hasNext = controlsArray.includes("next");
+  const hasPass = controlsArray.includes("pass");
+  const hasSuccess = controlsArray.includes("success");
+  const hasFailed = controlsArray.includes("failed");
 
   if (hasNext) {
     containerElement.appendChild(
-      createActionButton(labels.next, 'btn-next', handleNextCard)
+      createActionButton(labels.next, "btn-next", handleNextCard)
     );
   }
 
-  const shouldShowScore =
-    hasPass || hasSuccess || hasFailed;
+  const shouldShowScore = hasPass || hasSuccess || hasFailed;
   if (shouldShowScore) {
     const scoreElement = document.getElementById(DOM.score);
     if (scoreElement) {
-      scoreElement.style.display = 'block';
+      scoreElement.style.display = "block";
     }
   }
 
   if (hasPass) {
     containerElement.appendChild(
-      createActionButton(labels.pass, 'btn-pass', handleFailedCard)
+      createActionButton(labels.pass, "btn-pass", handleFailedCard)
     );
   }
 
   if (hasFailed) {
     containerElement.appendChild(
-      createActionButton(labels.pass, 'btn-failed', handleFailedCard)
+      createActionButton(labels.pass, "btn-failed", handleFailedCard)
     );
   }
 
   if (hasSuccess) {
     containerElement.appendChild(
-      createActionButton(labels.validate, 'btn-success', handleSuccessCard)
+      createActionButton(labels.validate, "btn-success", handleSuccessCard)
     );
   }
 }
 
 function createActionButton(buttonText, buttonId, clickHandler) {
-  const button = document.createElement('button');
+  const button = document.createElement("button");
   button.textContent = buttonText;
   button.id = buttonId;
-  button.className = 'action-button';
-  button.addEventListener('click', clickHandler);
+  button.className = "action-button";
+  button.addEventListener("click", clickHandler);
   return button;
 }
 
@@ -830,26 +838,28 @@ function stopTimer() {
 function showTimerDisplay() {
   const el = document.getElementById(DOM.timerDisplay);
   if (!el) return;
-  el.innerHTML = '<div class="timer-track"><div class="timer-bar"></div></div><span class="timer-count"></span>';
-  el.classList.add('visible');
+  el.innerHTML =
+    '<div class="timer-track"><div class="timer-bar"></div></div><span class="timer-count"></span>';
+  el.classList.add("visible");
 }
 
 function hideTimerDisplay() {
   const el = document.getElementById(DOM.timerDisplay);
-  if (el) el.classList.remove('visible');
+  if (el) el.classList.remove("visible");
 }
 
 function updateTimerDisplay() {
   const el = document.getElementById(DOM.timerDisplay);
   if (!el) return;
 
-  const bar = el.querySelector('.timer-bar');
-  const count = el.querySelector('.timer-count');
+  const bar = el.querySelector(".timer-bar");
+  const count = el.querySelector(".timer-count");
   const percentage = (gameState.timerRemaining / gameState.timerDuration) * 100;
 
   if (bar) {
     bar.style.width = `${percentage}%`;
-    const urgency = percentage <= 25 ? ' danger' : percentage <= 50 ? ' warning' : '';
+    const urgency =
+      percentage <= 25 ? " danger" : percentage <= 50 ? " warning" : "";
     bar.className = `timer-bar${urgency}`;
   }
 

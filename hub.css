@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 60px -20px rgba(60, 90, 110, 0.45);
-  font-family: 'Quicksand', system-ui, sans-serif;
+  font-family: "Quicksand", system-ui, sans-serif;
 }
 
 /* --- Header / banner --- */
@@ -36,7 +36,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
-  font-family: 'Caveat', cursive;
+  font-family: "Caveat", cursive;
   font-weight: 700;
   font-size: clamp(38px, 7vw, 64px);
   color: #fff;
@@ -75,11 +75,19 @@
   border: none;
   cursor: pointer;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
-  transition: transform 0.18s, opacity 0.2s, margin-top 0.2s, width 0.2s, height 0.2s;
+  transition:
+    transform 0.18s,
+    opacity 0.2s,
+    margin-top 0.2s,
+    width 0.2s,
+    height 0.2s;
 }
 
 .lang-flag--active {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), 0 0 0 2.5px #fff, 0 3px 8px -2px rgba(40, 70, 90, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 0 0 2.5px #fff,
+    0 3px 8px -2px rgba(40, 70, 90, 0.5);
 }
 
 .lang-flag--active:hover {
@@ -93,7 +101,9 @@
   opacity: 0;
   transform: scale(0.4);
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15), 0 2px 6px -2px rgba(40, 70, 90, 0.45);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 2px 6px -2px rgba(40, 70, 90, 0.45);
 }
 
 .lang-switcher.is-open .lang-flag--option {
@@ -106,16 +116,38 @@
 }
 
 .flag-fr {
-  background: linear-gradient(to right, #0055a4 0 33.33%, #fff 33.33% 66.66%, #ef4135 66.66% 100%);
+  background: linear-gradient(
+    to right,
+    #0055a4 0 33.33%,
+    #fff 33.33% 66.66%,
+    #ef4135 66.66% 100%
+  );
 }
 
 .flag-en {
-  background: linear-gradient(to bottom, transparent 38%, #cf142b 38% 62%, transparent 62%),
-    linear-gradient(to right, transparent 38%, #cf142b 38% 62%, transparent 62%), #f4f6f8;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 38%,
+      #cf142b 38% 62%,
+      transparent 62%
+    ),
+    linear-gradient(
+      to right,
+      transparent 38%,
+      #cf142b 38% 62%,
+      transparent 62%
+    ),
+    #f4f6f8;
 }
 
 .flag-es {
-  background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%);
+  background: linear-gradient(
+    to bottom,
+    #aa151b 0 25%,
+    #f1bf00 25% 75%,
+    #aa151b 75% 100%
+  );
 }
 
 /* --- Main content --- */
@@ -143,11 +175,13 @@
   background: none;
   border: none;
   border-bottom: 4px solid transparent;
-  font-family: 'Baloo 2', cursive;
+  font-family: "Baloo 2", cursive;
   font-size: 19px;
   font-weight: 600;
   color: rgba(90, 58, 34, 0.45);
-  transition: color 0.18s, border-color 0.18s;
+  transition:
+    color 0.18s,
+    border-color 0.18s;
 }
 
 .category-tab.is-active {
@@ -178,7 +212,9 @@
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-  transition: transform 0.22s ease, opacity 0.22s ease;
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
 }
 
 .games-grid--out-to-left {
@@ -206,7 +242,9 @@
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .game-tile:hover {
@@ -222,7 +260,11 @@
   position: relative;
   aspect-ratio: 4 / 5;
   min-height: 150px;
-  background: repeating-linear-gradient(135deg, #e6ecf1 0 7px, #f2f6f8 7px 14px);
+  background: repeating-linear-gradient(
+    135deg,
+    #e6ecf1 0 7px,
+    #f2f6f8 7px 14px
+  );
 }
 
 .game-tile__thumb {
@@ -252,7 +294,7 @@
   right: 0;
   bottom: 0;
   padding: 10px 12px 13px;
-  font-family: 'Baloo 2', cursive;
+  font-family: "Baloo 2", cursive;
   font-size: 18px;
   font-weight: 700;
   color: #fff;
@@ -266,7 +308,7 @@
   bottom: 8px;
   right: 10px;
   z-index: 999;
-  font-family: 'Quicksand', system-ui, sans-serif;
+  font-family: "Quicksand", system-ui, sans-serif;
   font-size: 11px;
   color: rgba(90, 58, 34, 0.4);
   pointer-events: none;

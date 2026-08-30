@@ -140,7 +140,7 @@ const I18N = {
     clearedAll: "Vous avez franchi les 15 questions.", expiredBeforeLock: "Le minuteur a expire avant la validation d'une reponse.",
     lifeline5050Used: "50:50 utilise. Deux mauvaises reponses disparaissent.", lifelineAudienceUsed: "Le public a donne son avis.", lifelinePhoneUsed: "Votre ami donne sa meilleure intuition.",
     lifelineSwapUsed: "Question echangee. Nouveau theme, meme palier.", lifelineSwapFailed: "Aucune autre question disponible pour ce palier.",
-    phoneMessage: (label, text, confidence) => `Votre ami dit : \"Je choisirais ${label} : ${text}. Je suis ${confidence}.\"`,
+    phoneMessage: (label, text, confidence) => `Votre ami dit : "Je choisirais ${label} : ${text}. Je suis ${confidence}."`,
     phoneConfident: ["presque certain", "assez confiant", "vraiment penche pour cette reponse"], phoneUnsure: ["pas totalement sur mais je tenterais ca", "hesitant, mais je dirais ca", "plutot en train de deviner ici"],
     closeAudienceAria: "Fermer l'avis du public", closePhoneAria: "Fermer l'appel a un ami", homeAria: "Retour a l'accueil", restartAria: "Recommencer la partie",
     showLadderLabel: "Afficher les paliers", hideLadderLabel: "Masquer les paliers"
@@ -170,7 +170,7 @@ const I18N = {
     clearedAll: "You cleared all 15 questions.", expiredBeforeLock: "The timer expired before an answer was locked in.",
     lifeline5050Used: "50:50 used. Two wrong answers removed.", lifelineAudienceUsed: "The audience has voted.", lifelinePhoneUsed: "Your friend is giving their best guess.",
     lifelineSwapUsed: "Question swapped. New prompt, same prize tier.", lifelineSwapFailed: "No spare question is available for this tier.",
-    phoneMessage: (label, text, confidence) => `Your friend says: \"I'd go with ${label}: ${text}. I'm ${confidence}.\"`,
+    phoneMessage: (label, text, confidence) => `Your friend says: "I'd go with ${label}: ${text}. I'm ${confidence}."`,
     phoneConfident: ["pretty sure", "quite confident", "strongly leaning that way"], phoneUnsure: ["not totally sure, but I'd try that", "torn, but I'd still say that", "mostly guessing here"],
     closeAudienceAria: "Close audience vote", closePhoneAria: "Close phone a friend", homeAria: "Return to home screen", restartAria: "Restart game",
     showLadderLabel: "Show prize ladder", hideLadderLabel: "Hide prize ladder"
@@ -200,7 +200,7 @@ const I18N = {
     clearedAll: "Superaste las 15 preguntas.", expiredBeforeLock: "El temporizador se agoto antes de bloquear una respuesta.",
     lifeline5050Used: "Has usado 50:50. Dos respuestas incorrectas desaparecen.", lifelineAudienceUsed: "El publico ya ha votado.", lifelinePhoneUsed: "Tu amigo te da su mejor intuicion.",
     lifelineSwapUsed: "Pregunta cambiada. Nuevo enunciado, mismo nivel.", lifelineSwapFailed: "No hay otra pregunta disponible para este nivel.",
-    phoneMessage: (label, text, confidence) => `Tu amigo dice: \"Yo iria con ${label}: ${text}. Estoy ${confidence}.\"`,
+    phoneMessage: (label, text, confidence) => `Tu amigo dice: "Yo iria con ${label}: ${text}. Estoy ${confidence}."`,
     phoneConfident: ["bastante seguro", "bastante convencido", "muy inclinado por esa opcion"], phoneUnsure: ["no del todo seguro, pero probaria esa", "dudando, aunque diria esa", "casi adivinando aqui"],
     closeAudienceAria: "Cerrar voto del publico", closePhoneAria: "Cerrar llamada a un amigo", homeAria: "Volver al inicio", restartAria: "Reiniciar partida",
     showLadderLabel: "Mostrar niveles de premio", hideLadderLabel: "Ocultar niveles de premio"
@@ -276,15 +276,13 @@ const I18N = {
     lifelinePhoneUsed: "Tu amigo te da su mejor intuicion.",
     lifelineSwapUsed: "Pregunta cambiada. Nuevo enunciado, mismo nivel.",
     lifelineSwapFailed: "No hay otra pregunta disponible para este nivel.",
-    phoneMessage: (label, text, confidence) => `Tu amigo dice: \"Yo iria con ${label}: ${text}. Estoy ${confidence}.\"`,
+    phoneMessage: (label, text, confidence) => `Tu amigo dice: "Yo iria con ${label}: ${text}. Estoy ${confidence}."`,
     phoneConfident: ["bastante seguro", "bastante convencido", "muy inclinado por esa opcion"],
     phoneUnsure: ["no del todo seguro, pero probaria esa", "dudando, aunque diria esa", "casi adivinando aqui"],
     closeAudienceAria: "Cerrar voto del publico",
     closePhoneAria: "Cerrar llamada a un amigo",
     homeAria: "Volver al inicio",
     restartAria: "Reiniciar partida",
-    showLadderLabel: "Mostrar niveles de premio",
-    hideLadderLabel: "Ocultar niveles de premio",
     showLadderLabel: "Mostrar niveles de premio",
     hideLadderLabel: "Ocultar niveles de premio"
   }
@@ -589,7 +587,7 @@ function renderRound() {
   const prize = CONFIG.prizeLadder[state.currentRound];
   const nextPrize = CONFIG.prizeLadder[state.currentRound + 1];
   elements.questionCounter.textContent = `${roundNumber}/${CONFIG.totalRounds}`;
-  // Keep current prize with full amount formatting (e.g. "1 000 €").
+  // Keep current prize with its full amount formatting, thousands separator included.
   elements.currentPrize.textContent = prize.label;
   elements.guaranteedPrize.textContent = getGuaranteedPrizeLabel(state.currentRound - 1);
   elements.nextPrize.textContent = nextPrize ? formatPrizeLabelByAmount(nextPrize) : copy.champion;
