@@ -117,8 +117,8 @@ elements.joinCodeInput.addEventListener("keydown", (event) => {
 if (elements.splashBackButton) {
   elements.splashBackButton.addEventListener("click", navigateToHub);
 }
-if (elements.settingsButton) {
-  elements.settingsButton.addEventListener("click", handleSettingsToggle);
+if (elements.settingsButton && elements.settingsPanel && window.GameHeader) {
+  window.GameHeader.initOptionsPanel(elements.settingsButton, elements.settingsPanel);
 }
 if (elements.settingsList) {
   elements.settingsList.addEventListener("change", handleSettingsInputChange);
@@ -262,7 +262,6 @@ function createInitialState() {
     setup: {
       mode: "solo",
       language: initialSetupLanguage,
-      settingsOpen: false,
       reverseDiceSelection: persistedReverseDiceSelection,
       rules: cloneRuleSettings(persistedRuleSettings || buildDefaultRuleSettings())
     },
@@ -414,9 +413,6 @@ function renderSplash() {
   const isRestoring = state.session.connectionState === "restoring";
   const isWaiting = state.session.connectionState === "waiting";
   const isBusy = isCreating || isJoining || isRestoring || isWaiting;
-  if (elements.settingsPanel) {
-    elements.settingsPanel.classList.toggle("is-visible", state.setup.settingsOpen);
-  }
   renderSettingsRows();
 
   elements.soloGameButton.disabled = isBusy;
@@ -869,11 +865,6 @@ function renderCelebration() {
 function handleLanguageSelection(language) {
   state.setup.language = language;
   applySetupSettings(state);
-  render();
-}
-
-function handleSettingsToggle() {
-  state.setup.settingsOpen = !state.setup.settingsOpen;
   render();
 }
 

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,9 +29,7 @@
           data-id="admin-login-form"
           autocomplete="off"
         >
-          <label class="admin-label" for="admin-password-input"
-            >Mot de passe</label
-          >
+          <label class="admin-label" for="admin-password-input">Password</label>
           <input
             class="admin-input"
             id="admin-password-input"
@@ -39,13 +37,14 @@
             type="password"
             required
             autocomplete="current-password"
+            autofocus
           />
           <button
             class="admin-button"
             type="submit"
             data-id="admin-login-submit"
           >
-            Entrer
+            Log in
           </button>
         </form>
         <p
@@ -64,7 +63,7 @@
       >
         <header class="admin-dashboard-header">
           <div>
-            <p class="admin-metric-label">Lancements de jeux</p>
+            <p class="admin-metric-label">Game launches</p>
             <p
               class="admin-metric-value"
               id="admin-total-launches"
@@ -85,7 +84,7 @@
               id="admin-refresh-button"
               data-id="admin-refresh-button"
             >
-              Rafraîchir
+              Refresh
             </button>
             <button
               class="admin-button admin-button--ghost"
@@ -93,7 +92,7 @@
               id="admin-logout-button"
               data-id="admin-logout-button"
             >
-              Quitter
+              Log out
             </button>
           </div>
         </header>
@@ -103,7 +102,7 @@
           id="admin-range-switch"
           data-id="admin-range-switch"
           role="group"
-          aria-label="Période affichée"
+          aria-label="Displayed period"
         >
           <button
             class="admin-range-option"
@@ -111,7 +110,7 @@
             data-range="7d"
             data-id="admin-range-7d"
           >
-            7 jours
+            7 days
           </button>
           <button
             class="admin-range-option"
@@ -119,7 +118,7 @@
             data-range="30d"
             data-id="admin-range-30d"
           >
-            30 jours
+            30 days
           </button>
           <button
             class="admin-range-option"
@@ -127,18 +126,28 @@
             data-range="6m"
             data-id="admin-range-6m"
           >
-            6 mois
+            6 months
           </button>
         </div>
 
-        <h2 class="admin-section-title">Tendance quotidienne</h2>
+        <div class="admin-trend-header">
+          <h2 class="admin-section-title">Daily trend</h2>
+          <select
+            class="admin-trend-game-select"
+            id="admin-trend-game-select"
+            data-id="admin-trend-game-select"
+            aria-label="Filter trend by game"
+          >
+            <option value="">All Games</option>
+          </select>
+        </div>
         <div
           class="admin-trend"
           id="admin-trend"
           data-id="admin-trend-chart"
         ></div>
 
-        <h2 class="admin-section-title">Classement des jeux</h2>
+        <h2 class="admin-section-title">Game ranking</h2>
         <ol
           class="admin-ranking"
           id="admin-ranking"
@@ -150,12 +159,12 @@
           data-id="admin-empty-state"
           hidden
         >
-          Aucun lancement enregistré pour le moment.
+          No launches recorded yet.
         </p>
       </section>
 
       <a class="admin-back" href="/" data-id="admin-back-to-hub"
-        >← Retour au hub</a
+        >← Back to hub</a
       >
     </main>
 

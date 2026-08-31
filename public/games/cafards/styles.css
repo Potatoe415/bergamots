@@ -11,13 +11,22 @@ body {
   font-family: Georgia, "Trebuchet MS", serif;
   background: radial-gradient(circle at top, #fff8d7, transparent 30%), radial-gradient(circle at bottom right, #c9e7a6, transparent 25%), linear-gradient(180deg, var(--bg1), var(--bg2));
 }
+/* Local skin on top of the shared .game-nav/.nav-side/.back-button/
+   .options-button/.options-panel* from /shared/css/game-header.css:
+   parchment theme instead of the shared plain white one, and a grid
+   layout instead of the shared fixed 25/50/25 flex columns. */
 .game-nav {
   display: grid;
   grid-template-columns: 1fr 0.5fr 1fr;
   align-items: center;
+  height: auto;
   padding: 0.25rem 0.8rem;
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
 }
 .nav-side {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,27 +35,30 @@ body {
   justify-content: flex-start;
 }
 .nav-center {
+  width: 100%;
+  height: auto;
   display: flex;
   justify-content: center;
 }
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
+.back-button,
+.options-button {
   border: 2px solid #9daa7f;
   background: linear-gradient(180deg, #fffdf4, #efe2c2);
-  text-decoration: none;
   color: var(--ink);
-  font-size: 1.3rem;
 }
 .nav-banner {
   max-height: 35px;
   max-width: min(260px, 60vw);
   border-radius: 18px;
   box-shadow: 0 10px 24px var(--shadow);
+}
+body.mode-game .options-button {
+  display: none;
+}
+.options-panel-sheet {
+  background: linear-gradient(180deg, var(--paper), #f7edd7);
+  border: 3px solid var(--paper-edge);
+  color: var(--ink);
 }
 body.mode-setup {
   background: linear-gradient(#fff8d799, #d5ebb5aa), url("assets/background.jpg") center/cover fixed no-repeat;
@@ -74,13 +86,12 @@ body.mode-game .game { display: grid; }
 .setup-card::after { width: 150px; height: 150px; background: var(--leaf); bottom: -50px; left: -30px; }
 .lang-row, .lang-switch { display: flex; align-items: center; gap: 0.7rem; }
 .lang-row { justify-content: flex-end; margin-bottom: 1rem; position: relative; z-index: 1; }
-body.mode-game .lang-switch { display: none; }
-.lang-btn, input, .start-btn, .ghost, .player button, .pile-hit { border-radius: 16px; border: 2px solid #9daa7f; }
-.lang-btn, .start-btn, .ghost, .player button {
+.lang-btn, input, .start-btn, .player button, .pile-hit { border-radius: 16px; border: 2px solid #9daa7f; }
+.lang-btn, .start-btn, .player button {
   padding: 0.7rem 1rem; cursor: pointer; color: var(--ink);
   background: linear-gradient(180deg, #fffdf4, #efe2c2); transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
 }
-.lang-btn:hover, .start-btn:hover, .ghost:hover, .player button:hover { transform: translateY(-2px) rotate(-0.5deg); }
+.lang-btn:hover, .start-btn:hover, .player button:hover { transform: translateY(-2px) rotate(-0.5deg); }
 .lang-btn.active { background: linear-gradient(180deg, #f6d779, var(--gold)); border-color: #9f7720; }
 .intro { max-width: 60ch; position: relative; z-index: 1; }
 .setup-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.95rem; margin: 1.1rem 0; position: relative; z-index: 1; }
@@ -88,44 +99,12 @@ label { display: grid; gap: 0.4rem; padding: 0.95rem; background: #fffdf7cc; bac
 .toggle { align-content: center; }
 input { padding: 0.75rem 0.95rem; background: #fffefa; }
 .start-btn { width: 100%; position: relative; z-index: 1; font-size: 1.05rem; font-weight: 700; background: linear-gradient(180deg, #f4d86a, #d89a33); border-color: #9b6b18; box-shadow: 0 12px 20px #b3781c44; }
-.floating-info-button {
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
-  z-index: 1400;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: none;
-  background: #111827;
-  color: #f9fafb;
-  font-weight: 700;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
-}
-.floating-info-button:active {
-  transform: scale(0.96);
-}
-body.mode-game .floating-info-button {
-  display: none;
-}
-.rules-modal[hidden] { display: none !important; }
-.rules-modal {
-  position: absolute; inset: 0; display: grid; place-items: center; padding: 1rem; background: #00000066; z-index: 10;
-}
-.rules-panel { width: min(900px, 100%); height: min(80vh, 760px); background: #fffaf0; border: 3px solid #d4bd85; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 50px #0000003a; }
-.rules-head { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; background: linear-gradient(180deg, #fff3d2, #efd497); }
-.rules-frame { width: 100%; height: calc(100% - 58px); border: 0; background: white; }
+.rules-frame { width: 100%; height: min(70vh, 520px); border: 0; border-radius: 12px; background: white; }
 .game { grid-template-rows: auto 1fr auto auto; gap: 1rem; padding: 1rem; background: radial-gradient(circle at center, #ffffff12, transparent 35%), linear-gradient(180deg, #7ca14b, #527331 55%, #476428); }
 .hud { display: grid; grid-template-columns: 220px auto; gap: 1rem; align-items: center; justify-content: space-between; }
 .hud > div, .player { background: linear-gradient(180deg, #fff6df, #f0e2bd); border: 2px solid #caae6f; box-shadow: 0 12px 24px #00000024; }
 .hud > div { padding: 0.85rem 1rem; border-radius: 22px; }
 #turnLabel { margin: 0.15rem 0 0; font-size: 2rem; }
-.ghost { background: linear-gradient(180deg, #fff5d8, #edcf92); border-color: #b88a38; }
 .board { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; min-height: 56vh; }
 .pile-shell { position: relative; padding: 1rem; border-radius: 32px; background: radial-gradient(circle at top, #88b055, transparent 25%), repeating-linear-gradient(135deg, #789c48 0 20px, #6f9347 20px 40px), linear-gradient(180deg, var(--table), var(--table-dark)); box-shadow: inset 0 0 0 3px #cde39c1f, 0 20px 34px #0000002b; }
 .pile-shell.active { outline: 5px solid #f5d46f; outline-offset: -4px; }
@@ -262,5 +241,4 @@ body.mode-setup .winner-overlay,
   .pile-hit { min-height: 34vh; }
 
   .card { width: min(210px, 48vw); }
-  .rules-panel { height: 85vh; }
 }

@@ -1,0 +1,202 @@
+/* Shared splash header: back arrow (left), optional title (center, empty by
+   default), options gear (right) opening a single consolidated panel.
+   Used by every in-repo game so the header looks and behaves the same
+   everywhere. Games keep their own visual skin by overriding these rules in
+   their own stylesheet, loaded after this one. */
+
+.game-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 2px solid #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.nav-side {
+  width: 25%;
+  display: flex;
+  align-items: center;
+}
+.nav-left {
+  justify-content: flex-start;
+}
+.nav-right {
+  justify-content: flex-end;
+  gap: 8px;
+}
+.nav-center {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-banner {
+  max-width: 100%;
+  max-height: 45px;
+  object-fit: contain;
+}
+
+.nav-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Empty by default: an unset title takes no visual space in the header. */
+.nav-title:empty {
+  display: none;
+}
+
+.back-button,
+.options-button {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #f1f1f1;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.back-button:active,
+.options-button:active {
+  transform: scale(0.94);
+}
+
+/* --- Options panel: single gear-triggered sheet that groups whatever a
+   game already offers there (language, rules, game-specific settings) --- */
+.options-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.options-panel[hidden] {
+  display: none;
+}
+
+.options-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.options-panel-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 30px rgba(15, 23, 42, 0.25);
+  padding: 16px 20px 20px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .options-panel {
+    align-items: center;
+  }
+  .options-panel-sheet {
+    border-radius: 20px;
+  }
+}
+
+.options-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.options-panel-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.options-panel-close {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.options-panel-section + .options-panel-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.options-panel-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin: 0 0 8px;
+}
+
+.rules-modal-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* --- Language switch, reused inside options panels --- */
+.lang-selector {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.lang-btn {
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-size: 1.4rem;
+  line-height: 1;
+  padding: 2px 3px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition:
+    opacity 0.15s,
+    border-color 0.15s;
+}
+
+.lang-btn:hover {
+  opacity: 0.75;
+}
+
+.lang-btn.active {
+  opacity: 1;
+  border-color: #007bff;
+}

@@ -176,15 +176,15 @@ select {
 }
 
 .settings-panel {
-  display: none;
+  display: block;
   border: 0.2rem solid rgba(87, 99, 110, 0.25);
   border-radius: 0.9rem;
   background: rgba(255, 255, 255, 0.7);
   padding: 0.7rem;
 }
 
-.settings-panel.is-visible {
-  display: block;
+.settings-panel[hidden] {
+  display: none;
 }
 
 .settings-list {

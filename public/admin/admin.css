@@ -166,6 +166,36 @@ body {
   outline-offset: 1px;
 }
 
+.admin-trend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 10px;
+}
+
+.admin-trend-header .admin-section-title {
+  margin: 0;
+}
+
+.admin-trend-game-select {
+  padding: 7px 10px;
+  border: 1px solid rgba(122, 74, 18, 0.25);
+  border-radius: 9px;
+  background: #fff;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-trend-game-select:focus-visible {
+  outline: 2px solid #e08b2f;
+  outline-offset: 1px;
+}
+
 .admin-trend {
   display: flex;
   gap: 8px;

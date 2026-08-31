@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Haut les Mains</title>
   <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/game-header.css">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body class="game-body">
@@ -12,24 +13,43 @@
   <section id="setup-view" class="view active">
     <header class="game-nav">
       <div class="nav-side nav-left">
-        <a href="../../index.html" class="back-button">←</a>
+        <a href="../../index.html" class="back-button" aria-label="Retour">←</a>
       </div>
       <div class="nav-center">
         <img src="./assets/thumbnail.jpg" alt="Logo" class="nav-banner" onerror="this.style.display='none'">
+        <h1 id="nav-title" class="nav-title"></h1>
       </div>
       <div class="nav-side nav-right">
         <button
-          id="olemains-rules-button"
-          class="floating-info-button"
+          id="olemains-options-button"
+          class="options-button"
           type="button"
-          aria-label="Afficher les règles de Haut les Mains"
+          aria-label="Options"
+          aria-expanded="false"
+          aria-controls="olemains-options-panel"
           style="display: none;"
         >
-          i
+          ⚙
         </button>
       </div>
     </header>
-    
+
+    <div id="olemains-options-panel" class="options-panel" hidden>
+      <div class="options-panel-backdrop" data-options-close></div>
+      <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+        <div class="options-panel-header">
+          <span class="options-panel-title">Options</span>
+          <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+        </div>
+        <div class="options-panel-body">
+          <div id="olemains-rules-section" class="options-panel-section">
+            <p class="options-panel-section-title">Règles</p>
+            <div id="olemains-rules-content" class="rules-modal-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <main class="game-container">
       <div class="setup-panel">
         <label for="timer-input" class="setup-label">Temps de jeu (secondes)</label>
@@ -67,6 +87,7 @@
     </main>
   </section>
 
+  <script src="../../shared/js/game-header.js"></script>
   <script type="module" src="./main.js"></script>
 </body>
 </html>

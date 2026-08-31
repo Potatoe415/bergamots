@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Salade de Cafards</title>
+  <link rel="stylesheet" href="/shared/css/game-header.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="mode-setup">
@@ -18,19 +19,49 @@
         class="nav-banner"
         onerror="this.style.display='none'"
       />
+      <h1 id="nav-title" class="nav-title"></h1>
     </div>
     <div class="nav-side nav-right">
-      <div class="lang-switch">
-        <button type="button" class="lang-btn active" data-lang="fr">FR</button>
-        <button type="button" class="lang-btn" data-lang="en">EN</button>
-        <button type="button" class="lang-btn" data-lang="es">ES</button>
-      </div>
       <div class="timer-bar">
         <div id="timerLight" class="timer-light"></div>
         <p id="timerText"></p>
       </div>
+      <button
+        id="optionsBtn"
+        class="options-button"
+        type="button"
+        aria-label="Options"
+        aria-expanded="false"
+        aria-controls="optionsPanel"
+      >
+        ⚙
+      </button>
     </div>
   </header>
+
+  <div id="optionsPanel" class="options-panel" hidden>
+    <div class="options-panel-backdrop" data-options-close></div>
+    <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+      <div class="options-panel-header">
+        <span class="options-panel-title">Options</span>
+        <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+      </div>
+      <div class="options-panel-body">
+        <div class="options-panel-section">
+          <p class="options-panel-section-title">Langue</p>
+          <div class="lang-switch">
+            <button type="button" class="lang-btn active" data-lang="fr">FR</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="es">ES</button>
+          </div>
+        </div>
+        <div class="options-panel-section">
+          <p class="options-panel-section-title" data-i18n="rulesTitle">Regles</p>
+          <iframe id="rulesFrame" class="rules-frame" title="Rules"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section id="setup" class="setup-screen">
     <div class="setup-card">
@@ -55,26 +86,7 @@
       </div>
       <button id="startBtn" type="button" class="start-btn" data-i18n="start">Lancer la partie</button>
     </div>
-
-    <div id="rulesModal" class="rules-modal" hidden>
-      <div class="rules-panel">
-        <div class="rules-head">
-          <strong data-i18n="rulesTitle">Regles</strong>
-          <button id="rulesClose" type="button" class="ghost">x</button>
-        </div>
-        <iframe id="rulesFrame" class="rules-frame" title="Rules"></iframe>
-      </div>
-    </div>
   </section>
-
-  <button
-    id="rulesBtn"
-    class="floating-info-button"
-    type="button"
-    aria-label="Afficher les règles du jeu"
-  >
-    i
-  </button>
 
   <main id="game" class="game">
 
@@ -109,6 +121,7 @@
     </article>
   </template>
 
+  <script src="/shared/js/game-header.js"></script>
   <script defer src="game.js"></script>
 </body>
 </html>

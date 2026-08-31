@@ -264,10 +264,6 @@ function resetHistoryAndStart() {
   renderByIndex(first);
 }
 
-function toggleSettingsPanel() {
-  els.settingsPanel.classList.toggle("is-visible");
-}
-
 function startGame() {
   els.splashScreen.classList.add("hidden");
   els.gameContainer.classList.remove("hidden");
@@ -281,7 +277,9 @@ function bindEvents() {
     });
   });
 
-  els.settingsButton.addEventListener("click", toggleSettingsPanel);
+  if (window.GameHeader) {
+    window.GameHeader.initOptionsPanel(els.settingsButton, els.settingsPanel);
+  }
   els.startButton.addEventListener("click", startGame);
 
   els.revealBox.addEventListener("click", () => setReveal(!revealed));

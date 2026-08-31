@@ -15,12 +15,12 @@
             <a class="settings-button splash-back-button" id="splash-back-button" href="/" aria-label="Go back to game hub" title="Go back to game hub">
               <span class="splash-back-icon" aria-hidden="true">←</span>
             </a>
-            <button class="settings-button" id="settings-button" type="button" aria-label="Game settings" title="Game settings">
+            <button class="settings-button" id="settings-button" type="button" aria-label="Game settings" title="Game settings" aria-expanded="false" aria-controls="settings-panel">
               <span class="settings-icon" aria-hidden="true">⚙</span>
             </button>
           </div>
           <h1 class="splash-title" id="splash-title">Yatzy</h1>
-          <section class="settings-panel" id="settings-panel" aria-label="Game settings">
+          <section class="settings-panel" id="settings-panel" aria-label="Game settings" hidden>
             <div class="settings-list" id="settings-list"></div>
           </section>
 
@@ -87,6 +87,7 @@
     </div>
   </main>
 
+  <script src="/shared/js/game-header.js"></script>
   <script src="config.js"></script>
   <script src="supabase-config.js"></script>
   <script src="i18n.js"></script>

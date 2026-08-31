@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pyramide</title>
     <link rel="stylesheet" href="../../shared/css/base.css" />
+    <link rel="stylesheet" href="../../shared/css/game-header.css" />
     <link rel="stylesheet" href="../../shared/css/wordplayer.css" />
     <link rel="stylesheet" href="./style.css" />
   </head>
@@ -21,10 +22,10 @@
             src="./data/images/banner.jpg"
             alt="Logo Pyramide"
           />
+          <h1 id="nav-title" class="nav-title"></h1>
         </div>
         <div class="nav-side nav-right">
           <div id="score-display" class="score-display" style="display: none;">0</div>
-          <div id="lang-selector" class="lang-selector"></div>
           <button
             id="pyramide-reset-button"
             class="icon-button nav-reset"
@@ -34,17 +35,37 @@
             ↻
           </button>
           <button
-            id="rules-button"
-            class="floating-info-button"
+            id="options-button"
+            class="options-button"
             type="button"
-            aria-label="Afficher les règles du jeu"
-            style="display: flex;"
-            data-bound="true"
+            aria-label="Options"
+            aria-expanded="false"
+            aria-controls="options-panel"
           >
-            i
+            ⚙
           </button>
         </div>
       </header>
+
+      <div id="options-panel" class="options-panel" hidden>
+        <div class="options-panel-backdrop" data-options-close></div>
+        <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+          <div class="options-panel-header">
+            <span class="options-panel-title">Options</span>
+            <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+          </div>
+          <div class="options-panel-body">
+            <div class="options-panel-section">
+              <p class="options-panel-section-title">Langue</p>
+              <div id="lang-selector" class="lang-selector"></div>
+            </div>
+            <div id="rules-section" class="options-panel-section" style="display: none">
+              <p id="pyramide-rules-title" class="options-panel-section-title"></p>
+              <div id="pyramide-rules-content" class="rules-modal-content"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="status-strip" id="statusStrip" aria-live="polite"></div>
 
@@ -68,18 +89,7 @@
       </div>
     </template>
 
-    <div id="pyramide-rules-modal" class="rules-modal-backdrop" hidden>
-      <div class="rules-modal" role="dialog" aria-modal="true" aria-labelledby="pyramide-rules-title">
-        <header>
-          <h2 id="pyramide-rules-title" class="rules-modal-title">R?gles de Pyramide</h2>
-          <button id="pyramide-rules-close" class="rules-modal-close" type="button" aria-label="Fermer les r?gles">
-            ?
-          </button>
-        </header>
-        <div id="pyramide-rules-content" class="rules-modal-content"></div>
-      </div>
-    </div>
-
+    <script src="../../shared/js/game-header.js"></script>
     <script src="./i18n.js"></script>
     <script src="./app.js"></script>
   </body>

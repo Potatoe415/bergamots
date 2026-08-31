@@ -4,31 +4,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Black Stories</title>
+  <link rel="stylesheet" href="/shared/css/base.css" />
+  <link rel="stylesheet" href="/shared/css/game-header.css" />
   <link rel="stylesheet" href="./blackstories.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <a href="/"><span aria-hidden="true">🕯️</span></a>
-      <div class="brandText">
-        <div class="brandTitle">Black Stories</div>
-        <div class="brandSub">Lis l’énigme. Clique pour révéler la solution.</div>
-      </div>
+  <header class="game-nav">
+    <div class="nav-side nav-left">
+      <a href="/" class="back-button" aria-label="Retour">←</a>
     </div>
-
-    <div class="controls">
-      <button id="settingsButton" class="settings-button" type="button" aria-label="Paramètres" title="Paramètres">
-        <span class="settings-icon" aria-hidden="true">⚙</span>
+    <div class="nav-center">
+      <h1 id="nav-title" class="nav-title"></h1>
+    </div>
+    <div class="nav-side nav-right">
+      <button id="settingsButton" class="options-button" type="button" aria-label="Options" aria-expanded="false" aria-controls="settingsPanel">
+        <span aria-hidden="true">⚙</span>
       </button>
-      <section id="settingsPanel" class="settings-panel" aria-label="Paramètres">
-        <div class="langWrap" role="group" aria-label="Langue">
-          <button class="chip langBtn" data-lang="fr" type="button">FR</button>
-          <button class="chip langBtn" data-lang="en" type="button">EN</button>
-          <button class="chip langBtn" data-lang="es" type="button">ES</button>
-        </div>
-      </section>
     </div>
   </header>
+
+  <div id="settingsPanel" class="options-panel" hidden>
+    <div class="options-panel-backdrop" data-options-close></div>
+    <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+      <div class="options-panel-header">
+        <span class="options-panel-title">Options</span>
+        <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+      </div>
+      <div class="options-panel-body">
+        <div class="options-panel-section">
+          <p class="options-panel-section-title">Langue</p>
+          <div class="langWrap" role="group" aria-label="Langue">
+            <button class="chip langBtn" data-lang="fr" type="button">FR</button>
+            <button class="chip langBtn" data-lang="en" type="button">EN</button>
+            <button class="chip langBtn" data-lang="es" type="button">ES</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section id="splashScreen" class="splash-screen" aria-label="Écran d’accueil">
     <div class="splashCard">
@@ -88,6 +101,7 @@
     </section>
   </main>
 
+  <script src="/shared/js/game-header.js"></script>
   <script src="./blackstories.js"></script>
 </body>
 </html>

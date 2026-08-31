@@ -61,9 +61,12 @@ class OlemainsGame {
   }
 
   async initRulesSupport() {
-    const button = document.getElementById('olemains-rules-button');
+    const button = document.getElementById('olemains-options-button');
+    const panel = document.getElementById('olemains-options-panel');
+    const section = document.getElementById('olemains-rules-section');
+    const content = document.getElementById('olemains-rules-content');
 
-    if (!button) {
+    if (!button || !panel || !section || !content) {
       return;
     }
 
@@ -71,69 +74,15 @@ class OlemainsGame {
     this.rulesHtml = await loadRulesIfExists('olemains', language);
 
     if (!this.rulesHtml) {
-      button.style.display = 'none';
+      section.style.display = 'none';
       return;
     }
 
+    content.innerHTML = this.rulesHtml;
     button.style.display = 'flex';
 
-    if (!button.dataset.bound) {
-      button.addEventListener('click', () => this.openRulesModal());
-      button.dataset.bound = 'true';
-    }
-  }
-
-  openRulesModal() {
-    if (!this.rulesHtml) {
-      return;
-    }
-
-    const existing = document.querySelector('.rules-modal-backdrop');
-    if (existing) {
-      existing.remove();
-    }
-
-    const backdrop = document.createElement('div');
-    backdrop.className = 'rules-modal-backdrop';
-
-    const dialog = document.createElement('div');
-    dialog.className = 'rules-modal';
-
-    const header = document.createElement('header');
-    const title = document.createElement('div');
-    title.className = 'rules-modal-title';
-    title.textContent = 'Règles du jeu';
-
-    const closeButton = document.createElement('button');
-    closeButton.className = 'rules-modal-close';
-    closeButton.type = 'button';
-    closeButton.innerHTML = '&times;';
-    closeButton.addEventListener('click', () => this.closeRulesModal(backdrop));
-
-    header.appendChild(title);
-    header.appendChild(closeButton);
-
-    const content = document.createElement('div');
-    content.className = 'rules-modal-content';
-    content.innerHTML = this.rulesHtml;
-
-    dialog.appendChild(header);
-    dialog.appendChild(content);
-    backdrop.appendChild(dialog);
-
-    backdrop.addEventListener('click', (event) => {
-      if (event.target === backdrop) {
-        this.closeRulesModal(backdrop);
-      }
-    });
-
-    document.body.appendChild(backdrop);
-  }
-
-  closeRulesModal(backdropElement) {
-    const target = backdropElement || document.querySelector('.rules-modal-backdrop');
-    if (target && target.parentNode) {
-      target.parentNode.removeChild(target);
+    if (window.GameHeader) {
+      window.GameHeader.initOptionsPanel(button, panel);
     }
   }
 

@@ -93,27 +93,24 @@ function formatPoints(points, locale = getLocale()) {
 }
 
 function setupInfoButton() {
-  const infoButton = document.getElementById("rules-button");
-  const modal = document.getElementById("pyramide-rules-modal");
+  const optionsButton = document.getElementById("options-button");
+  const optionsPanel = document.getElementById("options-panel");
   const titleEl = document.getElementById("pyramide-rules-title");
   const contentEl = document.getElementById("pyramide-rules-content");
-  const closeButton = document.getElementById("pyramide-rules-close");
-  if (!infoButton || !modal || !titleEl || !contentEl || !closeButton) return;
+  if (!optionsButton || !optionsPanel || !titleEl || !contentEl) return;
 
-  const openModal = () => {
+  const refreshRulesContent = () => {
     titleEl.textContent = t("rulesTitle");
     contentEl.innerHTML = t("rulesBodyHtml");
-    modal.hidden = false;
   };
 
-  const closeModal = () => {
-    modal.hidden = true;
-  };
+  refreshRulesContent();
 
-  infoButton.addEventListener("click", openModal);
-  closeButton.addEventListener("click", closeModal);
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) closeModal();
+  if (window.GameHeader) {
+    window.GameHeader.initOptionsPanel(optionsButton, optionsPanel);
+  }
+  optionsButton.addEventListener("click", () => {
+    if (!optionsPanel.hidden) refreshRulesContent();
   });
 }
 
@@ -396,7 +393,7 @@ function updateLayoutMode() {
 
   const resetButton = document.getElementById("pyramide-reset-button");
   const scoreDisplay = document.getElementById("score-display");
-  const infoButton = document.getElementById("rules-button");
+  const rulesSection = document.getElementById("rules-section");
 
   if (resetButton) {
     resetButton.style.display = isSplash ? "none" : "";
@@ -404,8 +401,8 @@ function updateLayoutMode() {
   if (scoreDisplay) {
     scoreDisplay.style.display = isSplash ? "none" : scoreDisplay.style.display;
   }
-  if (infoButton) {
-    infoButton.style.display = isSplash ? "none" : "";
+  if (rulesSection) {
+    rulesSection.style.display = isSplash ? "none" : "block";
   }
 }
 

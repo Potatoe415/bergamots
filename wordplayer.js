@@ -370,6 +370,7 @@ async function initializeWordPlayer() {
 
     hydrateUserInterface(gameEntry);
     initLanguageSelector();
+    initOptionsPanel();
     renderSetupScreen();
   } catch (error) {
     console.error(error);
@@ -418,27 +419,21 @@ async function ensureRulesForCurrentLanguage() {
     }
   }
 
-  toggleRulesButtonVisibility();
+  renderRulesSection();
 }
 
-function toggleRulesButtonVisibility() {
-  const button = document.getElementById("rules-button");
+function renderRulesSection() {
+  const section = document.getElementById("rules-section");
+  const content = document.getElementById("rules-content");
   const language = gameState.currentLanguage;
 
-  if (!button) {
+  if (!section || !content) {
     return;
   }
 
-  const hasRules =
-    Object.prototype.hasOwnProperty.call(gameState.rulesByLanguage, language) &&
-    Boolean(gameState.rulesByLanguage[language]);
-
-  button.style.display = hasRules ? "flex" : "none";
-
-  if (hasRules && !button.dataset.bound) {
-    button.addEventListener("click", openRulesModal);
-    button.dataset.bound = "true";
-  }
+  const rulesHtml = gameState.rulesByLanguage[language];
+  section.style.display = rulesHtml ? "block" : "none";
+  content.innerHTML = rulesHtml || "";
 }
 
 function initLanguageSelector() {
@@ -478,66 +473,11 @@ function handleLanguageChange(language) {
   renderControls(gameState.controls);
 }
 
-function getRulesModalTitle() {
-  const labels = getCurrentLabels();
-  return labels && labels.ready ? "Règles du jeu" : "Rules";
-}
-
-function openRulesModal() {
-  const language = gameState.currentLanguage;
-  const rulesHtml = gameState.rulesByLanguage[language];
-
-  if (!rulesHtml) {
-    return;
-  }
-
-  const existing = document.querySelector(".rules-modal-backdrop");
-  if (existing) {
-    existing.remove();
-  }
-
-  const backdrop = document.createElement("div");
-  backdrop.className = "rules-modal-backdrop";
-
-  const dialog = document.createElement("div");
-  dialog.className = "rules-modal";
-
-  const header = document.createElement("header");
-  const title = document.createElement("div");
-  title.className = "rules-modal-title";
-  title.textContent = getRulesModalTitle();
-
-  const closeButton = document.createElement("button");
-  closeButton.className = "rules-modal-close";
-  closeButton.type = "button";
-  closeButton.innerHTML = "&times;";
-  closeButton.addEventListener("click", () => closeRulesModal(backdrop));
-
-  header.appendChild(title);
-  header.appendChild(closeButton);
-
-  const content = document.createElement("div");
-  content.className = "rules-modal-content";
-  content.innerHTML = rulesHtml;
-
-  dialog.appendChild(header);
-  dialog.appendChild(content);
-  backdrop.appendChild(dialog);
-
-  backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) {
-      closeRulesModal(backdrop);
-    }
-  });
-
-  document.body.appendChild(backdrop);
-}
-
-function closeRulesModal(backdropElement) {
-  const target =
-    backdropElement || document.querySelector(".rules-modal-backdrop");
-  if (target && target.parentNode) {
-    target.parentNode.removeChild(target);
+function initOptionsPanel() {
+  const trigger = document.getElementById("options-button");
+  const panel = document.getElementById("options-panel");
+  if (window.GameHeader) {
+    window.GameHeader.initOptionsPanel(trigger, panel);
   }
 }
 

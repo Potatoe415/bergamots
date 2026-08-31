@@ -312,7 +312,7 @@ const state = {
 const elements = {
   languageSelect: document.querySelector("#languageSelect"), brandEyebrow: document.querySelector("#brandEyebrow"), brandTitle: document.querySelector("#brandTitle"), ladderEyebrow: document.querySelector("#ladderEyebrow"), ladderTitle: document.querySelector("#ladderTitle"), heroLabel: document.querySelector("#heroLabel"), heroCopy: document.querySelector("#heroCopy"), modeTag: document.querySelector("#modeTag"), languageLabel: document.querySelector("#languageLabel"), startGameButton: document.querySelector("#startGameButton"), toggleTimerButton: document.querySelector("#toggleTimerButton"), questionLabel: document.querySelector("#questionLabel"), guaranteedLabel: document.querySelector("#guaranteedLabel"), nextLabel: document.querySelector("#nextLabel"), timerChipLabel: document.querySelector("#timerChipLabel"), audienceEyebrow: document.querySelector("#audienceEyebrow"), audienceTitle: document.querySelector("#audienceTitle"), audienceCopy: document.querySelector("#audienceCopy"), phoneEyebrow: document.querySelector("#phoneEyebrow"), phoneTitle: document.querySelector("#phoneTitle"), errorEyebrow: document.querySelector("#errorEyebrow"), errorTitle: document.querySelector("#errorTitle"), retryLoadButton: document.querySelector("#retryLoadButton"), resultReachedLabel: document.querySelector("#resultReachedLabel"), resultGuaranteedLabel: document.querySelector("#resultGuaranteedLabel"), resultWonLabel: document.querySelector("#resultWonLabel"), playAgainButton: document.querySelector("#playAgainButton"), backHomeButton: document.querySelector("#backHomeButton"),
   screens: { start: document.querySelector("#startScreen"), game: document.querySelector("#gameScreen"), result: document.querySelector("#resultScreen") },
-  ladderPanel: document.querySelector(".ladder-panel"), ladderList: document.querySelector("#ladderList"), questionCounter: document.querySelector("#questionCounter"), currentPrize: document.querySelector("#currentPrize"), nextPrize: document.querySelector("#nextPrize"), guaranteedPrize: document.querySelector("#guaranteedPrize"), questionText: document.querySelector("#questionText"), answersGrid: document.querySelector("#answersGrid"), timerChip: document.querySelector("#timerChip"), timerValue: document.querySelector("#timerValue"), homeShortcut: document.querySelector("#homeShortcut"), restartShortcut: document.querySelector("#restartShortcut"),
+  ladderPanel: document.querySelector(".ladder-panel"), ladderList: document.querySelector("#ladderList"), questionCounter: document.querySelector("#questionCounter"), currentPrize: document.querySelector("#currentPrize"), nextPrize: document.querySelector("#nextPrize"), guaranteedPrize: document.querySelector("#guaranteedPrize"), questionText: document.querySelector("#questionText"), answersGrid: document.querySelector("#answersGrid"), timerChip: document.querySelector("#timerChip"), timerValue: document.querySelector("#timerValue"), homeShortcut: document.querySelector("#homeShortcut"), restartShortcut: document.querySelector("#restartShortcut"), optionsShortcut: document.querySelector("#optionsShortcut"), optionsPanel: document.querySelector("#optionsPanel"),
   lifelines: { fiftyFifty: document.querySelector("#lifeline5050"), audience: document.querySelector("#lifelineAudience"), phone: document.querySelector("#lifelinePhone"), swap: document.querySelector("#lifelineSwap") },
   result: { modeTag: document.querySelector("#resultModeTag"), title: document.querySelector("#resultTitle"), copy: document.querySelector("#resultCopy"), reached: document.querySelector("#resultReached"), guaranteed: document.querySelector("#resultGuaranteed"), prize: document.querySelector("#resultPrize") },
   modalBackdrop: document.querySelector("#modalBackdrop"), audienceModal: document.querySelector("#audienceModal"), phoneModal: document.querySelector("#phoneModal"), errorModal: document.querySelector("#errorModal"), audienceChart: document.querySelector("#audienceChart"), phoneFriendCopy: document.querySelector("#phoneFriendCopy"), errorCopy: document.querySelector("#errorCopy"), answerTemplate: document.querySelector("#answerButtonTemplate"),
@@ -336,6 +336,9 @@ function bindEvents() {
   elements.toggleTimerButton.addEventListener("click", toggleTimerMode);
   elements.homeShortcut.addEventListener("click", handleHomeShortcutClick);
   elements.restartShortcut.addEventListener("click", startGame);
+  if (window.GameHeader) {
+    window.GameHeader.initOptionsPanel(elements.optionsShortcut, elements.optionsPanel);
+  }
   elements.playAgainButton.addEventListener("click", startGame);
   elements.backHomeButton.addEventListener("click", returnHome);
   elements.retryLoadButton.addEventListener("click", loadQuestions);
@@ -749,6 +752,7 @@ function switchScreen(screenName) {
   Object.entries(elements.screens).forEach(([name, screen]) => {
     screen.classList.toggle("active", name === screenName);
   });
+  elements.restartShortcut.classList.toggle("is-hidden", screenName === "start");
 }
 
 function toggleTimerMode() {

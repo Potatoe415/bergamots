@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Qui veut gagner des millions</title>
+    <link rel="stylesheet" href="/shared/css/game-header.css" />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -25,10 +26,45 @@
           <p class="eyebrow visually-hidden" id="brandEyebrow">TV Quiz Challenge</p>
           <h1 class="visually-hidden" id="brandTitle">Qui veut gagner des millions</h1>
         </div>
-        <button class="icon-button" id="restartShortcut" type="button" aria-label="Restart game">
-          <span class="icon">↻</span>
-        </button>
+        <div class="topbar-actions">
+          <button class="icon-button is-hidden" id="restartShortcut" type="button" aria-label="Restart game">
+            <span class="icon">↻</span>
+          </button>
+          <button
+            class="icon-button options-button"
+            id="optionsShortcut"
+            type="button"
+            aria-label="Options"
+            aria-expanded="false"
+            aria-controls="optionsPanel"
+          >
+            <span class="icon">⚙</span>
+          </button>
+        </div>
       </header>
+
+      <div id="optionsPanel" class="options-panel" hidden>
+        <div class="options-panel-backdrop" data-options-close></div>
+        <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+          <div class="options-panel-header">
+            <span class="options-panel-title">Options</span>
+            <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+          </div>
+          <div class="options-panel-body">
+            <div class="options-panel-section">
+              <label class="language-picker" for="languageSelect">
+                <span id="languageLabel">Language</span>
+                <select id="languageSelect">
+                  <option value="fr">Francais</option>
+                  <option value="en">English</option>
+                  <option value="es">Espanol</option>
+                  <option value="es-419">Espanol (Latam)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <main class="layout">
         <aside class="ladder-panel glass-panel" aria-label="Prize ladder">
@@ -51,15 +87,6 @@
             <div class="start-card glass-panel">
             <div class="start-meta-row">
               <p class="mode-tag" id="modeTag">Classic Mode</p>
-              <label class="language-picker" for="languageSelect">
-                <span id="languageLabel">Language</span>
-                <select id="languageSelect">
-                  <option value="fr">Francais</option>
-                  <option value="en">English</option>
-                  <option value="es">Espanol</option>
-                  <option value="es-419">Espanol (Latam)</option>
-                </select>
-              </label>
             </div>
 
               <div class="start-actions">
@@ -212,6 +239,7 @@
       </button>
     </template>
 
+    <script src="/shared/js/game-header.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

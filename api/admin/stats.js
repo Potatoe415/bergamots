@@ -64,7 +64,8 @@ async function handler(req, res) {
     range,
     totalLaunches: data.length,
     ranking: rankByGame(data),
-    dailyTrend: buildDailyTrend(data, start, days)
+    dailyTrend: buildDailyTrend(data, start, days),
+    dailyTrendByGame: buildDailyTrendByGame(data, start, days)
   });
 }
 
@@ -103,6 +104,25 @@ function buildDailyTrend(rows, start, days) {
     date,
     launches
   }));
+}
+
+// One zero-filled trend per game, computed from the same rows as the
+// aggregate trend, so the /admin game filter needs no extra request.
+function buildDailyTrendByGame(rows, start, days) {
+  const rowsByGame = new Map();
+
+  rows.forEach((row) => {
+    if (!rowsByGame.has(row.game_id)) rowsByGame.set(row.game_id, []);
+    rowsByGame.get(row.game_id).push(row);
+  });
+
+  const trendByGame = {};
+
+  rowsByGame.forEach((gameRows, gameId) => {
+    trendByGame[gameId] = buildDailyTrend(gameRows, start, days);
+  });
+
+  return trendByGame;
 }
 
 function startOfDayUtc(dayOffset) {

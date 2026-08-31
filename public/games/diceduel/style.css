@@ -78,58 +78,56 @@ body {
     pointer-events: auto;
 }
 
-/* --- Home Screen --- */
+/* --- Home Screen ---
+   .game-nav/.nav-side/.back-button/.options-button/.options-panel* come
+   from the shared /shared/css/game-header.css; only the local skin and
+   the centered content column below the header live here. */
 #screen-home {
     position: relative;
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
+    align-items: stretch;
     text-align: center;
 }
 
+.home-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 24px;
+    padding-top: 0;
+}
+
+.game-nav {
+    height: auto;
+    padding: calc(16px + env(safe-area-inset-top)) 16px 16px;
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+}
+
 .back-button,
-.settings-button {
-    position: absolute;
-    top: calc(16px + env(safe-area-inset-top));
+.options-button {
     width: 44px;
     height: 44px;
-    padding: 0;
-    border-radius: 50%;
+    font-size: 1.2rem;
     background-color: var(--card-bg);
     color: var(--text-primary);
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     box-shadow: var(--shadow-soft);
-    text-decoration: none;
-    z-index: 5;
 }
 
-.back-button {
-    left: 16px;
+.options-panel-sheet {
+    background: var(--card-bg);
+    color: var(--text-primary);
 }
 
-.settings-button {
-    right: 16px;
-}
-
-.settings-panel {
-    display: none;
-    position: absolute;
-    top: calc(68px + env(safe-area-inset-top));
-    right: 16px;
-    z-index: 5;
-    width: min(90vw, 340px);
-    text-align: left;
-}
-
-.settings-panel.is-visible {
-    display: block;
-}
-
-.settings-panel .rules-preview {
+.options-panel .rules-preview {
     margin-top: 0;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    max-width: none;
 }
 
 #screen-home h1 {

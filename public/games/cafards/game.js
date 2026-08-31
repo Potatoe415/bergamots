@@ -14,10 +14,10 @@ const shuffle = (array) => {
   }
   return array;
 };
-function cacheDom(){el={setup:q("#setup"),game:q("#game"),playerCount:q("#playerCount"),deckSize:q("#deckSize"),winnersCount:q("#winnersCount"),timerEnabled:q("#timerEnabled"),timerSeconds:q("#timerSeconds"),startBtn:q("#startBtn"),backBtn:q("#backBtn"),timerLight:q("#timerLight"),timerText:q("#timerText"),pileA:q("#pileA"),pileB:q("#pileB"),pileAHit:q("#pileAHit"),pileBHit:q("#pileBHit"),pileACta:q("#pileACta"),pileBCta:q("#pileBCta"),pileShells:qa(".pile-shell"),players:q("#players"),cardTpl:q("#cardTpl"),langButtons:qa(".lang-btn"),i18nNodes:qa("[data-i18n]"),rulesBtn:q("#rulesBtn"),rulesModal:q("#rulesModal"),rulesClose:q("#rulesClose"),rulesFrame:q("#rulesFrame"),winnerOverlay:q("#winnerOverlay"),winnerText:q("#winnerText")};}
+function cacheDom(){el={setup:q("#setup"),game:q("#game"),playerCount:q("#playerCount"),deckSize:q("#deckSize"),winnersCount:q("#winnersCount"),timerEnabled:q("#timerEnabled"),timerSeconds:q("#timerSeconds"),startBtn:q("#startBtn"),backBtn:q("#backBtn"),timerLight:q("#timerLight"),timerText:q("#timerText"),pileA:q("#pileA"),pileB:q("#pileB"),pileAHit:q("#pileAHit"),pileBHit:q("#pileBHit"),pileACta:q("#pileACta"),pileBCta:q("#pileBCta"),pileShells:qa(".pile-shell"),players:q("#players"),cardTpl:q("#cardTpl"),langButtons:qa(".lang-btn"),i18nNodes:qa("[data-i18n]"),optionsBtn:q("#optionsBtn"),optionsPanel:q("#optionsPanel"),rulesFrame:q("#rulesFrame"),winnerOverlay:q("#winnerOverlay"),winnerText:q("#winnerText")};}
 function setSetupStatus(){/* no-op: status removed from splash UI */}
 function renderPileLabels(){}
-function applyI18n(){document.documentElement.lang=t("htmlLang"); el.i18nNodes.forEach((n)=>n.textContent=t(n.dataset.i18n)); renderPileLabels(); el.pileACta.textContent="Tap here!"; el.pileBCta.textContent="Tap here!"; el.timerText.textContent=state.started?el.timerText.textContent:t("waitingTimer"); el.langButtons.forEach((b)=>b.classList.toggle("active",b.dataset.lang===state.lang)); setSetupStatus(t("setupReady")); renderPlayers(); if(el.rulesFrame&&el.rulesModal&&!el.rulesModal.hidden) openRules();}
+function applyI18n(){document.documentElement.lang=t("htmlLang"); el.i18nNodes.forEach((n)=>n.textContent=t(n.dataset.i18n)); renderPileLabels(); el.pileACta.textContent="Tap here!"; el.pileBCta.textContent="Tap here!"; el.timerText.textContent=state.started?el.timerText.textContent:t("waitingTimer"); el.langButtons.forEach((b)=>b.classList.toggle("active",b.dataset.lang===state.lang)); setSetupStatus(t("setupReady")); renderPlayers(); if(el.rulesFrame&&!el.optionsPanel.hidden) el.rulesFrame.src=RULES[state.lang];}
 function readConfig(){
   const playersRaw=Number(el.playerCount.value)||4;
   state.config.count=Math.min(8,Math.max(2,playersRaw));
@@ -78,12 +78,12 @@ function setActivePile(index){state.activePile=index; if(el.turnLabel){el.turnLa
 function clearTimer(){clearTimeout(state.timerId); clearInterval(state.timerTickId); state.timerId=null; state.timerTickId=null;}
 function resetTimer(){clearTimer(); el.timerLight.classList.remove("on"); if(!state.started)return; if(!state.config.timerOn)return void(el.timerText.textContent=t("timerOff")); const deadline=Date.now()+state.config.timerMs; const update=()=>{const remaining=Math.max(0,deadline-Date.now()); el.timerText.textContent=t("alertIn",{value:(remaining/1000).toFixed(1)});}; update(); state.timerTickId=setInterval(update,100); state.timerId=setTimeout(()=>{clearInterval(state.timerTickId); state.timerTickId=null; el.timerLight.classList.add("on"); el.timerText.textContent=t("timeUp");},state.config.timerMs);}
 function nextTurn(){state.current=(state.current+1)%state.players.length; renderPlayers(); resetTimer();}
-function openRules(){ if(document.body.className !== "mode-setup") return; el.rulesFrame.src = RULES[state.lang]; el.rulesModal.hidden = false; }
-function closeRules(){el.rulesModal.hidden=true; el.rulesFrame.src="about:blank";}
-function startGame(){try{ closeRules(); readConfig(); deal(); state.started=true; state.current=0; state.piles=[[],[]]; setActivePile(0); document.body.className="mode-game"; render(); resetTimer();}catch(error){setSetupStatus(t("setupError",{message:error.message||String(error)}),true);}}
+let optionsPanelApi=null;
+function closeOptionsPanel(){ if(optionsPanelApi) optionsPanelApi.close(); el.rulesFrame.src="about:blank"; }
+function startGame(){try{ closeOptionsPanel(); readConfig(); deal(); state.started=true; state.current=0; state.piles=[[],[]]; setActivePile(0); document.body.className="mode-game"; render(); resetTimer();}catch(error){setSetupStatus(t("setupError",{message:error.message||String(error)}),true);}}
 function restartToSetup(){
   clearTimer();
-  closeRules();
+  closeOptionsPanel();
   state.started=false;
   state.current=0;
   state.piles=[[],[]];
@@ -226,9 +226,12 @@ function bindEvents(){
   if(el.backBtn){el.backBtn.addEventListener("click",handleBackClick);}
   el.timerEnabled.addEventListener("change",()=>{el.timerSeconds.disabled=!el.timerEnabled.checked;});
   el.langButtons.forEach((btn)=>btn.addEventListener("click",()=>{state.lang=btn.dataset.lang; applyI18n();}));
-  el.rulesBtn.addEventListener("click",openRules);
-  el.rulesClose.addEventListener("click",closeRules);
-  el.rulesModal.addEventListener("click",(e)=>{if(e.target===el.rulesModal)closeRules();});
+  if(window.GameHeader){
+    optionsPanelApi=window.GameHeader.initOptionsPanel(el.optionsBtn,el.optionsPanel);
+  }
+  el.optionsBtn.addEventListener("click",()=>{
+    if(!el.optionsPanel.hidden) el.rulesFrame.src=RULES[state.lang];
+  });
 }
 function init(){cacheDom(); bindEvents(); el.timerSeconds.disabled=!el.timerEnabled.checked; el.timerText.textContent=t("waitingTimer"); renderPileLabels(); applyI18n();}
 window.addEventListener("error",(event)=>{if(el.setupStatus&&!state.started)setSetupStatus(t("setupError",{message:event.message||"unknown error"}),true);});

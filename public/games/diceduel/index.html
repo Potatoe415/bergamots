@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dice Duel</title>
+    <link rel="stylesheet" href="/shared/css/game-header.css">
     <link rel="stylesheet" href="style.css">
     <meta name="theme-color" content="#5c8a66">
 </head>
@@ -11,26 +12,48 @@
     <div id="app">
         <!-- ÉCRAN D'ACCUEIL -->
         <div id="screen-home" class="screen active">
-            <a href="/" class="back-button" id="home-back-button" aria-label="Retour au hub" title="Retour au hub">←</a>
-            <button id="settings-button" class="settings-button" type="button" aria-label="Paramètres" title="Paramètres">⚙</button>
-            <section id="settings-panel" class="settings-panel" aria-label="Paramètres">
-                <div class="rules-preview">
-                    <h2>Règles du jeu</h2>
-                    <ul>
-                        <li>12 PV chacun. 3 lancers par tour.</li>
-                        <li>Gardez des dés pour faire des combinaisons (Paires, Brelans, Suites...).</li>
-                        <li><strong>Dé Caché :</strong> Le 1er dé gardé est masqué à l'adversaire.</li>
-                        <li><strong>Pacte de Sang :</strong> Sacrifiez 2 PV pour doubler vos dégâts (après le 2e lancer).</li>
-                        <li><strong>Rage :</strong> 0 dégât = 1 Rage. 3 Rage = 2 dégâts garantis.</li>
-                    </ul>
+            <header class="game-nav">
+                <div class="nav-side nav-left">
+                    <a href="/" class="back-button" id="home-back-button" aria-label="Retour au hub" title="Retour au hub">←</a>
                 </div>
-            </section>
-            <h1>Dice Duel</h1>
-            <p class="subtitle">La chance sourit aux audacieux</p>
-            <div class="menu-actions">
-                <button id="btn-pvp" class="btn-primary">Joueur vs Joueur</button>
-                <button id="btn-pve" class="btn-primary">Joueur vs Bot</button>
-                <button id="btn-resume" class="btn-secondary hidden">Reprendre la partie</button>
+                <div class="nav-center">
+                    <h1 id="nav-title" class="nav-title"></h1>
+                </div>
+                <div class="nav-side nav-right">
+                    <button id="settings-button" class="options-button" type="button" aria-label="Options" title="Options" aria-expanded="false" aria-controls="settings-panel">⚙</button>
+                </div>
+            </header>
+
+            <div id="settings-panel" class="options-panel" hidden>
+                <div class="options-panel-backdrop" data-options-close></div>
+                <div class="options-panel-sheet" role="dialog" aria-modal="true" aria-label="Options">
+                    <div class="options-panel-header">
+                        <span class="options-panel-title">Options</span>
+                        <button type="button" class="options-panel-close" data-options-close aria-label="Fermer">×</button>
+                    </div>
+                    <div class="options-panel-body">
+                        <div class="options-panel-section rules-preview">
+                            <h2>Règles du jeu</h2>
+                            <ul>
+                                <li>12 PV chacun. 3 lancers par tour.</li>
+                                <li>Gardez des dés pour faire des combinaisons (Paires, Brelans, Suites...).</li>
+                                <li><strong>Dé Caché :</strong> Le 1er dé gardé est masqué à l'adversaire.</li>
+                                <li><strong>Pacte de Sang :</strong> Sacrifiez 2 PV pour doubler vos dégâts (après le 2e lancer).</li>
+                                <li><strong>Rage :</strong> 0 dégât = 1 Rage. 3 Rage = 2 dégâts garantis.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home-content">
+                <h1>Dice Duel</h1>
+                <p class="subtitle">La chance sourit aux audacieux</p>
+                <div class="menu-actions">
+                    <button id="btn-pvp" class="btn-primary">Joueur vs Joueur</button>
+                    <button id="btn-pve" class="btn-primary">Joueur vs Bot</button>
+                    <button id="btn-resume" class="btn-secondary hidden">Reprendre la partie</button>
+                </div>
             </div>
         </div>
 
@@ -115,6 +138,7 @@
         </div>
     </div>
     
+    <script src="/shared/js/game-header.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/engine.js"></script>
     <script src="js/ui.js"></script>
