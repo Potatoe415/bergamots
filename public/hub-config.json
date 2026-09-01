@@ -133,9 +133,10 @@
   {
     "id": "gameboy-web",
     "title": "GameBoy Web",
-    "kind": "custom",
+    "kind": "external",
     "category": "autres",
-    "launch": "/games/gameboy-web/index.html",
-    "thumbnail": "/games/gameboy-web/assets/thumbnail.svg"
+    "launch": "https://gameboy-web.vercel.app/binjgb/docs/simple.html",
+    "thumbnail": "/games/gameboy-web/assets/thumbnail.svg",
+    "sameTab": true
   }
 ]

@@ -5,17 +5,16 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project on Vercel + Supabase. GameBoy Web is an in-repo custom game. One homebrew test ROM (`porklike.gb`) ships with the hub. Nintendo ROMs are not in git.
-Current_Goal: User to confirm the live GameBoy Web tile after this push: splash lists Porklike, and Open ROM still works for local files.
-Last_Action: Pointed the hub tile at `/games/gameboy-web/index.html`, vendored the binjgb player, added a file picker, and shipped `porklike.gb` via `ROM/index.json`. Refused to commit Zelda/Tetris dumps from the sibling `ROM/` folder.
+Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. The in-repo player duplicate is gone.
+Current_Goal: User to confirm the live hub tile opens GameBoy Web on Vercel after this push.
+Last_Action: Pointed the tile at `https://gameboy-web.vercel.app/binjgb/docs/simple.html` (`kind: external`, same tab) and deleted `public/games/gameboy-web/vendor/`, `index.html`, and `ROM/`. Kept `assets/thumbnail.svg`. Root `gameboy-web.vercel.app/` still 404s.
 Next_Actions:
-- After Vercel deploys, open GameBoy Web on the live hub and play Porklike.
+- Optional on gameboy-web: rewrite `/` to `/binjgb/docs/simple.html` so the bare domain works.
 - Rotate `ADMIN_PASSWORD` and copy `SUPABASE_URL` to Preview.
 - Verify Yatzy online with two real devices.
 - Decide what to do about the GitHub branch-protection rule.
 
 Open_Questions:
-- Whether later GameBoy Web UI work should happen in the sibling repo and be re-copied, or this vendored copy becomes the hub source.
 - `GET /api/yatsy/games/[code]` is still unauthenticated.
 - Room codes stay at 3 letters by user decision.
 - A player who loses their `localStorage` can no longer re-enter a game in progress.
@@ -32,8 +31,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - No automated tests.
 
 Recent_Changes:
-- 2026-09-01 GameBoy Web launches in-repo; splash ships porklike.gb for testing; Nintendo ROMs stay off GitHub.
-- 2026-09-01 Added GameBoy Web to the hub as an external tile (later replaced by the in-repo player).
+- 2026-09-01 Hub GameBoy Web tile launches the Vercel app; in-repo player/ROM copies deleted.
+- 2026-09-01 GameBoy Web launches in-repo with porklike.gb (later removed once Vercel hosted it).
+- 2026-09-01 Added GameBoy Web to the hub as an external tile.
 - 2026-08-31 Unified the splash header across all 8 in-repo games.
 - 2026-08-31 Translated `/admin` to English and added a per-game filter to the daily trend chart.
-- 2026-08-30 Swept all seven project docs against the code.
