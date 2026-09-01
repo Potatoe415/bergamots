@@ -5,44 +5,44 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project on Vercel + Supabase. A full technical audit was run on 2026-08-30 (score 4.75/10, verdict "production-ready under conditions"). Priorities 1 to 4 of its 5-point plan are done and priority 5 is half done: no unauthenticated mutating Yatzy endpoint remains, the site ships security headers plus a throttle plus token-based admin auth, every serverless handler logs its failures, `npm run check` (lint + format + build) now exits 0 for the first time, and the dead design tokens are cleaned up. The ~16.9 MB of dead assets is audited and listed but deliberately not deleted yet - the user reviews it first. All of it is now **deployed and verified live** on `bergamots.vercel.app` (which also serves the custom domain `www.patate.win`). `ADMIN_PASSWORD` is set on Vercel (Production, Sensitive) and the `0002_events` migration has been run, so **no blocking configuration step remains**: the whole analytics pipeline and admin auth chain are verified live end to end. Two follow-ups are open, both needing values only the user can read: the admin password is a temporary demo value that must be rotated, and `SUPABASE_URL` is missing from the Preview environment.
-Current_Goal: Get the new unified splash header manually verified by the user (browser MCP is down, see Last_Action) across the 8 in-repo games just migrated, then resume the Vercel/Supabase thread: rotate the demo `ADMIN_PASSWORD`, copy `SUPABASE_URL` to Preview, and verify Yatzy online play with two real devices.
-Last_Action: Unified the splash header across every in-repo game per user request. New shared files `public/shared/css/game-header.css` (`.game-nav`/`.nav-side`/`.back-button`/`.options-button`/`.nav-title` incl. `.nav-title:empty{display:none}`/`.options-panel*`/`.lang-selector`/`.rules-modal-content`) and `public/shared/js/game-header.js` (`GameHeader.initOptionsPanel(trigger, panel)`, a plain global script for classic-script compatibility). Migrated: `wordplayer.html`/`wordplayer.js` (Pictionary/Taboo/Esquisse/Pigeon Pigeon), Black Stories, Olé Mains (`#setup-view` only), Cafards, Millionaire, Pyramide, Yatzy, Dice Duel. Each game's previously-scattered lang switcher / rules button / settings now live behind one gear icon in a consolidated "Options" panel; games with bespoke skins (Cafards, Blackstories, Millionaire, Pyramide, Dice Duel) import the shared CSS then override background/layout locally, following the pre-existing Pyramide convention. Easy Frog / Tranquil / Coinche / Bouilla are out of scope (external projects). `npm run check` (lint + format + build) passes clean: 0 errors, same 16 pre-existing warnings, no new ones. Could not visually verify in a live browser: `cursor-ide-browser` MCP still refuses to register locally (same blocker as 2026-08-30, confirmed again via direct tool call, not task-specific) - needs manual verification instead, `npm run dev` is up at `http://localhost:5174/`.
+Status: Active project on Vercel + Supabase. A full technical audit was run on 2026-08-30 (score 4.75/10, verdict "production-ready under conditions"). Priorities 1 to 4 of its 5-point plan are done and priority 5 is half done. Deployed and verified live on `bergamots.vercel.app` (also `www.patate.win`). Two follow-ups still need the user: rotate the demo `ADMIN_PASSWORD`, copy `SUPABASE_URL` to Preview.
+Current_Goal: User to confirm the GameBoy Web hub tile (Autres tab) and, when they have a live player URL, replace the GitHub launch link.
+Last_Action: Added GameBoy Web to `public/hub-config.json` as `kind: "external"` (id `gameboy-web`, category `autres`, launch `https://github.com/Potatoe415/gameboy-web`). Thumbnail at `public/games/gameboy-web/assets/thumbnail.svg`. Not copied into this repo: it stays a sibling project. No Vercel project and no GitHub Pages for it.
 Next_Actions:
-- User to manually check the new header (back arrow left, gear right, Options panel) on the 8 migrated games at `http://localhost:5174/` (dev server already running) since the browser MCP can't do it automatically right now - restarting Cursor may fix the MCP registration per the existing 2026-08-30 note. Priority spots: Cafards (grid layout override), Blackstories (dark theme override), Millionaire (glass theme override), Pyramide/Dice Duel (local skin overrides).
-- If the user later recovers the external game projects (Easy Frog, Tranquil, Coinche/Bouilla), apply the same shared header there too.
-- Deploy and check `/admin` live: English text throughout, the trend chart still renders for "All Games" by default, and picking a specific game updates the chart to its own daily counts with no extra network request.
-- Delete the verification row left by the live test: `delete from public.muchogames_events where game_id = '__verification__';` in the Supabase SQL Editor. Harmless but it shows up in the `/admin` ranking.
-- Rotate `ADMIN_PASSWORD`: the current value is a short demo password chosen for testing. It is also the HMAC key that signs session tokens, so a weak value weakens the tokens too, and the in-memory throttle (10 attempts / 10 min) is per warm instance and resets on cold start, so it does not really bound guessing. Replace with a long random value via `vercel env add ADMIN_PASSWORD production --sensitive --force`, then redeploy.
-- Copy `SUPABASE_URL` to the Preview environment: it is currently Production-only while `SUPABASE_SERVICE_ROLE_KEY` covers Preview, and `api/_lib/supabase.js` throws when either is missing, so every DB-backed route 500s on Preview deployments. Values are Sensitive and unreadable, so only the user can do this.
-- Verify Yatzy online end to end with two real devices: create, join, leave, reload-to-resume, and reclaiming a seat by re-typing the code on the same device. The DELETE guard and room creation are already confirmed live via the API, but the browser flow is not.
-- Confirm the winner banner still looks right after the `innerHTML` to `textContent` change - it was not exercised end to end, since it needs a full 13-round game. Styling is safe (`.winner-card h2` / `.winner-card p` are plain descendant selectors) and the DOM structure is identical.
-- Decide what to do about the GitHub branch-protection rule: this push reported "Bypassed rule violations - Changes must be made through a pull request". Either work through PRs from now on, or drop the rule so it stops being a rule in name only.
-- Watch the first CI run on GitHub: it has been red since it was written, so the build step has almost certainly never executed there. `npm ci` is also new (verified in sync locally with `npm ci --dry-run`).
-- Decide whether to keep the 22 auth/throttle/observability assertions as the project's first test file - they were written, run green, then deleted, because adding a test convention is a decision for the user (see the open item in BACKLOG "Next").
-- User to delete/decommission the Firebase project (Hosting + Realtime Database) whenever ready - confirmed safe, no game depends on it.
-- Be aware Sync-Push/Pull use mtime-based conflict resolution, not real git merge - double-check important changes were not silently overwritten after each sync.
-- Confirm with user whether to keep or delete `refactor.py` (one-off, already-applied migration script at repo root).
+- Swap the GameBoy Web `launch` URL once a host exists (Vercel, GitHub Pages, or similar). Until then the tile opens the GitHub repo, not a playable emulator.
+- User to manually check the unified splash header on the 8 migrated in-repo games at `http://localhost:5174/` if the browser MCP is still down.
+- Deploy and check `/admin` live: English text throughout, the trend chart still renders for "All Games" by default, and picking a specific game updates the chart.
+- Delete the verification row: `delete from public.muchogames_events where game_id = '__verification__';`
+- Rotate `ADMIN_PASSWORD` via `vercel env add ADMIN_PASSWORD production --sensitive --force`, then redeploy.
+- Copy `SUPABASE_URL` to the Preview environment.
+- Verify Yatzy online end to end with two real devices.
+- Confirm the winner banner still looks right after the `innerHTML` to `textContent` change.
+- Decide what to do about the GitHub branch-protection rule.
+- Watch the first CI run on GitHub.
+- Decide whether to keep the 22 auth/throttle/observability assertions as the project's first test file.
+- User to delete/decommission the Firebase project whenever ready.
+- Confirm with user whether to keep or delete `refactor.py`.
 
 Open_Questions:
-- `GET /api/yatsy/games/[code]` is still unauthenticated: knowing a 3-letter code exposes room state read-only. Left open deliberately (out of the agreed fix scope). Decide whether to close it or accept it.
-- Room codes stay at 3 letters (17,576 combinations, enumerable in seconds) by user decision. Rate limiting is the planned mitigation - confirm that is enough, or revisit code length later.
-- A player who loses their `localStorage` can no longer re-enter a game in progress at all. Previously possible only via the seat-hijack path that was just closed. Confirm this is acceptable.
-- Retention: `muchogames_events` is append-only with no purge job. Decide if a TTL is ever wanted, or if keeping all history forever is fine (volume is tiny).
-- Rename: only `muchogames_events` uses the new name. Decide when to rename the repo, the Vercel project, and the `yatzy_*` tables.
-- Whether to raise `printWidth` from 80 to 100. Measured during priority 4: it would cut the remaining game-code churn from 20,633 to 18,075 lines. Not applied - changing a formatting convention is the user's call.
+- GameBoy Web has no public player URL. Hub currently points at GitHub. Confirm that, or provide a deploy URL.
+- `GET /api/yatsy/games/[code]` is still unauthenticated.
+- Room codes stay at 3 letters by user decision.
+- A player who loses their `localStorage` can no longer re-enter a game in progress.
+- Retention: `muchogames_events` is append-only with no purge job.
+- Rename: only `muchogames_events` uses the new name.
+- Whether to raise `printWidth` from 80 to 100.
 
 Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
-- `public/games/**` is excluded from `format:check` on purpose, so 79 game files are still unformatted and the gate does not cover them. The ratchet is documented in `.prettierignore`; Yatzy should be swept first since it is actively developed. Lint also still tolerates 16 warnings.
-- ~16.9 MB of unreferenced dead weight is still shipped to production, audited and itemised in `docs/BACKLOG.md`, left in place until the user reviews it: three `old*.jpg` at the repo root (one of them empty), `banner-games-hub-old.jpg`, the three `questions_*.json`, both unimported `dom.js` copies, and `easyfrog/style.css`.
-- `public/assets/banner-games-hub-mobile.jpg` is byte-identical to the desktop banner, so the `srcset` in `index.html` is a placebo: phones download the full 554 KB image.
-- `shared/js/engine.js` and `public/shared/js/engine.js` are duplicated (identical code, only the JSDoc differs). The split is structural - Vite bundles the root copy for `wordplayer.js`, games under `public/` are served verbatim - and was deliberately left as-is.
-- `npm run build` only bundles `index.html` + `wordplayer.html` (9 modules). All 10 custom games ship as raw unbundled source from `public/`, so a broken import inside a game passes CI and only fails in the browser.
-- No automated tests. Serverless errors are now logged (priority 3), but there is still no client-side error reporting, so a browser-side crash in a game remains invisible unless the user reports it.
+- `public/games/**` is excluded from `format:check` on purpose.
+- ~16.9 MB of unreferenced dead weight is still shipped to production.
+- `public/assets/banner-games-hub-mobile.jpg` is byte-identical to the desktop banner.
+- `shared/js/engine.js` and `public/shared/js/engine.js` are duplicated.
+- `npm run build` only bundles `index.html` + `wordplayer.html`.
+- No automated tests.
 
 Recent_Changes:
-- 2026-08-31 Unified the splash header (back arrow, gear "Options" panel, empty-by-default center title) across all 8 in-repo games via new `public/shared/css/game-header.css` + `public/shared/js/game-header.js`; consolidated each game's scattered lang/rules/settings widgets behind one gear icon. `npm run check` passes clean.
-- 2026-08-31 Translated `/admin` to English and added a per-game filter to the daily trend chart (default "All Games"). `POST /api/admin/stats` now also returns `dailyTrendByGame`, computed from the same query as the aggregate trend, so the filter needs no extra request.
-- 2026-08-30 Swept all seven project docs against the code (`2b75566`, `93fec6e`). `DATA_MODEL.md` contradicted itself on admin auth; `TECH.md` had four statements the code disproved ("no tokens", "answers yes or no", "no formalized pattern", "no structured logging"); `PRODUCT.md` still described the stats page without its period selector. `RUNBOOK.md` gained the operational lessons of the day.
-- 2026-08-30 Added a 7d/30d/6m range switch and a hand-rolled SVG daily trend chart to `/admin`, modelled on `nodali`'s analytics page but scoped to what `muchogames_events` actually stores; `totalLaunches` is now windowed, not all-time.
-- 2026-08-30 Fixed `/admin` loading neither its CSS nor its JS: relative asset paths resolved to the root because the page is served at `/admin` without a trailing slash. Also moved `favicon.ico` out of the repo root into `public/`, fixing a fourth 404 on the same page.
+- 2026-09-01 Added GameBoy Web to the hub as an external tile (GitHub launch, SVG thumbnail, Autres).
+- 2026-08-31 Unified the splash header (back arrow, gear "Options" panel, empty-by-default center title) across all 8 in-repo games via new `public/shared/css/game-header.css` + `public/shared/js/game-header.js`.
+- 2026-08-31 Translated `/admin` to English and added a per-game filter to the daily trend chart.
+- 2026-08-30 Swept all seven project docs against the code (`2b75566`, `93fec6e`).
+- 2026-08-30 Added a 7d/30d/6m range switch and a hand-rolled SVG daily trend chart to `/admin`.

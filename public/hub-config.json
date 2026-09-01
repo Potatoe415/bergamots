@@ -129,5 +129,13 @@
     "launch": "https://coinchapp.vercel.app/bouilla",
     "thumbnail": "/games/coinchapp/assets/thumbnail-bouilla.png",
     "sameTab": true
+  },
+  {
+    "id": "gameboy-web",
+    "title": "GameBoy Web",
+    "kind": "external",
+    "category": "autres",
+    "launch": "https://github.com/Potatoe415/gameboy-web",
+    "thumbnail": "/games/gameboy-web/assets/thumbnail.svg"
   }
 ]
