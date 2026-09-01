@@ -1,0 +1,1018 @@
+/*
+ * Copyright (C) 2020 Ben Smith
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ *
+ *
+ * Some code from GB-Studio, see LICENSE.gbstudio
+ *
+ * PHASE 1 (mobile-first touch controller): the #controller block below is a
+ * raw CSS Grid mimicking the DMG-01 layout (D-Pad + A/B + Start/Select),
+ * placed in normal flow *under* the canvas instead of floating on top of it.
+ */
+
+:root {
+  --pixel-font: 'Press Start 2P', 'Courier New', monospace;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #031921;
+  color: #fff;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+    Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+  /* Kill pinch-zoom, double-tap-zoom, and scroll/rubber-banding globally. */
+  touch-action: none;
+  -ms-touch-action: none;
+  overscroll-behavior: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+}
+
+#game {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  touch-action: none;
+}
+
+#menuBtn,
+#splashMenuBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 18px;
+  line-height: 36px;
+  padding: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+/* Always-visible quick-action bar, top-left, same row as #menuBtn. Kept
+   thin and overlaid on the canvas (like #menuBtn) so it never shrinks the
+   game screen -- mobile-first means the canvas stays maximized. */
+#gameHeader {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 52px; /* leave room for #menuBtn at top-right */
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#gameHeader[hidden] {
+  display: none;
+}
+
+.headerIconBtn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 15px;
+  line-height: 32px;
+  padding: 0;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.headerIconBtn:active,
+.headerIconBtn.btnPressed {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+#gameMenu,
+#splashMenu {
+  position: absolute;
+  top: 52px;
+  right: 8px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 220px;
+  padding: 6px;
+  border-radius: 10px;
+  background: rgba(10, 37, 48, 0.97);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+#gameMenu[hidden],
+#splashMenu[hidden] {
+  display: none;
+}
+
+.gameMenuItem {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  text-align: left;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.gameMenuItem:active,
+.gameMenuItem.btnPressed {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.gameMenuItem-danger {
+  color: #ff8a8a;
+}
+
+.gameMenuItem:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.gameMenuItem:disabled:active {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Keyboard-commands help dialog.                                        */
+/* ---------------------------------------------------------------------- */
+
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  touch-action: none;
+}
+
+.dialogOverlay[hidden] {
+  display: none;
+}
+
+.dialogCard {
+  width: 100%;
+  max-width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #0a2530;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.dialogCard-wide {
+  max-width: 460px;
+}
+
+.dialogTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 14px;
+  color: #ab1465;
+}
+
+.dialogSubtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  line-height: 1.4;
+  margin: -6px 0 14px;
+}
+
+.helpTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.helpTable td {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  vertical-align: top;
+}
+
+.helpTable td:first-child {
+  white-space: nowrap;
+  font-weight: bold;
+  color: #ffd400;
+  padding-right: 14px;
+}
+
+#languageOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#colorOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
+.colorOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.colorOption:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.colorOption.active {
+  background: #870a4c;
+  font-weight: bold;
+}
+
+.colorOption-swatch {
+  flex: 0 0 auto;
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.colorOption-swatch span {
+  display: block;
+  width: 11px;
+  height: 22px;
+}
+
+.colorOption-name {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.langOption {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.langOption:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.langOption.active {
+  background: #870a4c;
+  font-weight: bold;
+}
+
+.dialogCloseBtn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #870a4c;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.toast {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+#game canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Splash screen: game picker, reads the /ROM folder at boot.            */
+/*                                                                        */
+/* Styled like a nostalgic handheld console: a "shell" (#splash_console)  */
+/* with a power LED and a pixel-font logo, wrapping a recessed "LCD       */
+/* screen" (#splash_screen, complete with a subtle scanline overlay) that */
+/* holds the actual cartridge grid. Each game is shown as cover art only  */
+/* (#splash_list / .romBtn) -- the title is an overlay caption that only  */
+/* appears on hover/focus, like picking a cartridge off a shelf. Games    */
+/* with no matching cover image fall back to a plain cartridge shape     */
+/* with its initials, and always show the title underneath it.           */
+/* ---------------------------------------------------------------------- */
+
+#splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  padding: max(20px, env(safe-area-inset-top, 0px)) 16px
+    max(20px, env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(171, 20, 101, 0.18), transparent 70%),
+    #031921;
+  overflow-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+#splash.hidden {
+  display: none;
+}
+
+#splash_console {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Power LED: a small pulsing red dot, just like the one next to the       */
+/* screen on the original hardware. Purely decorative. */
+#splash_led {
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff8a8a, #c0102f 75%);
+  box-shadow: 0 0 5px 2px rgba(255, 40, 60, 0.55);
+  animation: splashLedPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes splashLedPulse {
+  0%, 100% { box-shadow: 0 0 4px 1px rgba(255, 40, 60, 0.45); opacity: 0.85; }
+  50% { box-shadow: 0 0 10px 4px rgba(255, 70, 90, 0.9); opacity: 1; }
+}
+
+/* Brand banner: an homage to the classic handheld logo lockup, in a      */
+/* blocky pixel font with a little rainbow accent stripe underneath.      */
+#splash_brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 26px;
+  animation: splashFadeDown .5s ease both;
+}
+
+#splash_logo {
+  display: flex;
+  gap: 10px;
+  font-family: var(--pixel-font);
+  font-size: clamp(16px, 4.5vw, 22px);
+  letter-spacing: 2px;
+  color: #eef3f5;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+#splash_logo_boy {
+  color: #ffd400;
+}
+
+#splash_logo_stripe {
+  width: min(70vw, 190px);
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ab1465, #ffd400 34%, #2fb4ff 67%, #35d07f);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+}
+
+/* The "LCD screen": a recessed dark panel holding the app title, the     */
+/* cartridge grid, and the empty-state message. A faint repeating         */
+/* scanline overlay is layered on top for the CRT/dot-matrix nostalgia,   */
+/* without tinting the actual cover art. */
+#splash_screen {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  margin-top: 22px;
+  padding: 20px 16px 30px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #06222c 0%, #041722 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.05),
+    inset 0 8px 22px rgba(0, 0, 0, 0.55),
+    0 12px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  animation: splashFadeUp .5s ease both;
+  animation-delay: .08s;
+}
+
+#splash_screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.045) 0px,
+    rgba(255, 255, 255, 0.045) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  opacity: 0.55;
+}
+
+#splash_title {
+  position: relative;
+  z-index: 2;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #ab1465;
+  margin-top: 2px;
+}
+
+#splash_subtitle {
+  position: relative;
+  z-index: 2;
+  font-family: var(--pixel-font);
+  font-size: 10px;
+  opacity: 0.75;
+  margin: 10px 0 22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+#splash_list {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 880px;
+}
+
+.romBtn {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(160deg, #163040, #0a1c26);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  font-size: 16px;
+  text-align: left;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  outline: none;
+  transition: transform .18s ease, box-shadow .18s ease;
+  animation: romPopIn .4s cubic-bezier(.2, .8, .2, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* Diagonal "glossy sticker" sweep, only visible while hovering/pressing. */
+.romBtn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.22) 46%, transparent 62%);
+  transform: translateX(-140%);
+  transition: transform .55s ease;
+  pointer-events: none;
+}
+
+.romBtn:hover,
+.romBtn:focus-visible,
+.romBtn.btnPressed {
+  transform: translateY(-4px) scale(1.045);
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.55),
+    0 0 0 2px #ab1465,
+    0 0 16px rgba(171, 20, 101, 0.55);
+}
+
+.romBtn:hover::after,
+.romBtn:focus-visible::after,
+.romBtn.btnPressed::after {
+  transform: translateX(140%);
+}
+
+.romBtn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.romBtn .romBtn-cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Fallback for ROMs with no matching cover art: a plain cartridge shape,  */
+/* complete with a little connector notch on top, showing its initials.   */
+.romBtn .romBtn-cart {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #8b1e57 0%, #6b1541 55%, #3c0d28 100%);
+}
+
+.romBtn .romBtn-cart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 42%;
+  height: 14%;
+  transform: translateX(-50%);
+  border-radius: 0 0 6px 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.romBtn .romBtn-cart-label {
+  font-family: var(--pixel-font);
+  font-size: 15px;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Title caption: hidden by default so the shelf really shows "just the   */
+/* covers", revealed on hover/focus like a tooltip -- except for the      */
+/* cartridge fallback, which has no artwork to identify itself with.      */
+.romBtn .romBtn-name {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 8px 8px;
+  font-size: 11px;
+  line-height: 1.3;
+  color: #fff;
+  text-align: center;
+  overflow-wrap: anywhere;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88), transparent);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity .18s ease, transform .18s ease;
+  pointer-events: none;
+}
+
+.romBtn:hover .romBtn-name,
+.romBtn:focus-visible .romBtn-name,
+.romBtn.btnPressed .romBtn-name,
+.romBtn--nocover .romBtn-name {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#splash_empty {
+  position: relative;
+  z-index: 2;
+  max-width: 420px;
+  text-align: center;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+#splash_empty code {
+  background: #0a2530;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+#openRomBtn {
+  position: relative;
+  z-index: 2;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 2px solid #9bbc0f;
+  border-radius: 8px;
+  background: #0a2530;
+  color: #c8e6d0;
+  font-family: var(--pixel-font);
+  font-size: 10px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.hubBackLink {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 6;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 36px;
+}
+
+/* Speaker grille: a purely decorative dot pattern, echoing the vents     */
+/* next to the speaker on the original hardware. */
+#splash_speaker {
+  position: absolute;
+  right: 18px;
+  bottom: 10px;
+  width: 64px;
+  height: 42px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.16) 1.4px, transparent 1.6px);
+  background-size: 8px 8px;
+  transform: rotate(20deg);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@keyframes romPopIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes splashFadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splashFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media only screen and (max-width: 380px) {
+  #splash_list {
+    grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+    gap: 10px;
+  }
+  #splash_speaker {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Controller: raw CSS Grid, DMG-01 ergonomics, sits below the screen.    */
+/* ---------------------------------------------------------------------- */
+
+#controller {
+  /* Mobile-first: the virtual pad is always visible below the screen,
+     independently of the input method actually used. */
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "dpad    actions"
+    "meta    meta";
+  align-items: center;
+  justify-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: #0a2530;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* D-Pad and A/B pad: round "Android emulator" style controls -- dark
+   circular housings, all children absolutely positioned by their *center*
+   point (left/top + translate(-50%,-50%)). Every position/size below is a
+   fraction of --pad-size (measured directly off the reference screenshot:
+   button/dot/circle ratios and offsets), so the whole thing reflows
+   perfectly just by overriding one variable in the small-phone media
+   query. Colors were kept in the original DMG-01 gray + magenta scheme
+   rather than the screenshot's flat gray-on-gray palette. */
+#controller_dpad,
+#controller_actions {
+  --pad-size: 180px;
+  position: relative;
+  width: var(--pad-size);
+  height: var(--pad-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #333333 0%, #1b1b1b 78%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+#controller_dpad { grid-area: dpad; }
+#controller_actions { grid-area: actions; }
+
+/* Shared "positioned by center" helper for every button/dot inside a pad. */
+.dpadBtn,
+.dpadDiag,
+.roundBtn,
+.controllerDot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--d);
+  height: var(--d);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+/* The 4 cardinal buttons: centered at ~0.585r from the pad center, diameter
+   ~0.317 * pad diameter -- i.e. big buttons that almost reach the
+   housing's inner edge, exactly like the reference. */
+.dpadBtn {
+  --d: calc(var(--pad-size) * 0.317);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #8a8a8a;
+  background: linear-gradient(165deg, #969696 0%, #767676 100%);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.dpadBtn-up    { --x: calc(var(--pad-size) * 0.5);    --y: calc(var(--pad-size) * 0.206); }
+.dpadBtn-down  { --x: calc(var(--pad-size) * 0.5);    --y: calc(var(--pad-size) * 0.794); }
+.dpadBtn-left  { --x: calc(var(--pad-size) * 0.206);  --y: calc(var(--pad-size) * 0.5); }
+.dpadBtn-right { --x: calc(var(--pad-size) * 0.794);  --y: calc(var(--pad-size) * 0.5); }
+
+/* Chevron glyphs: a plain square with a top+left border, rotated 45deg per
+   direction. Crisper and more consistent across platforms than a unicode
+   arrow glyph. */
+.dpadBtn::before {
+  content: "";
+  width: calc(var(--pad-size) * 0.072);
+  height: calc(var(--pad-size) * 0.072);
+  border-top: calc(var(--pad-size) * 0.0167) solid #4d4d4d;
+  border-left: calc(var(--pad-size) * 0.0167) solid #4d4d4d;
+  border-radius: 1px;
+}
+
+.dpadBtn-up::before    { transform: translateY(calc(var(--pad-size) * 0.017)) rotate(45deg); }
+.dpadBtn-right::before { transform: translateX(calc(var(--pad-size) * -0.017)) rotate(135deg); }
+.dpadBtn-down::before  { transform: translateY(calc(var(--pad-size) * -0.017)) rotate(225deg); }
+.dpadBtn-left::before  { transform: translateX(calc(var(--pad-size) * 0.017)) rotate(315deg); }
+
+/* Diagonal buttons: real, fully functional 8-way controls (pressing fires
+   both adjacent directions at once), drawn as the small corner dots seen
+   in the reference. The dot itself is small (matches the screenshot), but
+   the element's own hit-box is enlarged well past it for a comfortable
+   touch target -- the dot is just its ::before, centered inside. */
+.dpadDiag {
+  --d: calc(var(--pad-size) * 0.244);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.dpadDiag-ul { --x: calc(var(--pad-size) * 0.228); --y: calc(var(--pad-size) * 0.228); }
+.dpadDiag-ur { --x: calc(var(--pad-size) * 0.772); --y: calc(var(--pad-size) * 0.228); }
+.dpadDiag-dl { --x: calc(var(--pad-size) * 0.228); --y: calc(var(--pad-size) * 0.772); }
+.dpadDiag-dr { --x: calc(var(--pad-size) * 0.772); --y: calc(var(--pad-size) * 0.772); }
+
+.dpadDiag::before {
+  content: "";
+  width: calc(var(--pad-size) * 0.094);
+  height: calc(var(--pad-size) * 0.094);
+  border-radius: 50%;
+  background: #57565a;
+  transition: background-color 0.08s ease, transform 0.08s ease;
+}
+
+.dpadDiag.btnPressed {
+  background: transparent;
+  opacity: 1;
+  filter: none;
+}
+
+.dpadDiag.btnPressed::before {
+  background: #a0a0a0;
+  transform: scale(1.2);
+}
+
+/* Purely decorative rivet dots (present on both pads in the reference);
+   same look as the diagonal dots but non-interactive. */
+.controllerDot {
+  --d: calc(var(--pad-size) * 0.094);
+  border-radius: 50%;
+  background: #4a4a4a;
+  pointer-events: none;
+}
+
+.controllerDot-actionsTop    { --x: calc(var(--pad-size) * 0.306); --y: calc(var(--pad-size) * 0.167); }
+.controllerDot-actionsBottom { --x: calc(var(--pad-size) * 0.694); --y: calc(var(--pad-size) * 0.833); }
+
+#controller_meta {
+  grid-area: meta;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+/* A / B: equal-size round buttons offset symmetrically from the pad center
+   (A up-right, B down-left), DMG-01 magenta/maroon colors kept from the
+   original -- only their size/position now matches the reference. */
+.roundBtn {
+  --d: calc(var(--pad-size) * 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: calc(var(--pad-size) * 0.15);
+  color: #440f1f;
+  background: #870a4c;
+  background: radial-gradient(ellipse at 35% 30%, #c21876 0%, #8b1e57 100%);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.roundBtn-a { --x: calc(var(--pad-size) * 0.717); --y: calc(var(--pad-size) * 0.378); }
+.roundBtn-b { --x: calc(var(--pad-size) * 0.283); --y: calc(var(--pad-size) * 0.628); }
+
+.capsuleBtn {
+  font-weight: bold;
+  font-size: 11px;
+  color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  width: 70px;
+  height: 30px;
+  border-radius: 30px;
+  background: #222;
+  background: radial-gradient(ellipse at center, #666 0%, #555 100%);
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.2);
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.btnPressed {
+  opacity: 0.55;
+  filter: brightness(1.25);
+}
+
+/* The header bar has grown to 7 icons (back, pause, mute, save, load,
+   reset, language); shrink it a bit earlier than the D-Pad/buttons below,
+   so it never gets tight against the burger button on narrower phones. */
+@media only screen and (max-width: 400px) {
+  #gameHeader {
+    gap: 4px;
+  }
+  .headerIconBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+    line-height: 28px;
+  }
+}
+
+/* Small phones in portrait: shrink the pads a touch so they never eat more
+   than necessary of the vertical space. Every position/size above is
+   derived from --pad-size, so overriding it here is all that's needed. */
+@media only screen and (max-width: 340px) {
+  #controller_dpad,
+  #controller_actions {
+    --pad-size: 148px;
+  }
+}
+
+/* Landscape on phones/tablets: put the controller beside the screen instead
+   of eating vertical space, still below/around the canvas in DOM flow. */
+@media only screen and (orientation: landscape) and (max-height: 500px) {
+  #app {
+    flex-direction: row;
+  }
+  #controller {
+    flex: 0 0 260px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "dpad"
+      "meta"
+      "actions";
+    padding: 10px calc(10px + env(safe-area-inset-right, 0px)) 10px 10px;
+  }
+}

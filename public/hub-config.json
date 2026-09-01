@@ -133,9 +133,9 @@
   {
     "id": "gameboy-web",
     "title": "GameBoy Web",
-    "kind": "external",
+    "kind": "custom",
     "category": "autres",
-    "launch": "https://github.com/Potatoe415/gameboy-web",
+    "launch": "/games/gameboy-web/index.html",
     "thumbnail": "/games/gameboy-web/assets/thumbnail.svg"
   }
 ]
