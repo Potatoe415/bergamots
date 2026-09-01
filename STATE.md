@@ -5,11 +5,11 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. The in-repo player duplicate is gone.
-Current_Goal: User to confirm the live hub tile opens GameBoy Web on Vercel after this push.
-Last_Action: Pointed the tile at `https://gameboy-web.vercel.app/binjgb/docs/simple.html` (`kind: external`, same tab) and deleted `public/games/gameboy-web/vendor/`, `index.html`, and `ROM/`. Kept `assets/thumbnail.svg`. Root `gameboy-web.vercel.app/` still 404s.
+Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo.
+Current_Goal: User to confirm the live GameBoy Web tile photo after this push.
+Last_Action: Replaced the GameBoy Web SVG placeholder with `public/games/gameboy-web/assets/thumbnail.jpg` and pushed it.
 Next_Actions:
-- Optional on gameboy-web: rewrite `/` to `/binjgb/docs/simple.html` so the bare domain works.
+- Confirm the live hub tile shows the original Game Boy photo.
 - Rotate `ADMIN_PASSWORD` and copy `SUPABASE_URL` to Preview.
 - Verify Yatzy online with two real devices.
 - Decide what to do about the GitHub branch-protection rule.
@@ -31,8 +31,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - No automated tests.
 
 Recent_Changes:
+- 2026-09-01 GameBoy Web hub tile uses the original Game Boy photo (`thumbnail.jpg`).
 - 2026-09-01 Hub GameBoy Web tile launches the Vercel app; in-repo player/ROM copies deleted.
 - 2026-09-01 GameBoy Web launches in-repo with porklike.gb (later removed once Vercel hosted it).
 - 2026-09-01 Added GameBoy Web to the hub as an external tile.
 - 2026-08-31 Unified the splash header across all 8 in-repo games.
-- 2026-08-31 Translated `/admin` to English and added a per-game filter to the daily trend chart.

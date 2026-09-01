@@ -136,7 +136,7 @@
     "kind": "external",
     "category": "autres",
     "launch": "https://gameboy-web.vercel.app/binjgb/docs/simple.html",
-    "thumbnail": "/games/gameboy-web/assets/thumbnail.svg",
+    "thumbnail": "/games/gameboy-web/assets/thumbnail.jpg",
     "sameTab": true
   }
 ]
