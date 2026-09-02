@@ -99,6 +99,8 @@ let remoteSyncPromise = Promise.resolve();
 let pendingRemoteSyncCount = 0;
 let scoringAnimationInFlight = false;
 let remoteApplyInFlight = false;
+let extraRollTapCount = 0;
+let bonusRollUsedThisTurn = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
 
 elements.soloGameButton.addEventListener("click", () => handleLocalStart("solo"));
@@ -829,9 +831,11 @@ function renderRollControls() {
   }
 
   const canRoll = !state.gameOver && state.turnPhase === "rolling" && state.rollsRemaining > 0 && isLocalPlayersTurn() && !isRobotTurn();
+  const huntingBonus = canHuntOnlineBonusRoll();
   const showGoBack = Boolean(state.lastCommittedTurn) && !state.gameOver && !isOnlineGame();
   const controlsLocked = isInteractionLocked() || scoringAnimationInFlight;
-  elements.rollButton.disabled = !canRoll;
+  elements.rollButton.disabled = !canRoll && !huntingBonus;
+  elements.rollButton.classList.toggle("is-exhausted", huntingBonus);
   elements.goBackButton.textContent = t("controls.goBack");
   elements.goBackButton.disabled = controlsLocked;
   elements.goBackButton.classList.toggle("is-hidden", !showGoBack);
@@ -1339,6 +1343,10 @@ async function applyRemoteGameState(remoteState) {
   const nextFields = { players: state.players };
   hydrateFromRemoteGameState(nextFields, remoteState);
 
+  if (nextFields.currentPlayerIndex !== previousPlayerIndex || nextFields.rollsRemaining === 3) {
+    resetBonusRollHunt();
+  }
+
   const scoreEvent = findRemoteScoreEvent(previousScores, nextFields.scores);
   if (scoreEvent) {
     await playRemoteScoreAnimation(scoreEvent);
@@ -1466,6 +1474,7 @@ function resetGame({
   robotTurnTimeoutId = null;
   robotQueuedScoreCategory = null;
   robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
+  resetBonusRollHunt();
 
   const freshState = createInitialState();
   freshState.screen = screen;
@@ -1741,7 +1750,46 @@ function syncOnlineGameState() {
   return remoteSyncPromise;
 }
 
+function resetBonusRollHunt() {
+  extraRollTapCount = 0;
+  bonusRollUsedThisTurn = false;
+}
+
+function canHuntOnlineBonusRoll() {
+  return isOnlineGame()
+    && !state.gameOver
+    && !bonusRollUsedThisTurn
+    && !state.pendingScoreSelection
+    && isLocalPlayersTurn()
+    && state.rollsRemaining === 0
+    && state.dice.every((die) => die.value !== null);
+}
+
+function tryGrantOnlineBonusRoll() {
+  if (!canHuntOnlineBonusRoll()) {
+    return false;
+  }
+
+  extraRollTapCount += 1;
+  if (extraRollTapCount < 3) {
+    return true;
+  }
+
+  bonusRollUsedThisTurn = true;
+  extraRollTapCount = 0;
+  state.rollsRemaining = 1;
+  state.turnPhase = "rolling";
+  state.lastCommittedTurn = null;
+  render();
+  syncOnlineGameState();
+  return true;
+}
+
 function handleRoll() {
+  if (tryGrantOnlineBonusRoll()) {
+    return;
+  }
+
   if (state.gameOver || state.turnPhase !== "rolling" || state.rollsRemaining <= 0 || !isLocalPlayersTurn()) {
     return;
   }
@@ -1947,6 +1995,7 @@ function commitScoreSelection(playerIndex, categoryKey, score, turnSnapshot) {
   // A turn ends by resetting all turn-scoped state in one place,
   // which guarantees the next player starts from the same baseline every time.
   const finishedPlayerName = state.players[state.currentPlayerIndex].name;
+  resetBonusRollHunt();
   state.currentPlayerIndex = state.currentPlayerIndex === 0 ? 1 : 0;
   state.dice = Array.from({ length: 5 }, () => ({ value: null, locked: false, lastRolled: false }));
   state.rollsRemaining = 3;

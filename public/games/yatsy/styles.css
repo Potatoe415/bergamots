@@ -1151,7 +1151,8 @@ body.player-two-turn .roll-button {
   box-shadow: 0 0.45rem 0 #4f809a;
 }
 
-.roll-button:disabled {
+.roll-button:disabled,
+.roll-button.is-exhausted {
   cursor: default;
   opacity: 0.68;
 }
