@@ -47,7 +47,8 @@
         goBack: "Undo previous move",
         confirm: "Confirm",
         confirmSelection: "Confirm {score} in {category}",
-        roll: "ROLL"
+        roll: "ROLL",
+        sendEmoji: "Send an emoji"
       },
       labels: {
         bonus: "BONUS"
@@ -155,7 +156,8 @@
         goBack: "Deshacer jugada anterior",
         confirm: "Confirmar",
         confirmSelection: "Confirmar {score} en {category}",
-        roll: "LANZAR"
+        roll: "LANZAR",
+        sendEmoji: "Enviar un emoji"
       },
       labels: {
         bonus: "BONUS"
@@ -263,7 +265,8 @@
         goBack: "Annuler le coup precedent",
         confirm: "Confirmer",
         confirmSelection: "Confirmer {score} dans {category}",
-        roll: "LANCER"
+        roll: "LANCER",
+        sendEmoji: "Envoyer un emoji"
       },
       labels: {
         bonus: "BONUS"

@@ -86,12 +86,16 @@ const elements = {
   rollLabel: document.getElementById("roll-label"),
   rollIndicators: document.getElementById("roll-indicators"),
   celebrationLayer: document.getElementById("celebration-layer"),
+  emojiButton: document.getElementById("emoji-button"),
+  emojiPicker: document.getElementById("emoji-picker"),
+  emojiBackdrop: document.getElementById("emoji-picker-backdrop"),
   gameCard: document.getElementById("game-card"),
   gameTitle: document.getElementById("game-title"),
   restartButton: document.getElementById("restart-button")
 };
 
 let yatzyCelebrationTimeoutId = null;
+let emojiReactionTimeoutId = null;
 let robotTurnTimeoutId = null;
 let undoScoreTimeoutId = null;
 let robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
@@ -127,6 +131,14 @@ if (elements.settingsList) {
   elements.settingsList.addEventListener("change", handleSettingsInputChange);
 }
 elements.homeButton.addEventListener("click", handleHomeNavigation);
+const emojiController = window.YATZY_EMOJI
+  ? window.YATZY_EMOJI.createEmojiController({
+      buttonElement: elements.emojiButton,
+      pickerElement: elements.emojiPicker,
+      backdropElement: elements.emojiBackdrop,
+      onPick: handleSendEmoji
+    })
+  : null;
 elements.rollButton.addEventListener("click", handleRoll);
 elements.goBackButton.addEventListener("click", handleSelectionCancel);
 elements.restartButton.addEventListener("click", handleRestart);
@@ -293,6 +305,7 @@ function createInitialState() {
     lastCommittedTurn: null,
     animateDiceOnRender: false,
     yatzyCelebration: null,
+    emojiReaction: null,
     gameOver: false,
     winner: null,
     statusMessage: ""
@@ -495,6 +508,8 @@ function renderHeader() {
     ? `${t("splash.title")} - ${state.session.gameCode}`
     : t("splash.title");
   elements.restartButton.textContent = isOnlineGame() ? t("controls.leaveGame") : t("controls.restart");
+  elements.emojiButton.setAttribute("aria-label", t("controls.sendEmoji"));
+  elements.emojiButton.setAttribute("title", t("controls.sendEmoji"));
 }
 
 function renderScoreSummary() {
@@ -861,28 +876,58 @@ function renderRollControls() {
 }
 
 function renderCelebration() {
-  if (!state.yatzyCelebration) {
-    elements.celebrationLayer.innerHTML = "";
+  if (state.yatzyCelebration) {
+    elements.celebrationLayer.innerHTML = buildYatzyCelebrationMarkup(state.yatzyCelebration);
     return;
   }
 
+  if (state.emojiReaction) {
+    renderEmojiCelebration(state.emojiReaction);
+    return;
+  }
+
+  elements.celebrationLayer.innerHTML = "";
+}
+
+function buildYatzyCelebrationMarkup(celebration) {
   const particleMarkup = Array.from({ length: 18 }, (_, index) => (
     `<span style="--i:${index}"></span>`
   )).join("");
 
-  elements.celebrationLayer.innerHTML = `
+  return `
     <div class="yatzy-celebration">
       <div class="yatzy-burst"></div>
       <div class="yatzy-particles">${particleMarkup}</div>
       <div class="yatzy-banner">
         <strong>YATZY!</strong>
         <span>${t("celebration.rolledFiveKind", {
-          playerName: state.yatzyCelebration.playerName,
-          faceLabel: state.yatzyCelebration.faceLabel
+          playerName: celebration.playerName,
+          faceLabel: celebration.faceLabel
         })}</span>
       </div>
     </div>
   `;
+}
+
+function renderEmojiCelebration(reaction) {
+  // textContent rather than innerHTML: player names travel through the
+  // synced game state (see buildWinnerBanner), so a peer could otherwise
+  // inject markup into this overlay.
+  elements.celebrationLayer.innerHTML = "";
+  const wrapper = document.createElement("div");
+  wrapper.className = "emoji-celebration";
+
+  const emojiSpan = document.createElement("span");
+  emojiSpan.className = "emoji-celebration-emoji";
+  emojiSpan.textContent = reaction.emoji;
+  wrapper.appendChild(emojiSpan);
+
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "emoji-celebration-name";
+  nameSpan.textContent = reaction.playerName;
+  wrapper.appendChild(nameSpan);
+
+  elements.celebrationLayer.appendChild(wrapper);
 }
 
 function handleLanguageSelection(language) {
@@ -1289,8 +1334,49 @@ function createMatchmakingCallbacks() {
   return {
     startGameCallback: handleMatchStarted,
     stateChangeCallback: handleMatchStateChange,
-    gameClosedCallback: handleMatchClosed
+    gameClosedCallback: handleMatchClosed,
+    emojiReceivedCallback: handleEmojiReceived
   };
+}
+
+// The seat sending a reaction: the local seat when online (either player can
+// react any time, not just on their turn), or whichever seat is currently
+// playing in a local/robot game shared on one device.
+function actingPlayerIndex() {
+  return isOnlineGame() ? (state.session.localPlayerIndex ?? state.currentPlayerIndex) : state.currentPlayerIndex;
+}
+
+function handleSendEmoji(emoji) {
+  if (state.screen !== "game" || !window.YATZY_EMOJI?.isKnownEmoji(emoji)) {
+    return;
+  }
+
+  const playerIndex = actingPlayerIndex();
+  showEmojiReaction(state.players[playerIndex].name, emoji);
+
+  if (isOnlineGame()) {
+    MATCHMAKING?.sendEmoji(playerIndex, emoji);
+  }
+}
+
+function handleEmojiReceived(payload) {
+  if (!window.YATZY_EMOJI?.isKnownEmoji(payload?.emoji)) {
+    return;
+  }
+
+  const playerIndex = payload.seat === 1 ? 1 : 0;
+  showEmojiReaction(state.players[playerIndex].name, payload.emoji);
+}
+
+function showEmojiReaction(playerName, emoji) {
+  clearTimeout(emojiReactionTimeoutId);
+  state.emojiReaction = { playerName, emoji };
+  render();
+
+  emojiReactionTimeoutId = setTimeout(() => {
+    state.emojiReaction = null;
+    render();
+  }, window.YATZY_EMOJI?.REACTION_TTL_MS || 1800);
 }
 
 function handleMatchStarted(payload) {
@@ -1511,10 +1597,13 @@ function resetGame({
   mode = state.setup.mode
 } = {}) {
   clearTimeout(yatzyCelebrationTimeoutId);
+  clearTimeout(emojiReactionTimeoutId);
   clearTimeout(robotTurnTimeoutId);
   clearUndoWindow();
   yatzyCelebrationTimeoutId = null;
+  emojiReactionTimeoutId = null;
   robotTurnTimeoutId = null;
+  emojiController?.close();
   robotQueuedScoreCategory = null;
   robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
   resetBonusRollHunt();

@@ -172,6 +172,9 @@
         refetch
       )
       .on("broadcast", { event: "tick" }, refetch)
+      .on("broadcast", { event: "emoji" }, ({ payload }) => {
+        callbacks.emojiReceivedCallback?.(payload);
+      })
       .subscribe();
 
     await refetch();
@@ -254,6 +257,16 @@
     activeChannel?.send({ type: "broadcast", event: "tick", payload: {} });
   }
 
+  // Reactions are ephemeral and never persisted: a plain realtime broadcast,
+  // with no matching game-state field, is enough.
+  function sendEmoji(seat, emoji) {
+    activeChannel?.send({
+      type: "broadcast",
+      event: "emoji",
+      payload: { seat, emoji }
+    });
+  }
+
   async function leaveGame(options = {}) {
     const code = activeCode;
     const seat = activeSession;
@@ -275,6 +288,7 @@
     joinGame,
     resumeGame,
     updateGameState,
+    sendEmoji,
     leaveGame
   };
 }(window));
