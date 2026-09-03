@@ -27,6 +27,7 @@ const ROBOT_CONFIG = CONFIG.robot;
 const STORAGE_KEY = "yatzy-online-session";
 const RULE_SETTINGS_STORAGE_KEY = "yatzy-rule-settings";
 const REVERSE_SELECTION_STORAGE_KEY = "yatzy-reverse-selection";
+const EXTRA_ROLL_EASTER_EGG_STORAGE_KEY = "yatzy-extra-roll-easter-egg";
 const LOWER_RULE_OPTIONS = [
   { key: "fullHouse", scoreRule: "fullHouse", defaultEnabled: true, defaultPoints: 30, iconText: "FULL" },
   { key: "fourKind", scoreRule: "fourKind", defaultEnabled: true, defaultPoints: 40, iconText: "FOUR" },
@@ -265,6 +266,7 @@ function createInitialState() {
       mode: "solo",
       language: initialSetupLanguage,
       reverseDiceSelection: persistedReverseDiceSelection,
+      extraRollEasterEgg: readPersistedExtraRollEasterEgg(),
       rules: cloneRuleSettings(persistedRuleSettings || buildDefaultRuleSettings())
     },
     session: {
@@ -461,16 +463,31 @@ function renderSettingsRows() {
     elements.settingsList.appendChild(row);
   });
 
-  const reverseRow = document.createElement("label");
-  reverseRow.className = "settings-row settings-row-toggle";
-  reverseRow.innerHTML = `
+  appendSettingsToggleRow(
+    "reverseDiceSelection",
+    t("splash.reverseSelection"),
+    state.setup.reverseDiceSelection
+  );
+  appendSettingsToggleRow(
+    "extraRollEasterEgg",
+    t("splash.extraRollEasterEgg"),
+    state.setup.extraRollEasterEgg,
+    "settings-extra-roll-easter-egg"
+  );
+}
+
+function appendSettingsToggleRow(settingKey, name, enabled, dataId) {
+  const row = document.createElement("label");
+  row.className = "settings-row settings-row-toggle";
+  const dataIdAttr = dataId ? ` data-id="${dataId}"` : "";
+  row.innerHTML = `
     <span class="settings-check">
-      <input type="checkbox" data-setting-key="reverseDiceSelection" ${state.setup.reverseDiceSelection ? "checked" : ""}>
+      <input type="checkbox"${dataIdAttr} data-setting-key="${settingKey}" ${enabled ? "checked" : ""}>
     </span>
-    <span class="settings-name">${t("splash.reverseSelection")}</span>
-    <span class="settings-points settings-pill">${state.setup.reverseDiceSelection ? "ON" : "OFF"}</span>
+    <span class="settings-name">${name}</span>
+    <span class="settings-points settings-pill">${enabled ? "ON" : "OFF"}</span>
   `;
-  elements.settingsList.appendChild(reverseRow);
+  elements.settingsList.appendChild(row);
 }
 
 function renderHeader() {
@@ -831,11 +848,13 @@ function renderRollControls() {
   }
 
   const canRoll = !state.gameOver && state.turnPhase === "rolling" && state.rollsRemaining > 0 && isLocalPlayersTurn() && !isRobotTurn();
-  const huntingBonus = canHuntOnlineBonusRoll();
+  const secretRollClicksOpen = canKeepSecretRollClicks();
   const showGoBack = Boolean(state.lastCommittedTurn) && !state.gameOver && !isOnlineGame();
   const controlsLocked = isInteractionLocked() || scoringAnimationInFlight;
-  elements.rollButton.disabled = !canRoll && !huntingBonus;
-  elements.rollButton.classList.toggle("is-exhausted", huntingBonus);
+  // HTML disabled swallows clicks, so the easter-egg hunt must keep the
+  // button enabled and only look spent via is-exhausted.
+  elements.rollButton.disabled = !canRoll && !secretRollClicksOpen;
+  elements.rollButton.classList.toggle("is-exhausted", !canRoll && secretRollClicksOpen);
   elements.goBackButton.textContent = t("controls.goBack");
   elements.goBackButton.disabled = controlsLocked;
   elements.goBackButton.classList.toggle("is-hidden", !showGoBack);
@@ -878,6 +897,16 @@ function handleSettingsInputChange(event) {
   if (settingKey === "reverseDiceSelection") {
     state.setup.reverseDiceSelection = Boolean(target.checked);
     persistReverseDiceSelection(state.setup.reverseDiceSelection);
+    render();
+    return;
+  }
+
+  if (settingKey === "extraRollEasterEgg") {
+    state.setup.extraRollEasterEgg = Boolean(target.checked);
+    persistExtraRollEasterEgg(state.setup.extraRollEasterEgg);
+    if (!state.setup.extraRollEasterEgg) {
+      resetBonusRollHunt();
+    }
     render();
     return;
   }
@@ -951,28 +980,25 @@ function readPersistedRuleSettings() {
   }
 }
 
-function persistReverseDiceSelection(enabled) {
+function persistBooleanPreference(storageKey, enabled) {
   if (!window.localStorage) {
     return;
   }
 
   try {
-    window.localStorage.setItem(
-      REVERSE_SELECTION_STORAGE_KEY,
-      JSON.stringify(Boolean(enabled))
-    );
+    window.localStorage.setItem(storageKey, JSON.stringify(Boolean(enabled)));
   } catch (error) {
     // Preferences persistence should never break gameplay.
   }
 }
 
-function readPersistedReverseDiceSelection() {
+function readPersistedBooleanPreference(storageKey) {
   if (!window.localStorage) {
     return false;
   }
 
   try {
-    const raw = window.localStorage.getItem(REVERSE_SELECTION_STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey);
     if (!raw) {
       return false;
     }
@@ -981,6 +1007,22 @@ function readPersistedReverseDiceSelection() {
   } catch (error) {
     return false;
   }
+}
+
+function persistReverseDiceSelection(enabled) {
+  persistBooleanPreference(REVERSE_SELECTION_STORAGE_KEY, enabled);
+}
+
+function readPersistedReverseDiceSelection() {
+  return readPersistedBooleanPreference(REVERSE_SELECTION_STORAGE_KEY);
+}
+
+function persistExtraRollEasterEgg(enabled) {
+  persistBooleanPreference(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY, enabled);
+}
+
+function readPersistedExtraRollEasterEgg() {
+  return readPersistedBooleanPreference(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY);
 }
 
 function readHubLanguage() {
@@ -1258,6 +1300,7 @@ function handleMatchStarted(payload) {
   freshState.setup.mode = "online";
   freshState.setup.language = state.setup.language;
   freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
+  freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
   freshState.setup.rules = cloneRuleSettings(state.setup.rules);
   initializeRuntimeDefinitions(freshState.setup.rules);
   freshState.session = {
@@ -1481,6 +1524,7 @@ function resetGame({
   freshState.setup.mode = mode;
   freshState.setup.language = language;
   freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
+  freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
   freshState.setup.rules = cloneRuleSettings(state.setup.rules);
   initializeRuntimeDefinitions(freshState.setup.rules);
   applySetupSettings(freshState);
@@ -1755,18 +1799,27 @@ function resetBonusRollHunt() {
   bonusRollUsedThisTurn = false;
 }
 
-function canHuntOnlineBonusRoll() {
-  return isOnlineGame()
+function isExtraRollEasterEggEnabled() {
+  return Boolean(state.setup.extraRollEasterEgg) || readPersistedExtraRollEasterEgg();
+}
+
+function canKeepSecretRollClicks() {
+  return isExtraRollEasterEggEnabled()
     && !state.gameOver
+    && !isRobotTurn()
+    && isLocalPlayersTurn();
+}
+
+function canHuntBonusRoll() {
+  return canKeepSecretRollClicks()
     && !bonusRollUsedThisTurn
     && !state.pendingScoreSelection
-    && isLocalPlayersTurn()
     && state.rollsRemaining === 0
     && state.dice.every((die) => die.value !== null);
 }
 
-function tryGrantOnlineBonusRoll() {
-  if (!canHuntOnlineBonusRoll()) {
+function consumeSecretExtraRollTaps() {
+  if (!canHuntBonusRoll()) {
     return false;
   }
 
@@ -1780,13 +1833,11 @@ function tryGrantOnlineBonusRoll() {
   state.rollsRemaining = 1;
   state.turnPhase = "rolling";
   state.lastCommittedTurn = null;
-  render();
-  syncOnlineGameState();
-  return true;
+  return false;
 }
 
 function handleRoll() {
-  if (tryGrantOnlineBonusRoll()) {
+  if (consumeSecretExtraRollTaps()) {
     return;
   }
 
@@ -1799,8 +1850,10 @@ function handleRoll() {
 
   const firstRollOfTurn = state.rollsRemaining === 3 && state.dice.every((die) => die.value === null);
   const reverseSelectionEnabled = state.setup.reverseDiceSelection;
+  const dieWouldReroll = (die) => firstRollOfTurn || (reverseSelectionEnabled ? die.locked : !die.locked);
+  const rerollHeldDice = bonusRollUsedThisTurn && !state.dice.some(dieWouldReroll);
   state.dice = state.dice.map((die) => {
-    const shouldReroll = firstRollOfTurn || (reverseSelectionEnabled ? die.locked : !die.locked);
+    const shouldReroll = rerollHeldDice || dieWouldReroll(die);
     if (!shouldReroll) {
       return { ...die, lastRolled: false };
     }

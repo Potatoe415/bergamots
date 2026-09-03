@@ -1157,6 +1157,11 @@ body.player-two-turn .roll-button {
   opacity: 0.68;
 }
 
+.roll-button.is-exhausted {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .go-back-button {
   width: 100%;
   min-height: 3rem;
