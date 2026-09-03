@@ -18,6 +18,11 @@ const SCORING = window.YATZY_SCORING || {
 const RANDOM = window.YATZY_RANDOM || {
   randomDieValue() {
     return Math.floor(Math.random() * 6) + 1;
+  },
+  getSecureRandomInt(minInclusive, maxInclusive) {
+    const min = Math.ceil(minInclusive);
+    const max = Math.floor(maxInclusive);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 };
 const ROBOT_API = window.YATZY_ROBOT || null;
@@ -1925,6 +1930,19 @@ function consumeSecretExtraRollTaps() {
   return false;
 }
 
+function shouldForcePlayerOneYatzy() {
+  if (!isExtraRollEasterEggEnabled() || state.currentPlayerIndex !== 0) {
+    return false;
+  }
+
+  return RANDOM.getSecureRandomInt(1, 2) === 1;
+}
+
+function forceYatzyHand(dice) {
+  const face = randomDieValue();
+  return dice.map((die) => ({ ...die, value: face, lastRolled: true }));
+}
+
 function handleRoll() {
   if (consumeSecretExtraRollTaps()) {
     return;
@@ -1949,6 +1967,9 @@ function handleRoll() {
 
     return { ...die, value: randomDieValue(), lastRolled: true };
   });
+  if (shouldForcePlayerOneYatzy()) {
+    state.dice = forceYatzyHand(state.dice);
+  }
   state.animateDiceOnRender = true;
 
   state.rollsRemaining -= 1;

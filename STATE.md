@@ -6,8 +6,8 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 ---
 
 Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo.
-Current_Goal: Verify the new Yatzy emoji-reaction feature over two real online clients (local single-browser flow already verified).
-Last_Action: Added an emoji-reaction button to Yatzy (`public/games/yatsy/emoji.js`), modeled on Coinchapp's `EmojiButton`/broadcast pattern; reactions are ephemeral (Supabase realtime broadcast, not persisted) and shown in the existing celebration overlay. Verified locally in-browser (picker grid + overlay render correctly); fixed a `1fr`-grid-collapses-to-0 CSS bug found during that check.
+Current_Goal: Player 1 gets a Yatzy on 50% of rolls when the secret-fourth-roll checkbox is on.
+Last_Action: Forced a five-of-a-kind on half of Player 1 rolls while `4e lancer secret` is enabled.
 Next_Actions:
 - Verify the emoji reaction reaches the other player in a real two-tab/two-device online game.
 - Confirm the checkbox + 3-tap extra roll in a real game (local duo or online).
@@ -33,6 +33,7 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - No automated tests.
 
 Recent_Changes:
+- 2026-09-03 Secret fourth-roll checkbox also gives Player 1 a Yatzy on 50% of rolls.
 - 2026-09-03 Yatzy: emoji-reaction button + picker, broadcast over the existing matchmaking channel (ported from Coinchapp).
 - 2026-09-03 LANCER stays clickable after 3 rolls when “4e lancer secret” is on.
 - 2026-09-03 Yatzy secret fourth roll is off until the settings checkbox is enabled.
