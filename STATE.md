@@ -6,11 +6,10 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 ---
 
 Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on Bergamots Production + Preview.
-Current_Goal: Deploy the Yatzy GIF import-path fix, then confirm GIFs load on `bergamots.vercel.app`.
-Last_Action: Production `/api/yatsy/gifs` crashed with `ERR_MODULE_NOT_FOUND` because `api/yatsy/gifs.js` imported `../../_lib` (repo root) instead of `../_lib` (`api/_lib`). Key was already on Vercel; Bouilla was a different project.
+Current_Goal: Confirm the GIF tab and the reaction button under LANCER on production after deploy.
+Last_Action: Pushed the Yatzy reaction button from the floating corner into the controls column, directly under LANCER. SW cache v20.
 Next_Actions:
-- Confirm `GET /api/yatsy/gifs?lang=fr` returns JSON `{ gifs: [...] }` on production after deploy.
-- Finish/push the uncommitted move of the reaction button under LANCER if it still looks right.
+- Hard-refresh Yatzy: GIF tab should fill, reaction button should sit under LANCER.
 - Ask the remote player to hard-refresh / fully close-reopen the Yatzy tab if emoji still seem silent (stale service worker is the leading suspect, not the broadcast code).
 - Confirm the checkbox + 3-tap extra roll in a real game (local duo or online).
 - Rotate `ADMIN_PASSWORD` and copy `SUPABASE_URL` to Preview.
@@ -35,8 +34,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - No automated tests.
 
 Recent_Changes:
+- 2026-09-04 Yatzy reaction button moved under the LANCER button (no longer a floating corner). SW v20.
 - 2026-09-04 Fixed `api/yatsy/gifs.js` helper imports (`../_lib` not `../../_lib`). Production was crashing with `FUNCTION_INVOCATION_FAILED` even with `GIPHY_API_KEY` set.
 - 2026-09-04 Yatzy GIF tab in the reaction picker (Giphy, server-only key, Vite dev middleware so solo local works). SW v19. See DECISIONS.
 - 2026-09-04 Yatzy emoji button repositioned to a bottom-right floating trigger; picker opens upward; TTL 1.8s->2.6s; SW cache v18. Verified broadcast delivery end-to-end against production with two independent clients.
 - 2026-09-03 Secret fourth-roll checkbox also gives Player 1 a Yatzy on 50% of rolls.
-- 2026-09-03 LANCER stays clickable after 3 rolls when “4e lancer secret” is on.
