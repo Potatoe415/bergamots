@@ -1,6 +1,6 @@
-import { runGifSearch } from "../../_lib/giphy.js";
-import { sendError, sendJson, withErrorHandling } from "../../_lib/http.js";
-import { clientKey, isRateLimited } from "../../_lib/rateLimit.js";
+import { runGifSearch } from "../_lib/giphy.js";
+import { sendError, sendJson, withErrorHandling } from "../_lib/http.js";
+import { clientKey, isRateLimited } from "../_lib/rateLimit.js";
 
 const THROTTLE = { maxHits: 30, windowMs: 60000 };
 
