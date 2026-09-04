@@ -553,12 +553,10 @@ select {
   bottom: calc(100% + 0.5rem);
   right: 0;
   z-index: 26;
-  display: grid;
-  /* Fixed track sizes, not 1fr: an absolutely positioned box with an auto
-     width has no definite available space to distribute, so flexible
-     tracks would collapse to zero instead of sizing to their content. */
-  grid-template-columns: repeat(4, 2.3rem);
-  gap: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: min(18rem, calc(100vw - 2rem));
   padding: 0.55rem;
   background: rgba(47, 55, 66, 0.92);
   border-radius: 1.1rem;
@@ -567,6 +565,104 @@ select {
 
 .emoji-picker.is-hidden {
   display: none;
+}
+
+.reaction-tabs {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.reaction-tab {
+  flex: 1;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.35rem 0.4rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.reaction-tab.is-active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 2.3rem);
+  gap: 0.35rem;
+  justify-content: center;
+}
+
+.emoji-grid.is-hidden,
+.gif-pane.is-hidden {
+  display: none;
+}
+
+.gif-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.gif-search-input {
+  width: 100%;
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.4rem 0.55rem;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.gif-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.gif-search-status {
+  margin: 0;
+  padding: 0.6rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.gif-search-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+  max-height: 12.5rem;
+  overflow-y: auto;
+}
+
+.gif-option {
+  padding: 0;
+  border: none;
+  border-radius: 0.45rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.gif-option img {
+  display: block;
+  width: 100%;
+  height: 4.4rem;
+  object-fit: cover;
+}
+
+.giphy-attribution {
+  align-self: flex-end;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 .emoji-option {
@@ -1447,6 +1543,14 @@ body.player-two-turn .roll-button {
   font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.03em;
+}
+
+.emoji-celebration-gif {
+  max-width: 8.5rem;
+  max-height: 6.5rem;
+  border-radius: 0.7rem;
+  object-fit: contain;
+  animation: emoji-celebration-pop 5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes die-launch {

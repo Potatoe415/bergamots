@@ -42,6 +42,7 @@ Audit action plan, in order (audit run 2026-08-30, priorities 1 to 5; priorities
 - [ ] TBD
 
 ## Done
+- [x] 2026-09-04 — Yatzy GIF reactions via Giphy next to the emoji picker (local + online). Server-only `GIPHY_API_KEY`, 5s overlay, `pg-13`. See `docs/DECISIONS.md`.
 - [x] 2026-09-01 — GameBoy Web hub tile uses `public/games/gameboy-web/assets/thumbnail.jpg` (original Game Boy photo). The SVG placeholder is gone.
 - [x] 2026-09-01 — GameBoy Web tile launches `https://gameboy-web.vercel.app/binjgb/docs/simple.html` (`kind: external`, same tab). Removed the in-repo duplicate player. See `docs/DECISIONS.md`.
 - [x] 2026-09-01 — GameBoy Web tile now launches the in-repo player (`kind: custom`, `/games/gameboy-web/index.html`) instead of GitHub. binjgb web player lives under `public/games/gameboy-web/vendor/` (eslint-ignored). Splash lists `porklike.gb` via `ROM/index.json` and can also open local `.gb`/`.gbc` files. Nintendo ROMs are not committed. See `docs/DECISIONS.md`.

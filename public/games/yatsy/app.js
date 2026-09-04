@@ -141,7 +141,9 @@ const emojiController = window.YATZY_EMOJI
       buttonElement: elements.emojiButton,
       pickerElement: elements.emojiPicker,
       backdropElement: elements.emojiBackdrop,
-      onPick: handleSendEmoji
+      getText: (key) => t(key),
+      getLang: () => state.setup.language,
+      onPick: handleSendReaction
     })
   : null;
 elements.rollButton.addEventListener("click", handleRoll);
@@ -515,6 +517,7 @@ function renderHeader() {
   elements.restartButton.textContent = isOnlineGame() ? t("controls.leaveGame") : t("controls.restart");
   elements.emojiButton.setAttribute("aria-label", t("controls.sendEmoji"));
   elements.emojiButton.setAttribute("title", t("controls.sendEmoji"));
+  emojiController?.syncLabels();
 }
 
 function renderScoreSummary() {
@@ -922,10 +925,10 @@ function renderEmojiCelebration(reaction) {
   const wrapper = document.createElement("div");
   wrapper.className = "emoji-celebration";
 
-  const emojiSpan = document.createElement("span");
-  emojiSpan.className = "emoji-celebration-emoji";
-  emojiSpan.textContent = reaction.emoji;
-  wrapper.appendChild(emojiSpan);
+  const media = reaction.kind === "gif"
+    ? buildGifReactionMedia(reaction.gifUrl)
+    : buildEmojiReactionMedia(reaction.emoji);
+  if (media) wrapper.appendChild(media);
 
   const nameSpan = document.createElement("span");
   nameSpan.className = "emoji-celebration-name";
@@ -933,6 +936,24 @@ function renderEmojiCelebration(reaction) {
   wrapper.appendChild(nameSpan);
 
   elements.celebrationLayer.appendChild(wrapper);
+}
+
+function buildEmojiReactionMedia(emoji) {
+  const emojiSpan = document.createElement("span");
+  emojiSpan.className = "emoji-celebration-emoji";
+  emojiSpan.dataset.id = "player-emoji-reaction";
+  emojiSpan.textContent = emoji;
+  return emojiSpan;
+}
+
+function buildGifReactionMedia(gifUrl) {
+  if (!window.YATZY_EMOJI?.isGiphyMediaUrl(gifUrl)) return null;
+  const img = document.createElement("img");
+  img.className = "emoji-celebration-gif";
+  img.dataset.id = "player-gif-reaction";
+  img.src = gifUrl;
+  img.alt = "";
+  return img;
 }
 
 function handleLanguageSelection(language) {
@@ -1351,37 +1372,46 @@ function actingPlayerIndex() {
   return isOnlineGame() ? (state.session.localPlayerIndex ?? state.currentPlayerIndex) : state.currentPlayerIndex;
 }
 
-function handleSendEmoji(emoji) {
-  if (state.screen !== "game" || !window.YATZY_EMOJI?.isKnownEmoji(emoji)) {
+function handleSendReaction(pick) {
+  if (state.screen !== "game") {
+    return;
+  }
+
+  const parsed = window.YATZY_EMOJI?.parseReactionPayload(pick);
+  if (!parsed) {
     return;
   }
 
   const playerIndex = actingPlayerIndex();
-  showEmojiReaction(state.players[playerIndex].name, emoji);
+  showReaction(state.players[playerIndex].name, parsed);
 
   if (isOnlineGame()) {
-    MATCHMAKING?.sendEmoji(playerIndex, emoji);
+    MATCHMAKING?.sendReaction({ seat: playerIndex, ...parsed });
   }
 }
 
 function handleEmojiReceived(payload) {
-  if (!window.YATZY_EMOJI?.isKnownEmoji(payload?.emoji)) {
+  const parsed = window.YATZY_EMOJI?.parseReactionPayload(payload);
+  if (!parsed) {
     return;
   }
 
   const playerIndex = payload.seat === 1 ? 1 : 0;
-  showEmojiReaction(state.players[playerIndex].name, payload.emoji);
+  showReaction(state.players[playerIndex].name, parsed);
 }
 
-function showEmojiReaction(playerName, emoji) {
+function showReaction(playerName, pick) {
   clearTimeout(emojiReactionTimeoutId);
-  state.emojiReaction = { playerName, emoji };
+  state.emojiReaction = { playerName, ...pick };
   render();
 
+  const ttl = pick.kind === "gif"
+    ? (window.YATZY_EMOJI?.GIF_REACTION_TTL_MS || 5000)
+    : (window.YATZY_EMOJI?.REACTION_TTL_MS || 2600);
   emojiReactionTimeoutId = setTimeout(() => {
     state.emojiReaction = null;
     render();
-  }, window.YATZY_EMOJI?.REACTION_TTL_MS || 1800);
+  }, ttl);
 }
 
 function handleMatchStarted(payload) {

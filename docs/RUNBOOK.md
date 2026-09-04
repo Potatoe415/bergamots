@@ -10,6 +10,7 @@ Load this file only if the task contains or implies: run / command / script / se
 - Yatzy online multiplayer needs a Supabase project: run `supabase/migrations/0001_yatzy.sql` against it, then fill in `public/games/yatsy/supabase-config.js` (`url` + `anonKey`, public values) and set `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` as Vercel project env vars (server-only, never committed). Set both on **every** environment you intend to use: `api/_lib/supabase.js` throws unless the two are present, so a variable set on Production only makes every database-backed route answer 500 on Preview deployments.
 - Env vars stored as **Sensitive** on Vercel cannot be read back — not by the dashboard, not by `vercel env pull`. Keep your own copy, or be ready to regenerate the value.
 - Admin stats page needs the same Supabase project: run `supabase/migrations/0002_events.sql` (creates `muchogames_events`), then set `ADMIN_PASSWORD` as a Vercel project env var. Nothing else to configure; it reuses `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`.
+- Yatzy GIF reactions need `GIPHY_API_KEY` in `.env` / `.env.local` for `npm run dev` (Vite middleware at `/api/yatsy/gifs`) and as a Vercel env var (Production + Preview) for production. Server-only; never prefix with `VITE_`.
 
 ## Development
 - `npm run dev` — starts the Vite dev server.
@@ -45,3 +46,4 @@ Load this file only if the task contains or implies: run / command / script / se
 - Yatzy multiplayer not syncing: check `public/games/yatsy/supabase-config.js` has valid values, that `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` are set on the Vercel project, and that `yatzy_game_events` is added to the `supabase_realtime` publication (see `supabase/migrations/0001_yatzy.sql`).
 - Admin page rejects the right password: confirm `ADMIN_PASSWORD` is set on the Vercel project for the environment being used (Production and Preview are separate), and redeploy - env var changes only apply to new deployments.
 - Admin page shows zero launches: the counters only start from the moment `supabase/migrations/0002_events.sql` ran and a deployment containing the `hub.js` tracking hook went live. Verify with `curl -X POST https://<host>/api/track -d '{"gameId":"yatsy"}'`, which should return `{"recorded":true}`.
+- Yatzy GIF picker empty/error: check `GIPHY_API_KEY` is set locally (`.env` / `.env.local`) and on Vercel. Under `npm run dev` the search is served by a Vite middleware; under `vercel dev` / production it is `api/yatsy/gifs.js`.

@@ -48,7 +48,15 @@
         confirm: "Confirm",
         confirmSelection: "Confirm {score} in {category}",
         roll: "ROLL",
-        sendEmoji: "Send an emoji"
+        sendEmoji: "Send a reaction",
+        emojiTab: "Emojis",
+        gifTab: "GIF",
+        searchGifs: "Search GIFs",
+        gifSearchEmpty: "No GIFs",
+        gifSearchError: "Could not load GIFs",
+        gifSearchLoading: "Searching…",
+        sendGif: "Send a GIF",
+        poweredByGiphy: "Powered by GIPHY"
       },
       labels: {
         bonus: "BONUS"
@@ -157,7 +165,15 @@
         confirm: "Confirmar",
         confirmSelection: "Confirmar {score} en {category}",
         roll: "LANZAR",
-        sendEmoji: "Enviar un emoji"
+        sendEmoji: "Enviar una reaccion",
+        emojiTab: "Emojis",
+        gifTab: "GIF",
+        searchGifs: "Buscar GIFs",
+        gifSearchEmpty: "Sin GIFs",
+        gifSearchError: "No se pudieron cargar los GIFs",
+        gifSearchLoading: "Buscando…",
+        sendGif: "Enviar un GIF",
+        poweredByGiphy: "Powered by GIPHY"
       },
       labels: {
         bonus: "BONUS"
@@ -266,7 +282,15 @@
         confirm: "Confirmer",
         confirmSelection: "Confirmer {score} dans {category}",
         roll: "LANCER",
-        sendEmoji: "Envoyer un emoji"
+        sendEmoji: "Envoyer une reaction",
+        emojiTab: "Emojis",
+        gifTab: "GIF",
+        searchGifs: "Rechercher un GIF",
+        gifSearchEmpty: "Aucun GIF",
+        gifSearchError: "Impossible de charger les GIFs",
+        gifSearchLoading: "Recherche…",
+        sendGif: "Envoyer un GIF",
+        poweredByGiphy: "Powered by GIPHY"
       },
       labels: {
         bonus: "BONUS"

@@ -259,12 +259,16 @@
 
   // Reactions are ephemeral and never persisted: a plain realtime broadcast,
   // with no matching game-state field, is enough.
-  function sendEmoji(seat, emoji) {
+  function sendReaction(payload) {
     activeChannel?.send({
       type: "broadcast",
       event: "emoji",
-      payload: { seat, emoji }
+      payload
     });
+  }
+
+  function sendEmoji(seat, emoji) {
+    sendReaction({ seat, kind: "emoji", emoji });
   }
 
   async function leaveGame(options = {}) {
@@ -289,6 +293,7 @@
     resumeGame,
     updateGameState,
     sendEmoji,
+    sendReaction,
     leaveGame
   };
 }(window));
