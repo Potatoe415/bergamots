@@ -11,7 +11,9 @@
     { emoji: "🎲", id: "dice" },
     { emoji: "🥳", id: "party" }
   ];
-  const REACTION_TTL_MS = 1800;
+  // Long enough to be noticed over a real network round trip, short enough
+  // to stay a quick reaction rather than a lingering banner.
+  const REACTION_TTL_MS = 2600;
 
   function isKnownEmoji(candidate) {
     return EMOJIS.some((option) => option.emoji === candidate);

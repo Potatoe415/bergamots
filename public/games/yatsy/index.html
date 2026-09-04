@@ -58,13 +58,6 @@
             </button>
             <h1 id="game-title">Yatzy</h1>
             <button class="restart-button" id="restart-button" type="button">Restart</button>
-            <div class="emoji-trigger" id="emoji-trigger" data-id="emoji-trigger">
-              <button class="emoji-trigger-button" id="emoji-button" type="button" data-id="emoji-send-button" aria-haspopup="true" aria-expanded="false">
-                <span aria-hidden="true">😊</span>
-              </button>
-              <div class="emoji-picker-backdrop is-hidden" id="emoji-picker-backdrop" data-id="emoji-picker-backdrop" aria-hidden="true"></div>
-              <div class="emoji-picker is-hidden" id="emoji-picker" data-id="emoji-picker" role="menu" aria-label="Emoji"></div>
-            </div>
           </div>
 
           <section class="score-summary" id="score-summary" aria-label="Current scores"></section>
@@ -88,6 +81,14 @@
             Go back
           </button>
         </section>
+
+        <div class="emoji-trigger" id="emoji-trigger" data-id="emoji-trigger">
+          <div class="emoji-picker-backdrop is-hidden" id="emoji-picker-backdrop" data-id="emoji-picker-backdrop" aria-hidden="true"></div>
+          <div class="emoji-picker is-hidden" id="emoji-picker" data-id="emoji-picker" role="menu" aria-label="Emoji"></div>
+          <button class="emoji-trigger-button" id="emoji-button" type="button" data-id="emoji-send-button" aria-haspopup="true" aria-expanded="false">
+            <span aria-hidden="true">😊</span>
+          </button>
+        </div>
 
         <div class="celebration-layer" id="celebration-layer" aria-hidden="true"></div>
       </section>
