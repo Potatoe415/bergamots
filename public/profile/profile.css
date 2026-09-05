@@ -1,0 +1,35 @@
+.profile-shell {
+  max-width: 420px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #5a3a22;
+  font-family: "Quicksand", system-ui, sans-serif;
+}
+
+.profile-title {
+  margin: 0;
+  font-family: "Baloo 2", cursive;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.profile-empty {
+  margin: 0;
+  opacity: 0.75;
+}
+
+.profile-back {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.profile-back:hover {
+  text-decoration: underline;
+}

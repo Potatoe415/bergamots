@@ -50,7 +50,10 @@
 .auth-widget {
   position: absolute;
   top: 14px;
-  right: 58px;
+  right: 14px;
+  /* Higher than .lang-switcher so the popover always paints in front of the
+     flags instead of getting covered by them when the two overlap. */
+  z-index: 30;
 }
 
 .auth-trigger {
@@ -86,6 +89,10 @@
   right: 0;
   margin-top: 10px;
   padding: 10px;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.25);
@@ -104,7 +111,18 @@
   transform: none;
 }
 
-.auth-logout {
+.auth-email {
+  margin: 0 0 2px;
+  padding: 0 2px;
+  font-family: "Quicksand", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a3a22;
+  word-break: break-all;
+}
+
+.auth-logout,
+.auth-profile-link {
   font-family: "Quicksand", system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
@@ -115,9 +133,11 @@
   padding: 8px 14px;
   white-space: nowrap;
   cursor: pointer;
+  text-align: center;
 }
 
-.auth-logout:hover {
+.auth-logout:hover,
+.auth-profile-link:hover {
   background: rgba(90, 58, 34, 0.15);
 }
 
@@ -125,7 +145,8 @@
 .lang-switcher {
   position: absolute;
   top: 14px;
-  right: 14px;
+  right: 58px;
+  z-index: 20;
   display: flex;
   flex-direction: column;
   align-items: center;

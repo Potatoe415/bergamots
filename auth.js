@@ -1,8 +1,8 @@
 // Google Sign-In status widget for the hub only (see docs/DECISIONS.md).
-// No backend, no session, no personal data stored: the credential Google
-// returns is never read, verified or sent anywhere. Its mere presence in
-// `handleCredentialResponse` means the sign-in succeeded, so we keep only a
-// boolean "logged in" flag — no email, name or picture.
+// No backend, no session: the credential Google returns is never verified or
+// sent anywhere. Its JWT payload is decoded client-side only to read the
+// signed-in email, which is then the only personal data kept, in
+// `localStorage`, so it can be shown in the popover and survive a reload.
 
 // Not a secret: this is the public OAuth Client ID, meant to be visible in
 // browser code and restricted by its Authorized JavaScript origins (Google
@@ -15,13 +15,14 @@ const GSI_SCRIPT_URL = "https://accounts.google.com/gsi/client";
 const AUTH_STORAGE_KEY = "bergamots-auth";
 const WIDGET_ID = "auth-widget";
 const GOOGLE_BUTTON_CONTAINER_ID = "auth-google-button";
+const PROFILE_URL = "/profile";
 
 const ACCOUNT_ICON_SVG = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
   <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.6-5-8-5Z"/>
 </svg>`;
 
 const authState = {
-  isLoggedIn: readStoredAuth()
+  email: readStoredEmail()
 };
 
 export function initAuthWidget() {
@@ -33,29 +34,42 @@ export function initAuthWidget() {
       auto_select: false,
       cancel_on_tap_outside: true
     });
-    if (!authState.isLoggedIn) {
+    if (!authState.email) {
       renderGoogleButton();
     }
   });
 }
 
-function readStoredAuth() {
+function readStoredEmail() {
   try {
-    return localStorage.getItem(AUTH_STORAGE_KEY) === "in";
+    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+    // Guards against the earlier boolean-flag format ("in"): only treat the
+    // stored value as an email if it actually looks like one.
+    return stored && stored.includes("@") ? stored : "";
   } catch {
-    return false;
+    return "";
   }
 }
 
-function persistAuth(isLoggedIn) {
+function persistEmail(email) {
   try {
-    if (isLoggedIn) {
-      localStorage.setItem(AUTH_STORAGE_KEY, "in");
+    if (email) {
+      localStorage.setItem(AUTH_STORAGE_KEY, email);
     } else {
       localStorage.removeItem(AUTH_STORAGE_KEY);
     }
   } catch {
     // Storage unavailable (private mode, etc.) — status just won't persist.
+  }
+}
+
+function decodeJwtEmail(jwt) {
+  try {
+    const payloadSegment = jwt.split(".")[1];
+    const json = atob(payloadSegment.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(json).email || "";
+  } catch {
+    return "";
   }
 }
 
@@ -68,16 +82,16 @@ function loadGoogleScript(onLoaded) {
   document.head.appendChild(script);
 }
 
-function handleCredentialResponse() {
-  authState.isLoggedIn = true;
-  persistAuth(true);
+function handleCredentialResponse(response) {
+  authState.email = decodeJwtEmail(response.credential);
+  persistEmail(authState.email);
   closePopover();
   renderAuthWidget();
 }
 
 function logout() {
-  authState.isLoggedIn = false;
-  persistAuth(false);
+  authState.email = "";
+  persistEmail("");
   if (window.google?.accounts?.id) {
     window.google.accounts.id.disableAutoSelect();
   }
@@ -95,7 +109,7 @@ function renderAuthWidget() {
   if (!wrap) return;
 
   wrap.innerHTML = "";
-  wrap.classList.toggle("is-logged-in", authState.isLoggedIn);
+  wrap.classList.toggle("is-logged-in", !!authState.email);
 
   const trigger = document.createElement("button");
   trigger.type = "button";
@@ -112,13 +126,8 @@ function createPopoverNode() {
   const popover = document.createElement("div");
   popover.className = "auth-popover";
 
-  if (authState.isLoggedIn) {
-    const logoutButton = document.createElement("button");
-    logoutButton.type = "button";
-    logoutButton.className = "auth-logout";
-    logoutButton.textContent = "Se déconnecter";
-    logoutButton.addEventListener("click", logout);
-    popover.appendChild(logoutButton);
+  if (authState.email) {
+    popover.appendChild(createLoggedInContent());
   } else {
     const googleButtonContainer = document.createElement("div");
     googleButtonContainer.id = GOOGLE_BUTTON_CONTAINER_ID;
@@ -126,6 +135,30 @@ function createPopoverNode() {
   }
 
   return popover;
+}
+
+function createLoggedInContent() {
+  const fragment = document.createDocumentFragment();
+
+  const email = document.createElement("p");
+  email.className = "auth-email";
+  email.textContent = authState.email;
+  fragment.appendChild(email);
+
+  const profileLink = document.createElement("a");
+  profileLink.className = "auth-profile-link";
+  profileLink.href = PROFILE_URL;
+  profileLink.textContent = "Profil";
+  fragment.appendChild(profileLink);
+
+  const logoutButton = document.createElement("button");
+  logoutButton.type = "button";
+  logoutButton.className = "auth-logout";
+  logoutButton.textContent = "Se déconnecter";
+  logoutButton.addEventListener("click", logout);
+  fragment.appendChild(logoutButton);
+
+  return fragment;
 }
 
 function renderGoogleButton() {
