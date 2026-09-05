@@ -26,6 +26,9 @@ Status: Living document. Always reflects current state.
 - (none)
 
 ## Done
+- [x] Delay game-over overlay ~2s so the last placed tile / losing board stays visible (online + local/bot).
+- [x] iOS Safari: hand tiles clipped under the browser toolbar until rotate-to-landscape (visual viewport height + hand `min-w-0`).
+- [x] Share-game-link button on the online create-room connecting screen (native share / copy `?room=` URL).
 - [x] Migrated online backend from Railway/Socket.IO to Vercel Serverless Functions + Supabase (shared project with coinchapp) — see docs/DECISIONS.md (2026-08-03).
 - [x] Play vs Bot: co-op heuristic bot + lobby button + auto-play in local mode.
 - [x] Bootstrap context architecture.

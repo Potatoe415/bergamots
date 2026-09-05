@@ -5,13 +5,12 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Online backend migrated from Railway/Socket.IO to Vercel Serverless Functions + Supabase (reusing coinchapp's Supabase project/tables). Env vars are set on Vercel; the "create room" 500 is fixed and confirmed working in production via a direct `/api/join` call. Still needs a real two-browser-tab play-test.
-Current_Goal: Manually play-test the online flow end-to-end in the browser (two tabs), then resume normal feature work.
-Last_Action: Removed the perceived ~1s lag when playing a card online: `useOnlineGame` now applies an optimistic local prediction of my own move (`client/src/lib/optimisticMove.ts`) before awaiting `/api/*`, then reconciles with the server's authoritative state (and refetches to roll back if the move is rejected). Predictions only cover moves resolvable from the redacted client state (island/monster placement, discard-two, non-final start-discard contribution); Start/Finish cards and hidden draws still wait for the server. A move counter makes `refetch` drop snapshots taken before my in-flight move. Client type-check + build pass.
+Status: Online backend on Vercel + Supabase. Create-room works in production. End-to-end two-tab play-test still pending.
+Current_Goal: Delay the game-over overlay so the last board state stays visible.
+Last_Action: GameOver waits 2s after win/loss so the last tile (or losing board) can be seen; last grid change is highlighted even when the turn never flips.
 Next_Actions:
-- Manually play-test online mode with two browser tabs: create room, join by code, play a few cards (check the card appears instantly and the drawn card follows), reload one tab (session resume), test seat takeover after 30s idle.
-- Re-play-test local/vs-bot modes (unaffected by this migration, but not re-verified since).
-- If any other `/api/*` 500s show up, use `vercel logs <deployment-url>` (CLI is now logged in locally; `vercel ls` in `tranquil/` lists deployments) rather than the Cursor↔Vercel MCP, which is scoped to the `coinchapp` project only.
+- Manually play-test online mode with two browser tabs: create room, join by code/link, play a few cards, reload, seat takeover.
+- Re-play-test local/vs-bot modes on a real iPhone Safari if possible.
 
 Open_Questions:
 - Bot is greedy+feasibility-aware (no multi-turn search). Add look-ahead later if needed.
@@ -21,8 +20,8 @@ Open_Questions:
 - No idle-turn timer/bot-takeover for online mode yet (coinchapp has one) — add only if disconnections prove to be a real problem.
 
 Recent_Changes:
+- 2026-09-05 UX: 2s delay before GameOver overlay; highlight last grid change on game end.
+- 2026-09-05 Bugfix: iOS Safari hand clipped by toolbar — sync `--app-height` to visualViewport, pin GameBoard, shrink hand grid items.
+- 2026-09-05 UX: Share-game-link button on the online create-room stepper (native share or clipboard fallback).
 - 2026-08-03 UX: Optimistic local move application in online mode — the card lands on the grid on click instead of after the API round-trip.
-- 2026-08-03 Bugfix: "create room" 500 — `shared` package now compiled to CommonJS (`shared/dist`) instead of shipping raw `.ts` as `main`, which Vercel's Node function runtime couldn't `require()`. Build wired into `vercel.json` + root dev scripts.
-- 2026-08-03 Debug: Tagged app/server/db console logging for every step of connect/join/resume (client/src/lib/log.ts, api/_lib/log.ts).
-- 2026-08-03 UI: Multi-step "connecting" progress stepper for online create/join/resume (ConnectingScreen.tsx + useOnlineGame connectionKind/connectionStep).
-- 2026-08-03 Migration: Railway/Socket.IO → Vercel Serverless Functions + Supabase (shared project with coinchapp, `game_type='tranquillity'`, no new SQL migration needed). See docs/DECISIONS.md for rationale/trade-offs.
+- 2026-08-03 Bugfix: "create room" 500 — `shared` package now compiled to CommonJS (`shared/dist`) instead of shipping raw `.ts` as `main`.

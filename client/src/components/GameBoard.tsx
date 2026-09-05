@@ -7,6 +7,7 @@ import GameOver from './GameOver';
 import SettingsPanel from './SettingsPanel';
 import { useSettings } from '../settings';
 import { playTurnSound } from '../sounds';
+import { GAME_OVER_REVEAL_MS, findLastGridChange, useDelayedGameOver } from '../lib/endgameReveal';
 
 interface Props {
   gameState: ClientGameState;
@@ -73,6 +74,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   const me = gameState.players[myPlayerIndex];
   const movesForSelected: LegalMove[] = selectedCard ? legalMoves.filter(m => m.cardId === selectedCard.id) : [];
   const statusMessage = getStatusMessage(gameState, t);
+  const showGameOver = useDelayedGameOver(winner);
 
   // ── Opponent play preview ───────────────────────────────────────────────────
   const [opponentPlay, setOpponentPlay] = useState<{ card: Card; position: number } | null>(
@@ -80,38 +82,44 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   );
   const prevGridRef = useRef<GridCell[]>(grid);
   const prevIsMyTurnRef = useRef(isMyTurn);
+  const prevWinnerRef = useRef(winner);
+  const opponentPlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flashGridChange(play: { card: Card; position: number }, ms = GAME_OVER_REVEAL_MS) {
+    if (opponentPlayTimerRef.current) clearTimeout(opponentPlayTimerRef.current);
+    setOpponentPlay(play);
+    opponentPlayTimerRef.current = setTimeout(() => {
+      setOpponentPlay(null);
+      opponentPlayTimerRef.current = null;
+    }, ms);
+  }
 
   // Local mode: initialOpponentPlay is set on mount — start auto-clear timer
   useEffect(() => {
     if (!initialOpponentPlay) return;
-    const timer = setTimeout(() => setOpponentPlay(null), 2000);
-    return () => clearTimeout(timer);
+    flashGridChange(initialOpponentPlay);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Online mode: detect opponent's card when the turn flips to us
+  // Highlight the last grid change when the turn flips to us, or when the game
+  // just ended (the turn never flips, so the last tile would otherwise vanish
+  // under the overlay).
   useEffect(() => {
     const wasMyTurn = prevIsMyTurnRef.current;
     prevIsMyTurnRef.current = isMyTurn;
     const prevGrid = prevGridRef.current;
     prevGridRef.current = grid;
+    const justEnded = Boolean(winner) && !prevWinnerRef.current;
+    prevWinnerRef.current = winner;
 
-    if (isMyTurn && !wasMyTurn) {
-      // Regular card placed: a cell gained a card
-      const placedCell = grid.find((cell, i) => cell.card && !prevGrid[i]?.card);
-      if (placedCell?.card) {
-        setOpponentPlay({ card: placedCell.card, position: placedCell.position });
-        const timer = setTimeout(() => setOpponentPlay(null), 2000);
-        return () => clearTimeout(timer);
-      }
-      // Monster card played: a cell lost its card (monster removed it)
-      const clearedIdx = grid.findIndex((cell, i) => !cell.card && prevGrid[i]?.card);
-      if (clearedIdx >= 0) {
-        setOpponentPlay({ card: prevGrid[clearedIdx].card!, position: clearedIdx });
-        const timer = setTimeout(() => setOpponentPlay(null), 2000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isMyTurn, grid]);
+    if (!(isMyTurn && !wasMyTurn) && !justEnded) return;
+    const change = findLastGridChange(grid, prevGrid);
+    if (!change) return;
+    flashGridChange(change);
+  }, [isMyTurn, grid, winner]);
+
+  useEffect(() => () => {
+    if (opponentPlayTimerRef.current) clearTimeout(opponentPlayTimerRef.current);
+  }, []);
 
   // ── Sound on turn start ─────────────────────────────────────────────────────
   const prevIsMyTurnSoundRef = useRef(isMyTurn);
@@ -122,6 +130,18 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   }, [isMyTurn, settings.soundOnMyTurn]);
 
   // ───────────────────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const prevHtml = html.style.overflow;
+    const prevBody = document.body.style.overflow;
+    html.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      html.style.overflow = prevHtml;
+      document.body.style.overflow = prevBody;
+    };
+  }, []);
 
   useEffect(() => {
     if (!startDiscardState?.isMyTurnToContribute) setStartDiscardSelected(new Set());
@@ -181,8 +201,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     if (!move) return;
     if (move.discardCost === 0) {
       if (selectedCard.type === 'monster') {
-        setOpponentPlay({ card: selectedCard, position: pos });
-        setTimeout(() => setOpponentPlay(null), 700);
+        flashGridChange({ card: selectedCard, position: pos }, 700);
       }
       onPlayCard(selectedCard.id, pos, []);
       setSelectedCard(null);
@@ -229,7 +248,16 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
     : 0;
 
   return (
-    <div id="game-board" className="h-[100dvh] overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950">
+    <div
+      id="game-board"
+      className="fixed overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950"
+      style={{
+        top: 'var(--app-offset-top, 0px)',
+        left: 'var(--app-offset-left, 0px)',
+        height: 'var(--app-height, 100svh)',
+        width: 'var(--app-width, 100%)',
+      }}
+    >
       {/* Opponent info bar */}
       <header id="game-header" className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -408,7 +436,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       )}
 
       {/* My hand */}
-      <div id="game-footer" className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 py-2">
+      <div id="game-footer" className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-x-hidden">
         <div className="flex items-center justify-end gap-4 mb-1">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
@@ -434,7 +462,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         />
       </div>
 
-      {winner && <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />}
+      {showGameOver && winner && <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />}
       {showSettings && (
         <SettingsPanel
           onClose={() => setShowSettings(false)}
