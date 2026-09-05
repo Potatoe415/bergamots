@@ -1,6 +1,7 @@
 /* --- Hub shell: centered card, capped width so the shared radial-gradient
    background (see shared/css/base.css) frames it on wide screens --- */
 .hub-shell {
+  position: relative;
   width: 100%;
   max-width: 880px;
   margin: 0 auto;

@@ -28,10 +28,14 @@
             class="main-banner"
           />
         </picture>
-        <div class="auth-widget" id="auth-widget"></div>
-        <div class="lang-switcher" id="lang-switcher"></div>
         <h1 class="banner-title" data-id="hub-banner-title">Game on!</h1>
       </header>
+
+      <!-- Outside .hub-header on purpose: that header has overflow:hidden
+           to contain the banner image, which was clipping the auth popover
+           whenever it grew taller than the remaining header height. -->
+      <div class="auth-widget" id="auth-widget"></div>
+      <div class="lang-switcher" id="lang-switcher"></div>
 
       <main class="hub-main">
         <nav class="category-tabs" id="category-tabs"></nav>
