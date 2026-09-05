@@ -5,13 +5,13 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on Bergamots Production + Preview. Hub has a Google Sign-In icon (top-right, rightmost, real `GOOGLE_CLIENT_ID` from Google Cloud project "muchogames") that now shows the signed-in email and a "Profil" link to a placeholder `/profile` page; login confirmed working on `bergamots.vercel.app`, still failing on the custom domain `muchogames.win` (Cloudflare -> Vercel) with Google's generic "doesn't comply with OAuth 2.0 policy" error even after adding a Test user — suspected stale Cloudflare cache serving an old build, not yet confirmed/fixed.
-Current_Goal: Get Google login working on `muchogames.win` too (likely needs a Cloudflare cache purge), then commit/push the latest UI changes (email display, profile link, icon reorder, z-index fix).
-Last_Action: Implemented the Google Sign-In status widget on the hub (`auth.js`, `#auth-widget`, `hub.css`), updated `docs/PRODUCT.md`/`docs/TECH.md`/`docs/DECISIONS.md`, verified lint/format/build. User provided the real OAuth Client ID (from a downloaded `client_secret_*.json`, whose `client_secret` is unused and was not committed) — pasted into `auth.js`; that revision was committed and pushed. Since then: moved the login icon to the right of the language switcher, added explicit `z-index` to fix the popover rendering behind the flags, and — per new user request — now decode+store the signed-in email (`localStorage`, client-only) to show it in the popover, plus a "Profil" link to a new placeholder page (`public/profile/`, same unbundled pattern as `public/admin/`). Not yet committed.
+Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on Bergamots Production + Preview. Hub has a Google Sign-In icon (rightmost, real `GOOGLE_CLIENT_ID` from Google Cloud project "muchogames") showing the signed-in email + a "Profil" link (pushed, commit `d26585a`). Login confirmed working on `bergamots.vercel.app`, still failing on the custom domain `muchogames.win` (Cloudflare -> Vercel) with Google's "doesn't comply with OAuth 2.0 policy" error even after adding a Test user — suspected stale Cloudflare cache, not yet confirmed/fixed. `/profile` just gained an editable "Nom" field (`bergamots-player-name` in `localStorage`), not yet committed and not yet read by any game.
+Current_Goal: Commit/push the profile "Nom" field, then get Google login working on `muchogames.win` (Cloudflare cache purge).
+Last_Action: Added an editable "Nom" text field + save button to `/profile` (`public/profile/profile.js`, `bergamots-player-name` in `localStorage`), per explicit user request to defer wiring it into games to a later task. Updated `docs/PRODUCT.md`/`docs/TECH.md`/`docs/DECISIONS.md`.
 Next_Actions:
+- Run lint/format/build, then commit and push the profile "Nom" field.
 - Ask the user to purge the Cloudflare cache for `muchogames.win` and retry login there.
-- Run lint/format/build, then commit and push the new UI changes (email display, profile link, icon reorder, z-index fix, `public/profile/`).
-- Test the sign-in/sign-out round-trip again on all three hosts once the above is deployed.
+- Future task (not started): read `bergamots-player-name` from each game and pre-fill its own name input.
 - Hard-refresh Yatzy: emoji button should sit on the far right of the board; picker still opens upward.
 - Ask the remote player to hard-refresh / fully close-reopen the Yatzy tab if emoji still seem silent (stale service worker is the leading suspect, not the broadcast code).
 - Confirm the checkbox + 3-tap extra roll in a real game (local duo or online).
@@ -37,8 +37,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - No automated tests.
 
 Recent_Changes:
-- 2026-09-05 Auth popover now shows the signed-in email + a "Profil" link to a new placeholder `/profile` page; login icon moved right of the language switcher; z-index fix so the popover no longer renders behind the flags.
+- 2026-09-05 `/profile` gained an editable "Nom" field, saved client-side (`bergamots-player-name`). Not yet consumed by any game.
+- 2026-09-05 Auth popover shows the signed-in email + a "Profil" link to `/profile`; login icon moved right of the language switcher; z-index fix for the popover-behind-flags bug.
 - 2026-09-05 Google Sign-In status widget added to the hub (`auth.js`, client-only). Real `GOOGLE_CLIENT_ID` set; works on `bergamots.vercel.app`, still broken on `muchogames.win`.
 - 2026-09-05 Yatzy reaction button pinned to the right edge of the game card. SW v22.
-- 2026-09-04 Yatzy reaction button moved under the LANCER button (no longer a floating corner). SW v20.
 - 2026-09-04 Fixed `api/yatsy/gifs.js` helper imports (`../_lib` not `../../_lib`). Production was crashing with `FUNCTION_INVOCATION_FAILED` even with `GIPHY_API_KEY` set.

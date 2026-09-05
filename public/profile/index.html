@@ -17,12 +17,49 @@
   <body>
     <main class="profile-shell" data-id="profile-page">
       <h1 class="profile-title" data-id="profile-title">Profil</h1>
-      <p class="profile-empty" data-id="profile-empty-state">
-        Aucune information disponible pour le moment.
-      </p>
+
+      <form
+        class="profile-name-form"
+        id="profile-name-form"
+        data-id="profile-name-form"
+      >
+        <label
+          class="profile-label"
+          for="profile-name-input"
+          data-id="profile-name-label"
+          >Nom</label
+        >
+        <input
+          class="profile-name-input"
+          id="profile-name-input"
+          data-id="profile-name-input"
+          type="text"
+          placeholder="Ton nom"
+          autocomplete="name"
+          maxlength="40"
+        />
+        <button
+          class="profile-save-button"
+          type="submit"
+          data-id="profile-name-save-button"
+        >
+          Enregistrer
+        </button>
+        <p
+          class="profile-saved-notice"
+          id="profile-name-saved-notice"
+          data-id="profile-name-saved-notice"
+          hidden
+        >
+          Enregistré ✓
+        </p>
+      </form>
+
       <a class="profile-back" href="/" data-id="profile-back-to-hub"
         >← Retour à l'accueil</a
       >
     </main>
+
+    <script type="module" src="/profile/profile.js"></script>
   </body>
 </html>
