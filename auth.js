@@ -1,8 +1,10 @@
 // Google Sign-In status widget for the hub only (see docs/DECISIONS.md).
 // No backend, no session: the credential Google returns is never verified or
 // sent anywhere. Its JWT payload is decoded client-side only to read the
-// signed-in email, which is then the only personal data kept, in
-// `localStorage`, so it can be shown in the popover and survive a reload.
+// signed-in email (kept in `localStorage` so it can be shown in the popover
+// and survive a reload) and, once, the display name — used to pre-fill the
+// profile's "Nom" field the first time only, never overwriting a name the
+// player already typed themselves on /profile.
 
 // Not a secret: this is the public OAuth Client ID, meant to be visible in
 // browser code and restricted by its Authorized JavaScript origins (Google
@@ -13,6 +15,10 @@ const GOOGLE_CLIENT_ID =
 
 const GSI_SCRIPT_URL = "https://accounts.google.com/gsi/client";
 const AUTH_STORAGE_KEY = "bergamots-auth";
+// Same key as public/profile/profile.js — there is no shared module between
+// this root-level bundled file and that unbundled page, so the string is
+// duplicated on purpose (see docs/TECH.md).
+const NAME_STORAGE_KEY = "bergamots-player-name";
 const WIDGET_ID = "auth-widget";
 const GOOGLE_BUTTON_CONTAINER_ID = "auth-google-button";
 const PROFILE_URL = "/profile";
@@ -63,13 +69,26 @@ function persistEmail(email) {
   }
 }
 
-function decodeJwtEmail(jwt) {
+function decodeJwtPayload(jwt) {
   try {
     const payloadSegment = jwt.split(".")[1];
     const json = atob(payloadSegment.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(json).email || "";
+    return JSON.parse(json);
   } catch {
-    return "";
+    return null;
+  }
+}
+
+// Only fills the profile "Nom" field the first time (i.e. while it is still
+// empty), so it never overwrites a name the player already typed themselves.
+function fillNameIfEmpty(googleName) {
+  if (!googleName) return;
+  try {
+    if (!localStorage.getItem(NAME_STORAGE_KEY)) {
+      localStorage.setItem(NAME_STORAGE_KEY, googleName);
+    }
+  } catch {
+    // Storage unavailable — no pre-fill, not fatal.
   }
 }
 
@@ -83,8 +102,10 @@ function loadGoogleScript(onLoaded) {
 }
 
 function handleCredentialResponse(response) {
-  authState.email = decodeJwtEmail(response.credential);
+  const payload = decodeJwtPayload(response.credential) || {};
+  authState.email = payload.email || "";
   persistEmail(authState.email);
+  fillNameIfEmpty(payload.name);
   closePopover();
   renderAuthWidget();
 }
