@@ -518,9 +518,10 @@ select {
 }
 
 .emoji-trigger {
-  position: relative;
+  position: absolute;
+  right: 0;
+  bottom: 1.15rem;
   z-index: 15;
-  align-self: center;
 }
 
 .emoji-trigger-button {
@@ -1962,6 +1963,11 @@ body.player-two-turn .player-cell.valid {
     padding: 0.24rem 0.6rem;
     font-size: 0.68rem;
     border-width: 0.18rem;
+  }
+
+  .emoji-trigger {
+    right: 0;
+    bottom: 0.85rem;
   }
 
   .emoji-trigger-button {
