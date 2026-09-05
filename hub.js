@@ -1,3 +1,4 @@
+import { initAuthWidget } from "./auth.js";
 import { trackGameLaunch } from "./shared/js/analytics.js";
 import { APP_VERSION } from "./version.js";
 
@@ -42,6 +43,7 @@ const state = {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderVersionBadge();
+  initAuthWidget();
   initializeDashboard();
 });
 
