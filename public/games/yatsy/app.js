@@ -71,6 +71,7 @@ const elements = {
   playerNameLabel: document.getElementById("player-name-label"),
   playerNameInput: document.getElementById("player-name-input"),
   playerNameRow: document.getElementById("player-name-row"),
+  playerNameAvatar: document.getElementById("player-name-avatar"),
   soloGameButton: document.getElementById("solo-game-button"),
   robotGameButton: document.getElementById("robot-game-button"),
   playOnlineButton: document.getElementById("play-online-button"),
@@ -500,6 +501,7 @@ function renderSplash() {
   if (elements.playerNameRow) {
     elements.playerNameRow.classList.toggle("is-hidden", !showOnline);
   }
+  renderOnlineAvatar(elements.playerNameAvatar, showOnline);
   elements.createGameButton.classList.toggle("is-hidden", !showOnline);
   if (elements.splashJoin) {
     elements.splashJoin.classList.toggle("is-hidden", !showOnline || isWaiting || isCreating || isRestoring);
@@ -592,19 +594,58 @@ function renderHeader() {
 function renderScoreSummary() {
   const playerOneTotal = calculateGrandTotal(state.scores[0]);
   const playerTwoTotal = calculateGrandTotal(state.scores[1]);
-  const activeClass = !state.gameOver ? "is-active" : "";
+  const article = document.createElement("article");
+  article.className = `score-card${!state.gameOver ? " is-active" : ""}`;
+  article.appendChild(buildScoreHeader(playerOneTotal, playerTwoTotal));
+  elements.scoreSummary.replaceChildren(article);
+}
 
-  elements.scoreSummary.innerHTML = `
-    <article class="score-card ${activeClass}">
-      <div class="score-card-header">
-        <span class="score-card-scoreline">
-          <span class="score-card-value player-one-score">${playerOneTotal}</span>
-          <span class="score-card-divider">/</span>
-          <span class="score-card-value player-two-score">${playerTwoTotal}</span>
-        </span>
-      </div>
-    </article>
+function buildPlayerNameChip() {
+  const chip = document.createElement("span");
+  chip.className = "score-card-player";
+  chip.dataset.id = "yatsy-score-local-name";
+  appendAvatarImg(chip, localAvatarSrc());
+  const label = document.createElement("span");
+  label.textContent = state.players[state.session.localPlayerIndex].name;
+  chip.appendChild(label);
+  return chip;
+}
+
+function buildScoreHeader(playerOneTotal, playerTwoTotal) {
+  const header = document.createElement("div");
+  header.className = "score-card-header";
+  if (isOnlineGame() && Number.isInteger(state.session.localPlayerIndex)) {
+    header.appendChild(buildPlayerNameChip());
+  }
+  const scoreline = document.createElement("span");
+  scoreline.className = "score-card-scoreline";
+  scoreline.innerHTML = `
+      <span class="score-card-value player-one-score">${playerOneTotal}</span>
+      <span class="score-card-divider">/</span>
+      <span class="score-card-value player-two-score">${playerTwoTotal}</span>
   `;
+  header.appendChild(scoreline);
+  return header;
+}
+
+function localAvatarSrc() {
+  return window.PlayerProfile?.getAvatarThumb?.() || window.PlayerProfile?.getAvatar?.() || "";
+}
+
+function renderOnlineAvatar(img, visible) {
+  if (!img) return;
+  const src = visible ? localAvatarSrc() : "";
+  img.src = src;
+  img.hidden = !src;
+}
+
+function appendAvatarImg(parent, src) {
+  if (!src) return;
+  const img = document.createElement("img");
+  img.className = "player-name-avatar";
+  img.alt = "";
+  img.src = src;
+  parent.appendChild(img);
 }
 
 function renderScoreboard() {

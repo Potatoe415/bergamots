@@ -5,14 +5,15 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on Bergamots Production + Preview. Hub has a Google Sign-In icon (rightmost, real `GOOGLE_CLIENT_ID` from Google Cloud project "muchogames") showing the signed-in email + a "Profil" link. Login confirmed working on `bergamots.vercel.app`, still failing on the custom domain `muchogames.win`. `/profile` has Nom + a single clickable Avatar (no separate change button), copy in FR/EN/ES from `bergamots-lang`. Yatzy shows the name only on the Play Online step. Coinche/Bouilla (`coinchapp`)/Tranquil (`tranquil`) still get `?name=` from `hub.js`. See `docs/TECH.md` "Player identity contract" and `docs/DECISIONS.md` 2026-09-06.
-Current_Goal: None active — profile header + avatar crop pushed to main.
-Last_Action: Committed and pushed profile game header (back + language settings), avatar crop step, and 50 KB JPEG cap.
+Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on Bergamots Production + Preview. Hub has a Google Sign-In icon (rightmost, real `GOOGLE_CLIENT_ID` from Google Cloud project "muchogames") showing the signed-in email + a "Profil" link. Login confirmed working on `bergamots.vercel.app`, still failing on the custom domain `muchogames.win`. `/profile` has Nom + a single clickable Avatar (no separate change button), copy in FR/EN/ES from `bergamots-lang`. Yatzy shows the name only on the Play Online step. Coinche/Bouilla (`coinchapp`)/Tranquil (`tranquil`) get `?name=` and a tiny `?avatar=` thumb from `hub.js`. See `docs/DECISIONS.md` 2026-09-06.
+Current_Goal: Show the player's own avatar next to their name in online Coinche, Bouilla, Yatzy, and Tranquil.
+Last_Action: Stored a 48 px JPEG thumb, passed it as `?avatar=` on external launches, and showed it next to the local name in Yatzy online (splash + score chip).
 Next_Actions:
-- Confirm `/profile` header: back left, gear right, language-only panel, copy updates immediately.
-- Confirm avatar crop (pan/zoom) then saved file stays under 50 KB.
-- Confirm `/profile` shows "Aucun jeu lancé" then, after launching games from the hub, the total and top five.
-- Confirm the checkbox + 3-tap extra roll in a real game (local duo or online).
+- Confirm Yatzy Play Online: small avatar beside the name field and beside the local name on the score chip; solo/robot have neither.
+- Confirm Coinche/Bouilla online GameRoom chip (not local/ad-hoc) after those apps are deployed.
+- Confirm Tranquil online `GameBoard` (not local/bot) after that app is deployed.
+- Ask whether PRODUCT/TECH should drop "avatar is Bergamots-only".
+- Confirm `/profile` crop then saved file stays under 50 KB.
 - Rotate `ADMIN_PASSWORD` and copy `SUPABASE_URL` to Preview.
 - Decide what to do about the GitHub branch-protection rule.
 
@@ -33,8 +34,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - `npm run build` only bundles `index.html` + `wordplayer.html`.
 - No automated tests.
 
+- 2026-09-06 Tiny avatar thumb (`bergamots-player-avatar-thumb`) shown next to own name in online games; hub launches add `?avatar=`. Reverses Bergamots-only avatar. See DECISIONS.
 - 2026-09-06 Profile header matches games (back + settings/language). Avatar upload adds a crop step before the 50 KB JPEG. Login does not override bergamots-lang.
 - 2026-09-06 Coinche/Bouilla Play Online now keeps the hub profile name (`?name=` was dropped on the splash → `/online` navigation).
 - 2026-09-06 Hub top-right account button shows the stored JPEG avatar; profile upload compresses to a square JPEG under ~50 KB.
 - 2026-09-06 Profile: single clickable avatar (removed change button); page copy follows `bergamots-lang`. Yatzy: extra Play Online step before name/create/join. Auth popover translated.
-- 2026-09-06 Profile + cross-game name propagation, per approved plan: `/profile` Avatar upload (`bergamots-player-avatar`); new `public/shared/js/player-profile.js`; `hub.js` `appendLaunchParams()` adds `?name=` to external launches; Yatzy name field (now online-only); `coinchapp`/`tranquil` pre-fill from `?name=`. See DECISIONS.

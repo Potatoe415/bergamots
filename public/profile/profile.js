@@ -252,9 +252,9 @@ async function onAvatarFilePicked(fileInput, errorNotice) {
 
   try {
     const image = await loadImageFromFile(file);
-    const dataUrl = await openAvatarCrop(image, getCopy());
-    if (!dataUrl) return;
-    window.PlayerProfile.setAvatar(dataUrl);
+    const cropped = await openAvatarCrop(image, getCopy());
+    if (!cropped) return;
+    window.PlayerProfile.setAvatar(cropped.avatar, cropped.thumb);
     renderAvatarPreview();
   } catch {
     showError(errorNotice, getCopy().imageLoadError);

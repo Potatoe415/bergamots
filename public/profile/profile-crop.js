@@ -160,16 +160,20 @@ function onEscape(event) {
   }
 }
 
+const AVATAR_THUMB_PX = 48;
+
 function applyCrop() {
   const scale = displayScale();
   const size = stageSize();
-  finish(
-    compressCroppedImage(crop.image, {
-      sx: -crop.offsetX / scale,
-      sy: -crop.offsetY / scale,
-      sSize: size / scale
-    })
-  );
+  const region = {
+    sx: -crop.offsetX / scale,
+    sy: -crop.offsetY / scale,
+    sSize: size / scale
+  };
+  finish({
+    avatar: compressCroppedImage(crop.image, region),
+    thumb: encodeJpeg(crop.image, region, AVATAR_THUMB_PX, 0.5)
+  });
 }
 
 function finish(dataUrl) {

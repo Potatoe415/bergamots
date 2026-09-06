@@ -1,4 +1,5 @@
 import {
+  getStoredPlayerAvatarThumb,
   getStoredPlayerName,
   initAuthWidget,
   refreshAuthWidget
@@ -336,7 +337,12 @@ function isExternalLaunch(launchUrl) {
 function determineTargetUrl(game) {
   if (game.launch) {
     return isExternalLaunch(game.launch)
-      ? appendLaunchParams(game.launch, state.lang, getStoredPlayerName())
+      ? appendLaunchParams(
+          game.launch,
+          state.lang,
+          getStoredPlayerName(),
+          getStoredPlayerAvatarThumb()
+        )
       : game.launch;
   }
   if (game.type === "custom" && game.indexPath) {
@@ -346,13 +352,16 @@ function determineTargetUrl(game) {
 }
 
 // External games run in a different origin, so `localStorage` cannot be
-// shared with them — the player's name (and language) can only travel as a
-// URL param. Receiving games only use it to pre-fill their own name input;
-// see docs/TECH.md "Player identity" for the contract.
-function appendLaunchParams(url, lang, name) {
+// shared with them — the player's name, language, and a tiny JPEG avatar
+// thumb travel as URL params. Receiving games only use them to pre-fill
+// their own identity UI; see docs/TECH.md "Player identity".
+function appendLaunchParams(url, lang, name, avatarThumb) {
   const params = new URLSearchParams({ lang });
   if (name) {
     params.set("name", name);
+  }
+  if (avatarThumb) {
+    params.set("avatar", avatarThumb);
   }
   const separator = url.includes("?") ? "&" : "?";
   return `${url}${separator}${params.toString()}`;

@@ -10,6 +10,7 @@
 (function () {
   const NAME_KEY = "bergamots-player-name";
   const AVATAR_KEY = "bergamots-player-avatar";
+  const AVATAR_THUMB_KEY = "bergamots-player-avatar-thumb";
   const LAUNCH_COUNTS_KEY = "bergamots-launch-counts";
 
   function getName(fallback) {
@@ -40,15 +41,28 @@
     }
   }
 
-  function setAvatar(dataUrl) {
+  function setAvatar(dataUrl, thumbUrl) {
     try {
       if (dataUrl) {
         localStorage.setItem(AVATAR_KEY, dataUrl);
+        if (thumbUrl) {
+          localStorage.setItem(AVATAR_THUMB_KEY, thumbUrl);
+        }
       } else {
         localStorage.removeItem(AVATAR_KEY);
+        localStorage.removeItem(AVATAR_THUMB_KEY);
       }
     } catch {
       // Storage unavailable, or quota exceeded — avatar just won't persist.
+    }
+  }
+
+  function getAvatarThumb() {
+    try {
+      const stored = localStorage.getItem(AVATAR_THUMB_KEY) || "";
+      return stored.startsWith("data:image/") ? stored : "";
+    } catch {
+      return "";
     }
   }
 
@@ -94,10 +108,12 @@
   window.PlayerProfile = {
     NAME_KEY: NAME_KEY,
     AVATAR_KEY: AVATAR_KEY,
+    AVATAR_THUMB_KEY: AVATAR_THUMB_KEY,
     LAUNCH_COUNTS_KEY: LAUNCH_COUNTS_KEY,
     getName: getName,
     setName: setName,
     getAvatar: getAvatar,
+    getAvatarThumb: getAvatarThumb,
     setAvatar: setAvatar,
     getLaunchTotal: getLaunchTotal,
     getFavoriteLaunches: getFavoriteLaunches

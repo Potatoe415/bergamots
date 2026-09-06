@@ -360,6 +360,25 @@ select {
   margin-bottom: 0.2rem;
 }
 
+.splash-name-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.player-name-avatar {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 0.08rem solid rgba(255, 255, 255, 0.55);
+}
+
+.player-name-avatar[hidden] {
+  display: none;
+}
+
 .splash-name-input {
   min-height: 2.9rem;
   border-radius: 1rem;
@@ -795,6 +814,28 @@ h1 {
   justify-content: center;
   gap: 0.5rem;
   margin: 0;
+}
+
+.score-card-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  max-width: 6.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--slate);
+}
+
+.score-card-player span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-card-player .player-name-avatar {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-color: rgba(87, 99, 110, 0.35);
 }
 
 .score-card-scoreline {

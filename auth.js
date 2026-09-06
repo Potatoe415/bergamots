@@ -20,7 +20,9 @@ const AUTH_STORAGE_KEY = "bergamots-auth";
 // duplicated on purpose (see docs/TECH.md).
 const NAME_STORAGE_KEY = "bergamots-player-name";
 const AVATAR_STORAGE_KEY = "bergamots-player-avatar";
+const AVATAR_THUMB_STORAGE_KEY = "bergamots-player-avatar-thumb";
 const LANG_STORAGE_KEY = "bergamots-lang";
+const MAX_AVATAR_THUMB_CHARS = 6000;
 const LANGS = ["fr", "en", "es"];
 const WIDGET_ID = "auth-widget";
 const GOOGLE_BUTTON_CONTAINER_ID = "auth-google-button";
@@ -54,6 +56,7 @@ const authState = {
 
 export function initAuthWidget() {
   renderAuthWidget();
+  ensureAvatarThumb();
   loadGoogleScript(() => {
     window.google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
@@ -107,6 +110,46 @@ export function getStoredPlayerName() {
     return localStorage.getItem(NAME_STORAGE_KEY) || "";
   } catch {
     return "";
+  }
+}
+
+export function getStoredPlayerAvatarThumb() {
+  try {
+    const stored = localStorage.getItem(AVATAR_THUMB_STORAGE_KEY) || "";
+    if (!stored.startsWith("data:image/jpeg") || stored.length > MAX_AVATAR_THUMB_CHARS) {
+      return "";
+    }
+    return stored;
+  } catch {
+    return "";
+  }
+}
+
+export function ensureAvatarThumb() {
+  if (getStoredPlayerAvatarThumb() || !readStoredAvatar()) return;
+  const image = new Image();
+  image.onload = () => persistThumb(drawAvatarThumb(image));
+  image.src = readStoredAvatar();
+}
+
+function drawAvatarThumb(image) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 48;
+  canvas.height = 48;
+  const context = canvas.getContext("2d");
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, 48, 48);
+  context.drawImage(image, 0, 0, 48, 48);
+  return canvas.toDataURL("image/jpeg", 0.5);
+}
+
+function persistThumb(dataUrl) {
+  try {
+    if (dataUrl && dataUrl.length <= MAX_AVATAR_THUMB_CHARS) {
+      localStorage.setItem(AVATAR_THUMB_STORAGE_KEY, dataUrl);
+    }
+  } catch {
+    // Storage unavailable — launches just won't carry an avatar.
   }
 }
 
