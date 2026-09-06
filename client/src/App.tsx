@@ -47,6 +47,12 @@ export default function App() {
   const [lobbyInitialRoom, setLobbyInitialRoom] = useState<string | undefined>(
     () => new URLSearchParams(window.location.search).get('room')?.toUpperCase() || undefined
   );
+  // Pre-filled from the Bergamots hub's profile name (?name=), forwarded on
+  // launch exactly like ?lang= — see bergamots/docs/TECH.md "Player identity
+  // contract". Never required, never overwritten once the player edits it.
+  const [lobbyInitialName] = useState<string | undefined>(
+    () => new URLSearchParams(window.location.search).get('name') || undefined
+  );
   const {
     online,
     createRoom,
@@ -256,6 +262,7 @@ export default function App() {
           connectionStatus={online.connectionStatus}
           errorMessage={online.error ?? undefined}
           initialRoomCode={lobbyInitialRoom}
+          initialPlayerName={lobbyInitialName}
         />
       </>
     );

@@ -5,13 +5,14 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 ---
 
-Status: Online backend on Vercel + Supabase. Create-room works in production. End-to-end two-tab play-test still pending.
-Current_Goal: Fix the real mobile hand bug — it's horizontal card overflow, not vertical toolbar clipping (corrected diagnosis after re-reading the screenshots).
-Last_Action: `Hand.tsx` card row now sizes cards via `ResizeObserver` (`client/src/lib/useElementWidth.ts`) instead of CSS Grid `1fr` tracks — computes exact px size to fit `cards.length` in the measured row width, floored at 44px (tappable), with `overflow-x-auto` fallback once that floor is hit (matters for 7-8 card start-discard hands). Verified the sizing formula for hand sizes 1–12 and row widths 256–366px via a standalone Node check — none overflow silently. Also kept the earlier `--app-height` viewport-height fix and the `position: fixed`→`static` revert (docs/DECISIONS.md). NOTHING before this had actually been committed/pushed (last real commit was 2026-09-05 18:07) — an earlier turn likely deployed a preview build directly, which is what the friend tested against.
+Status: Online backend on Vercel + Supabase. Share-game-link button is on origin/main and in the current production bundle at tranquil-woad.vercel.app.
+Current_Goal: Confirm with the user that the share button is live — it only appears after creating an online room, on the waiting stepper (not on the lobby form).
+Last_Action: `App.tsx`/`Lobby.tsx` now pre-fill the pseudo fields (`myName`, local `p1`) from a new `?name=` URL param, forwarded by the Bergamots hub like it already does `?lang=`. See DECISIONS 2026-09-06. Not yet deployed.
 Next_Actions:
-- Commit + push so this actually deploys (nothing has reached git yet — verify with `git log` before telling the user it's live).
-- Have the user's friend re-test on the real iPhone 17 Pro (Safari + Chrome) after this deploys — confirm all hand cards are visible/reachable (scroll if 8+), no more cut-off cards.
-- Manually play-test online mode with two browser tabs: create room, join by code/link, play a few cards, reload, seat takeover.
+- Commit and push the `?name=` pre-fill change so it reaches `tranquil-woad.vercel.app`, then manually confirm: launching from the Bergamots hub with a profile name pre-fills "your name" (bot/create/join) and Player 1 (local); opening this app directly still shows the old defaults.
+- If the user still doesn't see it: hard-refresh / open https://tranquil-woad.vercel.app, create an online room, wait until the room code appears on the stepper.
+- Have the user's friend re-test the mobile hand on a real iPhone after this deploy.
+- Manually play-test online mode with two browser tabs.
 
 Open_Questions:
 - Bot is greedy+feasibility-aware (no multi-turn search). Add look-ahead later if needed.
@@ -21,6 +22,7 @@ Open_Questions:
 - No idle-turn timer/bot-takeover for online mode yet (coinchapp has one) — add only if disconnections prove to be a real problem.
 
 Recent_Changes:
+- 2026-09-06 `App.tsx`/`Lobby.tsx` pseudo fields pre-filled from `?name=` sent by the Bergamots hub. See DECISIONS. Not yet deployed.
 - 2026-09-06 Bugfix: Real fix for the mobile hand bug — it's horizontal overflow (cards don't shrink to fit screen width; confirmed from screenshots showing hand-count badge > visible cards), not vertical toolbar clipping. `Hand.tsx` now sizes cards via `ResizeObserver` with a 44px floor + horizontal scroll fallback for large hands.
 - 2026-09-06 Bugfix: Undid the `position: fixed` mobile-viewport fix (it made iOS clipping worse — needed app background/foreground instead of rotate). `#game-board` is normal-flow again, sized via JS-measured `--app-height`.
 - 2026-09-05 UX: 2s delay before GameOver overlay; highlight last grid change on game end.

@@ -15,6 +15,10 @@ interface Props {
   connectionStatus: 'idle' | 'connecting' | 'connected' | 'error';
   errorMessage?: string;
   initialRoomCode?: string;
+  /** Pre-filled from the Bergamots hub's profile name (?name=), forwarded on
+   *  launch exactly like ?lang= — see bergamots/docs/TECH.md "Player identity
+   *  contract". Never required, never overwritten once the player edits it. */
+  initialPlayerName?: string;
 }
 
 const DIFFICULTIES: { labelKey: string; count: MonsterCount; monsterCount: number }[] = [
@@ -37,13 +41,13 @@ function clearBrowserData() {
   window.location.reload();
 }
 
-export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode }: Props) {
+export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoinOnline, onCancelRoom, onlineRoomCode, connectionStatus, errorMessage, initialRoomCode, initialPlayerName }: Props) {
   const t = useT();
   const [mode, setMode] = useState<'menu' | 'local' | 'bot' | 'create' | 'join'>('menu');
   const [showSettings, setShowSettings] = useState(false);
-  const [p1, setP1] = useState('Player 1');
+  const [p1, setP1] = useState(initialPlayerName || 'Player 1');
   const [p2, setP2] = useState('Player 2');
-  const [myName, setMyName] = useState('');
+  const [myName, setMyName] = useState(initialPlayerName || '');
   const [roomCode, setRoomCode] = useState('');
   const [monsterCount, setMonsterCount] = useState<MonsterCount>(0);
 
