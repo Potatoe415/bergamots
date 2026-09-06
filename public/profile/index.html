@@ -18,6 +18,55 @@
     <main class="profile-shell" data-id="profile-page">
       <h1 class="profile-title" data-id="profile-title">Profil</h1>
 
+      <div class="profile-avatar-block" data-id="profile-avatar-block">
+        <img
+          class="profile-avatar-preview"
+          id="profile-avatar-preview"
+          data-id="profile-avatar-preview"
+          alt="Avatar du joueur"
+          hidden
+        />
+        <div
+          class="profile-avatar-placeholder"
+          id="profile-avatar-placeholder"
+          data-id="profile-avatar-placeholder"
+        >
+          👤
+        </div>
+        <div class="profile-avatar-actions">
+          <label
+            class="profile-avatar-upload-button"
+            for="profile-avatar-input"
+            data-id="profile-avatar-upload-label"
+          >
+            Changer l'avatar
+          </label>
+          <input
+            class="profile-avatar-input"
+            id="profile-avatar-input"
+            data-id="profile-avatar-input"
+            type="file"
+            accept="image/*"
+            hidden
+          />
+          <button
+            class="profile-avatar-remove-button"
+            id="profile-avatar-remove-button"
+            data-id="profile-avatar-remove-button"
+            type="button"
+            hidden
+          >
+            Retirer
+          </button>
+        </div>
+        <p
+          class="profile-avatar-error"
+          id="profile-avatar-error"
+          data-id="profile-avatar-error"
+          hidden
+        ></p>
+      </div>
+
       <form
         class="profile-name-form"
         id="profile-name-form"
@@ -60,6 +109,7 @@
       >
     </main>
 
+    <script src="/shared/js/player-profile.js"></script>
     <script type="module" src="/profile/profile.js"></script>
   </body>
 </html>

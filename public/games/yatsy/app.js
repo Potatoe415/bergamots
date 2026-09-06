@@ -68,7 +68,8 @@ const elements = {
   homeButton: document.getElementById("home-button"),
   splashScreen: document.getElementById("splash-screen"),
   splashTitle: document.getElementById("splash-title"),
-  localLabel: document.getElementById("local-label"),
+  playerNameLabel: document.getElementById("player-name-label"),
+  playerNameInput: document.getElementById("player-name-input"),
   soloGameButton: document.getElementById("solo-game-button"),
   robotGameButton: document.getElementById("robot-game-button"),
   createGameButton: document.getElementById("create-game-button"),
@@ -149,6 +150,10 @@ const emojiController = window.YATZY_EMOJI
 elements.rollButton.addEventListener("click", handleRoll);
 elements.goBackButton.addEventListener("click", handleSelectionCancel);
 elements.restartButton.addEventListener("click", handleRestart);
+
+if (elements.playerNameInput && window.PlayerProfile) {
+  elements.playerNameInput.value = window.PlayerProfile.getName();
+}
 
 render();
 restoreOnlineSession();
@@ -326,9 +331,21 @@ function t(key, params = {}, language = state.setup.language) {
   return I18N.t(language, key, params);
 }
 
+// The local player's own name comes from the profile ("Ton nom" on the splash
+// screen, prefilled from bergamots-player-name — see /shared/js/player-profile.js).
+// Only the local seat gets it; the other seat keeps the translated default
+// until the remote player's real name arrives via hydrateFromRemoteGameState.
 function applySetupSettings(targetState) {
+  const nameInput = document.getElementById("player-name-input");
+  const localIndex = Number.isInteger(targetState.session.localPlayerIndex)
+    ? targetState.session.localPlayerIndex
+    : 0;
+  const localName = nameInput ? nameInput.value.trim() : "";
+
   targetState.players = PLAYER_META.map((player, index) => ({
-    name: t(`players.player${index + 1}`, {}, targetState.setup.language),
+    name: index === localIndex && localName
+      ? localName
+      : t(`players.player${index + 1}`, {}, targetState.setup.language),
     isRobot: index === 1 && targetState.setup.mode === "robot"
   }));
 }
@@ -414,7 +431,12 @@ function renderSplash() {
   elements.splashScreen.classList.toggle("is-hidden", inGame);
   document.body.classList.toggle("is-splash", !inGame);
   elements.splashTitle.textContent = t("splash.title");
-  elements.localLabel.textContent = t("splash.localLabel");
+  if (elements.playerNameLabel) {
+    elements.playerNameLabel.textContent = t("splash.yourName");
+  }
+  if (elements.playerNameInput) {
+    elements.playerNameInput.placeholder = t("splash.namePlaceholder");
+  }
   elements.soloGameButton.textContent = t("splash.soloGame");
   elements.robotGameButton.textContent = t("splash.robotGame");
   elements.joinLabel.textContent = t("splash.joinLabel");
@@ -1860,6 +1882,19 @@ function hydrateFromRemoteGameState(targetState, remoteState) {
     return emptyCard;
   });
 
+  // Adopt the remote seat's real name if the payload carries one; the local
+  // seat's own name (already set by applySetupSettings from the profile)
+  // is never overwritten by a remote payload.
+  targetState.players = PLAYER_META.map((_, playerIndex) => {
+    const existing = targetState.players?.[playerIndex] || {};
+    const isLocalSeat = playerIndex === state.session.localPlayerIndex;
+    const remoteName = remoteState.players?.[playerIndex]?.name;
+    return {
+      name: !isLocalSeat && remoteName ? remoteName : existing.name,
+      isRobot: Boolean(existing.isRobot)
+    };
+  });
+
   targetState.gameOver = Boolean(remoteState.gameOver) || isScoreboardFull(targetState.scores);
   targetState.winner = null;
 
@@ -1884,7 +1919,11 @@ function serializeGameState() {
     rollsRemaining: state.rollsRemaining,
     turnPhase: state.turnPhase,
     scores: state.scores.map((scorecard) => ({ ...scorecard })),
-    gameOver: state.gameOver
+    gameOver: state.gameOver,
+    // Only carries each seat's display name so the opponent can see it —
+    // see hydrateFromRemoteGameState(), which only ever adopts the *other*
+    // seat's name from this and always keeps the local seat's own name.
+    players: state.players.map((player) => ({ name: player.name }))
   };
 }
 

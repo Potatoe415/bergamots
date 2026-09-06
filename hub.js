@@ -1,4 +1,4 @@
-import { initAuthWidget } from "./auth.js";
+import { initAuthWidget, getStoredPlayerName } from "./auth.js";
 import { trackGameLaunch } from "./shared/js/analytics.js";
 import { APP_VERSION } from "./version.js";
 
@@ -331,7 +331,7 @@ function isExternalLaunch(launchUrl) {
 function determineTargetUrl(game) {
   if (game.launch) {
     return isExternalLaunch(game.launch)
-      ? appendLangParam(game.launch, state.lang)
+      ? appendLaunchParams(game.launch, state.lang, getStoredPlayerName())
       : game.launch;
   }
   if (game.type === "custom" && game.indexPath) {
@@ -340,9 +340,17 @@ function determineTargetUrl(game) {
   return `./wordplayer.html?game=${game.id}`;
 }
 
-function appendLangParam(url, lang) {
+// External games run in a different origin, so `localStorage` cannot be
+// shared with them — the player's name (and language) can only travel as a
+// URL param. Receiving games only use it to pre-fill their own name input;
+// see docs/TECH.md "Player identity" for the contract.
+function appendLaunchParams(url, lang, name) {
+  const params = new URLSearchParams({ lang });
+  if (name) {
+    params.set("name", name);
+  }
   const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}lang=${lang}`;
+  return `${url}${separator}${params.toString()}`;
 }
 
 function generateBlackFallbackSVG() {

@@ -79,6 +79,16 @@ function decodeJwtPayload(jwt) {
   }
 }
 
+// Read by hub.js to forward the player's name as a `?name=` URL param when
+// launching external games (see docs/TECH.md "Player identity").
+export function getStoredPlayerName() {
+  try {
+    return localStorage.getItem(NAME_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
 // Only fills the profile "Nom" field the first time (i.e. while it is still
 // empty), so it never overwrites a name the player already typed themselves.
 function fillNameIfEmpty(googleName) {
