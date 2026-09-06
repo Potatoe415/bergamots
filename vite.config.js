@@ -4,6 +4,21 @@ import { defineConfig, loadEnv } from "vite";
 
 import { runGifSearch } from "./api/_lib/giphy.js";
 
+function staticPageDevPlugin() {
+  return {
+    name: "static-page-dev",
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        const path = (req.originalUrl || req.url || "").split("?")[0];
+        if (path === "/profile" || path === "/profile/") {
+          req.url = "/profile/index.html";
+        }
+        next();
+      });
+    }
+  };
+}
+
 function yatzyGifsDevPlugin(apiKey) {
   return {
     name: "yatzy-gifs-dev",
@@ -42,7 +57,7 @@ async function answerGifSearch(req, res, apiKey) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
-    plugins: [yatzyGifsDevPlugin(env.GIPHY_API_KEY)],
+    plugins: [yatzyGifsDevPlugin(env.GIPHY_API_KEY), staticPageDevPlugin()],
     server: {
       host: true, // Autorise l'accès via l'IP locale (0.0.0.0)
       port: 5173 // Optionnel : fixe le port si tu veux être sûr

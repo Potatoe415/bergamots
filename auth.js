@@ -185,6 +185,8 @@ function handleCredentialResponse(response) {
   authState.email = payload.email || "";
   persistEmail(authState.email);
   fillNameIfEmpty(payload.name);
+  // Do not write bergamots-lang here. Google locale must not override the
+  // language the player already chose on the hub or the profile settings.
   closePopover();
   renderAuthWidget();
 }
