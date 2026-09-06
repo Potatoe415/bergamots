@@ -1,4 +1,4 @@
-const CACHE_NAME = "yatzy-offline-v22";
+const CACHE_NAME = "yatzy-offline-v26";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -12,7 +12,8 @@ const APP_ASSETS = [
   "./scoring.js",
   "./random.js",
   "./styles.css",
-  "./app.js"
+  "./app.js",
+  "./assets/splash-bg.webp"
 ];
 
 self.addEventListener("install", (event) => {

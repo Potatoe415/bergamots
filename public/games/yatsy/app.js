@@ -412,6 +412,7 @@ function isRobotTurn() {
 function renderSplash() {
   const inGame = state.screen === "game";
   elements.splashScreen.classList.toggle("is-hidden", inGame);
+  document.body.classList.toggle("is-splash", !inGame);
   elements.splashTitle.textContent = t("splash.title");
   elements.localLabel.textContent = t("splash.localLabel");
   elements.soloGameButton.textContent = t("splash.soloGame");
