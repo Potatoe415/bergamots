@@ -132,18 +132,6 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   // ───────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
-    const html = document.documentElement;
-    const prevHtml = html.style.overflow;
-    const prevBody = document.body.style.overflow;
-    html.style.overflow = 'hidden';
-    document.body.style.overflow = 'hidden';
-    return () => {
-      html.style.overflow = prevHtml;
-      document.body.style.overflow = prevBody;
-    };
-  }, []);
-
-  useEffect(() => {
     if (!startDiscardState?.isMyTurnToContribute) setStartDiscardSelected(new Set());
   }, [startDiscardState?.isMyTurnToContribute]);
 
@@ -250,13 +238,8 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   return (
     <div
       id="game-board"
-      className="fixed overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950"
-      style={{
-        top: 'var(--app-offset-top, 0px)',
-        left: 'var(--app-offset-left, 0px)',
-        height: 'var(--app-height, 100svh)',
-        width: 'var(--app-width, 100%)',
-      }}
+      className="w-full overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950"
+      style={{ height: 'var(--app-height, 100svh)' }}
     >
       {/* Opponent info bar */}
       <header id="game-header" className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">

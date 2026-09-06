@@ -27,7 +27,8 @@ Status: Living document. Always reflects current state.
 
 ## Done
 - [x] Delay game-over overlay ~2s so the last placed tile / losing board stays visible (online + local/bot).
-- [x] iOS Safari: hand tiles clipped under the browser toolbar until rotate-to-landscape (visual viewport height + hand `min-w-0`).
+- [x] Mobile hand bug, corrected diagnosis: it's horizontal card overflow (hand-count badge didn't match visible cards, last cards cut off at the right edge), not vertical toolbar clipping. `Hand.tsx` now sizes cards via `ResizeObserver`, floored at 44px with horizontal-scroll fallback for 7-8+ card hands (start-discard). See docs/DECISIONS.md (2026-09-06). Pending real-device re-verification — not yet deployed.
+- [x] iOS Safari/Chrome hand-clipping fix, take 2: reverted `position: fixed` (caused a worse regression — needed app background/foreground to fix instead of rotate) back to normal-flow `#game-board` sized by `--app-height`. Pending real-device re-verification.
 - [x] Share-game-link button on the online create-room connecting screen (native share / copy `?room=` URL).
 - [x] Migrated online backend from Railway/Socket.IO to Vercel Serverless Functions + Supabase (shared project with coinchapp) — see docs/DECISIONS.md (2026-08-03).
 - [x] Play vs Bot: co-op heuristic bot + lobby button + auto-play in local mode.

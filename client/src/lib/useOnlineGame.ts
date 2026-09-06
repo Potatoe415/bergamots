@@ -8,7 +8,7 @@ import { predictContributeStartDiscard, predictDiscardTwo, predictPlayCard } fro
 /** Which multi-step connection flow is in progress, so the UI can render a
  *  progress stepper (e.g. "Authenticating" -> "Creating room" -> "Loading"). */
 export type ConnectionKind = 'create' | 'join' | 'resume' | null;
-export type ConnectionStep = 'auth' | 'create_room' | 'join_room' | 'sync' | null;
+export type ConnectionStep = 'auth' | 'create_room' | 'join_room' | 'sync' | 'wait_partner' | null;
 
 export interface OnlineGameState {
   clientState: ClientGameState | null;
@@ -40,6 +40,19 @@ function errorMessage(e: unknown): string {
   return e instanceof Error ? e.message : 'unknown_error';
 }
 
+function applyView(prev: OnlineGameState, view: api.ViewResponse): OnlineGameState {
+  const waiting = !view.clientState;
+  return {
+    ...prev,
+    roomCode: view.roomCode,
+    clientState: view.clientState,
+    connectionStatus: 'connected',
+    connectionKind: waiting ? 'create' : null,
+    connectionStep: waiting ? 'wait_partner' : null,
+    error: null,
+  };
+}
+
 /** Manages an online Tranquillity game over Supabase: anonymous identity,
  *  a realtime "tick" subscription that triggers a redacted refetch (mirrors
  *  coinchapp's useGameView), and a localStorage-persisted session that
@@ -65,15 +78,7 @@ export function useOnlineGame() {
         return;
       }
       logApp('sync', 'game view fetched', { status: view.status, hasState: view.clientState !== null });
-      setOnline((prev) => ({
-        ...prev,
-        roomCode: view.roomCode,
-        clientState: view.clientState,
-        connectionStatus: 'connected',
-        connectionKind: null,
-        connectionStep: null,
-        error: null,
-      }));
+      setOnline((prev) => applyView(prev, view));
     } catch (e) {
       logApp('sync', 'game view fetch failed', e);
       setOnline((prev) => ({ ...prev, connectionStatus: 'error', error: errorMessage(e) }));
