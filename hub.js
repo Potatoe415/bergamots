@@ -1,4 +1,8 @@
-import { initAuthWidget, getStoredPlayerName } from "./auth.js";
+import {
+  getStoredPlayerName,
+  initAuthWidget,
+  refreshAuthWidget
+} from "./auth.js";
 import { trackGameLaunch } from "./shared/js/analytics.js";
 import { APP_VERSION } from "./version.js";
 
@@ -105,6 +109,7 @@ function selectLang(lang) {
   persistLang(lang);
   renderLangSwitcher();
   renderCategoryTabs();
+  refreshAuthWidget();
 }
 
 function selectCategory(category) {

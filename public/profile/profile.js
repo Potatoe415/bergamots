@@ -6,14 +6,127 @@
 // (see hub.js). The avatar stays Bergamots-only: an image is too large to
 // travel through a URL, so it is not propagated to other games.
 
+import { initLaunchStats } from "./profile-stats.js";
+
 const NOTICE_TIMEOUT_MS = 1800;
 const MAX_AVATAR_BYTES = 50 * 1024;
 const AVATAR_MAX_DIMENSION_PX = 256;
+const AVATAR_MIN_DIMENSION_PX = 64;
+const LANG_STORAGE_KEY = "bergamots-lang";
+const LANGS = ["fr", "en", "es"];
+
+const MESSAGES = {
+  fr: {
+    documentTitle: "Profil — Bergamots",
+    title: "Profil",
+    avatarAlt: "Avatar du joueur",
+    changeAvatar: "Changer l'avatar",
+    removeAvatar: "Retirer",
+    nameLabel: "Nom",
+    namePlaceholder: "Ton nom",
+    save: "Enregistrer",
+    saved: "Enregistré ✓",
+    back: "← Retour à l'accueil",
+    imageOnly: "Choisis un fichier image.",
+    imageLoadError: "Impossible de charger cette image.",
+    launchesZero: "Aucun jeu lancé",
+    launchesOne: "1 jeu lancé",
+    launchesMany: "{count} jeux lancés",
+    favoritesTitle: "Jeux préférés",
+    favoritesEmpty: "Tes jeux les plus lancés apparaîtront ici."
+  },
+  en: {
+    documentTitle: "Profile — Bergamots",
+    title: "Profile",
+    avatarAlt: "Player avatar",
+    changeAvatar: "Change avatar",
+    removeAvatar: "Remove",
+    nameLabel: "Name",
+    namePlaceholder: "Your name",
+    save: "Save",
+    saved: "Saved ✓",
+    back: "← Back to hub",
+    imageOnly: "Choose an image file.",
+    imageLoadError: "Could not load that image.",
+    launchesZero: "No games launched",
+    launchesOne: "1 game launched",
+    launchesMany: "{count} games launched",
+    favoritesTitle: "Favorite games",
+    favoritesEmpty: "Your most launched games will show up here."
+  },
+  es: {
+    documentTitle: "Perfil — Bergamots",
+    title: "Perfil",
+    avatarAlt: "Avatar del jugador",
+    changeAvatar: "Cambiar avatar",
+    removeAvatar: "Quitar",
+    nameLabel: "Nombre",
+    namePlaceholder: "Tu nombre",
+    save: "Guardar",
+    saved: "Guardado ✓",
+    back: "← Volver al inicio",
+    imageOnly: "Elige un archivo de imagen.",
+    imageLoadError: "No se pudo cargar esa imagen.",
+    launchesZero: "Ningún juego iniciado",
+    launchesOne: "1 juego iniciado",
+    launchesMany: "{count} juegos iniciados",
+    favoritesTitle: "Juegos favoritos",
+    favoritesEmpty: "Tus juegos más lanzados aparecerán aquí."
+  }
+};
+
+const copy = MESSAGES[readStoredLang()] || MESSAGES.fr;
 
 document.addEventListener("DOMContentLoaded", () => {
+  applyProfileCopy();
   initNameForm();
   initAvatarUpload();
+  initLaunchStats(copy);
 });
+
+function readStoredLang() {
+  try {
+    const stored = localStorage.getItem(LANG_STORAGE_KEY);
+    return LANGS.includes(stored) ? stored : "fr";
+  } catch {
+    return "fr";
+  }
+}
+
+function applyProfileCopy() {
+  document.documentElement.lang = readStoredLang();
+  document.title = copy.documentTitle;
+  setText("profile-title", copy.title);
+  setText("profile-name-label", copy.nameLabel);
+  setText("profile-name-save-button", copy.save);
+  setText("profile-name-saved-notice", copy.saved);
+  setText("profile-back-to-hub", copy.back);
+  setText("profile-avatar-remove-button", copy.removeAvatar);
+  setText("profile-favorites-title", copy.favoritesTitle);
+
+  const nameInput = document.getElementById("profile-name-input");
+  if (nameInput) {
+    nameInput.placeholder = copy.namePlaceholder;
+  }
+
+  const preview = document.getElementById("profile-avatar-preview");
+  if (preview) {
+    preview.alt = copy.avatarAlt;
+  }
+
+  const avatarButton = document.getElementById("profile-avatar-button");
+  if (avatarButton) {
+    avatarButton.setAttribute("aria-label", copy.changeAvatar);
+    avatarButton.title = copy.changeAvatar;
+  }
+}
+
+function setText(dataId, text) {
+  const node = document.querySelector(`[data-id="${dataId}"]`);
+  if (node) {
+    node.textContent = text;
+  }
+}
 
 function initNameForm() {
   const form = document.getElementById("profile-name-form");
@@ -48,7 +161,7 @@ function initAvatarUpload() {
     hideError(errorNotice);
 
     if (!file.type.startsWith("image/")) {
-      showError(errorNotice, "Choisis un fichier image.");
+      showError(errorNotice, copy.imageOnly);
       return;
     }
 
@@ -57,7 +170,7 @@ function initAvatarUpload() {
       window.PlayerProfile.setAvatar(dataUrl);
       renderAvatarPreview();
     } catch {
-      showError(errorNotice, "Impossible de charger cette image.");
+      showError(errorNotice, copy.imageLoadError);
     }
   });
 
@@ -80,22 +193,31 @@ function renderAvatarPreview() {
   removeButton.hidden = !hasAvatar;
 }
 
-// Resizes the image to fit AVATAR_MAX_DIMENSION_PX and re-encodes it as JPEG,
-// lowering quality until it fits under MAX_AVATAR_BYTES (or the quality
-// floor is reached — good enough for an avatar, not worth failing on).
+// Center-crops to a square, paints a white JPEG background, then shrinks
+// quality and size until the file is under MAX_AVATAR_BYTES (~50 KB).
 async function compressImageToDataUrl(file) {
   const image = await loadImageFromFile(file);
-  const canvas = drawScaledCanvas(image, AVATAR_MAX_DIMENSION_PX);
-
+  let size = AVATAR_MAX_DIMENSION_PX;
   let quality = 0.85;
-  let dataUrl = canvas.toDataURL("image/jpeg", quality);
+  let dataUrl = encodeJpegAvatar(image, size, quality);
 
-  while (estimateDataUrlBytes(dataUrl) > MAX_AVATAR_BYTES && quality > 0.3) {
-    quality -= 0.15;
-    dataUrl = canvas.toDataURL("image/jpeg", quality);
+  while (estimateDataUrlBytes(dataUrl) > MAX_AVATAR_BYTES) {
+    if (quality > 0.4) {
+      quality -= 0.15;
+    } else if (size > AVATAR_MIN_DIMENSION_PX) {
+      size = Math.max(AVATAR_MIN_DIMENSION_PX, Math.round(size * 0.75));
+      quality = 0.7;
+    } else {
+      break;
+    }
+    dataUrl = encodeJpegAvatar(image, size, quality);
   }
 
   return dataUrl;
+}
+
+function encodeJpegAvatar(image, size, quality) {
+  return drawSquareCanvas(image, size).toDataURL("image/jpeg", quality);
 }
 
 function loadImageFromFile(file) {
@@ -112,14 +234,18 @@ function loadImageFromFile(file) {
   });
 }
 
-function drawScaledCanvas(image, maxDimension) {
-  const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+function drawSquareCanvas(image, size) {
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(image.width * scale);
-  canvas.height = Math.round(image.height * scale);
-
+  canvas.width = size;
+  canvas.height = size;
   const context = canvas.getContext("2d");
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, size, size);
+
+  const source = Math.min(image.width, image.height);
+  const sx = (image.width - source) / 2;
+  const sy = (image.height - source) / 2;
+  context.drawImage(image, sx, sy, source, source, 0, 0, size, size);
   return canvas;
 }
 

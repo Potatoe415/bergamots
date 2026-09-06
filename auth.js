@@ -19,9 +19,30 @@ const AUTH_STORAGE_KEY = "bergamots-auth";
 // this root-level bundled file and that unbundled page, so the string is
 // duplicated on purpose (see docs/TECH.md).
 const NAME_STORAGE_KEY = "bergamots-player-name";
+const AVATAR_STORAGE_KEY = "bergamots-player-avatar";
+const LANG_STORAGE_KEY = "bergamots-lang";
+const LANGS = ["fr", "en", "es"];
 const WIDGET_ID = "auth-widget";
 const GOOGLE_BUTTON_CONTAINER_ID = "auth-google-button";
 const PROFILE_URL = "/profile";
+
+const AUTH_COPY = {
+  fr: {
+    account: "Compte",
+    profile: "Profil",
+    logout: "Se déconnecter"
+  },
+  en: {
+    account: "Account",
+    profile: "Profile",
+    logout: "Sign out"
+  },
+  es: {
+    account: "Cuenta",
+    profile: "Perfil",
+    logout: "Cerrar sesión"
+  }
+};
 
 const ACCOUNT_ICON_SVG = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
   <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.6-5-8-5Z"/>
@@ -89,6 +110,54 @@ export function getStoredPlayerName() {
   }
 }
 
+function readStoredAvatar() {
+  try {
+    const stored = localStorage.getItem(AVATAR_STORAGE_KEY) || "";
+    return stored.startsWith("data:image/") ? stored : "";
+  } catch {
+    return "";
+  }
+}
+
+function createTriggerAvatar(dataUrl) {
+  const img = document.createElement("img");
+  img.className = "auth-trigger-avatar";
+  img.dataset.id = "auth-trigger-avatar";
+  img.src = dataUrl;
+  img.alt = "";
+  img.addEventListener("error", () => {
+    img.closest(".auth-widget")?.classList.remove("has-avatar");
+    img.replaceWith(createSvgFragment());
+  });
+  return img;
+}
+
+function createSvgFragment() {
+  const holder = document.createElement("span");
+  holder.innerHTML = ACCOUNT_ICON_SVG;
+  return holder.firstElementChild;
+}
+
+export function refreshAuthWidget() {
+  renderAuthWidget();
+  if (!authState.email) {
+    renderGoogleButton();
+  }
+}
+
+function readStoredLang() {
+  try {
+    const stored = localStorage.getItem(LANG_STORAGE_KEY);
+    return LANGS.includes(stored) ? stored : "fr";
+  } catch {
+    return "fr";
+  }
+}
+
+function authCopy() {
+  return AUTH_COPY[readStoredLang()] || AUTH_COPY.fr;
+}
+
 // Only fills the profile "Nom" field the first time (i.e. while it is still
 // empty), so it never overwrites a name the player already typed themselves.
 function fillNameIfEmpty(googleName) {
@@ -145,8 +214,15 @@ function renderAuthWidget() {
   const trigger = document.createElement("button");
   trigger.type = "button";
   trigger.className = "auth-trigger";
-  trigger.setAttribute("aria-label", "Compte");
-  trigger.innerHTML = ACCOUNT_ICON_SVG;
+  trigger.dataset.id = "auth-trigger";
+  trigger.setAttribute("aria-label", authCopy().account);
+  const avatar = readStoredAvatar();
+  wrap.classList.toggle("has-avatar", Boolean(avatar));
+  if (avatar) {
+    trigger.appendChild(createTriggerAvatar(avatar));
+  } else {
+    trigger.innerHTML = ACCOUNT_ICON_SVG;
+  }
   trigger.addEventListener("click", () => wrap.classList.toggle("is-open"));
   wrap.appendChild(trigger);
 
@@ -176,16 +252,19 @@ function createLoggedInContent() {
   email.textContent = authState.email;
   fragment.appendChild(email);
 
+  const strings = authCopy();
   const profileLink = document.createElement("a");
   profileLink.className = "auth-profile-link";
   profileLink.href = PROFILE_URL;
-  profileLink.textContent = "Profil";
+  profileLink.dataset.id = "auth-profile-link";
+  profileLink.textContent = strings.profile;
   fragment.appendChild(profileLink);
 
   const logoutButton = document.createElement("button");
   logoutButton.type = "button";
   logoutButton.className = "auth-logout";
-  logoutButton.textContent = "Se déconnecter";
+  logoutButton.dataset.id = "auth-logout-button";
+  logoutButton.textContent = strings.logout;
   logoutButton.addEventListener("click", logout);
   fragment.appendChild(logoutButton);
 
@@ -201,6 +280,6 @@ function renderGoogleButton() {
     theme: "outline",
     size: "medium",
     text: "signin_with",
-    locale: "fr"
+    locale: readStoredLang()
   });
 }

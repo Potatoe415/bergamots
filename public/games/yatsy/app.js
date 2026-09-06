@@ -70,11 +70,14 @@ const elements = {
   splashTitle: document.getElementById("splash-title"),
   playerNameLabel: document.getElementById("player-name-label"),
   playerNameInput: document.getElementById("player-name-input"),
+  playerNameRow: document.getElementById("player-name-row"),
   soloGameButton: document.getElementById("solo-game-button"),
   robotGameButton: document.getElementById("robot-game-button"),
+  playOnlineButton: document.getElementById("play-online-button"),
   createGameButton: document.getElementById("create-game-button"),
   shareGameButton: document.getElementById("share-game-button"),
   cancelCreateButton: document.getElementById("cancel-create-button"),
+  splashJoin: document.getElementById("splash-join"),
   joinLabel: document.getElementById("join-label"),
   joinCodeInput: document.getElementById("join-code-input"),
   joinGameButton: document.getElementById("join-game-button"),
@@ -116,6 +119,9 @@ const UNDO_SCORE_WINDOW_MS = 5000;
 
 elements.soloGameButton.addEventListener("click", () => handleLocalStart("solo"));
 elements.robotGameButton.addEventListener("click", () => handleLocalStart("robot"));
+if (elements.playOnlineButton) {
+  elements.playOnlineButton.addEventListener("click", handlePlayOnline);
+}
 elements.createGameButton.addEventListener("click", handleCreateGame);
 elements.shareGameButton.addEventListener("click", handleShareGame);
 elements.cancelCreateButton.addEventListener("click", handleWaitingCancel);
@@ -128,7 +134,7 @@ elements.joinCodeInput.addEventListener("keydown", (event) => {
   }
 });
 if (elements.splashBackButton) {
-  elements.splashBackButton.addEventListener("click", navigateToHub);
+  elements.splashBackButton.addEventListener("click", handleSplashBack);
 }
 if (elements.settingsButton && elements.settingsPanel && window.GameHeader) {
   window.GameHeader.initOptionsPanel(elements.settingsButton, elements.settingsPanel);
@@ -153,6 +159,8 @@ elements.restartButton.addEventListener("click", handleRestart);
 
 if (elements.playerNameInput && window.PlayerProfile) {
   elements.playerNameInput.value = window.PlayerProfile.getName();
+  elements.playerNameInput.addEventListener("change", persistPlayerNameFromInput);
+  elements.playerNameInput.addEventListener("blur", persistPlayerNameFromInput);
 }
 
 render();
@@ -286,6 +294,7 @@ function createInitialState() {
   // Using null lets the app distinguish "not played yet" from "played for zero".
   const initialState = {
     screen: "splash",
+    splashView: "modes",
     setup: {
       mode: "solo",
       language: initialSetupLanguage,
@@ -331,16 +340,18 @@ function t(key, params = {}, language = state.setup.language) {
   return I18N.t(language, key, params);
 }
 
-// The local player's own name comes from the profile ("Ton nom" on the splash
-// screen, prefilled from bergamots-player-name — see /shared/js/player-profile.js).
-// Only the local seat gets it; the other seat keeps the translated default
-// until the remote player's real name arrives via hydrateFromRemoteGameState.
+// The local player's own name comes from the profile (shown on the online
+// splash step, prefilled from bergamots-player-name — see player-profile.js).
+// Local games keep the translated Player 1 / Player 2 labels. Only the local
+// seat gets the custom name online; the other seat keeps the default until
+// the remote player's real name arrives via hydrateFromRemoteGameState.
 function applySetupSettings(targetState) {
   const nameInput = document.getElementById("player-name-input");
   const localIndex = Number.isInteger(targetState.session.localPlayerIndex)
     ? targetState.session.localPlayerIndex
     : 0;
-  const localName = nameInput ? nameInput.value.trim() : "";
+  const typedName = nameInput ? nameInput.value.trim() : "";
+  const localName = targetState.setup.mode === "online" ? typedName : "";
 
   targetState.players = PLAYER_META.map((player, index) => ({
     name: index === localIndex && localName
@@ -426,6 +437,21 @@ function isRobotTurn() {
   return state.screen === "game" && !isOnlineGame() && !state.gameOver && state.players[state.currentPlayerIndex].isRobot;
 }
 
+function isSplashBusy() {
+  const connectionState = state.session.connectionState;
+  return connectionState === "creating"
+    || connectionState === "joining"
+    || connectionState === "restoring"
+    || connectionState === "waiting";
+}
+
+function persistPlayerNameFromInput() {
+  if (!elements.playerNameInput || !window.PlayerProfile) {
+    return;
+  }
+  window.PlayerProfile.setName(elements.playerNameInput.value.trim());
+}
+
 function renderSplash() {
   const inGame = state.screen === "game";
   elements.splashScreen.classList.toggle("is-hidden", inGame);
@@ -439,6 +465,9 @@ function renderSplash() {
   }
   elements.soloGameButton.textContent = t("splash.soloGame");
   elements.robotGameButton.textContent = t("splash.robotGame");
+  if (elements.playOnlineButton) {
+    elements.playOnlineButton.textContent = t("splash.playOnline");
+  }
   elements.joinLabel.textContent = t("splash.joinLabel");
   elements.joinCodeInput.placeholder = t("splash.codePlaceholder");
   elements.joinCodeInput.value = state.session.joinCode;
@@ -460,10 +489,27 @@ function renderSplash() {
   const isRestoring = state.session.connectionState === "restoring";
   const isWaiting = state.session.connectionState === "waiting";
   const isBusy = isCreating || isJoining || isRestoring || isWaiting;
+  const showOnline = state.splashView === "online" || isBusy;
   renderSettingsRows();
+
+  elements.soloGameButton.classList.toggle("is-hidden", showOnline);
+  elements.robotGameButton.classList.toggle("is-hidden", showOnline);
+  if (elements.playOnlineButton) {
+    elements.playOnlineButton.classList.toggle("is-hidden", showOnline);
+  }
+  if (elements.playerNameRow) {
+    elements.playerNameRow.classList.toggle("is-hidden", !showOnline);
+  }
+  elements.createGameButton.classList.toggle("is-hidden", !showOnline);
+  if (elements.splashJoin) {
+    elements.splashJoin.classList.toggle("is-hidden", !showOnline || isWaiting || isCreating || isRestoring);
+  }
 
   elements.soloGameButton.disabled = isBusy;
   elements.robotGameButton.disabled = isBusy;
+  if (elements.playOnlineButton) {
+    elements.playOnlineButton.disabled = isBusy;
+  }
   elements.createGameButton.textContent = isCreating
     ? t("splash.createBusy")
     : isWaiting
@@ -1146,7 +1192,8 @@ async function handleRestart() {
   resetGame({
     screen: "splash",
     language: state.setup.language,
-    mode: state.setup.mode
+    mode: state.setup.mode,
+    splashView: "online"
   });
 }
 
@@ -1166,6 +1213,23 @@ function navigateToHub() {
   window.location.href = "/";
 }
 
+function handleSplashBack(event) {
+  event.preventDefault();
+  if (state.screen === "splash" && state.splashView === "online" && !isSplashBusy()) {
+    state.splashView = "modes";
+    state.session.splashError = "";
+    render();
+    return;
+  }
+  navigateToHub();
+}
+
+function handlePlayOnline() {
+  state.splashView = "online";
+  state.session.splashError = "";
+  render();
+}
+
 function handleLocalStart(mode) {
   syncRuntimeRulesFromSetup();
   resetGame({
@@ -1181,7 +1245,8 @@ async function handleWaitingCancel() {
   resetGame({
     screen: "splash",
     language: state.setup.language,
-    mode: state.setup.mode
+    mode: state.setup.mode,
+    splashView: "online"
   });
 }
 
@@ -1228,6 +1293,7 @@ async function handleCreateGame() {
     return;
   }
 
+  persistPlayerNameFromInput();
   state.setup.mode = "online";
   syncRuntimeRulesFromSetup();
   state.session.connectionState = "creating";
@@ -1274,6 +1340,7 @@ async function handleJoinGame() {
     return;
   }
 
+  persistPlayerNameFromInput();
   state.setup.mode = "online";
   syncRuntimeRulesFromSetup();
   state.session.connectionState = "joining";
@@ -1324,6 +1391,7 @@ function handleDeepLinkJoin() {
     return;
   }
 
+  state.splashView = "online";
   state.session.joinCode = linkedCode;
   render();
   handleJoinGame();
@@ -1336,6 +1404,7 @@ async function restoreOnlineSession() {
     return;
   }
 
+  state.splashView = "online";
   state.setup.mode = "online";
   state.session.gameCode = persisted.gameCode;
   state.session.joinCode = persisted.gameCode;
@@ -1652,7 +1721,8 @@ function setSplashError(errorCode) {
 function resetGame({
   screen = state.screen,
   language = state.setup.language,
-  mode = state.setup.mode
+  mode = state.setup.mode,
+  splashView = "modes"
 } = {}) {
   clearTimeout(yatzyCelebrationTimeoutId);
   clearTimeout(emojiReactionTimeoutId);
@@ -1676,6 +1746,7 @@ function resetGame({
   initializeRuntimeDefinitions(freshState.setup.rules);
   applySetupSettings(freshState);
   Object.assign(state, freshState);
+  state.splashView = splashView;
   if (mode !== "online") {
     clearPersistedOnlineSession();
   }

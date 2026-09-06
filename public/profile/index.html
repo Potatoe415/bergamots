@@ -19,46 +19,45 @@
       <h1 class="profile-title" data-id="profile-title">Profil</h1>
 
       <div class="profile-avatar-block" data-id="profile-avatar-block">
-        <img
-          class="profile-avatar-preview"
-          id="profile-avatar-preview"
-          data-id="profile-avatar-preview"
-          alt="Avatar du joueur"
-          hidden
-        />
-        <div
-          class="profile-avatar-placeholder"
-          id="profile-avatar-placeholder"
-          data-id="profile-avatar-placeholder"
+        <label
+          class="profile-avatar-button"
+          for="profile-avatar-input"
+          id="profile-avatar-button"
+          data-id="profile-avatar-button"
         >
-          👤
-        </div>
-        <div class="profile-avatar-actions">
-          <label
-            class="profile-avatar-upload-button"
-            for="profile-avatar-input"
-            data-id="profile-avatar-upload-label"
-          >
-            Changer l'avatar
-          </label>
-          <input
-            class="profile-avatar-input"
-            id="profile-avatar-input"
-            data-id="profile-avatar-input"
-            type="file"
-            accept="image/*"
+          <img
+            class="profile-avatar-preview"
+            id="profile-avatar-preview"
+            data-id="profile-avatar-preview"
+            alt=""
             hidden
           />
-          <button
-            class="profile-avatar-remove-button"
-            id="profile-avatar-remove-button"
-            data-id="profile-avatar-remove-button"
-            type="button"
-            hidden
+          <span
+            class="profile-avatar-placeholder"
+            id="profile-avatar-placeholder"
+            data-id="profile-avatar-placeholder"
+            aria-hidden="true"
           >
-            Retirer
-          </button>
-        </div>
+            👤
+          </span>
+        </label>
+        <input
+          class="profile-avatar-input"
+          id="profile-avatar-input"
+          data-id="profile-avatar-input"
+          type="file"
+          accept="image/*"
+          hidden
+        />
+        <button
+          class="profile-avatar-remove-button"
+          id="profile-avatar-remove-button"
+          data-id="profile-avatar-remove-button"
+          type="button"
+          hidden
+        >
+          Retirer
+        </button>
         <p
           class="profile-avatar-error"
           id="profile-avatar-error"
@@ -103,6 +102,29 @@
           Enregistré ✓
         </p>
       </form>
+
+      <section class="profile-stats" data-id="profile-stats">
+        <p
+          class="profile-launches-total"
+          id="profile-launches-total"
+          data-id="profile-launches-total"
+        ></p>
+        <h2 class="profile-favorites-title" data-id="profile-favorites-title">
+          Jeux préférés
+        </h2>
+        <ol
+          class="profile-favorites-list"
+          id="profile-favorites-list"
+          data-id="profile-favorites-list"
+          hidden
+        ></ol>
+        <p
+          class="profile-favorites-empty"
+          id="profile-favorites-empty"
+          data-id="profile-favorites-empty"
+          hidden
+        ></p>
+      </section>
 
       <a class="profile-back" href="/" data-id="profile-back-to-hub"
         >← Retour à l'accueil</a

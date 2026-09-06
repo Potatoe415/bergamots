@@ -10,6 +10,7 @@
 (function () {
   const NAME_KEY = "bergamots-player-name";
   const AVATAR_KEY = "bergamots-player-avatar";
+  const LAUNCH_COUNTS_KEY = "bergamots-launch-counts";
 
   function getName(fallback) {
     try {
@@ -51,12 +52,54 @@
     }
   }
 
+  function readLaunchCounts() {
+    try {
+      const parsed = JSON.parse(
+        localStorage.getItem(LAUNCH_COUNTS_KEY) || "{}"
+      );
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        return {};
+      }
+      const counts = {};
+      Object.keys(parsed).forEach((id) => {
+        const n = Number(parsed[id]);
+        if (id && Number.isFinite(n) && n > 0) {
+          counts[id] = Math.floor(n);
+        }
+      });
+      return counts;
+    } catch {
+      return {};
+    }
+  }
+
+  function getLaunchTotal() {
+    return Object.values(readLaunchCounts()).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+  }
+
+  function getFavoriteLaunches(limit) {
+    const cap = Number.isFinite(limit) && limit > 0 ? limit : 5;
+    return Object.entries(readLaunchCounts())
+      .map(([id, count]) => ({ id: id, count: count }))
+      .sort(
+        (left, right) =>
+          right.count - left.count || left.id.localeCompare(right.id)
+      )
+      .slice(0, cap);
+  }
+
   window.PlayerProfile = {
     NAME_KEY: NAME_KEY,
     AVATAR_KEY: AVATAR_KEY,
+    LAUNCH_COUNTS_KEY: LAUNCH_COUNTS_KEY,
     getName: getName,
     setName: setName,
     getAvatar: getAvatar,
-    setAvatar: setAvatar
+    setAvatar: setAvatar,
+    getLaunchTotal: getLaunchTotal,
+    getFavoriteLaunches: getFavoriteLaunches
   };
 })();

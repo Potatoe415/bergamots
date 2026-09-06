@@ -26,26 +26,27 @@
         <div class="splash-actions" data-id="yatsy-splash-actions">
           <h1 class="splash-title" id="splash-title">Yatzy</h1>
 
-          <div class="splash-name-row" data-id="yatsy-player-name-row">
+          <button class="splash-choice splash-choice-local" id="solo-game-button" type="button" data-id="yatsy-solo-game-button">Partie à deux</button>
+          <button class="splash-choice splash-choice-robot" id="robot-game-button" type="button" data-id="yatsy-robot-game-button">Partie solo</button>
+          <button class="splash-play" id="play-online-button" type="button" data-id="yatsy-play-online-button">Play Online</button>
+
+          <div class="splash-name-row is-hidden" id="player-name-row" data-id="yatsy-player-name-row">
             <label class="splash-label" for="player-name-input" id="player-name-label">Ton nom</label>
             <input class="splash-name-input" id="player-name-input" type="text" maxlength="40" autocomplete="name" placeholder="Ton nom" data-id="yatsy-player-name-input">
           </div>
-
-          <button class="splash-choice splash-choice-local" id="solo-game-button" type="button" data-id="yatsy-solo-game-button">Partie à deux</button>
-          <button class="splash-choice splash-choice-robot" id="robot-game-button" type="button" data-id="yatsy-robot-game-button">Partie solo</button>
-          <button class="splash-play" id="create-game-button" type="button" data-id="yatsy-create-game-button">Partie en ligne</button>
+          <button class="splash-play is-hidden" id="create-game-button" type="button" data-id="yatsy-create-game-button">Créer une partie</button>
           <button class="splash-share is-hidden" id="share-game-button" type="button" data-id="yatsy-share-game-button">Partager le lien</button>
           <button class="splash-cancel" id="cancel-create-button" type="button" data-id="yatsy-cancel-create-button">Cancel Waiting Room</button>
 
           <p class="splash-status" id="splash-status" aria-live="polite"></p>
           <p class="splash-error" id="splash-error" aria-live="polite"></p>
-        </div>
 
-        <div class="splash-join" data-id="yatsy-splash-join">
-          <p class="splash-label" id="join-label">Join with 3-letter code</p>
-          <div class="splash-join-row">
-            <input class="splash-code-input" id="join-code-input" type="text" maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC" aria-label="3-letter game code" data-id="yatsy-join-code-input">
-            <button class="splash-join-button" id="join-game-button" type="button" data-id="yatsy-join-game-button">Join Game</button>
+          <div class="splash-join is-hidden" id="splash-join" data-id="yatsy-splash-join">
+            <p class="splash-label" id="join-label">Join with 3-letter code</p>
+            <div class="splash-join-row">
+              <input class="splash-code-input" id="join-code-input" type="text" maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC" aria-label="3-letter game code" data-id="yatsy-join-code-input">
+              <button class="splash-join-button" id="join-game-button" type="button" data-id="yatsy-join-game-button">Join Game</button>
+            </div>
           </div>
         </div>
       </section>
