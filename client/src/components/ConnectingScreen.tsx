@@ -16,7 +16,7 @@ const STEPS_BY_KIND: Record<Exclude<ConnectionKind, null>, ConnectionStep[]> = {
 };
 
 function roomShareUrl(roomCode: string): string {
-  const url = new URL(window.location.href);
+  const url = new URL(window.location.pathname, window.location.origin);
   url.searchParams.set('room', roomCode);
   return url.toString();
 }

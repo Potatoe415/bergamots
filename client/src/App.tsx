@@ -10,7 +10,7 @@ import {
   chooseBotAction,
 } from '@tranquillity/shared';
 import { useOnlineGame } from './lib/useOnlineGame';
-import { readHubAvatar } from './lib/hubAvatar';
+import { readHubAvatar, readHubName } from './lib/hubAvatar';
 import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
 import PassAndPlayTransition from './components/PassAndPlayTransition';
@@ -52,7 +52,7 @@ export default function App() {
   // launch exactly like ?lang= — see bergamots/docs/TECH.md "Player identity
   // contract". Never required, never overwritten once the player edits it.
   const [lobbyInitialName] = useState<string | undefined>(
-    () => new URLSearchParams(window.location.search).get('name') || undefined
+    () => readHubName() || undefined
   );
   const [hubAvatar] = useState(() => readHubAvatar());
   const {
@@ -203,15 +203,10 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync URL ?room= param with current room code
+  // Keep ?room= in the address bar; never leave hub identity params there
+  // (a share/copy of this URL must not give the partner our name or avatar).
   useEffect(() => {
-    const url = new URL(window.location.href);
-    if (online.roomCode) {
-      url.searchParams.set('room', online.roomCode);
-    } else {
-      url.searchParams.delete('room');
-    }
-    window.history.replaceState(null, '', url.toString());
+    writeRoomUrl(online.roomCode);
   }, [online.roomCode]);
 
   // Persist local state on every change
@@ -234,9 +229,7 @@ export default function App() {
   function goToMenu() {
     leaveOnline();
     localStorage.removeItem('tranquillity_local');
-    const url = new URL(window.location.href);
-    url.searchParams.delete('room');
-    window.history.replaceState(null, '', url.toString());
+    writeRoomUrl(null);
     setLobbyInitialRoom(undefined);
     setMode('lobby');
     setLocal(null);
@@ -326,4 +319,16 @@ export default function App() {
   }
 
   return null;
+}
+
+function writeRoomUrl(roomCode: string | null) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('name');
+  url.searchParams.delete('avatar');
+  if (roomCode) {
+    url.searchParams.set('room', roomCode);
+  } else {
+    url.searchParams.delete('room');
+  }
+  window.history.replaceState(null, '', `${url.pathname}${url.search}`);
 }
