@@ -10,6 +10,7 @@ import {
   chooseBotAction,
 } from '@tranquillity/shared';
 import { useOnlineGame } from './lib/useOnlineGame';
+import { readHubAvatar } from './lib/hubAvatar';
 import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
 import PassAndPlayTransition from './components/PassAndPlayTransition';
@@ -53,6 +54,7 @@ export default function App() {
   const [lobbyInitialName] = useState<string | undefined>(
     () => new URLSearchParams(window.location.search).get('name') || undefined
   );
+  const [hubAvatar] = useState(() => readHubAvatar());
   const {
     online,
     createRoom,
@@ -318,6 +320,7 @@ export default function App() {
         onContributeStartDiscard={onlineContributeStartDiscard}
         onRematch={goToMenu}
         onMenu={goToMenu}
+        selfAvatar={hubAvatar}
       />
     );
   }

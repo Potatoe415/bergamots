@@ -18,6 +18,8 @@ interface Props {
   onMenu: () => void;
   /** Local (pass-and-play): card opponent just placed, shown immediately on mount */
   initialOpponentPlay?: { card: Card; position: number };
+  /** Online only: tiny JPEG from the Bergamots hub `?avatar=` launch param. */
+  selfAvatar?: string;
 }
 
 type UIMode = 'default' | 'selecting_discard_two';
@@ -57,7 +59,7 @@ function getStatusMessage(gameState: ClientGameState, t: Translate): string {
   }
 }
 
-export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContributeStartDiscard, onRematch, onMenu, initialOpponentPlay }: Props) {
+export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContributeStartDiscard, onRematch, onMenu, initialOpponentPlay, selfAvatar }: Props) {
   const t = useT();
   const { settings } = useSettings();
   const [showSettings, setShowSettings] = useState(false);
@@ -421,8 +423,16 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       {/* My hand */}
       <div id="game-footer" className="shrink-0 bg-ocean-900/80 border-t border-ocean-800 px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] overflow-x-hidden">
         <div className="flex items-center justify-end gap-4 mb-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" data-id="self-name-chip">
             <div className={`w-2 h-2 rounded-full ${me.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
+            {selfAvatar ? (
+              <img
+                src={selfAvatar}
+                alt=""
+                className="h-5 w-5 shrink-0 rounded-full object-cover"
+                data-id="self-name-avatar"
+              />
+            ) : null}
             <span className="text-sm font-semibold text-white">{me.name} {t('game.you')}</span>
           </div>
           <div className="flex gap-4 text-xs text-ocean-400">

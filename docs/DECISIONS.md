@@ -106,3 +106,13 @@ Context: Bergamots (the hub this app is launched from, `bergamots.vercel.app` / 
 Rationale: Reused the exact `?room=` pattern already in `App.tsx` (`useState` lazy initializer reading `URLSearchParams`) instead of introducing a new mechanism. Pre-filling default state rather than forcing the value keeps every existing behavior intact: a direct visit with no `?name=` still shows the same defaults as before (`'Player 1'` / empty), and a player can still type a different name for this particular game.
 Consequences: No new state persistence, no schema/API change — `initialPlayerName` is only ever a prop default. A player arriving from the Bergamots hub with a profile name no longer has to retype it here for bot/online modes, and gets it pre-filled as Player 1 in local pass-and-play.
 Alternatives_Rejected: Persisting the received name into this app's own storage for future visits — rejected, out of scope of what was asked (a pre-fill), and would introduce a second, potentially stale, source of truth for the name alongside Bergamots' own profile.
+
+---
+
+## 2026-09-06 — Hub avatar next to own name, online only
+
+Decision: Online `GameBoard` shows the Bergamots hub `?avatar=` thumb (if present) as a small circle next to `{me.name} (you)`. Local pass-and-play and bot games do not receive the prop. The image is session-only (`sessionStorage`) and is not shown next to the opponent's name.
+Context: Bergamots now forwards a tiny JPEG as `?avatar=` so the player can see their profile photo next to their name in online multiplayer. See bergamots `docs/DECISIONS.md` 2026-09-06 (tiny avatar thumb).
+Rationale: Same launch-URL channel as `?name=`. Passing `selfAvatar` only on the `mode === 'online'` `GameBoard` is the smallest gate. No schema/API change.
+Consequences: A direct visit with no `?avatar=` looks exactly as before. `docs/PRODUCT.md` / `docs/TECH.md` were not edited autonomously.
+Alternatives_Rejected: Showing the photo in local/bot modes too — rejected, user asked for online only. Syncing avatars through game state so the opponent can see them — rejected, not asked for.
