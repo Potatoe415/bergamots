@@ -72,6 +72,9 @@
       celebration: {
         rolledFiveKind: "{playerName} rolled five {faceLabel}s"
       },
+      defeatMode: {
+        activated: "{playerName}: Defeat mode ON"
+      },
       players: {
         player1: "Player 1",
         player2: "Player 2"
@@ -192,6 +195,9 @@
       celebration: {
         rolledFiveKind: "{playerName} ha sacado cinco {faceLabel}"
       },
+      defeatMode: {
+        activated: "{playerName}: Modo derrota ON"
+      },
       players: {
         player1: "Jugador 1",
         player2: "Jugador 2"
@@ -311,6 +317,9 @@
       },
       celebration: {
         rolledFiveKind: "{playerName} a fait cinq {faceLabel}"
+      },
+      defeatMode: {
+        activated: "{playerName} : Mode defaite ON"
       },
       players: {
         player1: "Joueur 1",

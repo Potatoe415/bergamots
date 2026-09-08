@@ -1663,6 +1663,18 @@ body.player-two-turn .roll-button {
   animation: emoji-celebration-pop 5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.defeat-mode-toast {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(196, 55, 55, 0.9);
+  color: var(--white);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  animation: emoji-celebration-pop 2.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes die-launch {
   0% {
     transform: translateY(1rem) scale(0.88) rotate(-8deg);

@@ -117,6 +117,14 @@ let remoteApplyInFlight = false;
 let extraRollTapCount = 0;
 let bonusRollUsedThisTurn = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
+let defeatModeTapCount = 0;
+let defeatModeTapTimeoutId = null;
+let defeatModeTurnTimeoutId = null;
+let defeatModeToastTimeoutId = null;
+const DEFEAT_MODE_TAP_WINDOW_MS = 1200;
+const DEFEAT_MODE_TURNS_THRESHOLD = 3;
+const DEFEAT_MODE_STEP_DELAY_MS = 150;
+const DEFEAT_MODE_TOAST_TTL_MS = 2200;
 
 elements.soloGameButton.addEventListener("click", () => handleLocalStart("solo"));
 elements.robotGameButton.addEventListener("click", () => handleLocalStart("robot"));
@@ -157,6 +165,9 @@ const emojiController = window.YATZY_EMOJI
 elements.rollButton.addEventListener("click", handleRoll);
 elements.goBackButton.addEventListener("click", handleSelectionCancel);
 elements.restartButton.addEventListener("click", handleRestart);
+if (elements.scoreSummary) {
+  elements.scoreSummary.addEventListener("click", handleScoreSummaryClick);
+}
 
 if (elements.playerNameInput && window.PlayerProfile) {
   elements.playerNameInput.value = window.PlayerProfile.getName();
@@ -328,6 +339,8 @@ function createInitialState() {
     animateDiceOnRender: false,
     yatzyCelebration: null,
     emojiReaction: null,
+    defeatMode: [false, false],
+    defeatModeAnnouncement: null,
     gameOver: false,
     winner: null,
     statusMessage: ""
@@ -396,6 +409,7 @@ function render() {
   renderRollControls();
   renderCelebration();
   scheduleRobotTurnIfNeeded();
+  scheduleDefeatModeTurnIfNeeded();
 }
 
 function renderTheme() {
@@ -999,12 +1013,26 @@ function renderCelebration() {
     return;
   }
 
+  if (state.defeatModeAnnouncement) {
+    renderDefeatModeAnnouncement(state.defeatModeAnnouncement);
+    return;
+  }
+
   if (state.emojiReaction) {
     renderEmojiCelebration(state.emojiReaction);
     return;
   }
 
   elements.celebrationLayer.innerHTML = "";
+}
+
+function renderDefeatModeAnnouncement(announcement) {
+  elements.celebrationLayer.innerHTML = "";
+  const banner = document.createElement("div");
+  banner.className = "defeat-mode-toast";
+  banner.dataset.id = "yatsy-defeat-mode-toast";
+  banner.textContent = t("defeatMode.activated", { playerName: announcement.playerName });
+  elements.celebrationLayer.appendChild(banner);
 }
 
 function buildYatzyCelebrationMarkup(celebration) {
@@ -1494,7 +1522,8 @@ function createMatchmakingCallbacks() {
     startGameCallback: handleMatchStarted,
     stateChangeCallback: handleMatchStateChange,
     gameClosedCallback: handleMatchClosed,
-    emojiReceivedCallback: handleEmojiReceived
+    emojiReceivedCallback: handleEmojiReceived,
+    noticeReceivedCallback: handleDefeatModeNoticeReceived
   };
 }
 
@@ -1545,6 +1574,78 @@ function showReaction(playerName, pick) {
     state.emojiReaction = null;
     render();
   }, ttl);
+}
+
+// "Mode defaite": a triple-click on the score summary lets a player whose
+// remaining categories are down to the wire hand their own remaining turns
+// off to the same decision engine the robot uses, played back very quickly.
+// It only affects the activating player's own future turns.
+function remainingCategoriesForPlayer(playerIndex) {
+  return CATEGORIES.filter((category) => state.scores[playerIndex][category.key] === null).length;
+}
+
+function canActivateDefeatMode() {
+  return state.screen === "game"
+    && !state.gameOver
+    && !isRobotTurn()
+    && isLocalPlayersTurn()
+    && !state.defeatMode[state.currentPlayerIndex]
+    && remainingCategoriesForPlayer(state.currentPlayerIndex) <= DEFEAT_MODE_TURNS_THRESHOLD;
+}
+
+function resetDefeatModeTapCount() {
+  clearTimeout(defeatModeTapTimeoutId);
+  defeatModeTapTimeoutId = null;
+  defeatModeTapCount = 0;
+}
+
+function handleScoreSummaryClick() {
+  if (!canActivateDefeatMode()) {
+    resetDefeatModeTapCount();
+    return;
+  }
+
+  clearTimeout(defeatModeTapTimeoutId);
+  defeatModeTapCount += 1;
+
+  if (defeatModeTapCount < 3) {
+    defeatModeTapTimeoutId = setTimeout(resetDefeatModeTapCount, DEFEAT_MODE_TAP_WINDOW_MS);
+    return;
+  }
+
+  resetDefeatModeTapCount();
+  activateDefeatMode();
+}
+
+function activateDefeatMode() {
+  const playerIndex = state.currentPlayerIndex;
+  const playerName = state.players[playerIndex].name;
+  state.defeatMode[playerIndex] = true;
+
+  if (isOnlineGame()) {
+    MATCHMAKING?.sendNotice({ type: "defeatMode", playerName });
+  }
+
+  showDefeatModeAnnouncement(playerName);
+}
+
+function showDefeatModeAnnouncement(playerName) {
+  clearTimeout(defeatModeToastTimeoutId);
+  state.defeatModeAnnouncement = { playerName };
+  render();
+
+  defeatModeToastTimeoutId = setTimeout(() => {
+    state.defeatModeAnnouncement = null;
+    render();
+  }, DEFEAT_MODE_TOAST_TTL_MS);
+}
+
+function handleDefeatModeNoticeReceived(payload) {
+  if (payload?.type !== "defeatMode" || typeof payload.playerName !== "string") {
+    return;
+  }
+
+  showDefeatModeAnnouncement(payload.playerName);
 }
 
 function handleMatchStarted(payload) {
@@ -1642,6 +1743,7 @@ async function applyRemoteGameState(remoteState) {
 
   if (nextFields.currentPlayerIndex !== previousPlayerIndex || nextFields.rollsRemaining === 3) {
     resetBonusRollHunt();
+    resetDefeatModeTapCount();
   }
 
   const scoreEvent = findRemoteScoreEvent(previousScores, nextFields.scores);
@@ -1768,14 +1870,19 @@ function resetGame({
   clearTimeout(yatzyCelebrationTimeoutId);
   clearTimeout(emojiReactionTimeoutId);
   clearTimeout(robotTurnTimeoutId);
+  clearTimeout(defeatModeTurnTimeoutId);
+  clearTimeout(defeatModeToastTimeoutId);
   clearUndoWindow();
   yatzyCelebrationTimeoutId = null;
   emojiReactionTimeoutId = null;
   robotTurnTimeoutId = null;
+  defeatModeTurnTimeoutId = null;
+  defeatModeToastTimeoutId = null;
   emojiController?.close();
   robotQueuedScoreCategory = null;
   robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
   resetBonusRollHunt();
+  resetDefeatModeTapCount();
 
   const freshState = createInitialState();
   freshState.screen = screen;
@@ -1958,6 +2065,61 @@ function applyRobotHoldPattern(lockMask) {
   });
 
   return changed;
+}
+
+// Drives the activating player's own remaining turns through the robot's
+// decision engine, reusing getRobotDecision()/applyRobotHoldPattern() so the
+// choices stay consistent with the robot, but paced much faster and allowed
+// during online games (unlike isRobotTurn(), which excludes online play).
+function isDefeatModeTurn() {
+  return state.screen === "game"
+    && !state.gameOver
+    && !isRobotTurn()
+    && isLocalPlayersTurn()
+    && Boolean(state.defeatMode[state.currentPlayerIndex]);
+}
+
+function scheduleDefeatModeTurnIfNeeded() {
+  if (!isDefeatModeTurn() || defeatModeTurnTimeoutId) {
+    return;
+  }
+
+  defeatModeTurnTimeoutId = setTimeout(() => {
+    defeatModeTurnTimeoutId = null;
+    runDefeatModeTurnStep();
+  }, DEFEAT_MODE_STEP_DELAY_MS);
+}
+
+function runDefeatModeTurnStep() {
+  if (!isDefeatModeTurn()) {
+    return;
+  }
+
+  const diceValues = state.dice.map((die) => die.value);
+  const turnStarted = diceValues.some((value) => value !== null);
+
+  if (!turnStarted && state.rollsRemaining === 3) {
+    handleRoll();
+    return;
+  }
+
+  const decision = getRobotDecision();
+
+  if (decision.type === "score") {
+    handleScoreSelection(decision.categoryKey);
+    return;
+  }
+
+  if (decision.type === "hold") {
+    const lockPatternChanged = applyRobotHoldPattern(decision.lockMask);
+    if (lockPatternChanged) {
+      render();
+      syncOnlineGameState();
+      return;
+    }
+  }
+
+  handleRoll();
 }
 
 function hydrateFromRemoteGameState(targetState, remoteState) {
@@ -2341,6 +2503,7 @@ function commitScoreSelection(playerIndex, categoryKey, score, turnSnapshot) {
   // which guarantees the next player starts from the same baseline every time.
   const finishedPlayerName = state.players[state.currentPlayerIndex].name;
   resetBonusRollHunt();
+  resetDefeatModeTapCount();
   state.currentPlayerIndex = state.currentPlayerIndex === 0 ? 1 : 0;
   state.dice = Array.from({ length: 5 }, () => ({ value: null, locked: false, lastRolled: false }));
   state.rollsRemaining = 3;

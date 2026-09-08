@@ -175,6 +175,9 @@
       .on("broadcast", { event: "emoji" }, ({ payload }) => {
         callbacks.emojiReceivedCallback?.(payload);
       })
+      .on("broadcast", { event: "notice" }, ({ payload }) => {
+        callbacks.noticeReceivedCallback?.(payload);
+      })
       .subscribe();
 
     await refetch();
@@ -271,6 +274,16 @@
     sendReaction({ seat, kind: "emoji", emoji });
   }
 
+  // Generic ephemeral broadcast, separate from reactions, for short one-off
+  // announcements (e.g. defeat mode) that don't map to the reaction shape.
+  function sendNotice(payload) {
+    activeChannel?.send({
+      type: "broadcast",
+      event: "notice",
+      payload
+    });
+  }
+
   async function leaveGame(options = {}) {
     const code = activeCode;
     const seat = activeSession;
@@ -294,6 +307,7 @@
     updateGameState,
     sendEmoji,
     sendReaction,
+    sendNotice,
     leaveGame
   };
 }(window));
