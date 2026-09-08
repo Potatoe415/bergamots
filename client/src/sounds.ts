@@ -58,6 +58,18 @@ export function playWinSound() {
   }
 }
 
+// Bright shimmer for the finish-card win flourish
+export function playFinishCardSound() {
+  try {
+    const ctx = getCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    const notes = [1046.5, 1318.5, 1568, 2093];
+    notes.forEach((freq, i) => playNote(ctx, freq, ctx.currentTime + i * 0.06, 0.5, 0.16, 'sine'));
+  } catch {
+    // AudioContext unavailable (SSR / old browser)
+  }
+}
+
 // Descending minor fall: A4 – F4 – D4
 export function playLoseSound() {
   try {

@@ -4,6 +4,7 @@ import { useT, LanguageSwitcher } from '../i18n';
 import Grid from './Grid';
 import Hand from './Hand';
 import GameOver from './GameOver';
+import FinishCardFlourish from './FinishCardFlourish';
 import SettingsPanel from './SettingsPanel';
 import { useSettings } from '../settings';
 import { playTurnSound } from '../sounds';
@@ -77,6 +78,19 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
   const movesForSelected: LegalMove[] = selectedCard ? legalMoves.filter(m => m.cardId === selectedCard.id) : [];
   const statusMessage = getStatusMessage(gameState, t);
   const showGameOver = useDelayedGameOver(winner);
+
+  // ── Finish-card win flourish ────────────────────────────────────────────────
+  // The finish card can only be played from 'playing' (never from 'finish_pending' —
+  // see gameEngine). So a 'playing' → 'won' transition is exactly the moment the
+  // finish card is played as the winning last card, with no monsters left to resolve.
+  const [showFinishFlourish, setShowFinishFlourish] = useState(false);
+  const prevPhaseRef = useRef(phase);
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current;
+    prevPhaseRef.current = phase;
+    if (prevPhase === 'playing' && phase === 'won') setShowFinishFlourish(true);
+    else if (phase !== 'won') setShowFinishFlourish(false);
+  }, [phase]);
 
   // ── Opponent play preview ───────────────────────────────────────────────────
   const [opponentPlay, setOpponentPlay] = useState<{ card: Card; position: number } | null>(
@@ -455,6 +469,7 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
         />
       </div>
 
+      {showFinishFlourish && <FinishCardFlourish />}
       {showGameOver && winner && <GameOver winner={winner} onRematch={onRematch} onMenu={onMenu} />}
       {showSettings && (
         <SettingsPanel
