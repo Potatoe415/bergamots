@@ -118,10 +118,7 @@ let robotTurnTimeoutId = null;
 let undoScoreTimeoutId = null;
 let robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
 let robotQueuedScoreCategory = null;
-let remoteSyncPromise = Promise.resolve();
-let pendingRemoteSyncCount = 0;
 let scoringAnimationInFlight = false;
-let remoteApplyInFlight = false;
 let extraRollTapCount = 0;
 let bonusRollUsedThisTurn = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
@@ -136,14 +133,17 @@ const DEFEAT_MODE_TOAST_TTL_MS = 2200;
 
 elements.soloGameButton.addEventListener("click", () => handleLocalStart("solo"));
 elements.robotGameButton.addEventListener("click", () => handleLocalStart("robot"));
+// These handlers live in session.js and are only wired up once the session
+// controller is created below, so each listener defers the lookup to click
+// time (arrow wrapper) instead of capturing an undefined reference now.
 if (elements.playOnlineButton) {
-  elements.playOnlineButton.addEventListener("click", handlePlayOnline);
+  elements.playOnlineButton.addEventListener("click", () => handlePlayOnline());
 }
-elements.createGameButton.addEventListener("click", handleCreateGame);
-elements.shareGameButton.addEventListener("click", handleShareGame);
-elements.cancelCreateButton.addEventListener("click", handleWaitingCancel);
-elements.joinGameButton.addEventListener("click", handleJoinGame);
-elements.joinCodeInput.addEventListener("input", handleJoinCodeInput);
+elements.createGameButton.addEventListener("click", () => handleCreateGame());
+elements.shareGameButton.addEventListener("click", () => handleShareGame());
+elements.cancelCreateButton.addEventListener("click", () => handleWaitingCancel());
+elements.joinGameButton.addEventListener("click", () => handleJoinGame());
+elements.joinCodeInput.addEventListener("input", (event) => handleJoinCodeInput(event));
 elements.joinCodeInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -151,7 +151,7 @@ elements.joinCodeInput.addEventListener("keydown", (event) => {
   }
 });
 if (elements.splashBackButton) {
-  elements.splashBackButton.addEventListener("click", handleSplashBack);
+  elements.splashBackButton.addEventListener("click", (event) => handleSplashBack(event));
 }
 if (elements.settingsButton && elements.settingsPanel && window.GameHeader) {
   window.GameHeader.initOptionsPanel(elements.settingsButton, elements.settingsPanel);
@@ -182,6 +182,90 @@ if (elements.playerNameInput && window.PlayerProfile) {
   elements.playerNameInput.addEventListener("change", persistPlayerNameFromInput);
   elements.playerNameInput.addEventListener("blur", persistPlayerNameFromInput);
 }
+
+// render.js owns the DOM projection of `state`; everything it needs that can
+// change identity at runtime (the category lists get rebuilt whenever rule
+// settings change, the scoring animation flag flips mid-turn) is passed as a
+// getter rather than a snapshot value.
+const renderer = window.YATZY_RENDER.createRenderer({
+  state,
+  elements,
+  t,
+  playerMeta: PLAYER_META,
+  bonusConfig: BONUS_CONFIG,
+  lowerRuleOptions: LOWER_RULE_OPTIONS,
+  emojiController,
+  getUpperCategories: () => UPPER_CATEGORIES,
+  getLowerCategories: () => LOWER_CATEGORIES,
+  isScoringAnimationInFlight: () => scoringAnimationInFlight,
+  isOnlineGame,
+  isLocalPlayersTurn,
+  isRobotTurn,
+  isInteractionLocked,
+  isCategoryScoreable,
+  previewScore,
+  categoryIconText,
+  categoryLabel,
+  getRuleDisplayName,
+  calculateUpperSection,
+  calculateGrandTotal,
+  getDieAriaLabel,
+  canKeepSecretRollClicks,
+  handleScoreSelection,
+  handleDieToggle,
+  scheduleRobotTurnIfNeeded,
+  scheduleDefeatModeTurnIfNeeded
+});
+const render = renderer.render;
+
+// session.js owns matchmaking wiring, remote-state sync and session
+// persistence. It shares mutable game state through `state` directly and
+// through the scoring-animation flag getter/setter below, since that flag is
+// also flipped by the local scoring flow further down in this file.
+const session = window.YATZY_SESSION.createSessionController({
+  state,
+  t,
+  render,
+  storage: STORAGE,
+  storageKey: STORAGE_KEY,
+  playerMeta: PLAYER_META,
+  getCategories: () => CATEGORIES,
+  isOnlineGame,
+  isSplashBusy,
+  navigateToHub,
+  resetGame,
+  resetBonusRollHunt,
+  resetDefeatModeTapCount,
+  syncRuntimeRulesFromSetup,
+  persistPlayerNameFromInput,
+  cloneRuleSettings,
+  initializeRuntimeDefinitions,
+  applySetupSettings,
+  createInitialState,
+  buildEmptyScorecard,
+  isScoreboardFull,
+  applyWinnerFromScores,
+  animateDiceIntoScoreCell,
+  maybeTriggerOnlineYatzyCelebration,
+  handleEmojiReceived,
+  handleDefeatModeNoticeReceived,
+  isScoringAnimationInFlight: () => scoringAnimationInFlight,
+  setScoringAnimationInFlight: (value) => {
+    scoringAnimationInFlight = value;
+  }
+});
+const handlePlayOnline = session.handlePlayOnline;
+const handleCreateGame = session.handleCreateGame;
+const handleShareGame = session.handleShareGame;
+const handleWaitingCancel = session.handleWaitingCancel;
+const handleJoinGame = session.handleJoinGame;
+const handleJoinCodeInput = session.handleJoinCodeInput;
+const handleSplashBack = session.handleSplashBack;
+const handleDeepLinkJoin = session.handleDeepLinkJoin;
+const restoreOnlineSession = session.restoreOnlineSession;
+const leaveCurrentGame = session.leaveCurrentGame;
+const syncOnlineGameState = session.syncOnlineGameState;
+const clearPersistedOnlineSession = session.clearPersistedOnlineSession;
 
 render();
 restoreOnlineSession();
@@ -398,48 +482,6 @@ function buildEmptyScorecard() {
   }, {});
 }
 
-function render() {
-  // Centralized rendering makes the UI a pure projection of current state.
-  // Any state mutation is followed by a render so visuals always stay in sync.
-  renderTheme();
-  renderSplash();
-  elements.homeButton.classList.toggle("is-hidden", state.screen !== "game");
-
-  elements.gameCard.classList.toggle("is-hidden", state.screen !== "game");
-  if (state.screen !== "game") {
-    return;
-  }
-
-  renderHeader();
-  renderScoreSummary();
-  renderScoreboard();
-  renderDice();
-  renderRollControls();
-  renderCelebration();
-  scheduleRobotTurnIfNeeded();
-  scheduleDefeatModeTurnIfNeeded();
-}
-
-function renderTheme() {
-  document.documentElement.lang = state.setup.language;
-  document.title = t("meta.title");
-
-  if (state.screen !== "game") {
-    document.body.classList.remove("player-two-turn", "player-one-turn", "scoring-phase");
-    elements.gameCard.classList.remove("yatzy-hit");
-    return;
-  }
-
-  const isPlayerTwoTurn = !state.gameOver && state.currentPlayerIndex === 1;
-  const isPlayerOneTurn = !state.gameOver && state.currentPlayerIndex === 0;
-  const isScoringPhase = state.turnPhase === "scoring" || Boolean(state.pendingScoreSelection);
-
-  document.body.classList.toggle("player-two-turn", isPlayerTwoTurn);
-  document.body.classList.toggle("player-one-turn", isPlayerOneTurn);
-  document.body.classList.toggle("scoring-phase", isScoringPhase);
-  elements.gameCard.classList.toggle("yatzy-hit", Boolean(state.yatzyCelebration));
-}
-
 function isOnlineGame() {
   return Boolean(state.session.gameCode);
 }
@@ -473,650 +515,6 @@ function persistPlayerNameFromInput() {
     return;
   }
   window.PlayerProfile.setName(elements.playerNameInput.value.trim());
-}
-
-function renderSplash() {
-  const inGame = state.screen === "game";
-  elements.splashScreen.classList.toggle("is-hidden", inGame);
-  document.body.classList.toggle("is-splash", !inGame);
-  elements.splashTitle.textContent = t("splash.title");
-  if (elements.playerNameLabel) {
-    elements.playerNameLabel.textContent = t("splash.yourName");
-  }
-  if (elements.playerNameInput) {
-    elements.playerNameInput.placeholder = t("splash.namePlaceholder");
-  }
-  elements.soloGameButton.textContent = t("splash.soloGame");
-  elements.robotGameButton.textContent = t("splash.robotGame");
-  if (elements.playOnlineButton) {
-    elements.playOnlineButton.textContent = t("splash.playOnline");
-  }
-  elements.joinLabel.textContent = t("splash.joinLabel");
-  elements.joinCodeInput.placeholder = t("splash.codePlaceholder");
-  elements.joinCodeInput.value = state.session.joinCode;
-  if (elements.settingsButton) {
-    elements.settingsButton.setAttribute("aria-label", t("splash.settings"));
-    elements.settingsButton.setAttribute("title", t("splash.settings"));
-  }
-  if (elements.splashBackButton) {
-    elements.splashBackButton.setAttribute("aria-label", t("splash.backToHub"));
-    elements.splashBackButton.setAttribute("title", t("splash.backToHub"));
-  }
-  elements.splashStatus.textContent = state.session.splashStatus;
-  elements.splashError.textContent = state.session.splashError;
-  elements.splashStatus.classList.toggle("is-visible", Boolean(state.session.splashStatus));
-  elements.splashError.classList.toggle("is-visible", Boolean(state.session.splashError));
-
-  const isCreating = state.session.connectionState === "creating";
-  const isJoining = state.session.connectionState === "joining";
-  const isRestoring = state.session.connectionState === "restoring";
-  const isWaiting = state.session.connectionState === "waiting";
-  const isBusy = isCreating || isJoining || isRestoring || isWaiting;
-  const showOnline = state.splashView === "online" || isBusy;
-  renderSettingsRows();
-
-  elements.soloGameButton.classList.toggle("is-hidden", showOnline);
-  elements.robotGameButton.classList.toggle("is-hidden", showOnline);
-  if (elements.playOnlineButton) {
-    elements.playOnlineButton.classList.toggle("is-hidden", showOnline);
-  }
-  if (elements.playerNameRow) {
-    elements.playerNameRow.classList.toggle("is-hidden", !showOnline);
-  }
-  renderOnlineAvatar(elements.playerNameAvatar, showOnline);
-  elements.createGameButton.classList.toggle("is-hidden", !showOnline);
-  if (elements.splashJoin) {
-    elements.splashJoin.classList.toggle("is-hidden", !showOnline || isWaiting || isCreating || isRestoring);
-  }
-
-  elements.soloGameButton.disabled = isBusy;
-  elements.robotGameButton.disabled = isBusy;
-  if (elements.playOnlineButton) {
-    elements.playOnlineButton.disabled = isBusy;
-  }
-  elements.createGameButton.textContent = isCreating
-    ? t("splash.createBusy")
-    : isWaiting
-      ? state.session.gameCode
-      : t("splash.createGame");
-  elements.createGameButton.classList.toggle("is-waiting-code", isWaiting);
-  elements.shareGameButton.textContent = t("splash.shareLink");
-  elements.cancelCreateButton.textContent = t("splash.cancelWaiting");
-  elements.joinGameButton.textContent = isJoining ? t("splash.joinBusy") : t("splash.joinGame");
-  elements.shareGameButton.classList.toggle("is-visible", isWaiting);
-  elements.shareGameButton.disabled = !isWaiting;
-  elements.cancelCreateButton.classList.toggle("is-visible", isWaiting);
-  elements.cancelCreateButton.disabled = !isWaiting;
-  elements.createGameButton.disabled = isBusy;
-  elements.joinCodeInput.disabled = isBusy;
-  elements.joinGameButton.disabled = isBusy || state.session.joinCode.length !== 3;
-  if (elements.settingsButton) {
-    elements.settingsButton.disabled = isBusy;
-  }
-}
-
-function renderSettingsRows() {
-  if (!elements.settingsList) {
-    return;
-  }
-
-  elements.settingsList.innerHTML = "";
-
-  LOWER_RULE_OPTIONS.forEach((option) => {
-    const setting = state.setup.rules[option.key];
-    const row = document.createElement("label");
-    row.className = "settings-row";
-    row.innerHTML = `
-      <span class="settings-check">
-        <input type="checkbox" data-rule-key="${option.key}" data-rule-field="enabled" ${setting.enabled ? "checked" : ""}>
-      </span>
-      <span class="settings-name">${getRuleDisplayName(option.key)}</span>
-      <input class="settings-points" type="number" min="0" step="1" data-rule-key="${option.key}" data-rule-field="points" value="${setting.points}">
-    `;
-    elements.settingsList.appendChild(row);
-  });
-
-  appendSettingsToggleRow(
-    "reverseDiceSelection",
-    t("splash.reverseSelection"),
-    state.setup.reverseDiceSelection
-  );
-  appendSettingsToggleRow(
-    "extraRollEasterEgg",
-    t("splash.extraRollEasterEgg"),
-    state.setup.extraRollEasterEgg,
-    "settings-extra-roll-easter-egg"
-  );
-}
-
-function appendSettingsToggleRow(settingKey, name, enabled, dataId) {
-  const row = document.createElement("label");
-  row.className = "settings-row settings-row-toggle";
-  const dataIdAttr = dataId ? ` data-id="${dataId}"` : "";
-  row.innerHTML = `
-    <span class="settings-check">
-      <input type="checkbox"${dataIdAttr} data-setting-key="${settingKey}" ${enabled ? "checked" : ""}>
-    </span>
-    <span class="settings-name">${name}</span>
-    <span class="settings-points settings-pill">${enabled ? "ON" : "OFF"}</span>
-  `;
-  elements.settingsList.appendChild(row);
-}
-
-function renderHeader() {
-  elements.gameTitle.textContent = isOnlineGame()
-    ? `${t("splash.title")} - ${state.session.gameCode}`
-    : t("splash.title");
-  elements.restartButton.textContent = isOnlineGame() ? t("controls.leaveGame") : t("controls.restart");
-  elements.emojiButton.setAttribute("aria-label", t("controls.sendEmoji"));
-  elements.emojiButton.setAttribute("title", t("controls.sendEmoji"));
-  emojiController?.syncLabels();
-}
-
-function renderScoreSummary() {
-  const playerOneTotal = calculateGrandTotal(state.scores[0]);
-  const playerTwoTotal = calculateGrandTotal(state.scores[1]);
-  const article = document.createElement("article");
-  article.className = `score-card${!state.gameOver ? " is-active" : ""}`;
-  article.appendChild(buildScoreHeader(playerOneTotal, playerTwoTotal));
-  elements.scoreSummary.replaceChildren(article);
-}
-
-function buildPlayerNameChip() {
-  const chip = document.createElement("span");
-  chip.className = "score-card-player";
-  chip.dataset.id = "yatsy-score-local-name";
-  appendAvatarImg(chip, localAvatarSrc());
-  const label = document.createElement("span");
-  label.textContent = state.players[state.session.localPlayerIndex].name;
-  chip.appendChild(label);
-  return chip;
-}
-
-function buildScoreHeader(playerOneTotal, playerTwoTotal) {
-  const header = document.createElement("div");
-  header.className = "score-card-header";
-  if (isOnlineGame() && Number.isInteger(state.session.localPlayerIndex)) {
-    header.appendChild(buildPlayerNameChip());
-  }
-  const scoreline = document.createElement("span");
-  scoreline.className = "score-card-scoreline";
-  scoreline.innerHTML = `
-      <span class="score-card-value player-one-score">${playerOneTotal}</span>
-      <span class="score-card-divider">/</span>
-      <span class="score-card-value player-two-score">${playerTwoTotal}</span>
-  `;
-  header.appendChild(scoreline);
-  return header;
-}
-
-function localAvatarSrc() {
-  return window.PlayerProfile?.getAvatarThumb?.() || window.PlayerProfile?.getAvatar?.() || "";
-}
-
-function renderOnlineAvatar(img, visible) {
-  if (!img) return;
-  const src = visible ? localAvatarSrc() : "";
-  img.src = src;
-  img.hidden = !src;
-}
-
-function appendAvatarImg(parent, src) {
-  if (!src) return;
-  const img = document.createElement("img");
-  img.className = "player-name-avatar";
-  img.alt = "";
-  img.src = src;
-  parent.appendChild(img);
-}
-
-function renderScoreboard() {
-  // Rebuilding the board from state each time keeps move legality simple:
-  // if a slot is scoreable in state, it becomes interactive in the DOM.
-  elements.scoreboard.innerHTML = "";
-  const targetRowCount = Math.max(
-    UPPER_CATEGORIES.length + 1,
-    LOWER_CATEGORIES.length
-  );
-
-  elements.scoreboard.appendChild(buildScoreGroup(UPPER_CATEGORIES, true, targetRowCount));
-  elements.scoreboard.appendChild(buildScoreGroup(LOWER_CATEGORIES, false, targetRowCount));
-
-  if (state.gameOver) {
-    elements.scoreboard.appendChild(buildWinnerBanner());
-  }
-}
-
-function buildScoreGroup(categories, includeBonusRow, targetRowCount) {
-  const group = document.createElement("div");
-  group.className = "score-group";
-  let renderedRows = 0;
-
-  categories.forEach((category) => {
-    group.appendChild(buildCategoryCell(category));
-
-    PLAYER_META.forEach((playerMeta, playerIndex) => {
-      group.appendChild(buildScoreCell(category, playerIndex, playerMeta.className));
-    });
-
-    renderedRows += 1;
-  });
-
-  if (includeBonusRow) {
-    group.appendChild(buildBonusLabelCell());
-
-    PLAYER_META.forEach((playerMeta, playerIndex) => {
-      group.appendChild(buildBonusProgressCell(playerIndex, playerMeta.className));
-    });
-
-    renderedRows += 1;
-  }
-
-  while (renderedRows < targetRowCount) {
-    group.appendChild(buildSpacerCell());
-    group.appendChild(buildSpacerCell("player-one"));
-    group.appendChild(buildSpacerCell("player-two"));
-    renderedRows += 1;
-  }
-
-  return group;
-}
-
-function buildCategoryCell(category) {
-  const cell = document.createElement("div");
-  cell.className = "score-cell category-cell";
-  cell.setAttribute("title", categoryLabel(category.key));
-
-  if (isCategoryScoreable(state.currentPlayerIndex, category.key) && !isRobotTurn()) {
-    const scorePreview = previewScore(category.key);
-    cell.classList.add("interactive", "valid");
-    cell.setAttribute("role", "button");
-    cell.setAttribute("tabindex", "0");
-    cell.setAttribute("aria-label", t("aria.categoryScore", {
-      category: categoryLabel(category.key),
-      score: scorePreview
-    }));
-    cell.addEventListener("click", () => handleScoreSelection(category.key));
-    cell.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        handleScoreSelection(category.key);
-      }
-    });
-  }
-
-  cell.appendChild(createCategoryIcon(category));
-  return cell;
-}
-
-function buildScoreCell(category, playerIndex, className) {
-  const cell = document.createElement("button");
-  cell.type = "button";
-  cell.className = `score-cell player-cell ${className}`;
-  cell.dataset.categoryKey = category.key;
-  cell.dataset.playerIndex = String(playerIndex);
-
-  const isCurrentPlayer = playerIndex === state.currentPlayerIndex;
-  const scoreValue = state.scores[playerIndex][category.key];
-  const canScore = isCategoryScoreable(playerIndex, category.key);
-
-  if (scoreValue !== null) {
-    cell.classList.add("filled");
-    cell.textContent = scoreValue;
-    cell.disabled = true;
-  } else if (canScore && !isRobotTurn()) {
-    // The preview value is derived live from the dice so players can see
-    // exactly what each category would score before committing the turn.
-    const scorePreview = previewScore(category.key);
-    cell.classList.add("interactive", "valid");
-    cell.classList.add(scorePreview === 0 ? "preview-zero" : "preview-positive");
-    cell.textContent = scorePreview;
-    cell.addEventListener("click", () => handleScoreSelection(category.key));
-    cell.setAttribute("aria-label", t("aria.playerCategoryScore", {
-      player: state.players[playerIndex].name,
-      category: categoryLabel(category.key),
-      score: scorePreview
-    }));
-  } else {
-    cell.classList.add("blocked");
-    cell.textContent = "";
-    cell.disabled = true;
-  }
-
-  if ((!isCurrentPlayer || !isLocalPlayersTurn()) && scoreValue === null) {
-    cell.classList.add("blocked");
-  }
-
-  return cell;
-}
-
-function buildBonusLabelCell() {
-  const cell = document.createElement("div");
-  cell.className = "score-cell category-cell bonus-label";
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "bonus-stack";
-  wrapper.innerHTML = `
-    <span class="bonus-title">${t("labels.bonus")}</span>
-    <span class="bonus-value">+${BONUS_CONFIG.points}</span>
-  `;
-
-  cell.appendChild(wrapper);
-  return cell;
-}
-
-function buildBonusProgressCell(playerIndex, className) {
-  // Bonus display is derived each render from the recorded upper-section values.
-  // That avoids mirrored aggregate state that could drift out of sync.
-  const progress = calculateUpperSection(state.scores[playerIndex]);
-
-  const cell = document.createElement("div");
-  cell.className = `score-cell player-cell ${className}`;
-
-  const bubble = document.createElement("div");
-  bubble.className = "bonus-progress";
-  bubble.textContent = `${progress}/${BONUS_CONFIG.threshold}`;
-
-  cell.appendChild(bubble);
-  return cell;
-}
-
-function buildSpacerCell(playerClassName = "") {
-  const cell = document.createElement("div");
-  cell.className = `score-cell ${playerClassName ? `player-cell spacer-cell ${playerClassName}` : "category-cell spacer-cell"}`;
-  cell.setAttribute("aria-hidden", "true");
-  return cell;
-}
-
-function buildWinnerBanner() {
-  const overlay = document.createElement("div");
-  overlay.className = "winner-banner";
-
-  const card = document.createElement("div");
-  card.className = "winner-card";
-
-  const totals = PLAYER_META.map((_, playerIndex) => calculateGrandTotal(state.scores[playerIndex]));
-  const isTie = totals[0] === totals[1];
-
-  // textContent rather than innerHTML: player names travel through the synced
-  // game state, so a peer could otherwise inject markup into this card.
-  const headline = document.createElement("h2");
-  headline.textContent = isTie ? t("winner.tie") : t("winner.win", { name: state.winner });
-  card.appendChild(headline);
-
-  PLAYER_META.forEach((_, playerIndex) => {
-    const scoreLine = document.createElement("p");
-    scoreLine.textContent = `${state.players[playerIndex].name}: ${totals[playerIndex]}`;
-    card.appendChild(scoreLine);
-  });
-
-  const hint = document.createElement("p");
-  hint.textContent = t("winner.useRestart");
-  card.appendChild(hint);
-
-  overlay.appendChild(card);
-  return overlay;
-}
-
-function createCategoryIcon(category) {
-  // The reference art uses symbolic category tiles rather than text labels,
-  // so these helpers build visual icons while the game rules stay data-driven.
-  if (category.face) {
-    return createDieFace(category.face);
-  }
-
-  const tile = document.createElement("div");
-
-  if (category.icon?.kind === "yatzy") {
-    tile.className = "icon-tile yatzy-mark";
-
-    const word = document.createElement("div");
-    word.className = "yatzy-word";
-    word.textContent = categoryIconText(category.key);
-    tile.appendChild(word);
-    return tile;
-  }
-
-  if (category.icon?.kind === "word") {
-    tile.className = "icon-tile word-icon";
-    tile.textContent = categoryIconText(category.key);
-    return tile;
-  }
-
-  tile.className = "icon-tile";
-  const mark = document.createElement("div");
-  mark.className = "question-mark";
-  mark.textContent = "?";
-  tile.appendChild(mark);
-  return tile;
-}
-
-function createDieFace(value) {
-  const die = document.createElement("div");
-  die.className = "face-die";
-
-  const pipMap = {
-    1: [5],
-    2: [3, 7],
-    3: [3, 5, 7],
-    4: [1, 3, 7, 9],
-    5: [1, 3, 5, 7, 9],
-    6: [1, 3, 4, 6, 7, 9]
-  };
-
-  for (let index = 1; index <= 9; index += 1) {
-    const slot = document.createElement("div");
-    slot.className = "pip-slot";
-    if (pipMap[value].includes(index)) {
-      const pip = document.createElement("span");
-      pip.className = "pip";
-      slot.appendChild(pip);
-    }
-    die.appendChild(slot);
-  }
-
-  return die;
-}
-
-function renderDice() {
-  elements.diceRow.innerHTML = "";
-  const reverseSelectionEnabled = state.setup.reverseDiceSelection;
-
-  state.dice.forEach((die, index) => {
-    const dieTile = document.createElement("button");
-    dieTile.type = "button";
-    dieTile.className = "game-die";
-
-    const turnStarted = state.rollsRemaining < 3 || state.dice.some((item) => item.value !== null);
-    const freshTurn = !turnStarted;
-    const finalRollState = state.rollsRemaining === 0 && die.value !== null;
-    const canToggle = !state.gameOver && !state.pendingScoreSelection && turnStarted && state.turnPhase === "rolling" && isLocalPlayersTurn() && !isRobotTurn();
-
-    const shouldReroll = reverseSelectionEnabled ? die.locked : !die.locked;
-    dieTile.style.setProperty("--die-delay", `${index * 70}ms`);
-    if (state.animateDiceOnRender && shouldReroll) {
-      dieTile.classList.add("rolling");
-    }
-
-    if (die.locked) {
-      dieTile.classList.add("locked");
-      if (reverseSelectionEnabled) {
-        dieTile.classList.add("reverse-selected");
-      }
-    }
-
-    if (freshTurn) {
-      dieTile.classList.add("armed");
-    }
-
-    if (finalRollState) {
-      dieTile.classList.add("final-selected");
-    }
-
-    if (finalRollState && die.lastRolled) {
-      dieTile.classList.add("final-rolled");
-    }
-
-    if (!canToggle) {
-      dieTile.classList.add("not-rollable");
-      dieTile.disabled = true;
-    }
-
-    dieTile.setAttribute("aria-pressed", die.locked ? "true" : "false");
-    dieTile.setAttribute("aria-label", getDieAriaLabel(die, index));
-    dieTile.appendChild(createGameDieContent(die));
-    dieTile.addEventListener("click", () => handleDieToggle(index));
-    elements.diceRow.appendChild(dieTile);
-  });
-}
-
-function createGameDieContent(die) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "die-value";
-
-  if (die.value === null) {
-    const star = document.createElement("div");
-    star.className = "star-shape";
-    wrapper.appendChild(star);
-    return wrapper;
-  }
-
-  wrapper.appendChild(createDieFace(die.value));
-  return wrapper;
-}
-
-function renderRollControls() {
-  const shortLabel = PLAYER_META[state.currentPlayerIndex].shortLabel || `P${state.currentPlayerIndex + 1}`;
-  elements.rollLabel.textContent = `${shortLabel} - ${t("controls.roll")}`;
-  elements.rollIndicators.innerHTML = "";
-
-  for (let rollNumber = 1; rollNumber <= 3; rollNumber += 1) {
-    const chip = document.createElement("span");
-    chip.className = "roll-chip";
-    chip.textContent = rollNumber;
-
-    if (rollNumber <= state.rollsRemaining) {
-      chip.classList.add("active");
-    }
-
-    elements.rollIndicators.appendChild(chip);
-  }
-
-  const canRoll = !state.gameOver && state.turnPhase === "rolling" && state.rollsRemaining > 0 && isLocalPlayersTurn() && !isRobotTurn();
-  const secretRollClicksOpen = canKeepSecretRollClicks();
-  const showGoBack = Boolean(state.lastCommittedTurn) && !state.gameOver && !isOnlineGame();
-  const controlsLocked = isInteractionLocked() || scoringAnimationInFlight;
-  // HTML disabled swallows clicks, so the easter-egg hunt must keep the
-  // button enabled and only look spent via is-exhausted.
-  elements.rollButton.disabled = !canRoll && !secretRollClicksOpen;
-  elements.rollButton.classList.toggle("is-exhausted", !canRoll && secretRollClicksOpen);
-  elements.goBackButton.textContent = t("controls.goBack");
-  elements.goBackButton.disabled = controlsLocked;
-  elements.goBackButton.classList.toggle("is-hidden", !showGoBack);
-}
-
-function renderCelebration() {
-  if (state.yatzyCelebration) {
-    elements.celebrationLayer.innerHTML = buildYatzyCelebrationMarkup(state.yatzyCelebration);
-    return;
-  }
-
-  if (state.defeatModeAnnouncement) {
-    renderDefeatModeAnnouncement(state.defeatModeAnnouncement);
-    return;
-  }
-
-  if (state.emojiReaction) {
-    renderEmojiCelebration(state.emojiReaction);
-    return;
-  }
-
-  elements.celebrationLayer.innerHTML = "";
-}
-
-function renderDefeatModeAnnouncement(announcement) {
-  elements.celebrationLayer.innerHTML = "";
-  const banner = document.createElement("div");
-  banner.className = "defeat-mode-toast";
-  banner.dataset.id = "yatsy-defeat-mode-toast";
-  banner.textContent = t("defeatMode.activated", { playerName: announcement.playerName });
-  elements.celebrationLayer.appendChild(banner);
-}
-
-function buildYatzyCelebrationMarkup(celebration) {
-  const particleMarkup = Array.from({ length: 18 }, (_, index) => (
-    `<span style="--i:${index}"></span>`
-  )).join("");
-
-  return `
-    <div class="yatzy-celebration">
-      <div class="yatzy-burst"></div>
-      <div class="yatzy-particles">${particleMarkup}</div>
-      <div class="yatzy-banner">
-        <strong>YATZY!</strong>
-        <span>${t("celebration.rolledFiveKind", {
-          playerName: celebration.playerName,
-          faceLabel: celebration.faceLabel
-        })}</span>
-      </div>
-    </div>
-  `;
-}
-
-function renderEmojiCelebration(reaction) {
-  // Guard: if the identical reaction is already in the DOM, leave it alone.
-  // Re-creating the <img> node resets the GIF to frame 0 and restarts its
-  // CSS pop animation — producing visible flicker in multiplayer because
-  // render() is called on every remote tick broadcast (i.e. each die roll
-  // or score commit from the other player). Skipping the DOM update keeps
-  // the GIF playing uninterrupted for its full TTL.
-  const existing = elements.celebrationLayer.querySelector(".emoji-celebration");
-  if (existing) {
-    if (reaction.kind === "gif") {
-      const img = existing.querySelector(".emoji-celebration-gif");
-      if (img && img.getAttribute("src") === reaction.gifUrl) return;
-    } else {
-      const span = existing.querySelector(".emoji-celebration-emoji");
-      if (span && span.textContent === reaction.emoji) return;
-    }
-  }
-
-  // textContent rather than innerHTML: player names travel through the
-  // synced game state (see buildWinnerBanner), so a peer could otherwise
-  // inject markup into this overlay.
-  elements.celebrationLayer.innerHTML = "";
-  const wrapper = document.createElement("div");
-  wrapper.className = "emoji-celebration";
-
-  const media = reaction.kind === "gif"
-    ? buildGifReactionMedia(reaction.gifUrl)
-    : buildEmojiReactionMedia(reaction.emoji);
-  if (media) wrapper.appendChild(media);
-
-  const nameSpan = document.createElement("span");
-  nameSpan.className = "emoji-celebration-name";
-  nameSpan.textContent = reaction.playerName;
-  wrapper.appendChild(nameSpan);
-
-  elements.celebrationLayer.appendChild(wrapper);
-}
-
-function buildEmojiReactionMedia(emoji) {
-  const emojiSpan = document.createElement("span");
-  emojiSpan.className = "emoji-celebration-emoji";
-  emojiSpan.dataset.id = "player-emoji-reaction";
-  emojiSpan.textContent = emoji;
-  return emojiSpan;
-}
-
-function buildGifReactionMedia(gifUrl) {
-  if (!window.YATZY_EMOJI?.isGiphyMediaUrl(gifUrl)) return null;
-  const img = document.createElement("img");
-  img.className = "emoji-celebration-gif";
-  img.dataset.id = "player-gif-reaction";
-  img.src = gifUrl;
-  img.alt = "";
-  return img;
 }
 
 function handleLanguageSelection(language) {
@@ -1241,22 +639,7 @@ function navigateToHub() {
   window.location.href = "/";
 }
 
-function handleSplashBack(event) {
-  event.preventDefault();
-  if (state.screen === "splash" && state.splashView === "online" && !isSplashBusy()) {
-    state.splashView = "modes";
-    state.session.splashError = "";
-    render();
-    return;
-  }
-  navigateToHub();
-}
 
-function handlePlayOnline() {
-  state.splashView = "online";
-  state.session.splashError = "";
-  render();
-}
 
 function handleLocalStart(mode) {
   syncRuntimeRulesFromSetup();
@@ -1267,224 +650,13 @@ function handleLocalStart(mode) {
   });
 }
 
-async function handleWaitingCancel() {
-  await leaveCurrentGame({ deleteCurrent: true });
-  clearDeepLinkFromUrl();
-  resetGame({
-    screen: "splash",
-    language: state.setup.language,
-    mode: state.setup.mode,
-    splashView: "online"
-  });
-}
 
-function handleJoinCodeInput(event) {
-  state.session.joinCode = MATCHMAKING.normalizeCode(event.target.value);
-  state.session.splashError = "";
-  render();
-}
 
-async function handleShareGame() {
-  if (!state.session.gameCode) {
-    return;
-  }
 
-  const shareUrl = buildGameShareUrl(state.session.gameCode);
 
-  try {
-    if (navigator.share) {
-      await navigator.share({
-        title: t("splash.title"),
-        text: t("splash.shareText"),
-        url: shareUrl
-      });
-    } else if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(shareUrl);
-      state.session.splashStatus = t("splash.shareSuccess");
-      render();
-    } else {
-      window.prompt("Copy this link", shareUrl);
-    }
-  } catch (error) {
-    if (error?.name === "AbortError") {
-      return;
-    }
 
-    state.session.splashError = t("splash.shareError");
-    render();
-  }
-}
 
-async function handleCreateGame() {
-  if (!MATCHMAKING) {
-    setSplashError("missing-config");
-    return;
-  }
 
-  persistPlayerNameFromInput();
-  state.setup.mode = "online";
-  syncRuntimeRulesFromSetup();
-  state.session.connectionState = "creating";
-  state.session.role = "creator";
-  state.session.resumeToken = "";
-  state.session.localPlayerIndex = 0;
-  state.session.splashError = "";
-  state.session.splashStatus = "";
-  render();
-
-  try {
-    const createdGame = await MATCHMAKING.createGame(createMatchmakingCallbacks());
-    state.session.gameCode = createdGame.code;
-    state.session.role = createdGame.role || "creator";
-    state.session.localPlayerIndex = createdGame.localPlayerIndex ?? 0;
-    state.session.resumeToken = createdGame.resumeToken || "";
-    state.session.connectionState = "waiting";
-    state.session.splashStatus = t("splash.waitingStatus", { code: createdGame.code });
-    updateUrlForGameCode(createdGame.code);
-    persistOnlineSession();
-    render();
-  } catch (error) {
-    state.session.connectionState = "idle";
-    state.session.role = null;
-    state.session.resumeToken = "";
-    state.session.localPlayerIndex = null;
-    state.session.gameCode = "";
-    setSplashError(error?.code);
-    render();
-  }
-}
-
-async function handleJoinGame() {
-  if (!MATCHMAKING) {
-    setSplashError("missing-config");
-    return;
-  }
-
-  const code = MATCHMAKING.normalizeCode(state.session.joinCode);
-
-  if (code.length !== 3) {
-    setSplashError("invalid-code");
-    render();
-    return;
-  }
-
-  persistPlayerNameFromInput();
-  state.setup.mode = "online";
-  syncRuntimeRulesFromSetup();
-  state.session.connectionState = "joining";
-  state.session.role = "joiner";
-  state.session.resumeToken = "";
-  state.session.localPlayerIndex = 1;
-  state.session.gameCode = code;
-  state.session.splashError = "";
-  state.session.splashStatus = t("splash.joiningStatus", { code });
-  render();
-
-  try {
-    const joinedGame = await MATCHMAKING.joinGame(
-      code,
-      createMatchmakingCallbacks(),
-      readSeatCredentialsFor(code)
-    );
-    state.session.gameCode = joinedGame.code;
-    state.session.role = joinedGame.role || "joiner";
-    state.session.localPlayerIndex = joinedGame.localPlayerIndex ?? 1;
-    state.session.resumeToken = joinedGame.resumeToken || "";
-    state.session.connectionState = "connected";
-    state.session.splashStatus = t("splash.connectedStatus", { code: joinedGame.code });
-    updateUrlForGameCode(joinedGame.code);
-    persistOnlineSession();
-    render();
-  } catch (error) {
-    state.session.connectionState = "idle";
-    state.session.role = null;
-    state.session.resumeToken = "";
-    state.session.localPlayerIndex = null;
-    state.session.gameCode = "";
-    state.session.splashStatus = "";
-    setSplashError(error?.code);
-    render();
-  }
-}
-
-function handleDeepLinkJoin() {
-  if (state.screen !== "splash" || readPersistedOnlineSession()) {
-    return;
-  }
-
-  const params = new URLSearchParams(window.location.search);
-  const linkedCode = MATCHMAKING?.normalizeCode(params.get("game") || "");
-
-  if (!linkedCode || linkedCode.length !== 3) {
-    return;
-  }
-
-  state.splashView = "online";
-  state.session.joinCode = linkedCode;
-  render();
-  handleJoinGame();
-}
-
-async function restoreOnlineSession() {
-  const persisted = readPersistedOnlineSession();
-
-  if (!persisted || !MATCHMAKING) {
-    return;
-  }
-
-  state.splashView = "online";
-  state.setup.mode = "online";
-  state.session.gameCode = persisted.gameCode;
-  state.session.joinCode = persisted.gameCode;
-  state.session.role = persisted.role;
-  state.session.resumeToken = persisted.resumeToken;
-  state.session.localPlayerIndex = persisted.localPlayerIndex;
-  state.session.connectionState = "restoring";
-  state.session.splashError = "";
-  state.session.splashStatus = t("splash.restoringStatus", { code: persisted.gameCode });
-  render();
-
-  try {
-    const resumed = await MATCHMAKING.resumeGame(
-      persisted.gameCode,
-      persisted.role,
-      persisted.resumeToken,
-      createMatchmakingCallbacks()
-    );
-    state.session.gameCode = resumed.code;
-    state.session.joinCode = resumed.code;
-    state.session.connectionState = resumed.status === "waiting" ? "waiting" : "connected";
-    state.session.splashStatus = resumed.status === "waiting"
-      ? t("splash.waitingStatus", { code: resumed.code })
-      : t("splash.connectedStatus", { code: resumed.code });
-    persistOnlineSession();
-
-    if (resumed.status === "waiting") {
-      render();
-    }
-  } catch (error) {
-    clearPersistedOnlineSession();
-    state.session.connectionState = "idle";
-    state.session.gameCode = "";
-    state.session.joinCode = "";
-    state.session.role = null;
-    state.session.resumeToken = "";
-    state.session.localPlayerIndex = null;
-    state.session.splashStatus = "";
-    setSplashError(error?.code);
-    render();
-  }
-}
-
-function createMatchmakingCallbacks() {
-  return {
-    startGameCallback: handleMatchStarted,
-    stateChangeCallback: handleMatchStateChange,
-    gameClosedCallback: handleMatchClosed,
-    emojiReceivedCallback: handleEmojiReceived,
-    noticeReceivedCallback: handleDefeatModeNoticeReceived
-  };
-}
 
 // The seat sending a reaction: the local seat when online (either player can
 // react any time, not just on their turn), or whichever seat is currently
@@ -1607,151 +779,10 @@ function handleDefeatModeNoticeReceived(payload) {
   showDefeatModeAnnouncement(payload.playerName);
 }
 
-function handleMatchStarted(payload) {
-  const previousSession = { ...state.session };
-  const freshState = createInitialState();
-  freshState.screen = "game";
-  freshState.setup.mode = "online";
-  freshState.setup.language = state.setup.language;
-  freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
-  freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
-  freshState.setup.rules = cloneRuleSettings(state.setup.rules);
-  initializeRuntimeDefinitions(freshState.setup.rules);
-  freshState.session = {
-    ...freshState.session,
-    ...previousSession,
-    gameCode: payload.code,
-    connectionState: "connected",
-    splashError: "",
-    splashStatus: t("splash.connectedStatus", { code: payload.code })
-  };
-  applySetupSettings(freshState);
 
-  if (payload.gameState) {
-    hydrateFromRemoteGameState(freshState, payload.gameState);
-  }
 
-  Object.assign(state, freshState);
-  persistOnlineSession();
-  render();
 
-  if (!payload.gameState && state.session.localPlayerIndex === 0) {
-    syncOnlineGameState();
-  }
-}
 
-function handleMatchStateChange(payload) {
-  state.session.gameCode = payload.code;
-  persistOnlineSession();
-
-  if (state.screen === "splash") {
-    if (payload.status === "waiting" && state.session.role === "creator") {
-      state.session.connectionState = "waiting";
-      state.session.splashStatus = t("splash.waitingStatus", { code: payload.code });
-    }
-
-    render();
-    return;
-  }
-
-  if (payload.gameState) {
-    if (isSameGameState(payload.gameState, serializeGameState())) {
-      return;
-    }
-
-    // While one of our own actions (die toggle/roll/score) is still being
-    // written to the DB, an incoming refetch can carry a stale snapshot from
-    // before that write. Applying it would visibly un-select a die, or even
-    // revert a just-committed turn, since scoring flips currentPlayerIndex
-    // locally before the write goes out (so isLocalPlayersTurn() alone can't
-    // be used as the guard here). Local state stays authoritative for our
-    // own pending action regardless of whose turn it now looks like; the
-    // tick broadcast that follows the last write brings the listener back
-    // in sync once every pending write has settled.
-    // Also skip while an animation is already in flight, local or remote:
-    // awaiting the flight animation below opens a window where a second,
-    // newer refetch could otherwise interleave and apply out of order, or
-    // collide with the local player's own in-progress scoring animation.
-    // Dropping it here is safe — the tick broadcast after every write plus
-    // the poll timer guarantee a follow-up refetch once this one finishes.
-    if (pendingRemoteSyncCount > 0 || remoteApplyInFlight || scoringAnimationInFlight) {
-      return;
-    }
-
-    applyRemoteGameState(payload.gameState);
-  }
-}
-
-// Mirrors the local roll/score visuals (same dimmed "not-rollable" look and
-// the same dice-spin / flight-to-scorecell animations already used for the
-// robot's turn) so the remote player's moves are visible and clearly not the
-// local player's own input, instead of the board silently jumping to a new
-// state.
-async function applyRemoteGameState(remoteState) {
-  remoteApplyInFlight = true;
-  const previousDiceValues = state.dice.map((die) => die.value);
-  const previousScores = state.scores.map((scorecard) => ({ ...scorecard }));
-  const previousPlayerIndex = state.currentPlayerIndex;
-
-  // hydrateFromRemoteGameState() reads targetState.players (via
-  // applyWinnerFromScores) when the incoming state ends the game, so it
-  // must be seeded here even though this object is otherwise just a
-  // staging area for the fields hydrate actually writes.
-  const nextFields = { players: state.players };
-  hydrateFromRemoteGameState(nextFields, remoteState);
-
-  if (nextFields.currentPlayerIndex !== previousPlayerIndex || nextFields.rollsRemaining === 3) {
-    resetBonusRollHunt();
-    resetDefeatModeTapCount();
-  }
-
-  const scoreEvent = findRemoteScoreEvent(previousScores, nextFields.scores);
-  if (scoreEvent) {
-    await playRemoteScoreAnimation(scoreEvent);
-  }
-
-  const rolledRemotely = !scoreEvent
-    && previousPlayerIndex === nextFields.currentPlayerIndex
-    && nextFields.dice.some((die, index) => die.value !== previousDiceValues[index]);
-
-  Object.assign(state, nextFields);
-  state.animateDiceOnRender = rolledRemotely;
-  maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIndex);
-  render();
-
-  if (rolledRemotely) {
-    state.animateDiceOnRender = false;
-  }
-
-  remoteApplyInFlight = false;
-}
-
-async function playRemoteScoreAnimation(scoreEvent) {
-  scoringAnimationInFlight = true;
-  render();
-
-  try {
-    await animateDiceIntoScoreCell(scoreEvent.playerIndex, scoreEvent.categoryKey);
-  } finally {
-    scoringAnimationInFlight = false;
-  }
-}
-
-function findRemoteScoreEvent(previousScores, nextScores) {
-  for (let playerIndex = 0; playerIndex < nextScores.length; playerIndex += 1) {
-    const previousCard = previousScores[playerIndex] || {};
-    const nextCard = nextScores[playerIndex] || {};
-    const filledCategory = CATEGORIES.find((category) => (
-      previousCard[category.key] === null && nextCard[category.key] !== null
-    ));
-
-    if (filledCategory) {
-      return { playerIndex, categoryKey: filledCategory.key };
-    }
-  }
-
-  return null;
-}
 
 function maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIndex) {
   const nextDiceValues = state.dice.map((die) => die.value);
@@ -1775,50 +806,8 @@ function maybeTriggerOnlineYatzyCelebration(previousDiceValues, previousPlayerIn
   }, 1700);
 }
 
-function handleMatchClosed({ reason }) {
-  clearPersistedOnlineSession();
-  clearDeepLinkFromUrl();
-  resetGame({
-    screen: "splash",
-    language: state.setup.language
-  });
 
-  if (reason) {
-    setSplashError(reason === "expired" ? "game-expired" : "roomClosed");
-    render();
-  }
-}
 
-async function leaveCurrentGame(options = {}) {
-  if (!MATCHMAKING) {
-    return;
-  }
-
-  try {
-    await MATCHMAKING.leaveGame(options);
-  } catch (error) {
-    // Leaving is best-effort. The local reset below still returns the UI safely.
-  }
-
-  clearPersistedOnlineSession();
-  clearDeepLinkFromUrl();
-}
-
-function setSplashError(errorCode) {
-  const translationKey = {
-    "missing-config": "splash.missingConfig",
-    "invalid-code": "splash.invalidCode",
-    "game-not-found": "splash.gameNotFound",
-    "game-expired": "splash.gameExpired",
-    "game-in-progress": "splash.gameInProgress",
-    "resume-denied": "splash.gameInProgress",
-    replaced: "splash.sessionReplaced",
-    missing: "splash.roomClosed",
-    expired: "splash.gameExpired"
-  }[errorCode] || "splash.genericError";
-
-  state.session.splashError = t(translationKey);
-}
 
 function resetGame({
   screen = state.screen,
@@ -1860,65 +849,12 @@ function resetGame({
   render();
 }
 
-function persistOnlineSession() {
-  if (!state.session.gameCode || !isOnlineGame()) {
-    return;
-  }
 
-  STORAGE.writeJSON(STORAGE_KEY, {
-    gameCode: state.session.gameCode,
-    role: state.session.role,
-    resumeToken: state.session.resumeToken,
-    localPlayerIndex: state.session.localPlayerIndex
-  });
-}
 
-function buildGameShareUrl(gameCode) {
-  const url = new URL(window.location.href);
-  url.searchParams.set("game", gameCode);
-  return url.toString();
-}
 
-function updateUrlForGameCode(gameCode) {
-  const url = new URL(window.location.href);
-  url.searchParams.set("game", gameCode);
-  window.history.replaceState({}, "", url);
-}
 
-function clearDeepLinkFromUrl() {
-  const url = new URL(window.location.href);
-  if (!url.searchParams.has("game")) {
-    return;
-  }
 
-  url.searchParams.delete("game");
-  window.history.replaceState({}, "", url);
-}
 
-function readPersistedOnlineSession() {
-  const parsed = STORAGE.readJSON(STORAGE_KEY);
-  if (!parsed?.gameCode || !parsed?.role || !parsed?.resumeToken || !Number.isInteger(parsed?.localPlayerIndex)) {
-    return null;
-  }
-
-  return parsed;
-}
-
-function clearPersistedOnlineSession() {
-  STORAGE.remove(STORAGE_KEY);
-}
-
-// A room that is already playing has both seats taken, so joining it by code
-// only works for a player reclaiming the seat they already hold.
-function readSeatCredentialsFor(code) {
-  const persisted = readPersistedOnlineSession();
-
-  if (!persisted || persisted.gameCode !== code) {
-    return null;
-  }
-
-  return { role: persisted.role, resumeToken: persisted.resumeToken };
-}
 
 function scheduleRobotTurnIfNeeded() {
   if (!isRobotTurn() || robotTurnTimeoutId) {
@@ -2062,115 +998,10 @@ function runDefeatModeTurnStep() {
   handleRoll();
 }
 
-function hydrateFromRemoteGameState(targetState, remoteState) {
-  targetState.currentPlayerIndex = remoteState.currentPlayerIndex === 1 ? 1 : 0;
-  targetState.rollsRemaining = clampRollsRemaining(remoteState.rollsRemaining);
-  targetState.turnPhase = remoteState.turnPhase === "scoring" ? "scoring" : "rolling";
-  targetState.pendingScoreSelection = null;
-  targetState.lastCommittedTurn = null;
-  targetState.animateDiceOnRender = false;
-  targetState.yatzyCelebration = null;
 
-  targetState.dice = Array.from({ length: 5 }, (_, index) => {
-    const remoteDie = Array.isArray(remoteState.dice) ? remoteState.dice[index] : null;
-    const value = Number.isInteger(remoteDie?.value) && remoteDie.value >= 1 && remoteDie.value <= 6
-      ? remoteDie.value
-      : null;
 
-    return {
-      value,
-      locked: Boolean(remoteDie?.locked),
-      lastRolled: Boolean(remoteDie?.lastRolled)
-    };
-  });
 
-  targetState.scores = PLAYER_META.map((_, playerIndex) => {
-    const emptyCard = buildEmptyScorecard();
-    const remoteCard = Array.isArray(remoteState.scores) ? remoteState.scores[playerIndex] : null;
 
-    CATEGORIES.forEach((category) => {
-      const value = remoteCard?.[category.key];
-      emptyCard[category.key] = Number.isFinite(value) ? value : null;
-    });
-
-    return emptyCard;
-  });
-
-  // Adopt the remote seat's real name if the payload carries one; the local
-  // seat's own name (already set by applySetupSettings from the profile)
-  // is never overwritten by a remote payload.
-  targetState.players = PLAYER_META.map((_, playerIndex) => {
-    const existing = targetState.players?.[playerIndex] || {};
-    const isLocalSeat = playerIndex === state.session.localPlayerIndex;
-    const remoteName = remoteState.players?.[playerIndex]?.name;
-    return {
-      name: !isLocalSeat && remoteName ? remoteName : existing.name,
-      isRobot: Boolean(existing.isRobot)
-    };
-  });
-
-  targetState.gameOver = Boolean(remoteState.gameOver) || isScoreboardFull(targetState.scores);
-  targetState.winner = null;
-
-  if (targetState.gameOver) {
-    applyWinnerFromScores(targetState);
-  }
-}
-
-function clampRollsRemaining(value) {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed >= 0 && parsed <= 3 ? parsed : 3;
-}
-
-function serializeGameState() {
-  return {
-    currentPlayerIndex: state.currentPlayerIndex,
-    dice: state.dice.map((die) => ({
-      value: die.value,
-      locked: die.locked,
-      lastRolled: die.lastRolled
-    })),
-    rollsRemaining: state.rollsRemaining,
-    turnPhase: state.turnPhase,
-    scores: state.scores.map((scorecard) => ({ ...scorecard })),
-    gameOver: state.gameOver,
-    // Only carries each seat's display name so the opponent can see it —
-    // see hydrateFromRemoteGameState(), which only ever adopts the *other*
-    // seat's name from this and always keeps the local seat's own name.
-    players: state.players.map((player) => ({ name: player.name }))
-  };
-}
-
-function isSameGameState(leftState, rightState) {
-  return JSON.stringify(leftState) === JSON.stringify(rightState);
-}
-
-function syncOnlineGameState() {
-  if (!isOnlineGame() || !MATCHMAKING) {
-    return remoteSyncPromise;
-  }
-
-  const gameCode = state.session.gameCode;
-  pendingRemoteSyncCount += 1;
-
-  // Chain onto the previous send instead of firing in parallel: quick,
-  // repeated die clicks must reach the server in the order they happened,
-  // otherwise an earlier request finishing last could overwrite a later one.
-  // serializeGameState() is read lazily inside the .then, so it always picks
-  // up the freshest local state at send time, not at click time.
-  remoteSyncPromise = remoteSyncPromise
-    .catch(() => {})
-    .then(() => MATCHMAKING.updateGameState(gameCode, serializeGameState()))
-    .catch(() => {
-      // The listener remains authoritative. If one sync fails, the next local
-      // state change will attempt to publish again.
-    })
-    .finally(() => {
-      pendingRemoteSyncCount -= 1;
-    });
-
-  return remoteSyncPromise;
-}
 
 function resetBonusRollHunt() {
   extraRollTapCount = 0;
