@@ -26,6 +26,14 @@ const RANDOM = window.YATZY_RANDOM || {
   }
 };
 const ROBOT_API = window.YATZY_ROBOT || null;
+const STORAGE = window.YATZY_STORAGE || {
+  readJSON() { return null; },
+  writeJSON() {},
+  readBoolean() { return false; },
+  writeBoolean() {},
+  remove() {},
+  readHubLanguage() { return "fr"; }
+};
 const PLAYER_META = CONFIG.players;
 const BONUS_CONFIG = CONFIG.bonus;
 const ROBOT_CONFIG = CONFIG.robot;
@@ -53,7 +61,7 @@ let LOWER_CATEGORIES = [];
 let robotEngine = null;
 const persistedRuleSettings = readPersistedRuleSettings();
 const persistedReverseDiceSelection = readPersistedReverseDiceSelection();
-const initialSetupLanguage = readHubLanguage();
+const initialSetupLanguage = STORAGE.readHubLanguage();
 initializeRuntimeDefinitions(buildDefaultRuleSettings());
 if (persistedRuleSettings) {
   initializeRuntimeDefinitions(persistedRuleSettings);
@@ -1174,94 +1182,28 @@ function syncRuntimeRulesFromSetup() {
 }
 
 function persistRuleSettings(ruleSettings) {
-  if (!window.localStorage) {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(
-      RULE_SETTINGS_STORAGE_KEY,
-      JSON.stringify(cloneRuleSettings(ruleSettings))
-    );
-  } catch (error) {
-    // Preferences persistence should never break gameplay.
-  }
+  STORAGE.writeJSON(RULE_SETTINGS_STORAGE_KEY, cloneRuleSettings(ruleSettings));
 }
 
 function readPersistedRuleSettings() {
-  if (!window.localStorage) {
-    return null;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(RULE_SETTINGS_STORAGE_KEY);
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw);
-    return cloneRuleSettings(parsed);
-  } catch (error) {
-    return null;
-  }
-}
-
-function persistBooleanPreference(storageKey, enabled) {
-  if (!window.localStorage) {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(storageKey, JSON.stringify(Boolean(enabled)));
-  } catch (error) {
-    // Preferences persistence should never break gameplay.
-  }
-}
-
-function readPersistedBooleanPreference(storageKey) {
-  if (!window.localStorage) {
-    return false;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(storageKey);
-    if (!raw) {
-      return false;
-    }
-
-    return Boolean(JSON.parse(raw));
-  } catch (error) {
-    return false;
-  }
+  const parsed = STORAGE.readJSON(RULE_SETTINGS_STORAGE_KEY);
+  return parsed ? cloneRuleSettings(parsed) : null;
 }
 
 function persistReverseDiceSelection(enabled) {
-  persistBooleanPreference(REVERSE_SELECTION_STORAGE_KEY, enabled);
+  STORAGE.writeBoolean(REVERSE_SELECTION_STORAGE_KEY, enabled);
 }
 
 function readPersistedReverseDiceSelection() {
-  return readPersistedBooleanPreference(REVERSE_SELECTION_STORAGE_KEY);
+  return STORAGE.readBoolean(REVERSE_SELECTION_STORAGE_KEY);
 }
 
 function persistExtraRollEasterEgg(enabled) {
-  persistBooleanPreference(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY, enabled);
+  STORAGE.writeBoolean(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY, enabled);
 }
 
 function readPersistedExtraRollEasterEgg() {
-  return readPersistedBooleanPreference(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY);
-}
-
-function readHubLanguage() {
-  if (!window.localStorage) {
-    return "fr";
-  }
-
-  try {
-    const stored = window.localStorage.getItem("bergamots-lang");
-    return stored === "en" || stored === "fr" || stored === "es" ? stored : "fr";
-  } catch (error) {
-    return "fr";
-  }
+  return STORAGE.readBoolean(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY);
 }
 
 async function handleRestart() {
@@ -1919,18 +1861,16 @@ function resetGame({
 }
 
 function persistOnlineSession() {
-  if (!window.localStorage || !state.session.gameCode || !isOnlineGame()) {
+  if (!state.session.gameCode || !isOnlineGame()) {
     return;
   }
 
-  const payload = {
+  STORAGE.writeJSON(STORAGE_KEY, {
     gameCode: state.session.gameCode,
     role: state.session.role,
     resumeToken: state.session.resumeToken,
     localPlayerIndex: state.session.localPlayerIndex
-  };
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  });
 }
 
 function buildGameShareUrl(gameCode) {
@@ -1956,33 +1896,16 @@ function clearDeepLinkFromUrl() {
 }
 
 function readPersistedOnlineSession() {
-  if (!window.localStorage) {
+  const parsed = STORAGE.readJSON(STORAGE_KEY);
+  if (!parsed?.gameCode || !parsed?.role || !parsed?.resumeToken || !Number.isInteger(parsed?.localPlayerIndex)) {
     return null;
   }
 
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return null;
-    }
-
-    const parsed = JSON.parse(raw);
-    if (!parsed?.gameCode || !parsed?.role || !parsed?.resumeToken || !Number.isInteger(parsed?.localPlayerIndex)) {
-      return null;
-    }
-
-    return parsed;
-  } catch (error) {
-    return null;
-  }
+  return parsed;
 }
 
 function clearPersistedOnlineSession() {
-  if (!window.localStorage) {
-    return;
-  }
-
-  window.localStorage.removeItem(STORAGE_KEY);
+  STORAGE.remove(STORAGE_KEY);
 }
 
 // A room that is already playing has both seats taken, so joining it by code
