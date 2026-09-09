@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import type { ClientGameState, Card, LegalMove, GridCell } from '@tranquillity/shared';
-import { useT, LanguageSwitcher } from '../i18n';
+import { useT } from '../i18n';
 import Grid from './Grid';
 import Hand from './Hand';
 import GameOver from './GameOver';
@@ -257,30 +257,19 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
       className="w-full overflow-hidden flex flex-col bg-gradient-to-b from-ocean-950 via-ocean-900 to-ocean-950"
       style={{ height: 'var(--app-height, 100svh)' }}
     >
-      {/* Opponent info bar */}
+      {/* Header: back button (top-left), opponent info (center), options (top-right) —
+          same layout convention as the sibling Bergamots-hub games. */}
       <header id="game-header" className="bg-ocean-900/80 border-b border-ocean-800 px-4 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onMenu}
-            title={t('game.backToMenu')}
-            className="text-ocean-400 hover:text-white transition-colors p-0.5 -ml-0.5"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-          </button>
-          <button
-            onClick={() => setShowSettings(true)}
-            title={t('settings.title')}
-            className="text-ocean-400 hover:text-white transition-colors p-0.5"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          </button>
-        </div>
+        <button
+          onClick={onMenu}
+          title={t('game.backToMenu')}
+          className="text-ocean-400 hover:text-white transition-colors p-0.5 -ml-0.5"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </button>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${opponent.isCurrentPlayer ? 'bg-green-400 animate-pulse' : 'bg-ocean-600'}`} />
@@ -290,8 +279,17 @@ export default function GameBoard({ gameState, onPlayCard, onDiscardTwo, onContr
             <span title={t('game.hand')}>🤚 <strong className="text-white">{opponent.handSize}</strong></span>
             <span title={t('game.deck')}>🃏 <strong className="text-white">{opponent.deckSize}</strong></span>
           </div>
-          <LanguageSwitcher />
         </div>
+        <button
+          onClick={() => setShowSettings(true)}
+          title={t('settings.title')}
+          className="text-ocean-400 hover:text-white transition-colors p-0.5"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
       </header>
 
       {/* Cells filled indicator */}

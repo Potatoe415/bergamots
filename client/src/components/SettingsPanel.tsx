@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSettings } from '../settings';
-import { useT } from '../i18n';
+import { useT, LanguageSwitcher } from '../i18n';
 
 interface Props {
   onClose: () => void;
@@ -46,6 +46,11 @@ export default function SettingsPanel({ onClose, onRestartGame, roomCode }: Prop
               </span>
             </div>
           )}
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-white/80 text-sm">{t('settings.language')}</span>
+            <LanguageSwitcher />
+          </div>
 
           <label className="flex items-center justify-between gap-3 cursor-pointer">
             <span className="text-white/80 text-sm">{t('settings.soundOnMyTurn')}</span>

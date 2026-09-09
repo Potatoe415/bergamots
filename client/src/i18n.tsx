@@ -44,6 +44,7 @@ const en: Record<string, string> = {
   'lobby.rules': 'Rules',
   'lobby.rulesTitle': 'Rules',
   'lobby.rulesAria': 'Open rules (PDF)',
+  'lobby.backToHub': 'Back to hub',
   'difficulty.title': 'Difficulty',
   'difficulty.standard': 'Standard',
   'difficulty.easy': 'Easy',
@@ -120,6 +121,7 @@ const en: Record<string, string> = {
   'app.step.wait_partner': 'Waiting for partner',
   // Settings
   'settings.title': 'Settings',
+  'settings.language': 'Language',
   'settings.soundOnMyTurn': 'Play a sound on my turn',
   'settings.restartGame': '↺ Restart game',
   'settings.roomCode': 'Room code',
@@ -160,6 +162,7 @@ const fr: Record<string, string> = {
   'lobby.rules': 'Règles',
   'lobby.rulesTitle': 'Règles',
   'lobby.rulesAria': 'Ouvrir les règles (PDF)',
+  'lobby.backToHub': 'Retour au hub',
   'difficulty.title': 'Difficulté',
   'difficulty.standard': 'Standard',
   'difficulty.easy': 'Facile',
@@ -236,6 +239,7 @@ const fr: Record<string, string> = {
   'app.step.wait_partner': 'En attente du partenaire',
   // Settings
   'settings.title': 'Paramètres',
+  'settings.language': 'Langue',
   'settings.soundOnMyTurn': 'Jouer un son à mon tour',
   'settings.restartGame': '↺ Recommencer la partie',
   'settings.roomCode': 'Code de salle',

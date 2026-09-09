@@ -92,6 +92,15 @@
            bg-black/40 hover:bg-black/60 text-white/70 hover:text-white border border-white/10
            disabled:opacity-40 disabled:cursor-not-allowed;
   }
+  /* Floating circular back/options buttons, pinned to a screen corner via an
+     added "left-4 top-4" or "right-4 top-4" utility class alongside this one
+     — same back-top-left, options-top-right convention used by the sibling
+     Bergamots hub games and coinchapp. */
+  .icon-btn-float {
+    @apply fixed z-20 flex items-center justify-center h-10 w-10 rounded-full
+           bg-black/30 hover:bg-black/50 text-white/80 hover:text-white
+           backdrop-blur-sm shadow-md transition-colors;
+  }
   .input-field {
     @apply bg-ocean-800 border border-ocean-600 rounded-lg px-3 py-2
            text-white placeholder-ocean-500 focus:outline-none focus:border-ocean-400

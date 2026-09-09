@@ -5,6 +5,10 @@ import SettingsPanel from './SettingsPanel';
 
 export type GameMode = 'local' | 'online_create' | 'online_join';
 
+// Same hub every sibling Bergamots-launched game links back to — see
+// coinchapp's `HomeTopBar.tsx` and `docs/DECISIONS.md` "Player identity contract".
+const BERGAMOTS_HUB_URL = 'https://bergamots.vercel.app/';
+
 interface Props {
   onStartLocal: (p1Name: string, p2Name: string, monsterCount: MonsterCount) => void;
   onStartBot: (playerName: string, monsterCount: MonsterCount) => void;
@@ -61,6 +65,30 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
 
   return (
     <div className="lobby-bg min-h-screen flex items-center justify-center">
+      {/* Back to hub (top-left) / options (top-right) — same layout convention
+          as the sibling Bergamots-hub games and coinchapp's home screen. */}
+      <a
+        href={BERGAMOTS_HUB_URL}
+        className="icon-btn-float left-4 top-4"
+        title={t('lobby.backToHub')}
+        aria-label={t('lobby.backToHub')}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+      </a>
+      <button
+        type="button"
+        onClick={() => setShowSettings(true)}
+        className="icon-btn-float right-4 top-4"
+        title={t('settings.title')}
+        aria-label={t('lobby.settingsAria')}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+      </button>
       <style>{`
         .lobby-bg {
           background-image: url(/assets/dashboard-mobile.jpg);
@@ -213,19 +241,6 @@ export default function Lobby({ onStartLocal, onStartBot, onCreateOnline, onJoin
             <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
           </svg>
           {t('lobby.reset')}
-        </button>
-
-        <button
-          onClick={() => setShowSettings(true)}
-          title={t('settings.title')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 text-white/50 hover:text-white hover:bg-black/50 transition-all text-xs"
-          aria-label={t('lobby.settingsAria')}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-          {t('settings.title')}
         </button>
 
         <a

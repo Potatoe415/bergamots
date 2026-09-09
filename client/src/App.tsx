@@ -244,9 +244,10 @@ export default function App() {
   );
 
   if (mode === 'lobby') {
+    // Lobby has its own back-to-hub / options buttons (top-left/top-right);
+    // language lives inside its options panel, so no floating langSwitcher here.
     return (
       <>
-        {langSwitcher}
         <Lobby
           onStartLocal={startLocal}
           onStartBot={startBot}
