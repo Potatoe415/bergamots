@@ -1,0 +1,21 @@
+{
+  "name": "Bergamots",
+  "short_name": "Bergamots",
+  "description": "Hub de jeux de soirée multijoueurs sans friction.",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "background_color": "#fffaeb",
+  "theme_color": "#fffaeb",
+  "icons": [
+    {
+      "src": "/assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

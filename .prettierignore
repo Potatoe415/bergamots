@@ -21,3 +21,4 @@ public/data/olemains/words.json
 #   public/games/**
 #   !public/games/yatsy/**
 public/games/**
+!public/games/yatsy/**

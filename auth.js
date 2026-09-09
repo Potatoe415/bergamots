@@ -116,7 +116,10 @@ export function getStoredPlayerName() {
 export function getStoredPlayerAvatarThumb() {
   try {
     const stored = localStorage.getItem(AVATAR_THUMB_STORAGE_KEY) || "";
-    if (!stored.startsWith("data:image/jpeg") || stored.length > MAX_AVATAR_THUMB_CHARS) {
+    if (
+      !stored.startsWith("data:image/jpeg") ||
+      stored.length > MAX_AVATAR_THUMB_CHARS
+    ) {
       return "";
     }
     return stored;

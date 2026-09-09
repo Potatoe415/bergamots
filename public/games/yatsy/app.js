@@ -1056,6 +1056,23 @@ function buildYatzyCelebrationMarkup(celebration) {
 }
 
 function renderEmojiCelebration(reaction) {
+  // Guard: if the identical reaction is already in the DOM, leave it alone.
+  // Re-creating the <img> node resets the GIF to frame 0 and restarts its
+  // CSS pop animation — producing visible flicker in multiplayer because
+  // render() is called on every remote tick broadcast (i.e. each die roll
+  // or score commit from the other player). Skipping the DOM update keeps
+  // the GIF playing uninterrupted for its full TTL.
+  const existing = elements.celebrationLayer.querySelector(".emoji-celebration");
+  if (existing) {
+    if (reaction.kind === "gif") {
+      const img = existing.querySelector(".emoji-celebration-gif");
+      if (img && img.getAttribute("src") === reaction.gifUrl) return;
+    } else {
+      const span = existing.querySelector(".emoji-celebration-emoji");
+      if (span && span.textContent === reaction.emoji) return;
+    }
+  }
+
   // textContent rather than innerHTML: player names travel through the
   // synced game state (see buildWinnerBanner), so a peer could otherwise
   // inject markup into this overlay.
@@ -1336,7 +1353,7 @@ async function handleShareGame() {
     if (navigator.share) {
       await navigator.share({
         title: t("splash.title"),
-        text: state.session.splashStatus || t("splash.waitingStatus", { code: state.session.gameCode }),
+        text: t("splash.shareText"),
         url: shareUrl
       });
     } else if (navigator.clipboard?.writeText) {

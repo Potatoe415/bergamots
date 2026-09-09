@@ -50,7 +50,33 @@ document.addEventListener("DOMContentLoaded", () => {
   renderVersionBadge();
   initAuthWidget();
   initializeDashboard();
+  setupHubShareButton();
 });
+
+function setupHubShareButton() {
+  const shareBtn = document.getElementById("hub-share-button");
+  if (!shareBtn) return;
+
+  shareBtn.addEventListener("click", async () => {
+    const url = window.location.origin;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "Bergamots",
+          text: "Découvre Bergamots, la plateforme de jeux de soirée multijoueurs !",
+          url: url
+        });
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        alert("Lien copié dans le presse-papier !");
+      }
+    } catch (err) {
+      if (err?.name !== "AbortError") {
+        console.error("Erreur lors du partage :", err);
+      }
+    }
+  });
+}
 
 function renderVersionBadge() {
   const badge = document.createElement("div");
@@ -373,4 +399,13 @@ function generateBlackFallbackSVG() {
     <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="14">Image Manquante</text>
   </svg>`;
   return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
+
+// Enregistrement du Service Worker pour la PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch((error) => {
+      console.warn("ServiceWorker registration failed:", error);
+    });
+  });
 }

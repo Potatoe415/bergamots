@@ -188,9 +188,11 @@ function applyProfileCopy() {
 }
 
 function syncLangButtons(lang) {
-  document.querySelectorAll("#profile-lang-selector .lang-btn").forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.lang === lang);
-  });
+  document
+    .querySelectorAll("#profile-lang-selector .lang-btn")
+    .forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.lang === lang);
+    });
 }
 
 function setText(dataId, text) {
@@ -232,7 +234,9 @@ function initAvatarUpload() {
   if (!fileInput || !removeButton) return;
 
   renderAvatarPreview();
-  fileInput.addEventListener("change", () => onAvatarFilePicked(fileInput, errorNotice));
+  fileInput.addEventListener("change", () =>
+    onAvatarFilePicked(fileInput, errorNotice)
+  );
   removeButton.addEventListener("click", () => {
     window.PlayerProfile.setAvatar("");
     renderAvatarPreview();
