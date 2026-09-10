@@ -288,6 +288,7 @@ window.YATZY_SESSION = {
     freshState.setup.language = state.setup.language;
     freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
     freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
+    freshState.setup.defeatModeEnabled = state.setup.defeatModeEnabled;
     freshState.setup.rules = cloneRuleSettings(state.setup.rules);
     initializeRuntimeDefinitions(freshState.setup.rules);
     freshState.session = {

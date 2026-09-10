@@ -191,6 +191,12 @@ window.YATZY_RENDER = {
       state.setup.extraRollEasterEgg,
       "settings-extra-roll-easter-egg"
     );
+    appendSettingsToggleRow(
+      "defeatModeEnabled",
+      t("splash.defeatModeEnabled"),
+      state.setup.defeatModeEnabled,
+      "settings-defeat-mode-enabled"
+    );
   }
 
   function appendSettingsToggleRow(settingKey, name, enabled, dataId) {

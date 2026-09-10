@@ -41,6 +41,7 @@ const STORAGE_KEY = "yatzy-online-session";
 const RULE_SETTINGS_STORAGE_KEY = "yatzy-rule-settings";
 const REVERSE_SELECTION_STORAGE_KEY = "yatzy-reverse-selection";
 const EXTRA_ROLL_EASTER_EGG_STORAGE_KEY = "yatzy-extra-roll-easter-egg";
+const DEFEAT_MODE_ENABLED_STORAGE_KEY = "yatzy-defeat-mode-enabled";
 const LOWER_RULE_OPTIONS = [
   { key: "fullHouse", scoreRule: "fullHouse", defaultEnabled: true, defaultPoints: 30, iconText: "FULL" },
   { key: "fourKind", scoreRule: "fourKind", defaultEnabled: true, defaultPoints: 40, iconText: "FOUR" },
@@ -404,6 +405,7 @@ function createInitialState() {
       language: initialSetupLanguage,
       reverseDiceSelection: persistedReverseDiceSelection,
       extraRollEasterEgg: readPersistedExtraRollEasterEgg(),
+      defeatModeEnabled: readPersistedDefeatModeEnabled(),
       rules: cloneRuleSettings(persistedRuleSettings || buildDefaultRuleSettings())
     },
     session: {
@@ -543,6 +545,19 @@ function handleSettingsInputChange(event) {
     return;
   }
 
+  if (settingKey === "defeatModeEnabled") {
+    state.setup.defeatModeEnabled = Boolean(target.checked);
+    persistDefeatModeEnabled(state.setup.defeatModeEnabled);
+    if (!state.setup.defeatModeEnabled) {
+      clearTimeout(defeatModeTurnTimeoutId);
+      defeatModeTurnTimeoutId = null;
+      state.defeatMode = [false, false];
+      resetDefeatModeTapCount();
+    }
+    render();
+    return;
+  }
+
   const ruleKey = target.dataset.ruleKey;
   const field = target.dataset.ruleField;
 
@@ -602,6 +617,17 @@ function persistExtraRollEasterEgg(enabled) {
 
 function readPersistedExtraRollEasterEgg() {
   return STORAGE.readBoolean(EXTRA_ROLL_EASTER_EGG_STORAGE_KEY);
+}
+
+function persistDefeatModeEnabled(enabled) {
+  STORAGE.writeBoolean(DEFEAT_MODE_ENABLED_STORAGE_KEY, enabled);
+}
+
+// Defaults to enabled: unlike the other toggles, nothing-stored-yet must read
+// as ON so the checkbox starts checked for players who never touched it.
+function readPersistedDefeatModeEnabled() {
+  const stored = STORAGE.readJSON(DEFEAT_MODE_ENABLED_STORAGE_KEY);
+  return stored === null ? true : Boolean(stored);
 }
 
 async function handleRestart() {
@@ -715,11 +741,16 @@ function remainingCategoriesForPlayer(playerIndex) {
   return CATEGORIES.filter((category) => state.scores[playerIndex][category.key] === null).length;
 }
 
+function isDefeatModeEnabled() {
+  return Boolean(state.setup.defeatModeEnabled);
+}
+
 function canActivateDefeatMode() {
   return state.screen === "game"
     && !state.gameOver
     && !isRobotTurn()
     && isLocalPlayersTurn()
+    && isDefeatModeEnabled()
     && !state.defeatMode[state.currentPlayerIndex]
     && remainingCategoriesForPlayer(state.currentPlayerIndex) <= DEFEAT_MODE_TURNS_THRESHOLD;
 }
@@ -838,6 +869,7 @@ function resetGame({
   freshState.setup.language = language;
   freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
   freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
+  freshState.setup.defeatModeEnabled = state.setup.defeatModeEnabled;
   freshState.setup.rules = cloneRuleSettings(state.setup.rules);
   initializeRuntimeDefinitions(freshState.setup.rules);
   applySetupSettings(freshState);
@@ -952,6 +984,7 @@ function isDefeatModeTurn() {
     && !state.gameOver
     && !isRobotTurn()
     && isLocalPlayersTurn()
+    && isDefeatModeEnabled()
     && Boolean(state.defeatMode[state.currentPlayerIndex]);
 }
 
