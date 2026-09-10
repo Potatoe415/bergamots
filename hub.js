@@ -36,7 +36,7 @@ const CATEGORY_LABELS = {
   }
 };
 
-const PINNED_GAME_IDS = ["coinche", "bouilla"];
+const PINNED_GAME_IDS = ["coinche", "bouilla", "president"];
 const SLIDE_DURATION_MS = 220;
 const SWIPE_THRESHOLD_PX = 50;
 

@@ -117,7 +117,7 @@
     "title": "Coinche",
     "kind": "external",
     "category": "cartesdes",
-    "launch": "https://coinchapp.vercel.app/",
+    "launch": "https://coinchapp.vercel.app/coinche",
     "thumbnail": "/games/coinchapp/assets/thumbnail.png",
     "sameTab": true
   },
@@ -128,6 +128,15 @@
     "category": "cartesdes",
     "launch": "https://coinchapp.vercel.app/bouilla",
     "thumbnail": "/games/coinchapp/assets/thumbnail-bouilla.png",
+    "sameTab": true
+  },
+  {
+    "id": "president",
+    "title": "Président",
+    "kind": "external",
+    "category": "cartesdes",
+    "launch": "https://coinchapp.vercel.app/president",
+    "thumbnail": "/games/coinchapp/assets/thumbnail-president.jpg",
     "sameTab": true
   },
   {
