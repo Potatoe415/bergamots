@@ -760,15 +760,19 @@ select {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  /* iOS Safari: explicit height required for object-fit: cover to work inside a button */
   display: block;
+  width: 100%;
   height: 4.4rem;
 }
 
 .gif-option img {
+  /* iOS Safari/Chrome (WebKit): percentage heights don't reliably resolve on a
+     descendant of a <button>, so height:100% falls back to the image's
+     intrinsic aspect ratio instead of filling the cell, making landscape
+     GIFs look squashed. Use a fixed unit that matches .gif-option instead. */
   display: block;
   width: 100%;
-  height: 100%;
+  height: 4.4rem;
   object-fit: cover;
 }
 
