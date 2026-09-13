@@ -106,12 +106,16 @@ function GifGrid({
           type="button"
           onClick={() => onSelect(gif.url)}
           aria-label={gif.title || t("sendGif")}
-          className="overflow-hidden rounded-md bg-white/10"
+          // iOS Safari/Chrome (WebKit): native button chrome (-webkit-appearance
+          // from Tailwind's preflight) can ignore overflow-hidden + rounded-md
+          // clipping on children, squashing the object-cover image. appearance-none
+          // drops that native rendering so the clip/object-fit apply correctly.
+          className="h-20 w-full appearance-none overflow-hidden rounded-md bg-white/10"
           data-id={`gif-pick-${gif.id}`}
         >
           {/* Giphy CDN animated assets; next/image cannot optimize them. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={gif.previewUrl} alt="" className="h-20 w-full object-cover" />
+          <img src={gif.previewUrl} alt="" className="h-full w-full rounded-md object-cover" />
         </button>
       ))}
     </div>
