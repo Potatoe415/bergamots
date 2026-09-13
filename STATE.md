@@ -6,9 +6,10 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 ---
 
 Status: Third game "Président" (Trou du cul) shipped end-to-end (local/online/ad-hoc), alongside Coinche and "la Bouilla". Online games have an idle-turn timer with permanent bot takeover. Local solo play is offline/reload-proof (PWA + localStorage). Online finished screens offer a same-room rematch. Reaction picker sends Giphy GIFs next to emojis (online + local). Deployed on Vercel (project `coinchapp`, team `remiinsf-3156s-projects`).
-Current_Goal: Added Président's "double" house rule (replay the pile's rank to skip the next seat; completing all 4 burns it); idle, awaiting next request.
-Last_Action: `lib/president/combos.ts`/`play.ts`: `isLegalCombo` now also accepts replaying the pile's exact rank/count (not just beating it); `applyPlay` skips the next active seat on such a play (new `GameState.lastSkip`, optional `Pile.stackCount`), or burns the pile like a "2" once all 4 cards of that rank are down. `PresidentTable.tsx` got a new `SkipFlash` "Tour sauté : {player} !" banner (reuses `.belote-flash` CSS); rules modal text updated; 6 new/updated tests, full suite green.
+Current_Goal: Fixed the GIF reaction picker being vertically squashed on iOS (Safari + Chrome/WebKit) across Coinche/Bouilla/Président; idle, awaiting next request.
+Last_Action: `components/GifPicker.tsx` grid thumbnails looked vertically squashed on iPhone (same bug family already fixed in the sibling `bergamots` repo's Yatzy game, but a different root cause here: the `<img>` already used a fixed `h-20`, not a percentage). Root cause: Tailwind's preflight sets `-webkit-appearance: button` on all `<button>` elements, and WebKit has a known bug where that native button chrome can ignore `overflow-hidden` + `rounded-md` clipping on children, breaking the `object-cover` image. Fixed by adding `appearance-none` plus an explicit `h-20 w-full` on the button (matching the img) and `rounded-md` directly on the `<img>` as defense-in-depth. Lint + `tsc --noEmit` both green. Committed and pushed (`98172ec`); shared by Coinche/Bouilla/Président since they all use `EmojiButton`/`GifPicker`.
 Next_Actions:
+- Ask the user to hard-refresh Coinche/Bouilla/Président on the iPhone once `98172ec` is deployed and confirm the GIF picker thumbnails are no longer squashed.
 - Manually verify in Président: playing the same rank as the pile (single/pair/triple) is accepted, skips the next seat with the "Tour sauté" flash, and completing 4 of that rank burns the pile with the existing fly animation.
 - Manually verify in Président: a 2/3/4-card combo lands centered on the felt, and the 1-2 previous plays sit tilted left/right behind it rather than in a straight diagonal line.
 - If the sort button is missing after a local reload, unregister the old service worker once (or hard-refresh) so the new `sw.js` can take over.
@@ -25,8 +26,8 @@ Open_Questions:
 - Ad-hoc P2P host hooks are now 3 parallel ~200-line files (Coinche/Bouilla/Président) - generalize now, or keep deferring per the accepted N=2 and N=3 trade-offs?
 
 Recent_Changes:
+- 2026-09-13 GifPicker: fixed vertical squash on iOS WebKit - `<button>` needed `appearance-none` (Tailwind's `-webkit-appearance: button` was breaking overflow-hidden/rounded-md clipping on the object-cover `<img>`); shared by Coinche/Bouilla/Président.
 - 2026-09-11 Président: new "double" house rule (always on) - replaying the pile's exact rank/count instead of beating it is now legal, skips the next active seat (new "Tour sauté" flash), and burns the pile like a "2" once all 4 cards of that rank are down.
 - 2026-09-11 Président: current pile play is now centered regardless of card count, and the 1-2 older plays behind it use a fixed left/right offset + tilt (`HISTORY_OFFSETS`) instead of a plain diagonal stack, for a scattered-heap look.
 - 2026-09-11 Président: rounds-to-play options narrowed to 1/2/3/4/5 (was 3/4/5/6/8), per user request.
 - 2026-09-11 Président: fixed a blocking bug reported by the user - from round 2 on, the end-of-round score table stayed on screen forever after pressing "Manche suivante", hiding the exchange panel underneath (game looked frozen). Root cause: `beginNextRound` never cleared `lastRoundResult`, unlike Bouilla's equivalent. Regression test added.
-- 2026-09-11 Président: played combos now slide into the pile from the playing seat's direction, reusing Bouilla/Coinche's shared `TrickStage.tsx` entrance animation instead of appearing statically.
