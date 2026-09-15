@@ -16,6 +16,9 @@ export interface PlayerBadgeProps {
   reaction?: TableReaction;
   dataId?: string;
   orientation?: "horizontal" | "vertical";
+  /** Président only: this seat is the round's president (first to empty
+   *  their hand) - shows a small crown before the name. */
+  isPresident?: boolean;
 }
 
 export function PlayerBadge({
@@ -28,6 +31,7 @@ export function PlayerBadge({
   reaction,
   dataId,
   orientation = "horizontal",
+  isPresident = false,
 }: PlayerBadgeProps) {
   const { t } = useI18n();
   const teamClass = team === "A" ? "text-team-a" : "text-team-b";
@@ -42,6 +46,11 @@ export function PlayerBadge({
           className={`px-1 py-2 text-lg font-black uppercase leading-none ${teamClass} ${turnClass} ${dimClass}`}
           style={{ writingMode: "vertical-rl" }}
         >
+          {isPresident && (
+            <span className="mb-1 block text-sm" data-id="player-crown-icon" aria-hidden="true">
+              👑
+            </span>
+          )}
           {name}
           {isDealer && <span className="mt-1 text-[10px]">D</span>}
         </div>
@@ -61,6 +70,11 @@ export function PlayerBadge({
     <div data-id={dataId} className="flex items-center gap-1 drop-shadow-lg">
       {isThinking && <ThinkingIndicator />}
       <div className={`px-1 py-0.5 text-xl font-black uppercase leading-none ${teamClass} ${turnClass} ${dimClass}`}>
+        {isPresident && (
+          <span className="mr-1 align-middle text-base" data-id="player-crown-icon" aria-hidden="true">
+            👑
+          </span>
+        )}
         {name}
         {isDealer && <span className="ml-1 align-middle text-[10px]">D</span>}
       </div>

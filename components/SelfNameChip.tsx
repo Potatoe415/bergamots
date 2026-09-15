@@ -4,9 +4,13 @@
 export function SelfNameChip({
   name,
   avatarSrc,
+  isPresident = false,
 }: {
   name: string;
   avatarSrc?: string;
+  /** Président only: I am the round's president (first to empty my hand) -
+   *  shows a small crown before my name. */
+  isPresident?: boolean;
 }) {
   return (
     <div
@@ -23,6 +27,11 @@ export function SelfNameChip({
         />
       ) : null}
       <span className="max-w-[8rem] truncate text-xs font-bold uppercase leading-none text-[var(--card-face)] drop-shadow-lg">
+        {isPresident && (
+          <span className="mr-1 align-middle" data-id="self-crown-icon" aria-hidden="true">
+            👑
+          </span>
+        )}
         {name}
       </span>
     </div>

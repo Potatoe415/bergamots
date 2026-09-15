@@ -1,5 +1,5 @@
 import { cardId, rankValue } from "./cards";
-import type { Card, GameState, PendingExchange, Seat, Titles } from "./types";
+import type { Card, ForcedTransfer, GameState, PendingExchange, Seat, Titles } from "./types";
 
 const SEATS: Seat[] = [0, 1, 2, 3];
 
@@ -14,12 +14,6 @@ function takeTopCards(hand: Card[], count: number): { taken: Card[]; remaining: 
   const taken = sorted.slice(0, count);
   const takenIds = new Set(taken.map(cardId));
   return { taken, remaining: hand.filter((c) => !takenIds.has(cardId(c))) };
-}
-
-export interface ForcedTransfer {
-  from: Seat;
-  to: Seat;
-  cards: Card[];
 }
 
 /** The automatic, no-choice half of the exchange: the previous round's Trou du
@@ -78,6 +72,7 @@ function nextExchangeStep(state: GameState, pending: PendingExchange): GameState
   return {
     ...state,
     pendingExchange: null,
+    forcedTransfers: null,
     phase: "playing",
     turn: seatWithTitle(state.titles!, "trouDuCul"),
     pile: { combo: null, leader: null },

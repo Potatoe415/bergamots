@@ -3,7 +3,7 @@ export * from "./cards";
 export { shuffle, dealHands, createInitialState, beginNextRound, type Rng } from "./deal";
 export { combosInHand, isLegalCombo, isValidComboShape } from "./combos";
 export { legalCombos, canPass, applyPlay, applyPass } from "./play";
-export { computeForcedTransfers, validateExchangeReturn, applyExchangeReturn, type ForcedTransfer } from "./exchange";
+export { computeForcedTransfers, validateExchangeReturn, applyExchangeReturn } from "./exchange";
 export { computeRoundResult, finalizeRound } from "./scoring";
 export { submitPlay, submitPass, submitExchangeReturn, startNextRound, markReadyForNextRound } from "./engine";
 export { chooseAction, advanceBots, type PresidentBotAction } from "./bot";

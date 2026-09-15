@@ -201,6 +201,7 @@ export function PresidentTable({
         )}
         <PileArea view={view} seats={seats} />
         <SkipFlash gv={gv} view={view} />
+        <PresidentCrownedFlash gv={gv} view={view} />
         {view.phase === "exchange" && !roundOverlayVisible && (
           <PresidentExchangePanel gv={gv} view={view} onSubmit={actions.onExchangeReturn} />
         )}
@@ -214,7 +215,11 @@ export function PresidentTable({
         />
         {selfAvatar !== undefined && !roundOverlayVisible && (
           <div className="absolute inset-x-0 bottom-[9.4rem] z-20" data-id="president-self-name-wrap">
-            <SelfNameChip name={playerName(gv, mySeat, locale)} avatarSrc={selfAvatar} />
+            <SelfNameChip
+              name={playerName(gv, mySeat, locale)}
+              avatarSrc={selfAvatar}
+              isPresident={view.finishedOrder[0] === mySeat}
+            />
           </div>
         )}
         {emojiOn && actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
@@ -433,6 +438,7 @@ function OpponentBadge({
           reaction={reaction}
           orientation={position === "top" ? "horizontal" : "vertical"}
           dataId={`president-player-seat-${seat}`}
+          isPresident={view.finishedOrder[0] === seat}
         />
         {title && <p className="text-center text-[10px] font-bold text-[var(--card-face)]/70" data-id={`president-title-seat-${seat}`}>{title}</p>}
       </div>
@@ -554,6 +560,78 @@ function SkipFlash({ gv, view }: { gv: PresidentGameView; view: PlayerView }) {
     <div className="pointer-events-none absolute inset-x-0 top-[44%] z-30 flex justify-center" data-id="president-skip-flash">
       <span className="belote-flash rounded-full bg-black/50 px-6 py-2 text-lg font-extrabold tracking-wide text-[var(--accent-yellow)] shadow-xl">
         {formatText(t("turnSkippedBanner"), { player: playerName(gv, skippedSeat, locale) })}
+      </span>
+    </div>
+  );
+}
+
+/** Deterministic confetti burst for `PresidentCrownedFlash` - fixed x/rotation/delay
+ *  per piece (not randomized) so the burst never jitters between re-renders, same
+ *  "cycled by index, not `Math.random()`" precedent as `HISTORY_OFFSETS` above. */
+const CONFETTI_COLORS = ["#f2c44f", "#16c8f0", "#ff6b6b", "#7cffb2", "#ffffff"];
+const CONFETTI_PIECES = Array.from({ length: 14 }, (_, i) => ({
+  x: (i % 2 === 0 ? -1 : 1) * (24 + ((i * 37) % 130)),
+  rot: (i * 53) % 360,
+  delay: (i * 83) % 420,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+}));
+
+function presidentCrownedKey(view: PlayerView): string {
+  return view.finishedOrder.length > 0 ? `${view.roundIndex}:${view.finishedOrder[0]}` : "";
+}
+
+/** Matches `.president-crown-pop`'s animation duration (`app/globals.css`). */
+const PRESIDENT_CROWNED_ANIMATION_MS = 2400;
+
+/** Same "diff the key to detect a *new* event" pattern as `useSkipFlash` above:
+ *  fires once the instant a round's first-to-finish seat is set (`finishedOrder[0]`),
+ *  while the other seats are still playing out the rest of the round. */
+function usePresidentCrownedFlash(view: PlayerView): { seat: Seat | null; visible: boolean } {
+  const [visible, setVisible] = useState(false);
+  const [key, setKey] = useState("");
+  const nextKey = presidentCrownedKey(view);
+
+  if (nextKey !== key && nextKey !== "") {
+    setKey(nextKey);
+    setVisible(true);
+  }
+
+  useEffect(() => {
+    if (!visible) return;
+    const id = window.setTimeout(() => setVisible(false), PRESIDENT_CROWNED_ANIMATION_MS);
+    return () => window.clearTimeout(id);
+  }, [visible, key]);
+
+  return { seat: view.finishedOrder[0] ?? null, visible };
+}
+
+/** Confetti + crown banner celebrating whoever just played their last card and
+ *  became this round's president - shown while everyone else keeps playing. */
+function PresidentCrownedFlash({ gv, view }: { gv: PresidentGameView; view: PlayerView }) {
+  const { locale, t } = useI18n();
+  const { seat, visible } = usePresidentCrownedFlash(view);
+  if (!visible || seat === null) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center" data-id="president-crowned-flash">
+      {CONFETTI_PIECES.map((piece, i) => (
+        <span
+          key={i}
+          className="president-confetti-piece absolute left-1/2 top-1/3 h-2.5 w-1.5 rounded-sm"
+          style={
+            {
+              backgroundColor: piece.color,
+              animationDelay: `${piece.delay}ms`,
+              "--confetti-x": `${piece.x}px`,
+              "--confetti-rot": `${piece.rot}deg`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+      <span className="president-crown-pop rounded-2xl bg-black/55 px-6 py-3 text-center shadow-xl">
+        <span className="block text-4xl" aria-hidden="true">👑</span>
+        <span className="mt-1 block text-lg font-extrabold tracking-wide text-[var(--accent-yellow)]">
+          {formatText(t("presidentCrownedBanner"), { player: playerName(gv, seat, locale) })}
+        </span>
       </span>
     </div>
   );

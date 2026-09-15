@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Card, PlayerView } from "@/lib/president";
+import { rankValue, type Card, type PlayerView } from "@/lib/president";
 import { formatText, useI18n } from "@/lib/client/i18n";
 import type { GameView } from "@/lib/server/view";
 import { playerName } from "./gameTableHelpers";
@@ -32,12 +32,27 @@ export function PresidentExchangePanel({
   const owed = pending.owed[view.mySeat] ?? 0;
 
   if (!myTurnToReturn) {
+    // Trou du Cul/Vice-Trou du Cul: never in `pendingExchange.awaiting` (they
+    // have no choice to make), but they still see which of their own best
+    // cards just got sent away by the forced half of the exchange.
+    const mySentTransfer = view.forcedTransfers?.find((tr) => tr.from === view.mySeat) ?? null;
     return (
       <div
         className="absolute inset-x-6 top-1/2 z-20 -translate-y-1/2 rounded-2xl bg-[var(--surface-overlay)] p-5 text-center text-[var(--card-face)]"
         data-id="president-exchange-waiting"
       >
-        <p className="text-sm">{formatText(t("exchangeWaitingOn"), { player: playerName(gv, pending.awaiting[0], locale) })}</p>
+        {mySentTransfer ? (
+          <>
+            <p className="text-sm">{formatText(t("exchangeYouSent"), { player: playerName(gv, mySentTransfer.to, locale) })}</p>
+            <div className="mt-3 flex justify-center gap-2" data-id="president-exchange-sent-cards">
+              {mySentTransfer.cards.map((card) => (
+                <PlayingCard key={cardKey(card)} card={card} size="md" dimmed dataId={`president-exchange-sent-card-${cardKey(card)}`} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm">{formatText(t("exchangeWaitingOn"), { player: playerName(gv, pending.awaiting[0], locale) })}</p>
+        )}
       </div>
     );
   }
@@ -51,6 +66,9 @@ export function PresidentExchangePanel({
   }
 
   const canConfirm = selected.length === owed;
+  // Exchange never happens mid-revolution (freshly dealt hands), so a plain
+  // ascending value sort - no revolution flip - always matches the rules.
+  const sortedHand = [...view.myHand].sort((a, b) => rankValue(a.rank, false) - rankValue(b.rank, false));
 
   return (
     <div
@@ -59,7 +77,7 @@ export function PresidentExchangePanel({
     >
       <p className="text-center text-sm font-bold">{formatText(t("exchangeReturnPrompt"), { count: owed })}</p>
       <div className="mt-4 flex flex-wrap justify-center gap-2" data-id="president-exchange-hand">
-        {view.myHand.map((card) => {
+        {sortedHand.map((card) => {
           const key = cardKey(card);
           const isSelected = selected.some((c) => cardKey(c) === key);
           return (
@@ -67,7 +85,14 @@ export function PresidentExchangePanel({
               key={key}
               className={`transition-transform ${isSelected ? "-translate-y-2 rounded-lg ring-2 ring-[var(--accent-yellow)]" : ""}`}
             >
-              <PlayingCard card={card} size="md" dataId={`president-exchange-card-${key}`} playable onClick={() => tapCard(card)} />
+              <PlayingCard
+                card={card}
+                size="md"
+                dataId={`president-exchange-card-${key}`}
+                playable
+                showPlayableRing={false}
+                onClick={() => tapCard(card)}
+              />
             </div>
           );
         })}

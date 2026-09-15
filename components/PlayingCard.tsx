@@ -16,11 +16,16 @@ export interface PlayingCardProps {
   size?: keyof typeof SIZES;
   dimmed?: boolean;
   playable?: boolean;
+  /** Suppresses `playable`'s always-on gold ring while keeping the card
+   *  clickable (e.g. the exchange panel, where every card is clickable but
+   *  only the ones the player actually selected should be highlighted).
+   *  Defaults to true. */
+  showPlayableRing?: boolean;
   onClick?: () => void;
   dataId?: string;
 }
 
-export function PlayingCard({ card, size = "md", dimmed, playable, onClick, dataId }: PlayingCardProps) {
+export function PlayingCard({ card, size = "md", dimmed, playable, showPlayableRing = true, onClick, dataId }: PlayingCardProps) {
   const red = RED_SUITS.includes(card.suit);
   const interactive = !!onClick;
   const sizeStyle = SIZES[size];
@@ -37,7 +42,8 @@ export function PlayingCard({ card, size = "md", dimmed, playable, onClick, data
         sizeStyle.card,
         red ? "text-[var(--accent-red)]" : "text-[var(--card-ink)]",
         dimmed ? "brightness-50 grayscale" : "",
-        playable ? "ring-4 ring-[var(--ring-strong)] cursor-pointer" : "",
+        playable ? "cursor-pointer" : "",
+        playable && showPlayableRing ? "ring-4 ring-[var(--ring-strong)]" : "",
         interactive && !playable ? "cursor-not-allowed" : "",
         "transition-transform",
       ].join(" ")}

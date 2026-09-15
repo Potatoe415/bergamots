@@ -31,6 +31,7 @@ export function createInitialState(roundsToPlay: number): GameState {
     finishedOrder: [],
     titles: null,
     pendingExchange: null,
+    forcedTransfers: null,
     totalScores: [0, 0, 0, 0],
     roundHistory: [],
     lastRoundResult: null,
@@ -57,6 +58,7 @@ export function beginNextRound(state: GameState, rng: Rng = Math.random): GameSt
     // round-end overlay keeps covering the table forever, hiding the "exchange"
     // panel round 2+ needs - the game looks frozen right after "Manche suivante".
     lastRoundResult: null,
+    forcedTransfers: null,
   };
 
   if (!state.titles) {
@@ -75,5 +77,6 @@ export function beginNextRound(state: GameState, rng: Rng = Math.random): GameSt
       awaiting: [president, vicePresident],
       owed: { [president]: 2, [vicePresident]: 1 } as Record<Seat, number>,
     },
+    forcedTransfers: transfers,
   };
 }

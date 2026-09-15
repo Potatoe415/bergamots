@@ -26,6 +26,10 @@ export interface PlayerView {
   finishedOrder: Seat[];
   titles: Titles | null;
   pendingExchange: PendingExchange | null;
+  /** Not secret (already-moved, face-up cards - same rationale as `lastBurn`):
+   *  passed through so the Trou du Cul/Vice-Trou du Cul can see what left
+   *  their hand during the forced half of the exchange. */
+  forcedTransfers: GameState["forcedTransfers"];
   totalScores: SeatScores;
   roundHistory: RoundResult[];
   lastRoundResult: RoundResult | null;
@@ -50,6 +54,7 @@ export function redact(state: GameState, seat: Seat): PlayerView {
     finishedOrder: state.finishedOrder,
     titles: state.titles,
     pendingExchange: state.pendingExchange,
+    forcedTransfers: state.forcedTransfers,
     totalScores: state.totalScores,
     roundHistory: state.roundHistory,
     lastRoundResult: state.lastRoundResult,

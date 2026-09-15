@@ -49,6 +49,15 @@ export interface RoundResult {
   titles: Titles;
 }
 
+/** A single leg of the exchange's forced, no-choice half (see
+ *  `computeForcedTransfers` in `exchange.ts`): `from`'s best card(s) moved to
+ *  `to` face-up, before anyone chooses anything. */
+export interface ForcedTransfer {
+  from: Seat;
+  to: Seat;
+  cards: Card[];
+}
+
 /** The forced part of the exchange (which cards moved, no choice involved) plus
  *  what each side still owes back, in the order seats must act. */
 export interface PendingExchange {
@@ -91,6 +100,12 @@ export interface GameState {
   titles: Titles | null;
   /** Present only during the "exchange" phase. */
   pendingExchange: PendingExchange | null;
+  /** Present only during the "exchange" phase: face-up record of the forced
+   *  half (previous round's Trou du Cul's 2 best cards to the President,
+   *  Vice-Trou du Cul's best card to the Vice-President) - purely a display
+   *  cue so the "losing" seats can see what left their hand even though it's
+   *  automatic and they have no say in it. Null once the exchange ends. */
+  forcedTransfers: [ForcedTransfer, ForcedTransfer] | null;
   totalScores: SeatScores;
   roundHistory: RoundResult[];
   lastRoundResult: RoundResult | null;
