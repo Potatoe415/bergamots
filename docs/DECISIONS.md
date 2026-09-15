@@ -508,3 +508,13 @@ Consequences: Président `games.state` jsonb now includes `lastSkip` (null after
 Alternatives_Rejected: Making it a settings toggle (user explicitly wants it always on); a distinct "prize" animation/field separate from the existing burn cue (user confirmed the mechanic is identical to a "2" burn, so reusing it is simpler and consistent); requiring `Pile.stackCount` instead of leaving it optional (would have forced touching every existing pile literal across the engine and its tests for no behavioral gain).
 
 ---
+
+## 2026-09-15 - Président: the "double" rule's skip is spared when the target seat also holds that rank
+
+Decision: `applyPlay`'s "double" skip now checks the would-be-skipped seat's hand first (`hasRank`): if it holds at least one card of the pile's rank, the skip is called off entirely and that seat just gets its normal turn (no `lastSkip` set, `turn` stays on that seat) instead of jumping past it. If it holds none, behavior is unchanged from the original "double" rule (skip applies, `lastSkip` set). This check only ever looks at rank (any suit), not count, and is skipped over entirely when the play instead completes all 4 cards of the rank (`burnsThePile`/burn branch runs first, unaffected).
+Context: User's follow-up house rule, clarified via questions: if the seat that would be skipped also has a card of the matching rank, it is not skipped - it plays normally. If it then chooses to replay that rank itself, the same check re-applies to the seat after it, so the "spared skip" can chain down the table until it reaches a seat with no matching card left.
+Rationale: No new state or mechanism needed - the existing per-play `matched` branch already re-evaluates from scratch on every subsequent play, so a seat that chains the double by replaying the rank naturally re-triggers the same `hasRank` check against the next seat. This keeps the chain effect "free" instead of needing an explicit chain counter or forced-play logic.
+Consequences: No `GameState` shape change, no migration. Existing `lastSkip`/`SkipFlash` plumbing is reused unchanged - it simply doesn't fire on a spared skip. Rules modal text updated (both languages) to mention the exception. Two new `play.test.ts` cases cover the spared skip and its chaining to a seat that lacks the rank.
+Alternatives_Rejected: Forcing the spared seat to replay the matching rank immediately (user chose "normal turn" over "forced play"); checking for the same card count as the combo rather than any single card of that rank (user chose "any card of that rank" as the simpler check); also re-checking hands during the completes-to-4 burn case (moot - burn already leaves no seat to skip).
+
+---

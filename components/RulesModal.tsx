@@ -71,7 +71,7 @@ const PRESIDENT_RULES = {
       },
       {
         heading: "Le doublé",
-        body: "Au lieu de monter, on peut aussi rejouer la même hauteur que la pile (même nombre de cartes) : ça saute le tour du joueur suivant. Si ça complète les 4 cartes de cette hauteur, la pile est brûlée d'un coup et on rejoue librement.",
+        body: "Au lieu de monter, on peut aussi rejouer la même hauteur que la pile (même nombre de cartes) : ça saute le tour du joueur suivant, sauf s'il a lui aussi une carte de cette hauteur — auquel cas il rejoue normalement (et peut relancer le doublé à son tour). Si ça complète les 4 cartes de cette hauteur, la pile est brûlée d'un coup et on rejoue librement.",
       },
       {
         heading: "La révolution",
@@ -108,7 +108,7 @@ const PRESIDENT_RULES = {
       },
       {
         heading: "The double",
-        body: "Instead of beating the pile, you can also replay its exact rank (same card count): this skips the next player's turn entirely. If it completes all 4 cards of that rank, the pile burns instantly instead and you lead freely again.",
+        body: "Instead of beating the pile, you can also replay its exact rank (same card count): this skips the next player's turn entirely, unless they also hold a card of that rank — then they play normally (and may chain the double themselves). If it completes all 4 cards of that rank, the pile burns instantly instead and you lead freely again.",
       },
       {
         heading: "Revolution",

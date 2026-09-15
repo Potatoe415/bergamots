@@ -1,7 +1,7 @@
 import { nextSeat } from "@/lib/cards";
 import { cardId } from "./cards";
 import { combosInHand, isLegalCombo, isValidComboShape } from "./combos";
-import type { Card, Combo, GameState, Pile, Seat } from "./types";
+import type { Card, Combo, GameState, Pile, Rank, Seat } from "./types";
 
 const SEATS: Seat[] = [0, 1, 2, 3];
 
@@ -66,6 +66,12 @@ function stackedCount(pile: Pile, combo: Combo): number {
   return (pile.stackCount ?? pile.combo?.cards.length ?? 0) + combo.cards.length;
 }
 
+/** True if `hand` holds at least one card of `rank` - the "double" rule's skip
+ *  is called off for a seat that could have defended itself the same way. */
+function hasRank(hand: Card[], rank: Rank): boolean {
+  return hand.some((c) => c.rank === rank);
+}
+
 const RANK_COUNT_IN_DECK = 4;
 
 /** Shared by both burn triggers (a "2", or the "double" rule completing all
@@ -81,10 +87,13 @@ function burnResult(state: GameState, hands: Card[][], seat: Seat, combo: Combo,
  *
  *  The "double" rule: replaying the pile's exact rank (`matchesPile`) is
  *  legal alongside beating it (`isLegalCombo`) and skips the very next
- *  active seat's turn entirely - unless it also completes all 4 cards of
+ *  active seat's turn entirely - unless that seat itself holds a card of the
+ *  same rank, in which case it is spared the skip and simply gets its normal
+ *  turn (`hasRank`); or unless the play instead completes all 4 cards of
  *  that rank, in which case it burns the pile just like a "2" instead
- *  (`burnResult`). Finishing your hand always takes priority over either
- *  effect, same precedent as a hand-emptying "2" never burning. */
+ *  (`burnResult`, checked first, so it takes priority over the skip/spare
+ *  check either way). Finishing your hand always takes priority over any of
+ *  these effects, same precedent as a hand-emptying "2" never burning. */
 export function applyPlay(state: GameState, seat: Seat, combo: Combo): GameState {
   if (state.phase !== "playing") throw new Error("not_playing");
   if (state.turn !== seat) throw new Error("not_your_turn");
@@ -108,8 +117,14 @@ export function applyPlay(state: GameState, seat: Seat, combo: Combo): GameState
   if (matched && !finished && stackCount >= RANK_COUNT_IN_DECK) return burnResult(state, hands, seat, combo, revolution, finishedOrder);
   if (matched && !finished) {
     const skippedSeat = nextActiveSeat(finishedOrder, seat);
-    const turn = nextActiveSeat(finishedOrder, skippedSeat);
     const pile = { combo, leader: seat, stackCount };
+    // Exception: a seat holding a card of the same rank can't be skipped - it
+    // gets its normal turn instead (and may chain the "double" itself, which
+    // re-runs this same check against the seat after it).
+    if (hasRank(hands[skippedSeat], combo.rank)) {
+      return { ...state, hands, pile, passStreak: 0, revolution, finishedOrder, turn: skippedSeat };
+    }
+    const turn = nextActiveSeat(finishedOrder, skippedSeat);
     return { ...state, hands, pile, lastSkip: { seat, skippedSeat, combo }, passStreak: 0, revolution, finishedOrder, turn };
   }
   const pile = { combo, leader: seat, stackCount };

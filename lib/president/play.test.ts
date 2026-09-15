@@ -121,6 +121,31 @@ describe("applyPlay", () => {
     expect(next.turn).toBe(1);
   });
 
+  it("the 'double' rule spares the skip when the would-be-skipped seat also holds that rank", () => {
+    const state = playingState({
+      turn: 1,
+      hands: [[card("K", "S")], [card("6", "D"), card("3", "H")], [card("6", "C"), card("Q", "S")], [card("J", "H")]],
+      pile: { combo: combo("6", [card("6", "H")]), leader: 0 },
+    });
+    const next = applyPlay(state, 1, combo("6", [card("6", "D")]));
+    expect(next.pile).toEqual({ combo: combo("6", [card("6", "D")]), leader: 1, stackCount: 2 });
+    expect(next.lastSkip).toBeNull();
+    expect(next.turn).toBe(2); // seat 2 keeps its turn instead of being skipped
+  });
+
+  it("the 'double' rule's spared skip can chain: seat 2 replays and now seat 3 lacks the rank, so it is skipped", () => {
+    let state = playingState({
+      turn: 1,
+      hands: [[card("K", "S")], [card("6", "D"), card("3", "H")], [card("6", "C"), card("Q", "S")], [card("J", "H")]],
+      pile: { combo: combo("6", [card("6", "H")]), leader: 0 },
+    });
+    state = applyPlay(state, 1, combo("6", [card("6", "D")]));
+    expect(state.turn).toBe(2);
+    state = applyPlay(state, 2, combo("6", [card("6", "C")]));
+    expect(state.lastSkip).toEqual({ seat: 2, skippedSeat: 3, combo: combo("6", [card("6", "C")]) });
+    expect(state.turn).toBe(0); // seat 3 (no 6 left) skipped, back around to seat 0
+  });
+
   it("the 'double' rule does not skip or burn when the matching play also empties the hand", () => {
     const state = playingState({
       turn: 1,
