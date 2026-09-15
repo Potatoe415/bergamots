@@ -71,7 +71,7 @@ export function PresidentTable({
   const [autoPassOn, setAutoPassOn] = useState(true);
   const [selected, setSelected] = useState<Card[]>([]);
   const [busy, setBusy] = useState(false);
-  const [handSort, setHandSort] = useState<HandSortMode>("suit");
+  const [handSort, setHandSort] = useState<HandSortMode>("rank");
 
   useEffect(() => {
     // Post-hydration browser read: deferred to after mount to avoid an SSR/client mismatch.
