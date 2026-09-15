@@ -745,7 +745,10 @@ function HandArea({
                 className="absolute bottom-0 transition-[left,transform] duration-200"
                 style={{
                   left: i * step,
-                  zIndex: isSelected ? 60 + i : i,
+                  // Keep natural left-to-right stacking (no +60 boost) so a selected card at a
+                  // lower index stays behind a still-unselected card to its right instead of
+                  // covering it (reported bug: selecting the first of a pair hid the second).
+                  zIndex: i,
                   transform: `translateY(${-(curveLift + selectedLift)}px) rotate(${curveRotate}deg)`,
                   transformOrigin: "bottom center",
                 }}
