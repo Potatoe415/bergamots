@@ -30,6 +30,10 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // Lets iOS report real `env(safe-area-inset-*)` values (e.g. the home-indicator
+  // area) instead of 0 - used by the game tables to always keep clearance below
+  // the hand of cards on notch/home-indicator iPhones.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

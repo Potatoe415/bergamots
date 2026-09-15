@@ -236,7 +236,12 @@ export function PresidentTable({
           />
         )}
       </div>
-      <div className="flex-1" aria-hidden="true" />
+      {/* Guaranteed minimum, grown from iOS's home-indicator safe area: keeps a visible
+          gap below the hand fan on every device instead of letting this spacer collapse
+          to 0 and leave the cards flush with (or under) the bottom system bar - the
+          equal-`flex-1` sibling above shrinks first to make room, which also has the
+          effect of nudging the whole table upward on short viewports. */}
+      <div className="flex-1 min-h-[calc(env(safe-area-inset-bottom)+12px)]" aria-hidden="true" />
       {scoreboardOpen && <PresidentScoreboard gv={gv} view={view} onClose={() => setScoreboardOpen(false)} />}
     </main>
   );
