@@ -257,6 +257,8 @@ function HandFan({
               card={card}
               left={i * HAND_STEP}
               zIndex={isPreSelected ? 60 + i : isPlayable ? 50 + i : i}
+              index={i}
+              total={n}
               isPlayable={isPlayable}
               isDimmed={myTurnToPlay && !isPlayable}
               isPreSelected={isPreSelected}
