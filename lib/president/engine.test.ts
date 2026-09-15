@@ -26,6 +26,14 @@ describe("engine integration (bots play a full match)", () => {
     expect(scoredRound1.roundHistory).toHaveLength(2);
   });
 
+  it("resolves round 0 to scoring across many seeds - guards against the strategic-passing bot ever stalling `advanceBots`' 500-iteration budget", () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const scored = advanceBots(beginNextRound(createInitialState(4), seededRng(seed)), ALL_BOTS);
+      expect(scored.phase).toBe("scoring");
+      expect(scored.finishedOrder).toHaveLength(4);
+    }
+  });
+
   it("markReadyForNextRound records a ready seat only during scoring, without duplicates", () => {
     const scored = advanceBots(beginNextRound(createInitialState(4), seededRng(5)), ALL_BOTS);
     let next = markReadyForNextRound(scored, 0);
