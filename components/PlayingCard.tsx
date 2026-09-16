@@ -41,11 +41,7 @@ export function PlayingCard({
   onClick,
   dataId,
 }: PlayingCardProps) {
-  // La Bataille Corse's 54-card deck only: jokers have no real suit (see
-  // `lib/bataillecorse/cards.ts`), so they get their own glyph instead of the
-  // usual rank/suit corner indices.
-  const isJoker = card.rank === "JOKER";
-  const red = !isJoker && RED_SUITS.includes(card.suit);
+  const red = RED_SUITS.includes(card.suit);
   const interactive = !!onClick;
   const sizeStyle = SIZES[size];
   const Tag = interactive ? "button" : "div";
@@ -67,29 +63,21 @@ export function PlayingCard({
         "transition-transform",
       ].join(" ")}
     >
-      {isJoker ? (
-        <span className="absolute inset-0 flex items-center justify-center text-center text-3xl leading-none" aria-label="Joker">
-          🃏
-        </span>
-      ) : (
-        <>
-          <div className="absolute top-1 left-1 flex flex-col items-center leading-none">
-            <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
-            <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
-          </div>
-          {showRightIndex && (
-            <div className="absolute top-1 right-1 flex flex-col items-center leading-none">
-              <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
-              <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
-            </div>
-          )}
-          <span
-            className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] leading-none ${sizeStyle.suit}`}
-          >
-            {SUIT_SYMBOL[card.suit]}
-          </span>
-        </>
+      <div className="absolute top-1 left-1 flex flex-col items-center leading-none">
+        <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
+        <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
+      </div>
+      {showRightIndex && (
+        <div className="absolute top-1 right-1 flex flex-col items-center leading-none">
+          <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
+          <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
+        </div>
       )}
+      <span
+        className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] leading-none ${sizeStyle.suit}`}
+      >
+        {SUIT_SYMBOL[card.suit]}
+      </span>
     </Tag>
   );
 }

@@ -2,16 +2,16 @@ import type { CardOf } from "@/lib/cards";
 
 export type { Suit } from "@/lib/cards";
 
-/** Full 52-card pack plus 2 jokers (54-card deck), or a piquet-style 32-card
- *  pack (7 and up only, no jokers) - the table's own deck-size setting picks
- *  between the two, see `DeckSize`/`buildDeck` in `cards.ts`. */
-export type Rank = "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A" | "JOKER";
+/** Full 52-card pack, or a piquet-style 32-card pack (7 and up only) - the
+ *  table's own deck-size setting picks between the two, no jokers either way
+ *  (see docs/DECISIONS.md), see `DeckSize`/`buildDeck` in `cards.ts`. */
+export type Rank = "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "A";
 
 export type Card = CardOf<Rank>;
 
 /** The only two deck sizes the table offers (see docs/DECISIONS.md): 32
- *  (piquet-style, 7 and up, no jokers) or 54 (full 52 plus 2 jokers). */
-export type DeckSize = 32 | 54;
+ *  (piquet-style, 7 and up) or 52 (the full pack). No jokers either way. */
+export type DeckSize = 32 | 52;
 
 /** Only ever 2 players (see docs/DECISIONS.md) - deliberately not the shared
  *  4-seat `Seat` from `@/lib/cards`. */

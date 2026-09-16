@@ -31,10 +31,10 @@ export interface GameSettings {
   /** Président only: how many rounds a match plays before it's over (see
    *  docs/DATA_MODEL.md). Defaults to `DEFAULT_PRESIDENT_ROUNDS_TO_PLAY`. */
   presidentRoundsToPlay?: number;
-  /** La Bataille Corse only: 32 (piquet-style, no jokers) or 54 (full pack +
-   *  2 jokers) - see `lib/bataillecorse/cards.ts`. Defaults to
+  /** La Bataille Corse only: 32 (piquet-style) or 52 (full pack) - no jokers
+   *  either way, see `lib/bataillecorse/cards.ts`. Defaults to
    *  `DEFAULT_BATAILLECORSE_DECK_SIZE`. */
-  bataillecorseDeckSize?: 32 | 54;
+  bataillecorseDeckSize?: 32 | 52;
 }
 
 /** `GameSettings.botThinkMs` bounds and default - shared by the setup slider
@@ -62,8 +62,8 @@ export const PRESIDENT_ROUNDS_OPTIONS = [1, 2, 3, 4, 5] as const;
 /** `GameSettings.bataillecorseDeckSize` default and the only two selectable
  *  values - shared by the setup slider (`GameSettingsPanel.tsx`) and the
  *  server-side sanitizer (`lib/server/actions-lobby.ts`). */
-export const DEFAULT_BATAILLECORSE_DECK_SIZE = 54;
-export const BATAILLECORSE_DECK_SIZE_OPTIONS = [32, 54] as const;
+export const DEFAULT_BATAILLECORSE_DECK_SIZE = 52;
+export const BATAILLECORSE_DECK_SIZE_OPTIONS = [32, 52] as const;
 
 /** Fixed length of the visible "are you still there?" countdown, in ms. Only the
  *  total timeout above is configurable; this trailing slice is always 5s. */

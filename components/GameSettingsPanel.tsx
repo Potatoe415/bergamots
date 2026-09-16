@@ -35,8 +35,8 @@ export interface GameSetupValues {
   botThinkMs: number;
   /** Président-only: number of rounds in the match (see `GameSettings.presidentRoundsToPlay`). */
   roundsToPlay: number;
-  /** La Bataille Corse-only: 32 or 54 cards (see `GameSettings.bataillecorseDeckSize`). */
-  bataillecorseDeckSize: 32 | 54;
+  /** La Bataille Corse-only: 32 or 52 cards (see `GameSettings.bataillecorseDeckSize`). */
+  bataillecorseDeckSize: 32 | 52;
 }
 
 export const DEFAULT_GAME_SETUP: GameSetupValues = {
@@ -57,6 +57,23 @@ export const DEFAULT_GAME_SETUP: GameSetupValues = {
 
 const TARGETS = [500, 1000, 1500, 2000];
 const PUNCH_LABEL_KEY = { low: "punchLow", med: "punchMed", high: "punchHigh" } as const;
+
+/** La Bataille Corse only: `botThinkMs` reframed as 4 discrete "reflex
+ *  quality" levels (slow..very fast) instead of the other games' continuous
+ *  thinking-time slider - it directly drives `simulateBotReactionMs`'s upper
+ *  bound, so a "faster" bot is a harder opponent to out-slap. */
+const BOT_REFLEX_LEVELS = [3200, 2400, 1600, 800] as const;
+const BOT_REFLEX_LABEL_KEYS = ["botReflexSlow", "botReflexNormal", "botReflexFast", "botReflexVeryFast"] as const;
+
+/** Nearest reflex level for a `botThinkMs` value that didn't come from this
+ *  slider (e.g. the shared `DEFAULT_BOT_THINK_MS`). */
+function closestBotReflexIndex(botThinkMs: number): number {
+  let closest = 0;
+  for (let i = 1; i < BOT_REFLEX_LEVELS.length; i++) {
+    if (Math.abs(BOT_REFLEX_LEVELS[i] - botThinkMs) < Math.abs(BOT_REFLEX_LEVELS[closest] - botThinkMs)) closest = i;
+  }
+  return closest;
+}
 
 interface ToggleProps {
   checked: boolean;
@@ -99,7 +116,7 @@ interface Props {
   /** Whether to show the Président-only field (rounds-to-play slider).
    *  Defaults to false. */
   presidentFields?: boolean;
-  /** Whether to show the la Bataille Corse-only field (32/54 card deck size).
+  /** Whether to show the la Bataille Corse-only field (32/52 card deck size).
    *  Defaults to false. */
   bataillecorseFields?: boolean;
   /** Whether to show the shared idle-turn timer field. Online-only: local and
@@ -156,28 +173,54 @@ export function GameSettingsPanel({
         )}
       </div>
       <div className="grid grid-cols-1 gap-3">
-        <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-bot-think-ms-row`}>
-          <div className="flex items-center justify-between">
-            <span className="text-[var(--card-face)]/75">{t("botThinkTime")}</span>
-            <span className="font-bold text-[var(--accent-yellow)]" data-id={`${idPrefix}-bot-think-ms-value`}>
-              {(values.botThinkMs / 1000).toFixed(1)}s
-            </span>
+        {bataillecorseFields ? (
+          <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-bot-reflex-row`}>
+            <div className="flex items-center justify-between">
+              <span className="text-[var(--card-face)]/75">{t("botReflexQualityLabel")}</span>
+              <span className="font-bold text-[var(--accent-yellow)]" data-id={`${idPrefix}-bot-reflex-value`}>
+                {t(BOT_REFLEX_LABEL_KEYS[closestBotReflexIndex(values.botThinkMs)])}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={BOT_REFLEX_LEVELS.length - 1}
+              step={1}
+              value={closestBotReflexIndex(values.botThinkMs)}
+              onChange={(e) => set("botThinkMs", BOT_REFLEX_LEVELS[Number(e.target.value)])}
+              data-id={`${idPrefix}-bot-reflex-slider`}
+              className="w-full accent-[var(--accent-yellow)]"
+            />
+            <div className="flex justify-between text-xs text-[var(--card-face)]/50">
+              {BOT_REFLEX_LABEL_KEYS.map((key) => (
+                <span key={key}>{t(key)}</span>
+              ))}
+            </div>
           </div>
-          <input
-            type="range"
-            min={MIN_BOT_THINK_MS}
-            max={MAX_BOT_THINK_MS}
-            step={BOT_THINK_MS_STEP}
-            value={values.botThinkMs}
-            onChange={(e) => set("botThinkMs", Number(e.target.value))}
-            data-id={`${idPrefix}-bot-think-ms-slider`}
-            className="w-full accent-[var(--accent-yellow)]"
-          />
-          <div className="flex justify-between text-xs text-[var(--card-face)]/50">
-            <span>{t("botThinkFast")}</span>
-            <span>{t("botThinkSlow")}</span>
+        ) : (
+          <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-bot-think-ms-row`}>
+            <div className="flex items-center justify-between">
+              <span className="text-[var(--card-face)]/75">{t("botThinkTime")}</span>
+              <span className="font-bold text-[var(--accent-yellow)]" data-id={`${idPrefix}-bot-think-ms-value`}>
+                {(values.botThinkMs / 1000).toFixed(1)}s
+              </span>
+            </div>
+            <input
+              type="range"
+              min={MIN_BOT_THINK_MS}
+              max={MAX_BOT_THINK_MS}
+              step={BOT_THINK_MS_STEP}
+              value={values.botThinkMs}
+              onChange={(e) => set("botThinkMs", Number(e.target.value))}
+              data-id={`${idPrefix}-bot-think-ms-slider`}
+              className="w-full accent-[var(--accent-yellow)]"
+            />
+            <div className="flex justify-between text-xs text-[var(--card-face)]/50">
+              <span>{t("botThinkFast")}</span>
+              <span>{t("botThinkSlow")}</span>
+            </div>
           </div>
-        </div>
+        )}
         {bataillecorseFields && (
           <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-deck-size-row`}>
             <span className="text-[var(--card-face)]/75">{t("deckSizeLabel")}</span>

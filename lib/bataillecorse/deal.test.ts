@@ -3,12 +3,12 @@ import { deal } from "./deal";
 import { seededRng } from "./test-utils";
 
 describe("deal", () => {
-  it("splits the default 54-card deck evenly with no overlap", () => {
+  it("splits the default 52-card deck evenly with no overlap", () => {
     const [a, b] = deal(seededRng(1));
-    expect(a).toHaveLength(27);
-    expect(b).toHaveLength(27);
+    expect(a).toHaveLength(26);
+    expect(b).toHaveLength(26);
     const ids = new Set([...a, ...b].map((c) => `${c.rank}${c.suit}`));
-    expect(ids.size).toBe(54);
+    expect(ids.size).toBe(52);
   });
 
   it("splits a 32-card deck evenly when asked", () => {

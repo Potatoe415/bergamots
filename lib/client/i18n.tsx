@@ -203,6 +203,11 @@ const TRANSLATIONS = {
     bataillecorseWinnerBanner: "{player} gagne !",
     myReactionTimeLabel: "Ton temps : {s} s",
     deckSizeLabel: "Nombre de cartes",
+    botReflexQualityLabel: "Qualité des réflexes du bot",
+    botReflexSlow: "Lent",
+    botReflexNormal: "Normal",
+    botReflexFast: "Rapide",
+    botReflexVeryFast: "Très rapide",
   },
   en: {
     backToDashboard: "Back to dashboard",
@@ -393,6 +398,11 @@ const TRANSLATIONS = {
     bataillecorseWinnerBanner: "{player} wins!",
     myReactionTimeLabel: "Your time: {s} s",
     deckSizeLabel: "Card count",
+    botReflexQualityLabel: "Bot reflex quality",
+    botReflexSlow: "Slow",
+    botReflexNormal: "Normal",
+    botReflexFast: "Fast",
+    botReflexVeryFast: "Very fast",
   },
 } as const;
 

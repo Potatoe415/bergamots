@@ -50,9 +50,9 @@ function sanitizePresidentRoundsToPlay(val: number | undefined): number {
     : DEFAULT_PRESIDENT_ROUNDS_TO_PLAY;
 }
 
-function sanitizeBataillecorseDeckSize(val: number | undefined): 32 | 54 {
+function sanitizeBataillecorseDeckSize(val: number | undefined): 32 | 52 {
   return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(val ?? 0)
-    ? (val as 32 | 54)
+    ? (val as 32 | 52)
     : DEFAULT_BATAILLECORSE_DECK_SIZE;
 }
 

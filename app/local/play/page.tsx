@@ -41,9 +41,9 @@ function parseRoundsToPlay(raw: string | undefined): number {
   return (PRESIDENT_ROUNDS_OPTIONS as readonly number[]).includes(n) ? n : DEFAULT_PRESIDENT_ROUNDS_TO_PLAY;
 }
 
-function parseDeckSize(raw: string | undefined): 32 | 54 {
+function parseDeckSize(raw: string | undefined): 32 | 52 {
   const n = Number(raw);
-  return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(n) ? (n as 32 | 54) : DEFAULT_BATAILLECORSE_DECK_SIZE;
+  return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(n) ? (n as 32 | 52) : DEFAULT_BATAILLECORSE_DECK_SIZE;
 }
 
 export default async function LocalPlayPage({
