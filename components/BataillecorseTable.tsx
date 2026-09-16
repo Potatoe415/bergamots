@@ -10,6 +10,7 @@ import { CardBack, PlayingCard } from "./PlayingCard";
 import { EmojiButton } from "./EmojiButton";
 import { ReactionBubble } from "./ReactionBubble";
 import { GameInfoButton, HostRow, type HostControls } from "./GameHud";
+import { playedCardEnterStyle, type EnterDirection } from "./TrickStage";
 import { playerName } from "./gameTableHelpers";
 
 /** This table only ever renders a la Bataille Corse game: narrow the shared,
@@ -49,6 +50,23 @@ function useFlash(eventId: number | undefined): boolean {
   return visible;
 }
 
+/** Which side the pile's newest card should slide in from: whichever seat's
+ *  stock count just went down played it. Adjusted during render (React's
+ *  documented "reset state on prop change" pattern, same as Président's
+ *  `usePileDisplay`) so it is always correct by the time the new card's key
+ *  first mounts. */
+function usePileEnterDirection(view: PlayerView): EnterDirection {
+  const [dir, setDir] = useState<EnterDirection>("bottom");
+  const [track, setTrack] = useState({ pileLength: view.pile.length, myStockCount: view.myStockCount });
+  if (view.pile.length !== track.pileLength) {
+    if (view.pile.length > track.pileLength) {
+      setDir(view.myStockCount < track.myStockCount ? "bottom" : "top");
+    }
+    setTrack({ pileLength: view.pile.length, myStockCount: view.myStockCount });
+  }
+  return dir;
+}
+
 export function BataillecorseTable({
   gv,
   actions,
@@ -76,6 +94,7 @@ export function BataillecorseTable({
 
   const pileWinFlash = useFlash(view.lastPileWin?.id);
   const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
+  const pileEnterDirection = usePileEnterDirection(view);
   const myTurnToFlip = view.phase === "playing" && view.turn === mySeat && view.slapWindow === null;
   const owesTribute = view.tribute?.seat === mySeat;
 
@@ -113,7 +132,7 @@ export function BataillecorseTable({
         >
           ‹
         </Link>
-        <p className="rounded-full bg-[var(--surface-overlay)] px-4 py-1 text-sm font-black" data-id="bataillecorse-stock-tally">
+        <p className="rounded-full bg-[var(--surface-overlay)]/70 px-3 py-1 text-xs font-medium text-[var(--card-face)]/70" data-id="bataillecorse-stock-tally">
           {view.myStockCount} — {view.opponentStockCount}
         </p>
         <GameInfoButton label={t("gameInfo")} onClick={() => setPanelOpen(true)} />
@@ -138,72 +157,78 @@ export function BataillecorseTable({
           isTurn={view.turn === opponentSeat}
           reaction={reactions?.get(opponentSeat)}
           dataId="bataillecorse-opponent-seat"
-          className="absolute inset-x-0 top-20"
+          className="absolute inset-x-0 top-16"
         />
 
-        <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-3" data-id="bataillecorse-pile-area">
-          <PileFan cards={view.pile} />
-          {view.tribute && (
-            <p
-              className="max-w-[85%] rounded-full bg-[var(--surface-overlay)] px-4 py-1.5 text-center text-xs font-bold"
-              data-id="bataillecorse-tribute-banner"
+        <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-4" data-id="bataillecorse-center-block">
+          <PileStack cards={view.pile} enterFrom={pileEnterDirection} />
+
+          <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
+            {view.tribute && (
+              <p
+                className="max-w-[85%] rounded-full bg-[var(--surface-overlay)] px-4 py-1.5 text-center text-xs font-bold"
+                data-id="bataillecorse-tribute-banner"
+              >
+                {formatText(t("tributeOwed"), {
+                  player: owesTribute ? t("you") : playerName(gv, opponentSeat, locale),
+                  attempts: view.tribute.attemptsLeft,
+                })}
+              </p>
+            )}
+            {pileWinFlash && view.lastPileWin && (
+              <p className="rounded-full bg-[var(--accent-yellow)] px-4 py-1.5 text-center text-xs font-black text-[var(--surface)]" data-id="bataillecorse-pile-win-flash">
+                {formatText(t("pileWonBanner"), {
+                  player: view.lastPileWin.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
+                  count: view.lastPileWin.cardCount,
+                })}
+              </p>
+            )}
+            {falseSlapFlash && view.lastFalseSlap && (
+              <p className="rounded-full bg-[var(--accent-red)] px-4 py-1.5 text-center text-xs font-black text-[var(--card-face)]" data-id="bataillecorse-false-slap-flash">
+                {formatText(t("falseSlapBanner"), {
+                  player: view.lastFalseSlap.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
+                })}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-col items-center gap-3" data-id="bataillecorse-actions">
+            <button
+              type="button"
+              data-id="bataillecorse-flip-button"
+              onClick={tapFlip}
+              disabled={!myTurnToFlip || busy}
+              className="rounded-2xl bg-[var(--accent-cyan)] px-8 py-3 text-lg font-black text-[var(--surface)] shadow-lg disabled:opacity-40"
             >
-              {formatText(t("tributeOwed"), {
-                player: owesTribute ? t("you") : playerName(gv, opponentSeat, locale),
-                attempts: view.tribute.attemptsLeft,
-              })}
-            </p>
-          )}
-          {pileWinFlash && view.lastPileWin && (
-            <p className="rounded-full bg-[var(--accent-yellow)] px-4 py-1.5 text-center text-xs font-black text-[var(--surface)]" data-id="bataillecorse-pile-win-flash">
-              {formatText(t("pileWonBanner"), {
-                player: view.lastPileWin.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
-                count: view.lastPileWin.cardCount,
-              })}
-            </p>
-          )}
-          {falseSlapFlash && view.lastFalseSlap && (
-            <p className="rounded-full bg-[var(--accent-red)] px-4 py-1.5 text-center text-xs font-black text-[var(--card-face)]" data-id="bataillecorse-false-slap-flash">
-              {formatText(t("falseSlapBanner"), {
-                player: view.lastFalseSlap.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
-              })}
-            </p>
-          )}
-          <button
-            type="button"
-            data-id="bataillecorse-slap-button"
-            onClick={tapSlap}
-            disabled={view.phase !== "playing"}
-            className={[
-              "h-28 w-28 rounded-full text-lg font-black uppercase shadow-2xl transition-transform active:scale-90",
-              view.slapWindow ? "animate-pulse bg-[var(--accent-red)] text-[var(--card-face)] ring-4 ring-white" : "bg-[var(--accent-yellow)] text-[var(--surface)]",
-            ].join(" ")}
-          >
-            {t("slapPileButton")}
-          </button>
+              {t("flipCardButton")}
+            </button>
+            <button
+              type="button"
+              data-id="bataillecorse-slap-button"
+              onClick={tapSlap}
+              disabled={view.phase !== "playing"}
+              className={[
+                "h-24 w-24 rounded-full text-base font-black uppercase shadow-2xl transition-transform active:scale-90",
+                view.slapWindow ? "animate-pulse bg-[var(--accent-red)] text-[var(--card-face)] ring-4 ring-white" : "bg-[var(--accent-yellow)] text-[var(--surface)]",
+              ].join(" ")}
+            >
+              {t("slapPileButton")}
+            </button>
+          </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-24 flex flex-col items-center gap-3" data-id="bataillecorse-self-seat">
+        <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-1.5" data-id="bataillecorse-self-seat">
           {selfAvatar !== undefined && (
             <p className="text-xs font-bold uppercase text-[var(--card-face)]/80" data-id="bataillecorse-self-name">
               {playerName(gv, mySeat, locale)}
             </p>
           )}
           <div className="flex items-center gap-2">
-            <CardBack size="md" dataId="bataillecorse-my-stock" />
-            <span className="text-sm font-bold" data-id="bataillecorse-my-stock-count">
+            <CardBack size="sm" dataId="bataillecorse-my-stock" />
+            <span className="text-xs font-medium text-[var(--card-face)]/60" data-id="bataillecorse-my-stock-count">
               {formatText(t("stockCount"), { count: view.myStockCount })}
             </span>
           </div>
-          <button
-            type="button"
-            data-id="bataillecorse-flip-button"
-            onClick={tapFlip}
-            disabled={!myTurnToFlip || busy}
-            className="rounded-2xl bg-[var(--accent-cyan)] px-8 py-3 text-lg font-black text-[var(--surface)] shadow-lg disabled:opacity-40"
-          >
-            {t("flipCardButton")}
-          </button>
         </div>
 
         {actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
@@ -233,33 +258,61 @@ function SeatRow({
 }) {
   const { t } = useI18n();
   return (
-    <div className={`flex flex-col items-center gap-2 ${className}`} data-id={dataId}>
+    <div className={`flex flex-col items-center gap-1.5 ${className}`} data-id={dataId}>
       <p className={`text-xs font-bold uppercase ${isTurn ? "underline decoration-2" : ""}`}>{label}</p>
       <div className="flex items-center gap-2">
         <CardBack size="sm" />
-        <span className="text-sm font-bold">{formatText(t("stockCount"), { count: stockCount })}</span>
+        <span className="text-xs font-medium text-[var(--card-face)]/60">{formatText(t("stockCount"), { count: stockCount })}</span>
       </div>
       {reaction && <ReactionBubble reaction={reaction} size="md" dataId="bataillecorse-opponent-reaction" />}
     </div>
   );
 }
 
-function PileFan({ cards }: { cards: PlayerView["pile"] }) {
+/** Fixed left/right/tilt offsets for the 2 cards sitting behind the current
+ *  top card, so the pile reads as a scattered discard heap rather than a
+ *  neat stack - same idea as Président's `HISTORY_OFFSETS` (`PresidentTable.tsx`). */
+const HISTORY_OFFSETS = [
+  { x: 16, y: 8, rot: 9 },
+  { x: -15, y: 14, rot: -8 },
+];
+
+function cardKey(card: PlayerView["pile"][number]): string {
+  return `${card.rank}${card.suit}`;
+}
+
+/** The center pile: the current top card slides in from whichever seat just
+ *  played it (`played-card-enter`, same animation every other game's table
+ *  uses - see `TrickStage.tsx`), while the 1-2 cards behind it sit scattered
+ *  and dimmed, always at least 2 of them visible when available. */
+function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom: EnterDirection }) {
   const shown = cards.slice(-3);
   if (shown.length === 0) {
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
   return (
     <div className="relative h-24 w-16" data-id="bataillecorse-pile">
-      {shown.map((card, i) => (
-        <div
-          key={i}
-          className="absolute left-0 top-0"
-          style={{ transform: `translate(${i * 4}px, ${-i * 4}px) rotate(${(i - 1) * 6}deg)`, zIndex: i }}
-        >
-          <PlayingCard card={card} size="md" dataId={`bataillecorse-pile-card-${i}`} />
-        </div>
-      ))}
+      {shown.map((card, i) => {
+        const isTop = i === shown.length - 1;
+        const depthFromTop = shown.length - 1 - i;
+        const offset = HISTORY_OFFSETS[(depthFromTop - 1 + HISTORY_OFFSETS.length) % HISTORY_OFFSETS.length];
+        return (
+          <div
+            key={cardKey(card)}
+            className="absolute left-0 top-0"
+            style={isTop ? { zIndex: i } : { transform: `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rot}deg)`, zIndex: i }}
+            data-id={isTop ? "bataillecorse-pile-current" : `bataillecorse-pile-history-${depthFromTop}`}
+          >
+            {isTop ? (
+              <div className="played-card-enter will-change-transform" style={playedCardEnterStyle(enterFrom)}>
+                <PlayingCard card={card} size="md" dataId="bataillecorse-pile-current-card" />
+              </div>
+            ) : (
+              <PlayingCard card={card} size="md" dimmed dataId={`bataillecorse-pile-history-card-${depthFromTop}`} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
