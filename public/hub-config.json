@@ -140,6 +140,15 @@
     "sameTab": true
   },
   {
+    "id": "bataillecorse",
+    "title": "La Bataille Corse",
+    "kind": "external",
+    "category": "cartesdes",
+    "launch": "https://coinchapp.vercel.app/bataillecorse",
+    "thumbnail": "/games/coinchapp/assets/thumbnail-bataillecorse.jpg",
+    "sameTab": true
+  },
+  {
     "id": "gameboy-web",
     "title": "GameBoy Web",
     "kind": "external",
