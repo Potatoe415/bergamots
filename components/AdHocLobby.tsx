@@ -112,6 +112,7 @@ export function AdHocLobby() {
           connections: conns as Map<0 | 1, P2PConnection>,
           seed,
           botThinkMs: setup.botThinkMs,
+          deckSize: setup.bataillecorseDeckSize,
         });
       } else {
         setHostConfig({ mySeat: 0, roster, connections: conns, settings: toSettings(setup), seed });
@@ -154,6 +155,7 @@ export function AdHocLobby() {
             title={t("settings")}
             coincheFields={!isBouilla && !isPresident && !isBataillecorse}
             presidentFields={isPresident}
+            bataillecorseFields={isBataillecorse}
           />
         </div>
       )}

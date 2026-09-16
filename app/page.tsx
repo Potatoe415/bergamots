@@ -83,7 +83,7 @@ const TILES: GameTile[] = [
   { game: "coinche", href: "/coinche", image: "/splashscreen.jpg", titleKey: "gameTabCoinche", accent: "var(--accent-yellow)" },
   { game: "bouilla", href: "/bouilla", image: "/bouilla-full.jpg", titleKey: "gameTabBouilla", accent: "var(--accent-cyan)" },
   { game: "president", href: "/president", image: "/president-full.jpg", titleKey: "gameTabPresident", accent: "var(--accent-green)" },
-  { game: "bataillecorse", href: "/bataillecorse", titleKey: "gameTabBataillecorse", accent: "var(--accent-red)" },
+  { game: "bataillecorse", href: "/bataillecorse", image: "/bataillecorse-full.jpg", titleKey: "gameTabBataillecorse", accent: "var(--accent-red)" },
 ];
 
 /** App landing screen: a list of game tiles. Tapping one navigates to that
@@ -114,7 +114,7 @@ export default function Home() {
               key={tile.game}
               href={tile.href}
               data-id={`game-tile-${tile.game}`}
-              className={`relative aspect-square overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/15 transition active:scale-95 ${tile.image ? "" : "bg-felt"}`}
+              className={`relative aspect-[3/4] overflow-hidden rounded-2xl shadow-lg ring-1 ring-white/15 transition active:scale-95 ${tile.image ? "" : "bg-felt"}`}
               style={tile.image ? { backgroundImage: `url('${tile.image}')`, backgroundSize: "cover", backgroundPosition: "center top" } : undefined}
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />

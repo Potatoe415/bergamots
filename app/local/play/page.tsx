@@ -4,6 +4,8 @@ import { PresidentLocalGame } from "@/components/PresidentLocalGame";
 import { BataillecorseLocalGame } from "@/components/BataillecorseLocalGame";
 import { BOT_PUNCH_LEVELS, type BotPunch, type ScoringRules } from "@/lib/coinche";
 import {
+  BATAILLECORSE_DECK_SIZE_OPTIONS,
+  DEFAULT_BATAILLECORSE_DECK_SIZE,
   DEFAULT_BOT_THINK_MS,
   DEFAULT_PRESIDENT_ROUNDS_TO_PLAY,
   MAX_BOT_THINK_MS,
@@ -39,6 +41,11 @@ function parseRoundsToPlay(raw: string | undefined): number {
   return (PRESIDENT_ROUNDS_OPTIONS as readonly number[]).includes(n) ? n : DEFAULT_PRESIDENT_ROUNDS_TO_PLAY;
 }
 
+function parseDeckSize(raw: string | undefined): 32 | 54 {
+  const n = Number(raw);
+  return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(n) ? (n as 32 | 54) : DEFAULT_BATAILLECORSE_DECK_SIZE;
+}
+
 export default async function LocalPlayPage({
   searchParams,
 }: {
@@ -56,6 +63,7 @@ export default async function LocalPlayPage({
     botPunch?: string;
     botThinkMs?: string;
     roundsToPlay?: string;
+    deckSize?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -68,7 +76,7 @@ export default async function LocalPlayPage({
     return <PresidentLocalGame seed={seed} botThinkMs={botThinkMs} roundsToPlay={parseRoundsToPlay(sp.roundsToPlay)} />;
   }
   if (sp.game === "bataillecorse") {
-    return <BataillecorseLocalGame seed={seed} botThinkMs={botThinkMs} />;
+    return <BataillecorseLocalGame seed={seed} botThinkMs={botThinkMs} deckSize={parseDeckSize(sp.deckSize)} />;
   }
   const target = Number(sp.target);
   const targetPoints = TARGETS.includes(target) ? target : 1000;

@@ -176,10 +176,17 @@ a single continuous match, `state.phase` is just `"playing" | "finished"`.
   observedWindowId }` (`lib/server/game-dispatch.ts`), driven client-side by
   the host's dedicated `lib/client/useBataillecorseBotRunner.ts` (not the
   generic Coinche/Bouilla `useBotRunner.ts`, which only knows bid/play moves).
-- Settings: reuses the shared `stillThereTimeoutSec`/`botThinkMs` only (no
-  game-specific setting) - `botThinkMs` also scales the bot's simulated slap
-  reaction range (`simulateBotReactionMs`), so the same slider tunes both bot
-  pacing and reflex difficulty.
+- Settings: shared `stillThereTimeoutSec`/`botThinkMs` (`botThinkMs` also
+  scales the bot's simulated slap reaction range, `simulateBotReactionMs`, so
+  the same slider tunes both bot pacing and reflex difficulty) plus its own
+  `bataillecorseDeckSize: 32 | 54` (`DEFAULT_BATAILLECORSE_DECK_SIZE`/
+  `BATAILLECORSE_DECK_SIZE_OPTIONS`) - 32 is a piquet-style pack (7 and up, no
+  jokers), 54 is the full 52-card pack plus 2 jokers. `Rank` includes `"JOKER"`
+  (no natural suit - `PlayingCard.tsx` renders it as a 🃏 glyph instead of a
+  rank/suit corner index); a joker is a challenge rank like J/Q/K/A, worth 5
+  tribute attempts (`attemptsFor`), and otherwise needs no special-casing
+  anywhere else in the engine (tribute/slap logic only ever compares ranks
+  generically).
 
 ---
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import Link from "next/link";
 import type { PlayerView } from "@/lib/bataillecorse";
 import { formatText, useI18n } from "@/lib/client/i18n";
@@ -37,6 +37,9 @@ export interface BataillecorseActions {
  *  `lastBurn`/`lastSkip`, see docs/DECISIONS.md). */
 const FLASH_MS = 1800;
 
+/** How long the "your reaction time" readout stays on screen after a slap attempt. */
+const REACTION_READOUT_MS = 3000;
+
 function useFlash(eventId: number | undefined): boolean {
   const [visible, setVisible] = useState(false);
   const seenRef = useRef<number | undefined>(undefined);
@@ -67,6 +70,30 @@ function usePileEnterDirection(view: PlayerView): EnterDirection {
   return dir;
 }
 
+/** The instant (`performance.now()`) *this client* first saw the currently
+ *  open slap window, for measuring a genuine local reaction time - read only
+ *  from the `tapSlap` event handler, never during render (`.current` is a
+ *  ref, not state, and mutated inside an effect, not the render body).
+ *  Uses `useLayoutEffect` (not `useEffect`): a plain effect only runs after
+ *  the browser has already painted the new frame, which is late enough that
+ *  a fast human reacting to the very frame that opened the window could tap
+ *  before it fires, wrongly reading back as "no window seen yet" (reaction
+ *  measured as 0). A layout effect runs before paint, so by the time the
+ *  player can actually see the window, this ref is already set. */
+function useWindowSeenAtRef(slapWindow: PlayerView["slapWindow"]): RefObject<{ id: number; perfMs: number } | null> {
+  const ref = useRef<{ id: number; perfMs: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!slapWindow || ref.current?.id === slapWindow.id) return;
+    ref.current = { id: slapWindow.id, perfMs: performance.now() };
+  }, [slapWindow]);
+  return ref;
+}
+
+function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
+  const value = (ms / 1000).toFixed(3);
+  return locale === "fr" ? value.replace(".", ",") : value;
+}
+
 export function BataillecorseTable({
   gv,
   actions,
@@ -84,13 +111,15 @@ export function BataillecorseTable({
   const opponentSeat = mySeat === 0 ? 1 : 0;
   const [panelOpen, setPanelOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const windowSeenAtRef = useRef<{ id: number; perfMs: number } | null>(null);
+  const [myReactionMs, setMyReactionMs] = useState<number | null>(null);
+  const windowSeenAtRef = useWindowSeenAtRef(view.slapWindow);
+  const reactionHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!view.slapWindow) return;
-    if (windowSeenAtRef.current?.id === view.slapWindow.id) return;
-    windowSeenAtRef.current = { id: view.slapWindow.id, perfMs: performance.now() };
-  }, [view.slapWindow]);
+    return () => {
+      if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
+    };
+  }, []);
 
   const pileWinFlash = useFlash(view.lastPileWin?.id);
   const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
@@ -113,6 +142,11 @@ export function BataillecorseTable({
     const seen = view.slapWindow && windowSeenAtRef.current?.id === view.slapWindow.id ? windowSeenAtRef.current : null;
     const reactionMs = seen ? performance.now() - seen.perfMs : 0;
     const observedWindowId = view.slapWindow?.id ?? view.lastClosedSlapWindowId ?? null;
+
+    setMyReactionMs(reactionMs);
+    if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
+    reactionHideTimerRef.current = setTimeout(() => setMyReactionMs(null), REACTION_READOUT_MS);
+
     await actions.onSlap(reactionMs, observedWindowId);
   }
 
@@ -160,8 +194,24 @@ export function BataillecorseTable({
           className="absolute inset-x-0 top-16"
         />
 
-        <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-4" data-id="bataillecorse-center-block">
-          <PileStack cards={view.pile} enterFrom={pileEnterDirection} />
+        <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-3" data-id="bataillecorse-center-block">
+          {/* Tapping the pile itself is the slap gesture: a very light circle
+              around the cards is the whole hit target, not a separate button. */}
+          <button
+            type="button"
+            data-id="bataillecorse-slap-button"
+            onClick={tapSlap}
+            disabled={view.phase !== "playing"}
+            aria-label={t("slapPileButton")}
+            className={[
+              "flex h-60 w-60 items-center justify-center rounded-full transition-all active:scale-95",
+              view.slapWindow
+                ? "animate-pulse bg-[var(--accent-red)]/15 ring-4 ring-[var(--accent-red)]"
+                : "bg-white/5 ring-1 ring-white/20",
+            ].join(" ")}
+          >
+            <PileStack cards={view.pile} enterFrom={pileEnterDirection} />
+          </button>
 
           <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
             {view.tribute && (
@@ -191,30 +241,6 @@ export function BataillecorseTable({
               </p>
             )}
           </div>
-
-          <div className="flex flex-col items-center gap-3" data-id="bataillecorse-actions">
-            <button
-              type="button"
-              data-id="bataillecorse-flip-button"
-              onClick={tapFlip}
-              disabled={!myTurnToFlip || busy}
-              className="rounded-2xl bg-[var(--accent-cyan)] px-8 py-3 text-lg font-black text-[var(--surface)] shadow-lg disabled:opacity-40"
-            >
-              {t("flipCardButton")}
-            </button>
-            <button
-              type="button"
-              data-id="bataillecorse-slap-button"
-              onClick={tapSlap}
-              disabled={view.phase !== "playing"}
-              className={[
-                "h-24 w-24 rounded-full text-base font-black uppercase shadow-2xl transition-transform active:scale-90",
-                view.slapWindow ? "animate-pulse bg-[var(--accent-red)] text-[var(--card-face)] ring-4 ring-white" : "bg-[var(--accent-yellow)] text-[var(--surface)]",
-              ].join(" ")}
-            >
-              {t("slapPileButton")}
-            </button>
-          </div>
         </div>
 
         <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-1.5" data-id="bataillecorse-self-seat">
@@ -223,13 +249,22 @@ export function BataillecorseTable({
               {playerName(gv, mySeat, locale)}
             </p>
           )}
-          <div className="flex items-center gap-2">
-            <CardBack size="sm" dataId="bataillecorse-my-stock" />
-            <span className="text-xs font-medium text-[var(--card-face)]/60" data-id="bataillecorse-my-stock-count">
-              {formatText(t("stockCount"), { count: view.myStockCount })}
+          <StockPile
+            count={view.myStockCount}
+            dataId="bataillecorse-my-stock"
+            scale={1.5}
+            onClick={tapFlip}
+            disabled={!myTurnToFlip || busy}
+          />
+        </div>
+
+        {myReactionMs !== null && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-30 flex justify-center" data-id="bataillecorse-my-reaction-time">
+            <span className="rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg">
+              {formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) })}
             </span>
           </div>
-        </div>
+        )}
 
         {actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
       </div>
@@ -256,16 +291,72 @@ function SeatRow({
   dataId: string;
   className: string;
 }) {
-  const { t } = useI18n();
   return (
     <div className={`flex flex-col items-center gap-1.5 ${className}`} data-id={dataId}>
       <p className={`text-xs font-bold uppercase ${isTurn ? "underline decoration-2" : ""}`}>{label}</p>
-      <div className="flex items-center gap-2">
-        <CardBack size="sm" />
-        <span className="text-xs font-medium text-[var(--card-face)]/60">{formatText(t("stockCount"), { count: stockCount })}</span>
-      </div>
+      <StockPile count={stockCount} />
       {reaction && <ReactionBubble reaction={reaction} size="md" dataId="bataillecorse-opponent-reaction" />}
     </div>
+  );
+}
+
+/** `CardBack size="sm"` is 40x56px - the base `StockPile` renders at (before `scale`). */
+const STOCK_CARD_W = 40;
+const STOCK_CARD_H = 56;
+const STOCK_LAYER_STEP = 2;
+
+/** A face-down draw pile: layered card-backs (not just one) so it reads as an
+ *  actual stack rather than a single flat card, collapsing to a single card
+ *  once only one is left. The remaining count is written directly on the
+ *  front card's back (just the number, no unit) instead of a separate label.
+ *  `scale` grows the whole stack from its bottom-left anchor without
+ *  disturbing layout around it (the reserved box grows to match). When
+ *  `onClick` is given (own stock only - see `tapFlip`), tapping the pile
+ *  itself is how you play: there is no separate "Jouer" button. */
+function StockPile({
+  count,
+  dataId,
+  scale = 1,
+  onClick,
+  disabled,
+}: {
+  count: number;
+  dataId?: string;
+  scale?: number;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  const layers = count === 0 ? 0 : count === 1 ? 1 : 3;
+  const step = STOCK_LAYER_STEP * scale;
+  const width = STOCK_CARD_W * scale + step * Math.max(0, layers - 1);
+  const height = STOCK_CARD_H * scale + step * Math.max(0, layers - 1);
+  const Tag = onClick ? "button" : "div";
+  return (
+    <Tag
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      disabled={onClick ? disabled : undefined}
+      className={onClick ? "relative transition-transform active:scale-95 disabled:opacity-50" : "relative"}
+      style={{ width, height }}
+      data-id={dataId}
+    >
+      {Array.from({ length: layers }, (_, i) => {
+        const isFront = i === layers - 1;
+        return (
+          <div key={i} className="absolute origin-bottom-left" style={{ left: i * step, bottom: i * step, transform: `scale(${scale})` }}>
+            <CardBack size="sm" />
+            {isFront && (
+              <span
+                className="absolute inset-0 flex items-center justify-center text-lg font-black text-white/60 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                data-id={dataId ? `${dataId}-count` : undefined}
+              >
+                {count}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </Tag>
   );
 }
 
@@ -291,7 +382,7 @@ function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom:
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
   return (
-    <div className="relative h-24 w-16" data-id="bataillecorse-pile">
+    <div className="relative h-24 w-16" data-id="bataillecorse-pile" style={{ transform: "scale(1.5)" }}>
       {shown.map((card, i) => {
         const isTop = i === shown.length - 1;
         const depthFromTop = shown.length - 1 - i;
@@ -308,7 +399,13 @@ function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom:
                 <PlayingCard card={card} size="md" dataId="bataillecorse-pile-current-card" />
               </div>
             ) : (
-              <PlayingCard card={card} size="md" dimmed dataId={`bataillecorse-pile-history-card-${depthFromTop}`} />
+              <PlayingCard
+                card={card}
+                size="md"
+                dimmed
+                showRightIndex
+                dataId={`bataillecorse-pile-history-card-${depthFromTop}`}
+              />
             )}
           </div>
         );

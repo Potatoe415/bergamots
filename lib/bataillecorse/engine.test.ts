@@ -3,12 +3,18 @@ import { attemptSlap, createInitialState, resolveStaleSlapWindow, submitFlip, SL
 import { card, seededRng, stateWith } from "./test-utils";
 
 describe("createInitialState", () => {
-  it("deals 26 cards to each seat and starts seat 0's turn", () => {
+  it("deals 27 cards to each seat (default 54-card deck) and starts seat 0's turn", () => {
     const state = createInitialState(seededRng(1));
-    expect(state.stocks[0]).toHaveLength(26);
-    expect(state.stocks[1]).toHaveLength(26);
+    expect(state.stocks[0]).toHaveLength(27);
+    expect(state.stocks[1]).toHaveLength(27);
     expect(state.turn).toBe(0);
     expect(state.phase).toBe("playing");
+  });
+
+  it("deals 16 cards to each seat for a 32-card deck", () => {
+    const state = createInitialState(seededRng(1), 32);
+    expect(state.stocks[0]).toHaveLength(16);
+    expect(state.stocks[1]).toHaveLength(16);
   });
 });
 

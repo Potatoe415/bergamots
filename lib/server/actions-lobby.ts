@@ -6,7 +6,9 @@ import { beginNextRound as beginNextPresidentRound, createInitialState as create
 import { createInitialState as createInitialBataillecorseState } from "@/lib/bataillecorse";
 import { getServiceClient, getUserId } from "@/lib/supabase/server";
 import {
+  BATAILLECORSE_DECK_SIZE_OPTIONS,
   BOT_THINK_MS_STEP,
+  DEFAULT_BATAILLECORSE_DECK_SIZE,
   DEFAULT_BOT_THINK_MS,
   DEFAULT_PRESIDENT_ROUNDS_TO_PLAY,
   MAX_BOT_THINK_MS,
@@ -48,6 +50,12 @@ function sanitizePresidentRoundsToPlay(val: number | undefined): number {
     : DEFAULT_PRESIDENT_ROUNDS_TO_PLAY;
 }
 
+function sanitizeBataillecorseDeckSize(val: number | undefined): 32 | 54 {
+  return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(val ?? 0)
+    ? (val as 32 | 54)
+    : DEFAULT_BATAILLECORSE_DECK_SIZE;
+}
+
 /** Clamps to the slider's range and snaps to its step, so a tampered/stale value
  *  can never push the ISMCTS budget (Coinche) or bot pacing (Bouilla) out of bounds. */
 function sanitizeBotThinkMs(val: number | undefined): number {
@@ -79,10 +87,17 @@ function sanitizeCoincheSettings(input: Partial<GameSettings>): GameSettings {
  *  the idle-turn timer and bot thinking time, both shared with Coinche. Président
  *  additionally has its own rounds-to-play setting. */
 function sanitizeSettings(gameType: GameType, input: Partial<GameSettings>): GameSettings {
-  if (gameType === "bouilla" || gameType === "bataillecorse") {
+  if (gameType === "bouilla") {
     return {
       stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
       botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+    };
+  }
+  if (gameType === "bataillecorse") {
+    return {
+      stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
+      botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+      bataillecorseDeckSize: sanitizeBataillecorseDeckSize(input.bataillecorseDeckSize),
     };
   }
   if (gameType === "president") {
@@ -354,7 +369,9 @@ export async function swapSeats(gameId: string, seatA: number, seatB: number): P
 }
 
 function startInitialState(gameType: GameType, settings: GameSettings): AnyGameState {
-  if (gameType === "bataillecorse") return createInitialBataillecorseState();
+  if (gameType === "bataillecorse") {
+    return createInitialBataillecorseState(Math.random, settings.bataillecorseDeckSize ?? DEFAULT_BATAILLECORSE_DECK_SIZE);
+  }
   if (gameType === "bouilla") return beginNextRound(createInitialBouillaState());
   if (gameType === "president") {
     return beginNextPresidentRound(createInitialPresidentState(settings.presidentRoundsToPlay ?? DEFAULT_PRESIDENT_ROUNDS_TO_PLAY));

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   attemptSlap,
   createInitialState,
@@ -10,6 +10,7 @@ import {
   simulateBotReactionMs,
   submitFlip,
   SLAP_GRACE_MS,
+  type DeckSize,
   type GameState,
   type Seat,
 } from "@/lib/bataillecorse";
@@ -18,7 +19,7 @@ import type { GameView } from "@/lib/server/view";
 import { seededRng } from "./cardGameDriver";
 import type { P2PConnection } from "./p2p/connection";
 import { buildBataillecorseSeatView, parseClientMessage, type ClientMessage, type RosterEntry } from "./p2p/protocol";
-import { DEFAULT_BOT_THINK_MS } from "@/lib/supabase/types";
+import { DEFAULT_BATAILLECORSE_DECK_SIZE, DEFAULT_BOT_THINK_MS, type GameSettings } from "@/lib/supabase/types";
 
 /** Small buffer past `SLAP_GRACE_MS`, same reasoning as the local hook. */
 const GRACE_BUFFER_MS = 80;
@@ -31,6 +32,7 @@ export interface P2PBataillecorseHostConfig {
   connections: Map<Seat, P2PConnection>;
   seed: number;
   botThinkMs?: number;
+  deckSize?: DeckSize;
 }
 
 /**
@@ -42,7 +44,9 @@ export interface P2PBataillecorseHostConfig {
 export function useP2PBataillecorseHost(config: P2PBataillecorseHostConfig): { gv: GameView; actions: BataillecorseActions } {
   const { mySeat, seed } = config;
   const botThinkMs = config.botThinkMs ?? DEFAULT_BOT_THINK_MS;
-  const [state, setState] = useState<GameState>(() => createInitialState(seededRng(seed)));
+  const deckSize = config.deckSize ?? DEFAULT_BATAILLECORSE_DECK_SIZE;
+  const settings: GameSettings = useMemo(() => ({ botThinkMs, bataillecorseDeckSize: deckSize }), [botThinkMs, deckSize]);
+  const [state, setState] = useState<GameState>(() => createInitialState(seededRng(seed), deckSize));
   const stateRef = useRef(state);
   const [roster, setRoster] = useState<RosterEntry[]>(() => config.roster.map((entry) => ({ ...entry })));
   const rosterRef = useRef<RosterEntry[]>(roster);
@@ -59,11 +63,11 @@ export function useP2PBataillecorseHost(config: P2PBataillecorseHostConfig): { g
     (next: GameState) => {
       for (const [seat, conn] of connsRef.current) {
         if (rosterRef.current[seat]?.isBot) continue;
-        const view = buildBataillecorseSeatView(next, seat as Seat, rosterRef.current, {}, mySeat);
+        const view = buildBataillecorseSeatView(next, seat as Seat, rosterRef.current, settings, mySeat);
         conn.send(JSON.stringify({ t: "view", view }));
       }
     },
-    [mySeat],
+    [mySeat, settings],
   );
 
   const commit = useCallback(
@@ -152,10 +156,10 @@ export function useP2PBataillecorseHost(config: P2PBataillecorseHostConfig): { g
         else applyRemote(msg, seat as Seat);
       });
       conn.onClose(() => demoteSeatToBot(seat as Seat));
-      const view = buildBataillecorseSeatView(stateRef.current, seat as Seat, rosterRef.current, {}, mySeat);
+      const view = buildBataillecorseSeatView(stateRef.current, seat as Seat, rosterRef.current, settings, mySeat);
       conn.send(JSON.stringify({ t: "view", view }));
     }
-  }, [applyRemote, applyHello, demoteSeatToBot, mySeat]);
+  }, [applyRemote, applyHello, demoteSeatToBot, mySeat, settings]);
 
   const actions: BataillecorseActions = {
     onFlip: () => {
@@ -168,6 +172,6 @@ export function useP2PBataillecorseHost(config: P2PBataillecorseHostConfig): { g
     },
   };
 
-  const gv = buildBataillecorseSeatView(state, mySeat, roster, {}, mySeat);
+  const gv = buildBataillecorseSeatView(state, mySeat, roster, settings, mySeat);
   return { gv, actions };
 }

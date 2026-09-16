@@ -1,14 +1,15 @@
 import type { Rng } from "@/lib/cards";
+import { DEFAULT_DECK_SIZE } from "./cards";
 import { deal } from "./deal";
 import { detectSlapPattern } from "./pattern";
 import { resolveTributeEffect } from "./tribute";
-import { SLAP_GRACE_MS, type Card, type GameState, type Seat, type SlapWindow } from "./types";
+import { SLAP_GRACE_MS, type Card, type DeckSize, type GameState, type Seat, type SlapWindow } from "./types";
 
 export { SLAP_GRACE_MS };
 export { otherSeat } from "./tribute";
 
-export function createInitialState(rng: Rng = Math.random): GameState {
-  const [a, b] = deal(rng);
+export function createInitialState(rng: Rng = Math.random, deckSize: DeckSize = DEFAULT_DECK_SIZE): GameState {
+  const [a, b] = deal(rng, deckSize);
   return {
     phase: "playing",
     turn: 0,

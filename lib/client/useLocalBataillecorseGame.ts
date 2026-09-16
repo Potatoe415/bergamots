@@ -10,9 +10,11 @@ import {
   simulateBotReactionMs,
   submitFlip,
   SLAP_GRACE_MS,
+  type DeckSize,
   type GameState,
 } from "@/lib/bataillecorse";
 import type { BataillecorseActions, BataillecorseGameView } from "@/components/BataillecorseTable";
+import { DEFAULT_BATAILLECORSE_DECK_SIZE } from "@/lib/supabase/types";
 import { useI18n } from "./i18n";
 import { seededRng } from "./cardGameDriver";
 import { LOCAL_BATAILLECORSE_STORAGE_KEY, loadPersistedGame, savePersistedGame } from "./localGamePersistence";
@@ -26,8 +28,8 @@ const BOT_FLIP_PACING_MS = 500;
  *  never races the server-equivalent timing exactly on the edge. */
 const GRACE_BUFFER_MS = 80;
 
-function startState(seed: number): GameState {
-  return createInitialState(seededRng(seed));
+function startState(seed: number, deckSize: DeckSize): GameState {
+  return createInitialState(seededRng(seed), deckSize);
 }
 
 /** Fully offline 1v1 la Bataille Corse: you are seat 0, the bot is seat 1.
@@ -38,9 +40,10 @@ function startState(seed: number): GameState {
 export function useLocalBataillecorseGame(
   seed: number,
   botThinkMs: number,
+  deckSize: DeckSize = DEFAULT_BATAILLECORSE_DECK_SIZE,
 ): { gv: BataillecorseGameView; actions: BataillecorseActions } {
   const { t } = useI18n();
-  const [state, setState] = useState<GameState>(() => startState(seed));
+  const [state, setState] = useState<GameState>(() => startState(seed, deckSize));
   const stateRef = useRef(state);
 
   const commit = useCallback((next: GameState) => {
@@ -111,7 +114,7 @@ export function useLocalBataillecorseGame(
     roomCode: "LOCAL",
     gameType: "bataillecorse",
     status: state.phase === "finished" ? "finished" : "playing",
-    settings: { botThinkMs },
+    settings: { botThinkMs, bataillecorseDeckSize: deckSize },
     version: 0,
     players: [
       { seat: 0, displayName: t("defaultYouName"), isBot: false, team: "A", connected: true },

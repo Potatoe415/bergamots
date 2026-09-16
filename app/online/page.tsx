@@ -142,8 +142,14 @@ function OnlinePageInner() {
                 displayName: name,
                 locale,
                 gameType,
-                settings: isBouilla || isBataillecorse
+                settings: isBouilla
                   ? { stillThereTimeoutSec: setup.stillThereTimeoutSec, botThinkMs: setup.botThinkMs }
+                  : isBataillecorse
+                  ? {
+                      stillThereTimeoutSec: setup.stillThereTimeoutSec,
+                      botThinkMs: setup.botThinkMs,
+                      bataillecorseDeckSize: setup.bataillecorseDeckSize,
+                    }
                   : isPresident
                   ? {
                       presidentRoundsToPlay: setup.roundsToPlay,
@@ -221,6 +227,7 @@ function OnlinePageInner() {
         title={t("gameSettings")}
         coincheFields={!isBouilla && !isPresident && !isBataillecorse}
         presidentFields={isPresident}
+        bataillecorseFields={isBataillecorse}
         showStillThereTimeout
       />
     </main>

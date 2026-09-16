@@ -3,7 +3,9 @@
 import { useI18n } from "@/lib/client/i18n";
 import { BOT_PUNCH_LEVELS, type BotPunch } from "@/lib/coinche";
 import {
+  BATAILLECORSE_DECK_SIZE_OPTIONS,
   BOT_THINK_MS_STEP,
+  DEFAULT_BATAILLECORSE_DECK_SIZE,
   DEFAULT_BOT_THINK_MS,
   DEFAULT_PRESIDENT_ROUNDS_TO_PLAY,
   MAX_BOT_THINK_MS,
@@ -33,6 +35,8 @@ export interface GameSetupValues {
   botThinkMs: number;
   /** Président-only: number of rounds in the match (see `GameSettings.presidentRoundsToPlay`). */
   roundsToPlay: number;
+  /** La Bataille Corse-only: 32 or 54 cards (see `GameSettings.bataillecorseDeckSize`). */
+  bataillecorseDeckSize: 32 | 54;
 }
 
 export const DEFAULT_GAME_SETUP: GameSetupValues = {
@@ -48,6 +52,7 @@ export const DEFAULT_GAME_SETUP: GameSetupValues = {
   stillThereTimeoutSec: 15,
   botThinkMs: DEFAULT_BOT_THINK_MS,
   roundsToPlay: DEFAULT_PRESIDENT_ROUNDS_TO_PLAY,
+  bataillecorseDeckSize: DEFAULT_BATAILLECORSE_DECK_SIZE,
 };
 
 const TARGETS = [500, 1000, 1500, 2000];
@@ -94,6 +99,9 @@ interface Props {
   /** Whether to show the Président-only field (rounds-to-play slider).
    *  Defaults to false. */
   presidentFields?: boolean;
+  /** Whether to show the la Bataille Corse-only field (32/54 card deck size).
+   *  Defaults to false. */
+  bataillecorseFields?: boolean;
   /** Whether to show the shared idle-turn timer field. Online-only: local and
    *  ad-hoc games never run the server-side idle timer, so it would be dead UI
    *  there. Defaults to false. */
@@ -107,6 +115,7 @@ export function GameSettingsPanel({
   title,
   coincheFields = true,
   presidentFields = false,
+  bataillecorseFields = false,
   showStillThereTimeout = false,
 }: Props) {
   const { t } = useI18n();
@@ -169,6 +178,29 @@ export function GameSettingsPanel({
             <span>{t("botThinkSlow")}</span>
           </div>
         </div>
+        {bataillecorseFields && (
+          <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-deck-size-row`}>
+            <span className="text-[var(--card-face)]/75">{t("deckSizeLabel")}</span>
+            <div className="flex gap-2">
+              {BATAILLECORSE_DECK_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  data-id={`${idPrefix}-deck-size-${size}`}
+                  onClick={() => set("bataillecorseDeckSize", size)}
+                  className={[
+                    "flex-1 rounded-lg px-3 py-2 font-bold",
+                    values.bataillecorseDeckSize === size
+                      ? "bg-[var(--accent-yellow)] text-[var(--surface)]"
+                      : "bg-[rgba(255,250,242,0.12)] text-[var(--card-face)]/70",
+                  ].join(" ")}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {showStillThereTimeout && (
           <div className="flex flex-col gap-1.5 text-sm" data-id={`${idPrefix}-still-there-timeout-row`}>
             <div className="flex items-center justify-between">

@@ -47,7 +47,7 @@ function LocalSetupPageInner() {
       return;
     }
     if (isBataillecorse) {
-      router.push(`/local/play?game=bataillecorse&botThinkMs=${setup.botThinkMs}`);
+      router.push(`/local/play?game=bataillecorse&botThinkMs=${setup.botThinkMs}&deckSize=${setup.bataillecorseDeckSize}`);
       return;
     }
     const params = new URLSearchParams({
@@ -114,6 +114,7 @@ function LocalSetupPageInner() {
         title={t("settings")}
         coincheFields={!isBouilla && !isPresident && !isBataillecorse}
         presidentFields={isPresident}
+        bataillecorseFields={isBataillecorse}
       />
     </main>
   );

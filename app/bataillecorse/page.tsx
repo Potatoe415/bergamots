@@ -16,8 +16,13 @@ export default function BataillecorsePage() {
 
   return (
     <main
-      className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-between overflow-hidden bg-felt"
+      className="relative mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-between overflow-hidden"
       data-id="bataillecorse-home-screen"
+      style={{
+        backgroundImage: "url('/bataillecorse-full.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+      }}
     >
       <HomeTopBar />
 
