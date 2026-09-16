@@ -5,12 +5,24 @@ import Link from "next/link";
 import { useI18n } from "@/lib/client/i18n";
 import { parseReactionPayload, type ReactionPick } from "@/lib/client/reactions";
 import { useBotRunner } from "@/lib/client/useBotRunner";
+import { useBataillecorseBotRunner } from "@/lib/client/useBataillecorseBotRunner";
 import { useGameView } from "@/lib/client/useGameView";
 import { useReactions } from "@/lib/client/useReactions";
 import { useStillThereTimer } from "@/lib/client/useStillThereTimer";
 import { useHubPrefillAvatar } from "@/lib/client/hubName";
 import { ensureAnonAuth } from "@/lib/client/auth";
-import { becomeHost, nextDeal, pass, placeBid, playCard, playCombo, readyForNextRound, submitExchangeReturn } from "@/lib/server/actions-game";
+import {
+  attemptSlap,
+  becomeHost,
+  flipCard,
+  nextDeal,
+  pass,
+  placeBid,
+  playCard,
+  playCombo,
+  readyForNextRound,
+  submitExchangeReturn,
+} from "@/lib/server/actions-game";
 import { joinBotSeat, rematchGame } from "@/lib/server/actions-lobby";
 import { BotDebugOverlay } from "./BotDebugOverlay";
 import { BotSeatPicker } from "./BotSeatPicker";
@@ -22,6 +34,7 @@ import { Lobby } from "./Lobby";
 import { GameTable, type GameActions, type CoincheGameView } from "./GameTable";
 import { BouillaTable, type BouillaActions, type BouillaGameView } from "./BouillaTable";
 import { PresidentTable, type PresidentActions, type PresidentGameView } from "./PresidentTable";
+import { BataillecorseTable, type BataillecorseActions, type BataillecorseGameView } from "./BataillecorseTable";
 import type { BidPayload } from "./BiddingPanel";
 import { StillThereModal } from "./StillThereModal";
 
@@ -32,6 +45,7 @@ export function GameRoom({ gameId }: { gameId: string }) {
   const { view, loading, error, refetch, notify, forceResync } = useGameView(gameId);
   const [debugMode, setDebugMode] = useState(false);
   const botDebugLog = useBotRunner(gameId, view, refetch, notify, debugMode);
+  useBataillecorseBotRunner(gameId, view, refetch, notify);
   const stillThere = useStillThereTimer(view, refetch);
   const { reactions, addReaction } = useReactions();
   const selfAvatar = useHubPrefillAvatar();
@@ -156,6 +170,23 @@ export function GameRoom({ gameId }: { gameId: string }) {
     onRematch,
   };
 
+  const bataillecorseActions: BataillecorseActions = {
+    onFlip: async () => {
+      await flipCard(gameId);
+      notify();
+      await refetch();
+    },
+    onSlap: async (reactionMs: number, observedWindowId: number | null) => {
+      await attemptSlap(gameId, reactionMs, observedWindowId);
+      notify();
+      await refetch();
+    },
+    onBecomeHost,
+    onForceSync: forceResync,
+    onSendReaction,
+    onRematch,
+  };
+
   if (loading) {
     return <Centered>{t("loading")}</Centered>;
   }
@@ -207,6 +238,8 @@ export function GameRoom({ gameId }: { gameId: string }) {
         <BouillaTable gv={view as BouillaGameView} actions={bouillaActions} reactions={reactions} selfAvatar={selfAvatar} />
       ) : view.gameType === "president" ? (
         <PresidentTable gv={view as PresidentGameView} actions={presidentActions} reactions={reactions} selfAvatar={selfAvatar} />
+      ) : view.gameType === "bataillecorse" ? (
+        <BataillecorseTable gv={view as BataillecorseGameView} actions={bataillecorseActions} reactions={reactions} selfAvatar={selfAvatar} />
       ) : (
         <GameTable gv={view as CoincheGameView} actions={coincheActions} reactions={reactions} selfAvatar={selfAvatar} />
       )}

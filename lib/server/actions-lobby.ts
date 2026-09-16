@@ -3,6 +3,7 @@
 import { beginNextDeal, BOT_PUNCH_LEVELS, createInitialState } from "@/lib/coinche";
 import { beginNextRound, createInitialState as createInitialBouillaState } from "@/lib/bouilla";
 import { beginNextRound as beginNextPresidentRound, createInitialState as createInitialPresidentState } from "@/lib/president";
+import { createInitialState as createInitialBataillecorseState } from "@/lib/bataillecorse";
 import { getServiceClient, getUserId } from "@/lib/supabase/server";
 import {
   BOT_THINK_MS_STEP,
@@ -12,6 +13,7 @@ import {
   MIN_BOT_THINK_MS,
   PRESIDENT_ROUNDS_OPTIONS,
   STILL_THERE_TIMEOUT_OPTIONS,
+  seatCountFor,
   type AnyGameState,
   type GameRow,
   type GameSettings,
@@ -77,7 +79,7 @@ function sanitizeCoincheSettings(input: Partial<GameSettings>): GameSettings {
  *  the idle-turn timer and bot thinking time, both shared with Coinche. Président
  *  additionally has its own rounds-to-play setting. */
 function sanitizeSettings(gameType: GameType, input: Partial<GameSettings>): GameSettings {
-  if (gameType === "bouilla") {
+  if (gameType === "bouilla" || gameType === "bataillecorse") {
     return {
       stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
       botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
@@ -94,7 +96,7 @@ function sanitizeSettings(gameType: GameType, input: Partial<GameSettings>): Gam
 }
 
 function isGameType(value: unknown): value is GameType {
-  return value === "coinche" || value === "bouilla" || value === "president";
+  return value === "coinche" || value === "bouilla" || value === "president" || value === "bataillecorse";
 }
 
 function cleanName(name: string, fallback: string): string {
@@ -166,7 +168,8 @@ export async function createGame(input: {
 /** Pick a seat for a joining human: a free seat first, otherwise a bot to replace. */
 function pickJoinSeat(loaded: LoadedGame): { seat: number; mode: "insert" | "replace" } | null {
   const taken = new Set(loaded.players.map((p) => p.seat));
-  const freeSeat = [0, 1, 2, 3].find((s) => !taken.has(s));
+  const seats = Array.from({ length: seatCountFor(loaded.game.game_type) }, (_, s) => s);
+  const freeSeat = seats.find((s) => !taken.has(s));
   if (freeSeat !== undefined) return { seat: freeSeat, mode: "insert" };
   const botSeat = loaded.players
     .filter((p) => p.is_bot)
@@ -294,7 +297,8 @@ export async function fillWithBots(gameId: string): Promise<void> {
   const taken = new Set(loaded.players.map((p) => p.seat));
   const supabase = getServiceClient();
   const botNames = ["Adam", "Jane", "Lea", "Max"];
-  const rows = [0, 1, 2, 3]
+  const seats = Array.from({ length: seatCountFor(loaded.game.game_type) }, (_, s) => s);
+  const rows = seats
     .filter((s) => !taken.has(s))
     .map((seat) => ({
       game_id: gameId,
@@ -350,6 +354,7 @@ export async function swapSeats(gameId: string, seatA: number, seatB: number): P
 }
 
 function startInitialState(gameType: GameType, settings: GameSettings): AnyGameState {
+  if (gameType === "bataillecorse") return createInitialBataillecorseState();
   if (gameType === "bouilla") return beginNextRound(createInitialBouillaState());
   if (gameType === "president") {
     return beginNextPresidentRound(createInitialPresidentState(settings.presidentRoundsToPlay ?? DEFAULT_PRESIDENT_ROUNDS_TO_PLAY));
@@ -396,7 +401,7 @@ export async function startGame(gameId: string, randomize = false): Promise<void
   await requireUser();
   const loaded = await loadGame(gameId);
   if (loaded.game.status !== "lobby") throw new Error("already_started");
-  if (loaded.players.length < 4) throw new Error("need_four_players");
+  if (loaded.players.length < seatCountFor(loaded.game.game_type)) throw new Error("not_enough_players");
 
   if (randomize) await shuffleSeatsInPlace(gameId, loaded.players);
   const state = startInitialState(loaded.game.game_type, loaded.game.settings);

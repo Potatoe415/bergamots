@@ -11,6 +11,7 @@ import type { P2PConnection } from "@/lib/client/p2p/connection";
 import type { P2PHostConfig } from "@/lib/client/useP2PHost";
 import type { P2PBouillaHostConfig } from "@/lib/client/useP2PBouillaHost";
 import type { P2PPresidentHostConfig } from "@/lib/client/useP2PPresidentHost";
+import type { P2PBataillecorseHostConfig } from "@/lib/client/useP2PBataillecorseHost";
 import type { RosterEntry } from "@/lib/client/p2p/protocol";
 import {
   GameSettingsPanel,
@@ -22,6 +23,7 @@ import { JoinFlow } from "@/components/p2p/JoinFlow";
 import { P2PHostGame } from "@/components/p2p/P2PHostGame";
 import { P2PBouillaHostGame } from "@/components/p2p/P2PBouillaHostGame";
 import { P2PPresidentHostGame } from "@/components/p2p/P2PPresidentHostGame";
+import { P2PBataillecorseHostGame } from "@/components/p2p/P2PBataillecorseHostGame";
 import { P2PClientGame } from "@/components/p2p/P2PClientGame";
 
 const BOT_NAMES = ["", "Adam", "Jane", "Léa"];
@@ -43,9 +45,15 @@ function toSettings(v: GameSetupValues): GameSettings {
   };
 }
 
-function buildRoster(hostName: string, humanCount: number, youName: string, playerNameTemplate: string): RosterEntry[] {
+function buildRoster(
+  hostName: string,
+  humanCount: number,
+  youName: string,
+  playerNameTemplate: string,
+  maxSeat: number = 3,
+): RosterEntry[] {
   const roster: RosterEntry[] = [{ seat: 0, displayName: hostName || youName, isBot: false }];
-  for (let seat = 1; seat <= 3; seat++) {
+  for (let seat = 1; seat <= maxSeat; seat++) {
     const human = seat <= humanCount;
     roster.push({
       seat: seat as Seat,
@@ -62,6 +70,8 @@ export function AdHocLobby() {
   const game = searchParams.get("game");
   const isBouilla = game === "bouilla";
   const isPresident = game === "president";
+  const isBataillecorse = game === "bataillecorse";
+  const maxSeat = isBataillecorse ? 1 : 3;
   const [phase, setPhase] = useState<Phase>("choose");
   const [name, setName] = useHubPrefillName();
   const [humanCount, setHumanCount] = useState(1);
@@ -70,16 +80,20 @@ export function AdHocLobby() {
   const [hostConfig, setHostConfig] = useState<P2PHostConfig | null>(null);
   const [bouillaHostConfig, setBouillaHostConfig] = useState<P2PBouillaHostConfig | null>(null);
   const [presidentHostConfig, setPresidentHostConfig] = useState<P2PPresidentHostConfig | null>(null);
+  const [bataillecorseHostConfig, setBataillecorseHostConfig] = useState<P2PBataillecorseHostConfig | null>(null);
   const [client, setClient] = useState<{ conn: P2PConnection; name: string } | null>(null);
 
+  // La Bataille Corse is 2-player only: there is exactly one opponent seat to
+  // invite, no picker needed.
+  const effectiveHumanCount = isBataillecorse ? 1 : humanCount;
   const humanSeats = useMemo(
-    () => Array.from({ length: humanCount }, (_, i) => (i + 1) as Seat),
-    [humanCount],
+    () => Array.from({ length: effectiveHumanCount }, (_, i) => (i + 1) as Seat),
+    [effectiveHumanCount],
   );
 
   const onHostReady = useCallback(
     (conns: Map<Seat, P2PConnection>) => {
-      const roster = buildRoster(name, humanCount, t("defaultYouName"), t("defaultPlayerName"));
+      const roster = buildRoster(name, effectiveHumanCount, t("defaultYouName"), t("defaultPlayerName"), maxSeat);
       if (isBouilla) {
         setBouillaHostConfig({ mySeat: 0, roster, connections: conns, seed, botThinkMs: setup.botThinkMs });
       } else if (isPresident) {
@@ -91,21 +105,30 @@ export function AdHocLobby() {
           roundsToPlay: setup.roundsToPlay,
           botThinkMs: setup.botThinkMs,
         });
+      } else if (isBataillecorse) {
+        setBataillecorseHostConfig({
+          mySeat: 0,
+          roster,
+          connections: conns as Map<0 | 1, P2PConnection>,
+          seed,
+          botThinkMs: setup.botThinkMs,
+        });
       } else {
         setHostConfig({ mySeat: 0, roster, connections: conns, settings: toSettings(setup), seed });
       }
       setPhase("host-play");
     },
-    [name, humanCount, setup, seed, isBouilla, isPresident, t],
+    [name, effectiveHumanCount, maxSeat, setup, seed, isBouilla, isPresident, isBataillecorse, t],
   );
 
   if (phase === "host-play" && hostConfig) return <P2PHostGame config={hostConfig} />;
   if (phase === "host-play" && bouillaHostConfig) return <P2PBouillaHostGame config={bouillaHostConfig} />;
   if (phase === "host-play" && presidentHostConfig) return <P2PPresidentHostGame config={presidentHostConfig} />;
+  if (phase === "host-play" && bataillecorseHostConfig) return <P2PBataillecorseHostGame config={bataillecorseHostConfig} />;
   if (phase === "join-play" && client) return <P2PClientGame conn={client.conn} name={client.name} />;
 
   return (
-    <Shell isBouilla={isBouilla} isPresident={isPresident}>
+    <Shell isBouilla={isBouilla} isPresident={isPresident} isBataillecorse={isBataillecorse}>
       {phase === "choose" && <ChooseMode t={t} setPhase={setPhase} />}
       {phase === "host-setup" && (
         <div className="flex flex-col gap-4" data-id="adhoc-host-setup">
@@ -116,20 +139,20 @@ export function AdHocLobby() {
             placeholder={t("pseudo")}
             className="rounded-lg bg-white/10 px-4 py-3 text-white placeholder-white/50"
           />
-          <OpponentCount t={t} value={humanCount} onChange={setHumanCount} />
+          {!isBataillecorse && <OpponentCount t={t} value={humanCount} onChange={setHumanCount} />}
           <button
             data-id="adhoc-invite-button"
             onClick={() => setPhase("host-connect")}
             className="rounded-2xl bg-[var(--accent-yellow)] px-4 py-4 text-lg font-black text-[var(--surface)] shadow-lg"
           >
-            {t("inviteOpponents")}
+            {isBataillecorse ? t("inviteOpponent") : t("inviteOpponents")}
           </button>
           <GameSettingsPanel
             values={setup}
             onChange={setSetup}
             idPrefix="adhoc"
             title={t("settings")}
-            coincheFields={!isBouilla && !isPresident}
+            coincheFields={!isBouilla && !isPresident && !isBataillecorse}
             presidentFields={isPresident}
           />
         </div>
@@ -151,10 +174,12 @@ function Shell({
   children,
   isBouilla,
   isPresident,
+  isBataillecorse,
 }: {
   children: React.ReactNode;
   isBouilla: boolean;
   isPresident: boolean;
+  isBataillecorse: boolean;
 }) {
   const { t } = useI18n();
   return (
@@ -169,10 +194,22 @@ function Shell({
       </Link>
       <header className="text-center">
         <h1 className="text-3xl font-black tracking-tight text-white" data-id="adhoc-title">
-          {isBouilla ? t("bouillaAdhocTitle") : isPresident ? t("presidentAdhocTitle") : t("playAdhoc")}
+          {isBouilla
+            ? t("bouillaAdhocTitle")
+            : isPresident
+            ? t("presidentAdhocTitle")
+            : isBataillecorse
+            ? t("bataillecorseAdhocTitle")
+            : t("playAdhoc")}
         </h1>
         <p className="text-sm text-white/70">
-          {isBouilla ? t("bouillaAdhocSubtitle") : isPresident ? t("presidentAdhocSubtitle") : t("adhocSubtitle")}
+          {isBouilla
+            ? t("bouillaAdhocSubtitle")
+            : isPresident
+            ? t("presidentAdhocSubtitle")
+            : isBataillecorse
+            ? t("bataillecorseAdhocSubtitle")
+            : t("adhocSubtitle")}
         </p>
       </header>
       {children}

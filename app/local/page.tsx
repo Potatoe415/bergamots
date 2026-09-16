@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/client/i18n";
 import { GameSettingsPanel, DEFAULT_GAME_SETUP } from "@/components/GameSettingsPanel";
 import type { GameSetupValues } from "@/components/GameSettingsPanel";
 import {
+  LOCAL_BATAILLECORSE_STORAGE_KEY,
   LOCAL_BOUILLA_STORAGE_KEY,
   LOCAL_COINCHE_STORAGE_KEY,
   LOCAL_PRESIDENT_STORAGE_KEY,
@@ -27,6 +28,7 @@ function LocalSetupPageInner() {
   const game = useSearchParams().get("game");
   const isBouilla = game === "bouilla";
   const isPresident = game === "president";
+  const isBataillecorse = game === "bataillecorse";
   const [setup, setSetup] = useState<GameSetupValues>(DEFAULT_GAME_SETUP);
 
   function startLocalGame() {
@@ -35,12 +37,17 @@ function LocalSetupPageInner() {
     clearPersistedGame(LOCAL_COINCHE_STORAGE_KEY);
     clearPersistedGame(LOCAL_BOUILLA_STORAGE_KEY);
     clearPersistedGame(LOCAL_PRESIDENT_STORAGE_KEY);
+    clearPersistedGame(LOCAL_BATAILLECORSE_STORAGE_KEY);
     if (isBouilla) {
       router.push(`/local/play?game=bouilla&botThinkMs=${setup.botThinkMs}`);
       return;
     }
     if (isPresident) {
       router.push(`/local/play?game=president&botThinkMs=${setup.botThinkMs}&roundsToPlay=${setup.roundsToPlay}`);
+      return;
+    }
+    if (isBataillecorse) {
+      router.push(`/local/play?game=bataillecorse&botThinkMs=${setup.botThinkMs}`);
       return;
     }
     const params = new URLSearchParams({
@@ -71,10 +78,22 @@ function LocalSetupPageInner() {
 
       <header className="text-center">
         <h1 className="text-3xl font-black tracking-tight text-[var(--surface)]" data-id="local-title">
-          {isBouilla ? t("bouillaLocalTitle") : isPresident ? t("presidentLocalTitle") : t("playLocal")}
+          {isBouilla
+            ? t("bouillaLocalTitle")
+            : isPresident
+            ? t("presidentLocalTitle")
+            : isBataillecorse
+            ? t("bataillecorseLocalTitle")
+            : t("playLocal")}
         </h1>
         <p className="text-sm text-[var(--foreground)]/75">
-          {isBouilla ? t("bouillaLocalSubtitle") : isPresident ? t("presidentLocalSubtitle") : t("localSubtitle")}
+          {isBouilla
+            ? t("bouillaLocalSubtitle")
+            : isPresident
+            ? t("presidentLocalSubtitle")
+            : isBataillecorse
+            ? t("bataillecorseLocalSubtitle")
+            : t("localSubtitle")}
         </p>
       </header>
 
@@ -93,7 +112,7 @@ function LocalSetupPageInner() {
         onChange={setSetup}
         idPrefix="local"
         title={t("settings")}
-        coincheFields={!isBouilla && !isPresident}
+        coincheFields={!isBouilla && !isPresident && !isBataillecorse}
         presidentFields={isPresident}
       />
     </main>

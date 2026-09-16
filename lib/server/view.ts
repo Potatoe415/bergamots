@@ -1,10 +1,11 @@
 import { redact as redactCoinche, type PlayerView as CoinchePlayerView } from "@/lib/coinche";
 import { redact as redactBouilla, type PlayerView as BouillaPlayerView } from "@/lib/bouilla";
 import { redact as redactPresident, type PlayerView as PresidentPlayerView } from "@/lib/president";
+import { redact as redactBataillecorse, type PlayerView as BataillecorsePlayerView } from "@/lib/bataillecorse";
 import type { GameRow, GameSettings, GameStatus, GameType } from "@/lib/supabase/types";
 import { isSeatLive, PRESENCE_STALE_MS, seatOf, type LoadedGame } from "./repo";
 
-export type AnyPlayerView = CoinchePlayerView | BouillaPlayerView | PresidentPlayerView;
+export type AnyPlayerView = CoinchePlayerView | BouillaPlayerView | PresidentPlayerView | BataillecorsePlayerView;
 
 export interface LobbyPlayer {
   seat: number;
@@ -57,6 +58,9 @@ export interface GameView {
 /** Dispatch to the active game's own redact function (never shared: each game's
  *  hidden-information rules differ). */
 function redactForSeat(game: GameRow, seat: 0 | 1 | 2 | 3): AnyPlayerView {
+  if (game.game_type === "bataillecorse") {
+    return redactBataillecorse(game.state as Parameters<typeof redactBataillecorse>[0], seat as 0 | 1);
+  }
   if (game.game_type === "bouilla") return redactBouilla(game.state as Parameters<typeof redactBouilla>[0], seat);
   if (game.game_type === "president") return redactPresident(game.state as Parameters<typeof redactPresident>[0], seat);
   return redactCoinche(game.state as Parameters<typeof redactCoinche>[0], seat);

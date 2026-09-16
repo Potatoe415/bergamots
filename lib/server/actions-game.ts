@@ -1,13 +1,16 @@
 "use server";
 
 import type { BidType, Seat, TrumpMode } from "@/lib/coinche";
+import { attemptSlap as attemptBataillecorseSlap, type GameState as BataillecorseGameState } from "@/lib/bataillecorse";
 import { getServiceClient, getUserId } from "@/lib/supabase/server";
 import type { AnyGameState, GameRow, GameType } from "@/lib/supabase/types";
 import { advanceScoringTimeout, applyReadyForNextRound } from "./round-gate";
+import { advanceStaleSlapWindow } from "./slap-timer";
 import {
   applyCardPlay,
   applyComboPlay,
   applyExchangeReturn,
+  applyFlip,
   applyMove,
   applyPass,
   applyStartNext,
@@ -96,6 +99,29 @@ export async function submitExchangeReturn(gameId: string, cards: WireCard[]): P
   resetMissedTurns(loaded, seat);
 }
 
+/** La Bataille Corse only: flip the top card of your own stock. No payload -
+ *  the top card is random/hidden, there is nothing to choose. */
+export async function flipCard(gameId: string): Promise<void> {
+  const { loaded, seat, state, gameType } = await loadForAction(gameId);
+  if (gameType !== "bataillecorse") throw new Error("flip_not_supported");
+  const next = applyFlip(state, seat);
+  await commit(loaded, next);
+  resetMissedTurns(loaded, seat);
+}
+
+/** La Bataille Corse only: attempt to slap the pile. `reactionMs` is measured
+ *  entirely on the caller's own client (elapsed time since *that client*
+ *  rendered the currently-open slap window) - the server only ever compares
+ *  these self-reported values against the other seat's own claim, never the
+ *  order in which the two requests arrive (see docs/DECISIONS.md). */
+export async function attemptSlap(gameId: string, reactionMs: number, observedWindowId: number | null): Promise<void> {
+  const { loaded, seat, state, gameType } = await loadForAction(gameId);
+  if (gameType !== "bataillecorse") throw new Error("slap_not_supported");
+  const next = attemptBataillecorseSlap(state as BataillecorseGameState, seat as 0 | 1, reactionMs, observedWindowId);
+  await commit(loaded, next);
+  resetMissedTurns(loaded, seat); // a slap attempt is proof of presence too
+}
+
 /** A tap anywhere on screen while the idle-turn "are you still there?" banner is
  *  showing (see `lib/client/useStillThereTimer.ts`) counts as proof of presence:
  *  clears the miss streak and restarts the silence clock, even though the seat
@@ -131,7 +157,9 @@ export async function submitBotMove(gameId: string, seat: Seat, move: BotMove): 
   if (loaded.game.host_user_id !== uid) throw new Error("not_host");
   const state = loaded.game.state;
   if (!state) throw new Error("game_not_started");
-  if (state.turn !== seat) throw new Error("not_bot_turn");
+  // A slap is never gated by whose turn it is (either seat may attempt one
+  // the instant a slap window opens) - every other move requires it.
+  if (move.kind !== "slap" && state.turn !== seat) throw new Error("not_bot_turn");
   if (!botSeats(loaded.players)[seat]) throw new Error("seat_not_bot");
 
   const gameType = loaded.game.game_type;
@@ -149,6 +177,10 @@ function applyBotMove(gameType: GameType, state: AnyGameState, seat: Seat, move:
       return applyPass(state, seat);
     case "exchangeReturn":
       return applyExchangeReturn(state, seat, move.cards);
+    case "flip":
+      return applyFlip(state, seat);
+    case "slap":
+      return attemptBataillecorseSlap(state as BataillecorseGameState, seat as 0 | 1, move.reactionMs, move.observedWindowId);
     case "bid":
       return applyMove(gameType, state, seat, { kind: "bid", bid: { seat, type: move.type, value: move.value, suit: move.suit } });
   }
@@ -217,6 +249,7 @@ export async function getView(gameId: string): Promise<GameView> {
   // Tighter, seat-idle-specific check first (seconds, not the browser-gone 45s
   // safety net below); see lib/server/idle-timer.ts.
   await advanceIdleTurns(loaded);
+  await advanceStaleSlapWindow(loaded);
   await advanceStaleTurns(loaded);
   await advanceScoringTimeout(loaded);
   return buildView(loaded, uid);

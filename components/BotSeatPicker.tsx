@@ -28,6 +28,10 @@ export function BotSeatPicker({
   const { t } = useI18n();
   const [name, setName] = useHubPrefillName();
   const bySeat = new Map(players.map((p) => [p.seat, p]));
+  // A started game always has exactly one row per seat (see `seatCountFor`) -
+  // derive the seat count from the actual roster instead of assuming 4, so
+  // this also works for a 2-seat game like la Bataille Corse.
+  const seats = players.map((p) => p.seat).sort((a, b) => a - b);
   const hasBotSeat = players.some((p) => p.isBot);
 
   return (
@@ -49,7 +53,7 @@ export function BotSeatPicker({
             className="w-full rounded-lg bg-[rgba(32,40,58,0.08)] px-3 py-2 outline-none ring-1 ring-[var(--surface)]/15 focus:ring-[var(--accent-cyan)]"
           />
           <ul className="grid grid-cols-2 gap-3" data-id="bot-seat-picker-seats">
-            {[0, 1, 2, 3].map((seat) => {
+            {seats.map((seat) => {
               const player = bySeat.get(seat);
               const canJoin = player?.isBot === true && !busy;
               return (

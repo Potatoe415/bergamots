@@ -3,6 +3,7 @@
 import { redact as redactCoinche, type BidType, type GameState as CoincheGameState, type Seat, type TrumpMode } from "@/lib/coinche";
 import { redact as redactBouilla, type GameState as BouillaGameState } from "@/lib/bouilla";
 import { redact as redactPresident, type GameState as PresidentGameState } from "@/lib/president";
+import { redact as redactBataillecorse, type GameState as BataillecorseGameState } from "@/lib/bataillecorse";
 import type { GameSettings, GameType } from "@/lib/supabase/types";
 import type { GameView } from "@/lib/server/view";
 
@@ -31,7 +32,9 @@ export type ClientMessage =
   | { t: "combo"; combo: WireCombo }
   | { t: "pass" }
   | { t: "exchangeReturn"; cards: WireCard[] }
-  | { t: "nextDeal" };
+  | { t: "nextDeal" }
+  | { t: "flip" }
+  | { t: "slap"; reactionMs: number; observedWindowId: number | null };
 
 /** Messages the host sends to a client (that seat's redacted view). */
 export type HostMessage = { t: "view"; view: GameView };
@@ -108,6 +111,33 @@ export function buildBouillaSeatView(
     players: lobbyPlayers(roster),
     mySeat: seat,
     view: redactBouilla(state, seat),
+    hostUserId: null,
+    hostSeat,
+    isHost: seat === hostSeat,
+    turnStartedAt: null,
+    myMissedTurnsInRow: 0,
+  };
+}
+
+/** Same as `buildSeatView`, for a la Bataille Corse table (2 seats, no
+ *  bidding/trump/teams to carry). */
+export function buildBataillecorseSeatView(
+  state: BataillecorseGameState,
+  seat: Seat,
+  roster: RosterEntry[],
+  settings: GameSettings,
+  hostSeat: Seat,
+): GameView {
+  return {
+    gameId: "adhoc",
+    roomCode: "P2P",
+    gameType: "bataillecorse" as GameType,
+    status: state.phase === "finished" ? "finished" : "playing",
+    settings,
+    version: 0,
+    players: lobbyPlayers(roster),
+    mySeat: seat,
+    view: redactBataillecorse(state, seat as 0 | 1),
     hostUserId: null,
     hostSeat,
     isHost: seat === hostSeat,

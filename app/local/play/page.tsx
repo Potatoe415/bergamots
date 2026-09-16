@@ -1,6 +1,7 @@
 import { LocalGame } from "@/components/LocalGame";
 import { BouillaLocalGame } from "@/components/BouillaLocalGame";
 import { PresidentLocalGame } from "@/components/PresidentLocalGame";
+import { BataillecorseLocalGame } from "@/components/BataillecorseLocalGame";
 import { BOT_PUNCH_LEVELS, type BotPunch, type ScoringRules } from "@/lib/coinche";
 import {
   DEFAULT_BOT_THINK_MS,
@@ -65,6 +66,9 @@ export default async function LocalPlayPage({
   }
   if (sp.game === "president") {
     return <PresidentLocalGame seed={seed} botThinkMs={botThinkMs} roundsToPlay={parseRoundsToPlay(sp.roundsToPlay)} />;
+  }
+  if (sp.game === "bataillecorse") {
+    return <BataillecorseLocalGame seed={seed} botThinkMs={botThinkMs} />;
   }
   const target = Number(sp.target);
   const targetPoints = TARGETS.includes(target) ? target : 1000;

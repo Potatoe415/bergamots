@@ -30,6 +30,7 @@ import {
   type Combo,
   type GameState as PresidentGameState,
 } from "@/lib/president";
+import { submitFlip as submitBataillecorseFlip, type GameState as BataillecorseGameState } from "@/lib/bataillecorse";
 import type { AnyGameState, GameStatus, GameType } from "@/lib/supabase/types";
 
 /** A played card, loosely typed at the transport boundary: the active game's own
@@ -41,13 +42,17 @@ export type WireCombo = { rank: string; cards: WireCard[] };
 
 /** A move the host client submits on behalf of a bot seat. Bidding only applies to
  *  Coinche; Bouilla only ever plays a card; Président plays a combo, passes, or
- *  (during its "exchange" phase) returns cards. */
+ *  (during its "exchange" phase) returns cards; la Bataille Corse only ever flips
+ *  (no card choice - the top card is random/hidden) - its "slap" move is handled
+ *  separately (see `attemptBotSlap` in actions-game.ts, not turn-gated). */
 export type BotMove =
   | { kind: "bid"; type: BidType; value?: number; suit?: TrumpMode }
   | { kind: "play"; card: WireCard }
   | { kind: "combo"; combo: WireCombo }
   | { kind: "pass" }
-  | { kind: "exchangeReturn"; cards: WireCard[] };
+  | { kind: "exchangeReturn"; cards: WireCard[] }
+  | { kind: "flip" }
+  | { kind: "slap"; reactionMs: number; observedWindowId: number | null };
 
 /** A move chosen by the heuristic bot for the seat whose turn it is. */
 export type HeuristicMove =
@@ -55,15 +60,22 @@ export type HeuristicMove =
   | { kind: "play"; card: WireCard }
   | { kind: "combo"; combo: WireCombo }
   | { kind: "pass" }
-  | { kind: "exchangeReturn"; cards: WireCard[] };
+  | { kind: "exchangeReturn"; cards: WireCard[] }
+  | { kind: "flip" };
 
 export function statusFor(state: AnyGameState): GameStatus {
   return state.phase === "finished" ? "finished" : "playing";
 }
 
 /** Whether the seat whose turn it is right now is expected to actually act
- *  (as opposed to a phase with no live turn, e.g. Coinche's lobby/scoring). */
+ *  (as opposed to a phase with no live turn, e.g. Coinche's lobby/scoring).
+ *  La Bataille Corse: false while a slap window is open - there is no turn
+ *  action to auto-play at that instant, its own timeout mechanism is
+ *  `resolveStaleSlapWindow` (see `lib/server/slap-timer.ts`). */
 export function isActivePhase(gameType: GameType, state: AnyGameState): boolean {
+  if (gameType === "bataillecorse") {
+    return state.phase === "playing" && (state as BataillecorseGameState).slapWindow === null;
+  }
   if (gameType === "bouilla") return state.phase === "playing";
   if (gameType === "president") return state.phase === "playing" || state.phase === "exchange";
   return state.phase === "bidding" || state.phase === "playing";
@@ -94,6 +106,12 @@ export function applyExchangeReturn(state: AnyGameState, seat: Seat, cards: Wire
   return submitPresidentExchangeReturn(state as PresidentGameState, seat, cards as unknown as PresidentCard[]);
 }
 
+/** La Bataille Corse only: flip the top card of `seat`'s own stock - no card
+ *  choice, so unlike `applyCardPlay` this takes no payload. */
+export function applyFlip(state: AnyGameState, seat: Seat): AnyGameState {
+  return submitBataillecorseFlip(state as BataillecorseGameState, seat as 0 | 1);
+}
+
 /** Dispatch "start the next hand" (Coinche: next deal, Bouilla/Président: next round). */
 export function applyStartNext(gameType: GameType, state: AnyGameState): AnyGameState {
   if (state.phase !== "scoring") throw new Error("deal_not_finished");
@@ -104,6 +122,7 @@ export function applyStartNext(gameType: GameType, state: AnyGameState): AnyGame
 
 /** Heuristic bot move for the seat whose turn it is (server-side takeover / bot host). */
 export function chooseHeuristicMove(gameType: GameType, state: AnyGameState, seat: Seat): HeuristicMove {
+  if (gameType === "bataillecorse") return { kind: "flip" };
   if (gameType === "bouilla") {
     return { kind: "play", card: chooseBouillaCard(redactBouilla(state as BouillaGameState, seat)) };
   }
@@ -133,5 +152,7 @@ export function applyMove(gameType: GameType, state: AnyGameState, seat: Seat, m
       return applyPass(state, seat);
     case "exchangeReturn":
       return applyExchangeReturn(state, seat, move.cards);
+    case "flip":
+      return applyFlip(state, seat);
   }
 }

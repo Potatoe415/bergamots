@@ -20,8 +20,12 @@ function toMove(action: BotAction | BouillaBotAction): BotMove {
   return { kind: "bid", type: "pass" };
 }
 
-/** Is the seat whose turn it is expected to act right now, for the active game type? */
+/** Is the seat whose turn it is expected to act right now, for the active game type?
+ *  La Bataille Corse has its own dedicated runner (`useBataillecorseBotRunner`,
+ *  flip/slap instead of a card/bid) and must never fall into this Coinche-brain
+ *  default below. */
 function isActiveTurn(gameType: GameView["gameType"], phase: string): boolean {
+  if (gameType === "bataillecorse") return false;
   return gameType === "bouilla" ? phase === "playing" : phase === "bidding" || phase === "playing";
 }
 

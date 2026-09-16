@@ -51,9 +51,11 @@ export function decideIdleAction(params: {
 
 /** A uniformly random legal move for `seat` (first-offense auto-play only; once
  *  a seat is a permanent bot, every future move goes through the heuristic bot
- *  like any other bot seat instead): a card for Coinche/Bouilla, or a random
- *  legal combo (falling back to a pass) for Président. */
+ *  like any other bot seat instead): a card for Coinche/Bouilla, a random
+ *  legal combo (falling back to a pass) for Président, or a flip (no choice
+ *  to randomize) for la Bataille Corse. */
 function chooseRandomMove(gameType: GameType, state: AnyGameState, seat: Seat): HeuristicMove {
+  if (gameType === "bataillecorse") return { kind: "flip" };
   if (gameType === "bouilla") {
     const legal = legalBouillaCards(state as BouillaGameState, seat);
     if (legal.length === 0) throw new Error("no_legal_cards");

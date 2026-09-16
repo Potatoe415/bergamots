@@ -16,6 +16,9 @@ export interface P2PClientActions {
   onCombo: (combo: WireCombo) => void;
   onPass: () => void;
   onExchangeReturn: (cards: WireCard[]) => void;
+  /** la Bataille Corse only. */
+  onFlip: () => void;
+  onSlap: (reactionMs: number, observedWindowId: number | null) => void;
 }
 
 /**
@@ -51,6 +54,8 @@ export function useP2PClient(
       onCombo: (combo: WireCombo) => send({ t: "combo", combo }),
       onPass: () => send({ t: "pass" }),
       onExchangeReturn: (cards: WireCard[]) => send({ t: "exchangeReturn", cards }),
+      onFlip: () => send({ t: "flip" }),
+      onSlap: (reactionMs: number, observedWindowId: number | null) => send({ t: "slap", reactionMs, observedWindowId }),
     }),
     [send],
   );

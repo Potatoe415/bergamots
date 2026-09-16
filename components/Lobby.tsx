@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/client/i18n";
 import { useHubPrefillName } from "@/lib/client/hubName";
 import { fillWithBots, joinGame, startGame, swapSeats } from "@/lib/server/actions-lobby";
 import type { GameView, LobbyPlayer } from "@/lib/server/view";
+import { seatCountFor } from "@/lib/supabase/types";
 
 /** Local optimistic swap of the occupants of two seats (team follows seat parity). */
 function swapPlayers(players: LobbyPlayer[], from: number, to: number): LobbyPlayer[] {
@@ -39,13 +40,16 @@ export function Lobby({ gv, onChange, debugMode, onDebugModeChange }: LobbyProps
     setSeenVersion(gv.version);
     setOptimisticPlayers(null);
   }
-  const seats = [0, 1, 2, 3];
+  const seatCount = seatCountFor(gv.gameType);
+  const seats = Array.from({ length: seatCount }, (_, s) => s);
   const players = optimisticPlayers ?? gv.players;
   const bySeat = new Map(players.map((p) => [p.seat, p]));
-  const full = gv.players.length === 4;
+  const full = gv.players.length === seatCount;
   const isMember = gv.mySeat !== null;
   // A newcomer can still join a full lobby by taking over a bot seat.
-  const canJoin = gv.players.filter((p) => !p.isBot).length < 4;
+  const canJoin = gv.players.filter((p) => !p.isBot).length < seatCount;
+  // No team concept for a 2-player free-for-all reflex game.
+  const showTeamLabel = gv.gameType !== "bataillecorse";
 
   async function copyInviteLink() {
     const url = `${window.location.origin}/join/${gv.roomCode}`;
@@ -149,7 +153,8 @@ export function Lobby({ gv, onChange, debugMode, onDebugModeChange }: LobbyProps
               }`}
             >
               <p className="text-xs text-current/65">
-                {t("seat")} {seat + 1} · {t("team")} {seat % 2 === 0 ? "A" : "B"}
+                {t("seat")} {seat + 1}
+                {showTeamLabel ? ` · ${t("team")} ${seat % 2 === 0 ? "A" : "B"}` : ""}
               </p>
               <p className="font-bold">
                 {player ? player.displayName : t("free")}
@@ -227,7 +232,7 @@ export function Lobby({ gv, onChange, debugMode, onDebugModeChange }: LobbyProps
             onClick={() => act(() => startGame(gv.gameId, randomizeSeats))}
             className="rounded-lg bg-[var(--accent-yellow)] px-4 py-3 font-bold text-[var(--surface)] disabled:opacity-40"
           >
-            {full ? t("startGame") : t("waitingFourPlayers")}
+            {full ? t("startGame") : seatCount === 2 ? t("waitingTwoPlayers") : t("waitingFourPlayers")}
           </button>
         </div>
       ) : (

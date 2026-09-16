@@ -130,6 +130,59 @@ const PRESIDENT_RULES = {
   },
 } as const;
 
+const BATAILLECORSE_RULES = {
+  fr: {
+    title: "Règles de la Bataille Corse",
+    sections: [
+      {
+        heading: "But du jeu",
+        body: "2 joueurs. Le paquet de 52 cartes est partagé en deux, face cachée, sans le regarder. Chacun pose à son tour la carte du dessus de son propre paquet, face visible, au centre. Le but est de remporter tout le paquet.",
+      },
+      {
+        heading: "Les figures (tribut)",
+        body: "Quand une figure ou un as tombe, l'autre joueur doit à son tour sortir une figure ou un as, en un nombre d'essais limité : Valet = 1, Dame = 2, Roi = 3, As = 4. S'il y arrive, c'est à l'adversaire de relever le défi à son tour. S'il échoue (essais épuisés), celui qui a posé la dernière figure remporte tout le tas.",
+      },
+      {
+        heading: "Les tapes (réflexe)",
+        body: "Un double (deux cartes de même valeur posées à la suite) ou un sandwich (deux cartes de même valeur séparées par une seule autre) : le premier qui tape le tas le remporte, peu importe le tribut en cours. À distance, seul le temps de réaction mesuré sur son propre appareil compte, jamais le temps réseau.",
+      },
+      {
+        heading: "La fausse tape",
+        body: "Taper alors qu'aucune tape n'était valable coûte une carte : elle est glissée face cachée sous le tas, sans être récupérée.",
+      },
+      {
+        heading: "Fin de la partie",
+        body: "Le premier joueur à se retrouver sans carte perd la partie : l'autre remporte tout.",
+      },
+    ],
+  },
+  en: {
+    title: "La Bataille Corse Rules",
+    sections: [
+      {
+        heading: "Goal",
+        body: "2 players. The 52-card pack is split in two, face down, unseen. Each player flips the top card of their own pack to the center, in turn. The goal is to win the whole pack.",
+      },
+      {
+        heading: "Figures (tribute)",
+        body: "When a figure or an ace lands, the other player must produce a figure or an ace within a limited number of attempts: Jack = 1, Queen = 2, King = 3, Ace = 4. Success passes the tribute back the other way. Failure (attempts run out) hands the whole pile to whoever played the last figure.",
+      },
+      {
+        heading: "Slaps (reflex)",
+        body: "A double (2 same-rank cards played back to back) or a sandwich (2 same-rank cards separated by exactly one other): first to slap the pile takes it, regardless of any tribute in progress. Remotely, only the reaction time measured on your own device counts, never network time.",
+      },
+      {
+        heading: "False slap",
+        body: "Slapping when no pattern is actually there costs a card: it is slid face-down under the pile, without being won back.",
+      },
+      {
+        heading: "End of the game",
+        body: "The first player left with no cards loses - the other wins everything.",
+      },
+    ],
+  },
+} as const;
+
 const COINCHE_RULES = {
   fr: {
     title: "Règles de la Coinche",
@@ -193,7 +246,12 @@ const COINCHE_RULES = {
 
 export function RulesModal({ onClose, game = "coinche" }: Props) {
   const { locale } = useI18n();
-  const rulesByGame = { coinche: COINCHE_RULES, bouilla: BOUILLA_RULES, president: PRESIDENT_RULES };
+  const rulesByGame = {
+    coinche: COINCHE_RULES,
+    bouilla: BOUILLA_RULES,
+    president: PRESIDENT_RULES,
+    bataillecorse: BATAILLECORSE_RULES,
+  };
   const rules = rulesByGame[game][locale];
 
   return (

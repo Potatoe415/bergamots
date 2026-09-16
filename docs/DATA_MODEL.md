@@ -35,10 +35,10 @@ Fields:
 |---|---|---|---|
 | id | uuid | Yes | Primary key |
 | room_code | text | Yes | Unique join code |
-| game_type | text | Yes | `"coinche" \| "bouilla" \| "president"` (default `'coinche'`); lets one project host several games, and picks which rules engine (`lib/coinche`, `lib/bouilla`, or `lib/president`) `actions-lobby.ts`/`actions-game.ts`/`view.ts` dispatch to. Indexed. |
+| game_type | text | Yes | `"coinche" \| "bouilla" \| "president" \| "bataillecorse"` (default `'coinche'`); lets one project host several games, and picks which rules engine (`lib/coinche`, `lib/bouilla`, `lib/president`, or `lib/bataillecorse`) `actions-lobby.ts`/`actions-game.ts`/`view.ts` dispatch to. Also picks the seat count via `seatCountFor` (2 for `bataillecorse`, 4 for every other game) - see below. Indexed. |
 | status | text | Yes | lobby / playing / finished |
-| settings | jsonb | Yes | `GameSettings`, all fields optional so one shape fits all three games. Coinche: targetPoints, countContractOnlyIfMade, failedContractDefensePoints, zeroPointsForNonContractingTeamWhenContractMade, capotMadePoints, capotFailedDefensePoints, allowToutAtoutSansAtout, requireMorePointsToWin, botPunch ("low"\|"med"\|"high", default "med"; bot bidding aggressiveness, not part of GameState). Président: presidentRoundsToPlay (default 4, one of 1/2/3/4/5 - `DEFAULT_PRESIDENT_ROUNDS_TO_PLAY`/`PRESIDENT_ROUNDS_OPTIONS`). Shared by all three: stillThereTimeoutSec (default 15; see idle-turn timer below), botThinkMs (800-4000ms, default 800; how long a bot "thinks" - the Coinche ISMCTS search's wall-clock budget, or a pure pacing delay for Bouilla's/Président's instant heuristic bots; read by whichever client runs the bots, same as botPunch) — Bouilla's 6 rounds/point values and Président's exchange mechanics are otherwise fixed, so these are their only per-game settings. |
-| state | jsonb | No | Full `GameState` for the row's `game_type` (`AnyGameState` = Coinche `GameState` \| Bouilla `GameState` \| Président `GameState`, hidden hands). Server-only. Bouilla's and Président's states additionally carry an optional `readySeats: Seat[]`, present only during the "scoring" phase - see the end-of-round readiness gate below. |
+| settings | jsonb | Yes | `GameSettings`, all fields optional so one shape fits all four games. Coinche: targetPoints, countContractOnlyIfMade, failedContractDefensePoints, zeroPointsForNonContractingTeamWhenContractMade, capotMadePoints, capotFailedDefensePoints, allowToutAtoutSansAtout, requireMorePointsToWin, botPunch ("low"\|"med"\|"high", default "med"; bot bidding aggressiveness, not part of GameState). Président: presidentRoundsToPlay (default 4, one of 1/2/3/4/5 - `DEFAULT_PRESIDENT_ROUNDS_TO_PLAY`/`PRESIDENT_ROUNDS_OPTIONS`). Shared by all four: stillThereTimeoutSec (default 15; see idle-turn timer below), botThinkMs (800-4000ms, default 800; how long a bot "thinks" - the Coinche ISMCTS search's wall-clock budget, a pure pacing delay for Bouilla's/Président's instant heuristic bots, or (la Bataille Corse) both the bot's flip pacing and the range its simulated slap reaction is drawn from; read by whichever client runs the bots, same as botPunch) — Bouilla's 6 rounds/point values, Président's exchange mechanics, and la Bataille Corse's rules are otherwise fixed, so these are their only per-game settings. |
+| state | jsonb | No | Full `GameState` for the row's `game_type` (`AnyGameState` = Coinche \| Bouilla \| Président \| Bataille Corse `GameState`, hidden hands/stocks). Server-only. Bouilla's and Président's states additionally carry an optional `readySeats: Seat[]`, present only during the "scoring" phase - see the end-of-round readiness gate below. |
 | version | integer | Yes | Incremented on each change (realtime tick) |
 | host_user_id | uuid | No | User id of the client that runs the bots. Set to creator on create; reassigned by `becomeHost`. |
 | turn_started_at | timestamptz | Yes | When `state.turn` last changed; stamped by `persistGame` (`lib/server/repo.ts`) whenever the new state's turn differs from the previous one. Anchors the idle-turn timer below. |
@@ -60,7 +60,7 @@ Fields:
 |---|---|---|---|
 | id | uuid | Yes | Primary key |
 | game_id | uuid | Yes | FK -> games(id), cascade delete |
-| seat | smallint | Yes | 0..3, unique per game |
+| seat | smallint | Yes | 0..3, unique per game (checked at the DB level; `bataillecorse` only ever uses 0/1 - `seatCountFor` in `lib/supabase/types.ts` is the single source of truth for how many seats a given `game_type` needs, threaded through `pickJoinSeat`/`fillWithBots`/`startGame` in `lib/server/actions-lobby.ts` and the lobby/bot-seat-picker UI) |
 | user_id | uuid | No | null for bots |
 | display_name | text | Yes | |
 | is_bot | boolean | Yes | |
@@ -124,6 +124,62 @@ Président ("Trou du cul") plays a fixed number of rounds (`presidentRoundsToPla
 - A quad (4-of-a-kind) play triggers a "revolution": rank order inverts for the rest of that round (toggles again on a second quad, always resets at the start of the next round). Tracked as `state.revolution: boolean`, not persisted separately.
 - A "2" (single, pair, or triple - a quad still only revolutions) instantly burns the pile: `state.pile` is cleared and the same seat leads again. `state.lastBurn: { seat, combo } | null` is a display cue for the collect-and-fly animation (redacted through to `PlayerView.lastBurn`); rules never read it. Cleared at deal / next round / end of exchange. Playing a "2" that empties the hand does not burn (normal finish flow).
 - The "double" rule: replaying the pile's exact rank (same card count) is legal alongside beating it (`isLegalCombo`/`applyPlay` in `lib/president/play.ts`) and skips the very next active seat's turn entirely, unless it also completes all 4 cards of that rank - which instead burns the pile exactly like a "2" (same seat leads again). `Pile.stackCount` (optional, defaults to `combo?.cards.length ?? 0` when absent) tracks how many cards of the pile's rank are down so far; `state.lastSkip: { seat, skippedSeat, combo } | null` is the matching display cue for a "turn skipped" animation, same never-read-by-rules/diff-by-clients contract as `lastBurn`. Finishing your hand always takes priority over either effect (same precedent as a hand-emptying "2" never burning).
+
+---
+
+## La Bataille Corse (2 players, reflex game)
+
+The only 2-player game (`seatCountFor` returns 2 for `"bataillecorse"`, 4 for every
+other game - see `game_players.seat` above). No teams, no rounds/scoring table:
+a single continuous match, `state.phase` is just `"playing" | "finished"`.
+
+- `state.stocks: [Card[], Card[]]` - each seat's own face-down draw pile (last
+  element = top, next to flip). `state.pile: Card[]` is the shared, fully
+  face-up center pile (last element = top/most recent). Redaction
+  (`lib/bataillecorse/redact.ts`) only ever hides each stock's *order* (as a
+  count) - the pile and stock counts are always visible to both seats, same
+  as the physical game.
+- `state.turn: Seat` (0 | 1) - whose turn it is to flip next, either a plain
+  lead or paying the tribute they currently owe (`state.tribute`). Not the
+  same thing as who may attempt a slap (see below).
+- `state.tribute: { seat, attemptsLeft, fromRank } | null` - a figure/ace
+  challenge in progress. Attempts allowed: Jack=1, Queen=2, King=3, Ace=4
+  (`attemptsFor` in `lib/bataillecorse/cards.ts`). Resolved a card at a time
+  by `resolveTributeEffect` (`lib/bataillecorse/tribute.ts`): another
+  figure/ace flips the obligation onto the other seat; running out of
+  attempts hands the whole `pile` to the challenger.
+- `state.slapWindow: { id, pattern, openedAtMs } | null` - open the instant a
+  "double" (top 2 cards same rank) or "sandwich" (top and 2-below same rank)
+  appears (`detectSlapPattern`), superseding whatever tribute/turn is
+  pending. Blocks `submitFlip` until it resolves.
+- `state.slapClaims: SlapClaim[]` (`{ seat, reactionMs }`) - each seat's own
+  **locally measured** reaction time (elapsed ms on that seat's own client,
+  from when it rendered the open window to when it tapped), never a network
+  arrival order. `attemptSlap` (`lib/bataillecorse/engine.ts`) awards the
+  pile to the lower `reactionMs` once both seats have claimed; a lone claim
+  (or none) auto-resolves after `SLAP_GRACE_MS` (3000ms, comfortably above a
+  real round-trip) via `resolveStaleSlapWindow`, run opportunistically from
+  `getView` like every other timer below (`lib/server/slap-timer.ts`
+  `advanceStaleSlapWindow`) - online only; local/ad-hoc schedule it with a
+  plain `setTimeout` instead, since there is no polled `getView` there.
+  Tapping when no window is open (or one just closed and the tap's
+  `observedWindowId` doesn't match `state.lastClosedSlapWindowId`) is a false
+  slap: one of the slapper's own stock cards slides face-down under the pile.
+- Either seat's stock reaching 0 cards ends the match immediately - the
+  other seat wins (`checkElimination`). No "capot"/sweep scoring: this is a
+  single win/lose outcome (`state.winner: Seat | null`).
+- Server actions: `flipCard(gameId)` (no payload - the top card is
+  random/hidden, nothing to choose) and `attemptSlap(gameId, reactionMs,
+  observedWindowId)`, both `bataillecorse`-only in `lib/server/actions-game.ts`.
+  A bot seat's flip/slap go through the existing `submitBotMove` with new
+  `BotMove` variants `{ kind: "flip" }` / `{ kind: "slap", reactionMs,
+  observedWindowId }` (`lib/server/game-dispatch.ts`), driven client-side by
+  the host's dedicated `lib/client/useBataillecorseBotRunner.ts` (not the
+  generic Coinche/Bouilla `useBotRunner.ts`, which only knows bid/play moves).
+- Settings: reuses the shared `stillThereTimeoutSec`/`botThinkMs` only (no
+  game-specific setting) - `botThinkMs` also scales the bot's simulated slap
+  reaction range (`simulateBotReactionMs`), so the same slider tunes both bot
+  pacing and reflex difficulty.
 
 ---
 
@@ -193,3 +249,9 @@ Impact: New `lib/server/idle-timer.ts` module (`decideIdleAction` pure/unit-test
 Change: No SQL change (`games.game_type` is plain `text` with no CHECK constraint, per the 2026-06-12 entry). `createGame` now also accepts `game_type: "president"`; `GameSettings` gained `presidentRoundsToPlay` (default 4, one of 3/4/5/6/8); `GameRow.state`/`GameView.view`/`botViews` widened to a 3-way discriminated union (`AnyGameState`/`AnyPlayerView`) over Coinche/Bouilla/Président. Président's `state` also carries the same optional `readySeats: Seat[]` field Bouilla introduced for its end-of-round gate (see above), reused verbatim.
 Reason: Second real consumer of the `game_type` discriminator beyond Bouilla, confirming the pattern generalizes to a third game with no schema change at all.
 Impact: Existing Coinche/Bouilla rows/behavior unchanged. Every read of `game.state`/`game.settings` specific to one engine narrows via `game.game_type` first, same dispatch points Bouilla already established (`lib/server/view.ts` `redactForSeat`, `lib/server/actions-game.ts`, `lib/server/actions-lobby.ts` `startInitialState`/`sanitizeSettings`, `lib/server/game-dispatch.ts`).
+
+## 2026-09-16 - Fourth game "la Bataille Corse" (2 players, reflex) + seat count generalized
+
+Change: No SQL change (the `seat between 0 and 3` check already accommodates a 2-seat game; `game_type` is plain `text`). `createGame` now also accepts `game_type: "bataillecorse"`. New `seatCountFor(gameType)` in `lib/supabase/types.ts` (2 for `bataillecorse`, 4 otherwise) replaces every hardcoded `[0,1,2,3]`/`length === 4`/`length < 4` in `lib/server/actions-lobby.ts` (`pickJoinSeat`, `fillWithBots`, `startGame` - error code renamed `need_four_players` -> `not_enough_players`), `components/Lobby.tsx`, and `components/BotSeatPicker.tsx` (previously hardcoded 4 seats independently of the actual roster passed in - a latent bug for any non-4-seat game, fixed by deriving seats from the roster itself instead of a fixed range). `GameRow.state`/`GameView.view`/`botViews` widened to a 4-way discriminated union.
+Reason: la Bataille Corse is a 2-player-only reflex game (first to slap a double/sandwich takes the pile; figures/aces open a tribute) - the first game that isn't 4 seats, so the seat-count assumption baked into the lobby/bot-fill/start-game plumbing had to become a per-game-type lookup instead of a literal.
+Impact: Existing Coinche/Bouilla/Président rows/behavior unchanged (still 4 seats). `state.slapWindow`/`state.tribute`/`state.slapClaims` etc. are new, `bataillecorse`-only fields with no shared-shape equivalent in any other game (see the dedicated section above) - unlike Bouilla/Président's `readySeats`, nothing here is reused verbatim by another game. Also fixed a real bug found while wiring this in: the generic online bot runner (`lib/client/useBotRunner.ts`) defaulted any non-`"bouilla"` game type to the Coinche ISMCTS brain on whatever `PlayerView` shape it was given - harmless-looking until `bataillecorse`'s view shape actually crashed it at runtime. Now explicitly excludes `bataillecorse` (which has its own `useBataillecorseBotRunner.ts`); Président likely has the same latent issue and was left alone (out of scope here, flagged in `docs/BACKLOG.md`).

@@ -1,6 +1,7 @@
 import type { BotPunch, GameState as CoincheGameState } from "@/lib/coinche";
 import type { GameState as BouillaGameState } from "@/lib/bouilla";
 import type { GameState as PresidentGameState } from "@/lib/president";
+import type { GameState as BataillecorseGameState } from "@/lib/bataillecorse";
 
 /** Coinche settings are all optional here: Bouilla's 6 rounds/point values are fixed
  *  (see docs/DECISIONS.md), so it only ever carries `stillThereTimeoutSec` below. */
@@ -61,9 +62,15 @@ export const STILL_THERE_POPUP_LEAD_MS = 5000;
 export type GameStatus = "lobby" | "playing" | "finished";
 
 /** Which game a row belongs to. Extend the union when a new game is added. */
-export type GameType = "coinche" | "bouilla" | "president";
+export type GameType = "coinche" | "bouilla" | "president" | "bataillecorse";
 
-export type AnyGameState = CoincheGameState | BouillaGameState | PresidentGameState;
+export type AnyGameState = CoincheGameState | BouillaGameState | PresidentGameState | BataillecorseGameState;
+
+/** Seats a table for this game needs to start - every game but la Bataille
+ *  Corse (2-player only, see docs/PRODUCT.md) uses the full 4-seat table. */
+export function seatCountFor(gameType: GameType): number {
+  return gameType === "bataillecorse" ? 2 : 4;
+}
 
 export interface GameRow {
   id: string;

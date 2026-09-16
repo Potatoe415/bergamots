@@ -28,7 +28,8 @@ function OnlinePageInner() {
   const game = useSearchParams().get("game");
   const isBouilla = game === "bouilla";
   const isPresident = game === "president";
-  const gameType: GameType = isBouilla ? "bouilla" : isPresident ? "president" : "coinche";
+  const isBataillecorse = game === "bataillecorse";
+  const gameType: GameType = isBouilla ? "bouilla" : isPresident ? "president" : isBataillecorse ? "bataillecorse" : "coinche";
   const [name, setName] = useHubPrefillName();
   const [setup, setSetup] = useState<GameSetupValues>(DEFAULT_GAME_SETUP);
   const [code, setCode] = useState("");
@@ -90,10 +91,22 @@ function OnlinePageInner() {
 
       <header className="text-center">
         <h1 className="text-3xl font-black tracking-tight text-[var(--surface)]" data-id="online-title">
-          {isBouilla ? t("bouillaOnlineTitle") : isPresident ? t("presidentOnlineTitle") : t("playOnline")}
+          {isBouilla
+            ? t("bouillaOnlineTitle")
+            : isPresident
+            ? t("presidentOnlineTitle")
+            : isBataillecorse
+            ? t("bataillecorseOnlineTitle")
+            : t("playOnline")}
         </h1>
         <p className="text-sm text-[var(--foreground)]/75">
-          {isBouilla ? t("bouillaOnlineSubtitle") : isPresident ? t("presidentOnlineSubtitle") : t("onlineSubtitle")}
+          {isBouilla
+            ? t("bouillaOnlineSubtitle")
+            : isPresident
+            ? t("presidentOnlineSubtitle")
+            : isBataillecorse
+            ? t("bataillecorseOnlineSubtitle")
+            : t("onlineSubtitle")}
         </p>
       </header>
 
@@ -129,7 +142,7 @@ function OnlinePageInner() {
                 displayName: name,
                 locale,
                 gameType,
-                settings: isBouilla
+                settings: isBouilla || isBataillecorse
                   ? { stillThereTimeoutSec: setup.stillThereTimeoutSec, botThinkMs: setup.botThinkMs }
                   : isPresident
                   ? {
@@ -206,7 +219,7 @@ function OnlinePageInner() {
         onChange={setSetup}
         idPrefix="online"
         title={t("gameSettings")}
-        coincheFields={!isBouilla && !isPresident}
+        coincheFields={!isBouilla && !isPresident && !isBataillecorse}
         presidentFields={isPresident}
         showStillThereTimeout
       />
