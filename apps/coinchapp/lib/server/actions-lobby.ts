@@ -1,0 +1,445 @@
+"use server";
+
+import { beginNextDeal, BOT_PUNCH_LEVELS, createInitialState } from "@/lib/coinche";
+import { beginNextRound, createInitialState as createInitialBouillaState } from "@/lib/bouilla";
+import { beginNextRound as beginNextPresidentRound, createInitialState as createInitialPresidentState } from "@/lib/president";
+import { createInitialState as createInitialBataillecorseState } from "@/lib/bataillecorse";
+import { getServiceClient, getUserId } from "@/lib/supabase/server";
+import {
+  BATAILLECORSE_DECK_SIZE_OPTIONS,
+  BOT_THINK_MS_STEP,
+  DEFAULT_BATAILLECORSE_DECK_SIZE,
+  DEFAULT_BOT_THINK_MS,
+  DEFAULT_PRESIDENT_ROUNDS_TO_PLAY,
+  MAX_BOT_THINK_MS,
+  MIN_BOT_THINK_MS,
+  PRESIDENT_ROUNDS_OPTIONS,
+  STILL_THERE_TIMEOUT_OPTIONS,
+  seatCountFor,
+  type AnyGameState,
+  type GameRow,
+  type GameSettings,
+  type GameType,
+} from "@/lib/supabase/types";
+import {
+  findGameByCode,
+  loadGame,
+  persistGame,
+  randomRoomCode,
+  seatOf,
+  teamForSeat,
+  touchGame,
+  touchTurnStartedAt,
+} from "./repo";
+import type { LoadedGame } from "./repo";
+
+const TARGET_OPTIONS = [500, 1000, 1500, 2000];
+const ROOM_CODE_REGEX = /^[A-Z0-9]{3}$/;
+
+function sanitizePoints(val: number | undefined, fallback: number): number {
+  return Number.isFinite(val) && (val as number) >= 0 ? Math.floor(val as number) : fallback;
+}
+
+function sanitizeStillThereTimeoutSec(val: number | undefined): number {
+  return (STILL_THERE_TIMEOUT_OPTIONS as readonly number[]).includes(val ?? 0) ? (val as number) : 15;
+}
+
+function sanitizePresidentRoundsToPlay(val: number | undefined): number {
+  return (PRESIDENT_ROUNDS_OPTIONS as readonly number[]).includes(val ?? 0)
+    ? (val as number)
+    : DEFAULT_PRESIDENT_ROUNDS_TO_PLAY;
+}
+
+function sanitizeBataillecorseDeckSize(val: number | undefined): 32 | 52 {
+  return (BATAILLECORSE_DECK_SIZE_OPTIONS as readonly number[]).includes(val ?? 0)
+    ? (val as 32 | 52)
+    : DEFAULT_BATAILLECORSE_DECK_SIZE;
+}
+
+/** Clamps to the slider's range and snaps to its step, so a tampered/stale value
+ *  can never push the ISMCTS budget (Coinche) or bot pacing (Bouilla) out of bounds. */
+function sanitizeBotThinkMs(val: number | undefined): number {
+  if (!Number.isFinite(val)) return DEFAULT_BOT_THINK_MS;
+  const snapped = Math.round((val as number) / BOT_THINK_MS_STEP) * BOT_THINK_MS_STEP;
+  return Math.min(MAX_BOT_THINK_MS, Math.max(MIN_BOT_THINK_MS, snapped));
+}
+
+function sanitizeCoincheSettings(input: Partial<GameSettings>): GameSettings {
+  const targetPoints = TARGET_OPTIONS.includes(input.targetPoints ?? 0)
+    ? (input.targetPoints as number)
+    : 1000;
+  return {
+    targetPoints,
+    countContractOnlyIfMade: input.countContractOnlyIfMade === true,
+    failedContractDefensePoints: sanitizePoints(input.failedContractDefensePoints, 160),
+    zeroPointsForNonContractingTeamWhenContractMade: input.zeroPointsForNonContractingTeamWhenContractMade === true,
+    capotMadePoints: sanitizePoints(input.capotMadePoints, 250),
+    capotFailedDefensePoints: sanitizePoints(input.capotFailedDefensePoints, 250),
+    allowToutAtoutSansAtout: input.allowToutAtoutSansAtout === true,
+    requireMorePointsToWin: input.requireMorePointsToWin !== false,
+    botPunch: BOT_PUNCH_LEVELS.includes(input.botPunch ?? "med") ? (input.botPunch ?? "med") : "med",
+    stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
+    botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+  };
+}
+
+/** Bouilla's 6 rounds/point values are fixed - its only configurable settings are
+ *  the idle-turn timer and bot thinking time, both shared with Coinche. Président
+ *  additionally has its own rounds-to-play setting. */
+function sanitizeSettings(gameType: GameType, input: Partial<GameSettings>): GameSettings {
+  if (gameType === "bouilla") {
+    return {
+      stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
+      botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+    };
+  }
+  if (gameType === "bataillecorse") {
+    return {
+      stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
+      botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+      bataillecorseDeckSize: sanitizeBataillecorseDeckSize(input.bataillecorseDeckSize),
+    };
+  }
+  if (gameType === "president") {
+    return {
+      stillThereTimeoutSec: sanitizeStillThereTimeoutSec(input.stillThereTimeoutSec),
+      botThinkMs: sanitizeBotThinkMs(input.botThinkMs),
+      presidentRoundsToPlay: sanitizePresidentRoundsToPlay(input.presidentRoundsToPlay),
+    };
+  }
+  return sanitizeCoincheSettings(input);
+}
+
+function isGameType(value: unknown): value is GameType {
+  return value === "coinche" || value === "bouilla" || value === "president" || value === "bataillecorse";
+}
+
+function cleanName(name: string, fallback: string): string {
+  const trimmed = (name ?? "").trim().slice(0, 20);
+  return trimmed.length > 0 ? trimmed : fallback;
+}
+
+function playerNameFallback(locale: "fr" | "en" | undefined, seat?: number): string {
+  const label = locale === "en" ? "Player" : "Joueur";
+  return seat === undefined ? label : `${label} ${seat + 1}`;
+}
+
+function normalizeRoomCode(code: string): string {
+  const normalized = (code ?? "").trim().toUpperCase();
+  if (!ROOM_CODE_REGEX.test(normalized)) throw new Error("invalid_room_code");
+  return normalized;
+}
+
+async function requireUser(): Promise<string> {
+  const uid = await getUserId();
+  if (!uid) throw new Error("not_authenticated");
+  return uid;
+}
+
+export async function createGame(input: {
+  displayName: string;
+  locale?: "fr" | "en";
+  gameType?: GameType;
+  settings: Partial<GameSettings>;
+}): Promise<{ gameId: string; roomCode: string }> {
+  const uid = await requireUser();
+  const supabase = getServiceClient();
+  const gameType = isGameType(input.gameType) ? input.gameType : "coinche";
+  const settings = sanitizeSettings(gameType, input.settings);
+
+  let roomCode = randomRoomCode();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const existing = await findGameByCode(roomCode);
+    if (!existing) break;
+    roomCode = randomRoomCode();
+  }
+
+  const { data, error } = await supabase
+    .from("games")
+    .insert({ room_code: roomCode, game_type: gameType, status: "lobby", settings, version: 0, host_user_id: uid })
+    .select("id")
+    .single();
+  if (error || !data) throw new Error("create_failed");
+  const gameId = (data as { id: string }).id;
+
+  const { error: seatError } = await supabase.from("game_players").insert({
+    game_id: gameId,
+    seat: 0,
+    user_id: uid,
+    display_name: cleanName(input.displayName, playerNameFallback(input.locale)),
+    is_bot: false,
+    team: teamForSeat(0),
+  });
+  // Without this check a failed seat insert leaves a game with no players: the
+  // creator lands in a lobby with 4 empty seats and cannot start.
+  if (seatError) {
+    await supabase.from("games").delete().eq("id", gameId);
+    throw new Error("create_failed");
+  }
+
+  return { gameId, roomCode };
+}
+
+/** Pick a seat for a joining human: a free seat first, otherwise a bot to replace. */
+function pickJoinSeat(loaded: LoadedGame): { seat: number; mode: "insert" | "replace" } | null {
+  const taken = new Set(loaded.players.map((p) => p.seat));
+  const seats = Array.from({ length: seatCountFor(loaded.game.game_type) }, (_, s) => s);
+  const freeSeat = seats.find((s) => !taken.has(s));
+  if (freeSeat !== undefined) return { seat: freeSeat, mode: "insert" };
+  const botSeat = loaded.players
+    .filter((p) => p.is_bot)
+    .map((p) => p.seat)
+    .sort((a, b) => a - b)[0];
+  return botSeat === undefined ? null : { seat: botSeat, mode: "replace" };
+}
+
+export async function joinGame(input: {
+  roomCode: string;
+  displayName: string;
+  locale?: "fr" | "en";
+}): Promise<{ gameId: string; seat: number }> {
+  const uid = await requireUser();
+  const roomCode = normalizeRoomCode(input.roomCode);
+  const loaded = await findGameByCode(roomCode);
+  if (!loaded) throw new Error("game_not_found");
+  if (loaded.game.status !== "lobby") throw new Error("already_started");
+
+  const existingSeat = seatOf(uid, loaded.players);
+  if (existingSeat !== null) return { gameId: loaded.game.id, seat: existingSeat };
+
+  const target = pickJoinSeat(loaded);
+  if (!target) throw new Error("game_full");
+
+  const supabase = getServiceClient();
+  const name = cleanName(input.displayName, playerNameFallback(input.locale, target.seat));
+  if (target.mode === "insert") {
+    await supabase.from("game_players").insert({
+      game_id: loaded.game.id,
+      seat: target.seat,
+      user_id: uid,
+      display_name: name,
+      is_bot: false,
+      team: teamForSeat(target.seat),
+    });
+  } else {
+    await supabase
+      .from("game_players")
+      .update({ user_id: uid, display_name: name, is_bot: false, missed_turns_in_row: 0 })
+      .eq("game_id", loaded.game.id)
+      .eq("seat", target.seat);
+  }
+  await touchGame(loaded.game);
+  return { gameId: loaded.game.id, seat: target.seat };
+}
+
+export interface RoomPreview {
+  gameId: string;
+  gameType: GameType;
+  status: GameRow["status"];
+  players: { seat: number; displayName: string; isBot: boolean }[];
+}
+
+/** Read-only lookup for the join screen: lets it show an in-progress game's
+ *  seats (and which ones are bots) before the caller commits to joining.
+ *  No auth required - exposes only seat/name/bot-flag, never hands or state. */
+export async function previewRoomByCode(roomCode: string): Promise<RoomPreview | null> {
+  let normalized: string;
+  try {
+    normalized = normalizeRoomCode(roomCode);
+  } catch {
+    return null;
+  }
+  const loaded = await findGameByCode(normalized);
+  if (!loaded) return null;
+  return {
+    gameId: loaded.game.id,
+    gameType: loaded.game.game_type,
+    status: loaded.game.status,
+    players: loaded.players.map((p) => ({ seat: p.seat, displayName: p.display_name, isBot: p.is_bot })),
+  };
+}
+
+/** Join an already-started game by taking over a specific bot seat (the
+ *  human-chosen counterpart to the idle-turn timer's automatic bot
+ *  conversion in `idle-timer.ts`). Rejects if that seat is no longer a bot -
+ *  e.g. someone else just took it - so two players tapping the same seat at
+ *  once can't both win it. */
+export async function joinBotSeat(input: {
+  roomCode: string;
+  seat: number;
+  displayName: string;
+  locale?: "fr" | "en";
+}): Promise<{ gameId: string; seat: number }> {
+  const uid = await requireUser();
+  const roomCode = normalizeRoomCode(input.roomCode);
+  const loaded = await findGameByCode(roomCode);
+  if (!loaded) throw new Error("game_not_found");
+  if (loaded.game.status !== "playing") throw new Error("game_not_joinable");
+
+  const existingSeat = seatOf(uid, loaded.players);
+  if (existingSeat !== null) return { gameId: loaded.game.id, seat: existingSeat };
+
+  const target = loaded.players.find((p) => p.seat === input.seat);
+  if (!target || !target.is_bot) throw new Error("seat_not_available");
+
+  const supabase = getServiceClient();
+  const name = cleanName(input.displayName, playerNameFallback(input.locale, target.seat));
+  await supabase
+    .from("game_players")
+    .update({ user_id: uid, display_name: name, is_bot: false, missed_turns_in_row: 0 })
+    .eq("game_id", loaded.game.id)
+    .eq("seat", target.seat);
+
+  // Reset the idle-turn clock only if this seat is the one currently on the
+  // clock - otherwise it would unfairly extend some other seat's timeout.
+  // Either way the game row's version must bump so other clients' realtime
+  // subscription (tied to `games` row changes, not `game_players`) picks up
+  // the new occupant.
+  if (loaded.game.state && (loaded.game.state as { turn?: number }).turn === target.seat) {
+    await touchTurnStartedAt(loaded.game as GameRow);
+  } else {
+    await touchGame(loaded.game);
+  }
+
+  return { gameId: loaded.game.id, seat: target.seat };
+}
+
+export async function fillWithBots(gameId: string): Promise<void> {
+  await requireUser();
+  const loaded = await loadGame(gameId);
+  if (loaded.game.status !== "lobby") throw new Error("already_started");
+
+  const taken = new Set(loaded.players.map((p) => p.seat));
+  const supabase = getServiceClient();
+  const botNames = ["Adam", "Jane", "Lea", "Max"];
+  const seats = Array.from({ length: seatCountFor(loaded.game.game_type) }, (_, s) => s);
+  const rows = seats
+    .filter((s) => !taken.has(s))
+    .map((seat) => ({
+      game_id: gameId,
+      seat,
+      user_id: null,
+      display_name: botNames[seat],
+      is_bot: true,
+      team: teamForSeat(seat),
+    }));
+  if (rows.length > 0) await supabase.from("game_players").insert(rows);
+  await touchGame(loaded.game);
+}
+
+export async function swapSeats(gameId: string, seatA: number, seatB: number): Promise<void> {
+  const uid = await requireUser();
+  const loaded = await loadGame(gameId);
+  if (loaded.game.status !== "lobby") throw new Error("already_started");
+  if (loaded.game.host_user_id !== uid) throw new Error("not_host");
+  if (seatA === seatB) return;
+
+  const supabase = getServiceClient();
+  const playerA = loaded.players.find((p) => p.seat === seatA);
+  const playerB = loaded.players.find((p) => p.seat === seatB);
+
+  if (playerA && playerB) {
+    // Both seats occupied: swap occupants in place. Seat numbers stay fixed, so
+    // the unique (game_id, seat) constraint is never violated. Team stays tied
+    // to the seat, so it does not change.
+    await supabase
+      .from("game_players")
+      .update({ user_id: playerB.user_id, display_name: playerB.display_name, is_bot: playerB.is_bot })
+      .eq("game_id", gameId)
+      .eq("seat", seatA);
+    await supabase
+      .from("game_players")
+      .update({ user_id: playerA.user_id, display_name: playerA.display_name, is_bot: playerA.is_bot })
+      .eq("game_id", gameId)
+      .eq("seat", seatB);
+  } else if (playerA) {
+    await supabase
+      .from("game_players")
+      .update({ seat: seatB, team: teamForSeat(seatB) })
+      .eq("game_id", gameId)
+      .eq("seat", seatA);
+  } else if (playerB) {
+    await supabase
+      .from("game_players")
+      .update({ seat: seatA, team: teamForSeat(seatA) })
+      .eq("game_id", gameId)
+      .eq("seat", seatB);
+  }
+  await touchGame(loaded.game);
+}
+
+function startInitialState(gameType: GameType, settings: GameSettings): AnyGameState {
+  if (gameType === "bataillecorse") {
+    return createInitialBataillecorseState(Math.random, settings.bataillecorseDeckSize ?? DEFAULT_BATAILLECORSE_DECK_SIZE);
+  }
+  if (gameType === "bouilla") return beginNextRound(createInitialBouillaState());
+  if (gameType === "president") {
+    return beginNextPresidentRound(createInitialPresidentState(settings.presidentRoundsToPlay ?? DEFAULT_PRESIDENT_ROUNDS_TO_PLAY));
+  }
+  return beginNextDeal(createInitialState(settings.targetPoints ?? 1000, {
+    countContractOnlyIfMade: settings.countContractOnlyIfMade,
+    failedContractDefensePoints: settings.failedContractDefensePoints,
+    zeroPointsForNonContractingTeamWhenContractMade: settings.zeroPointsForNonContractingTeamWhenContractMade,
+    capotMadePoints: settings.capotMadePoints,
+    capotFailedDefensePoints: settings.capotFailedDefensePoints,
+    allowToutAtoutSansAtout: settings.allowToutAtoutSansAtout,
+    requireMorePointsToWin: settings.requireMorePointsToWin,
+  }));
+}
+
+/** Fisher-Yates shuffle; returns a new array. */
+function shuffled<T>(arr: T[]): T[] {
+  const result = [...arr];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+/** Shuffle the 4 occupants across the 4 seat rows. Teams stay tied to the seat
+ *  (even = A, odd = B). Only user_id / display_name / is_bot are swapped. */
+async function shuffleSeatsInPlace(gameId: string, players: import("@/lib/supabase/types").PlayerRow[]): Promise<void> {
+  const supabase = getServiceClient();
+  const byCurrentSeat = [...players].sort((a, b) => a.seat - b.seat);
+  const newOccupants = shuffled(byCurrentSeat);
+  await Promise.all(
+    newOccupants.map((p, seatIdx) =>
+      supabase
+        .from("game_players")
+        .update({ user_id: p.user_id, display_name: p.display_name, is_bot: p.is_bot, missed_turns_in_row: 0 })
+        .eq("game_id", gameId)
+        .eq("seat", seatIdx),
+    ),
+  );
+}
+
+export async function startGame(gameId: string, randomize = false): Promise<void> {
+  await requireUser();
+  const loaded = await loadGame(gameId);
+  if (loaded.game.status !== "lobby") throw new Error("already_started");
+  if (loaded.players.length < seatCountFor(loaded.game.game_type)) throw new Error("not_enough_players");
+
+  if (randomize) await shuffleSeatsInPlace(gameId, loaded.players);
+  const state = startInitialState(loaded.game.game_type, loaded.game.settings);
+  await persistGame(loaded.game as GameRow, state, state.phase === "finished" ? "finished" : "playing");
+}
+
+/** Online only: "Nouvelle partie" from the finished screen. Restarts a fresh
+ *  match in the same room (same `room_code`, same seats/settings), skipping
+ *  the lobby entirely - unlike `startGame`, which only ever runs once, from
+ *  a lobby that has never played. Any seat still occupied by a human keeps
+ *  its idle-turn clock wiped, so a slow last few seconds of the previous
+ *  match can't carry over into an immediate bot takeover in the new one. */
+export async function rematchGame(gameId: string): Promise<void> {
+  const uid = await requireUser();
+  const loaded = await loadGame(gameId);
+  if (seatOf(uid, loaded.players) === null) throw new Error("not_a_member");
+  if (loaded.game.status !== "finished") throw new Error("game_not_finished");
+
+  const state = startInitialState(loaded.game.game_type, loaded.game.settings);
+  await persistGame(loaded.game as GameRow, state, state.phase === "finished" ? "finished" : "playing");
+
+  const supabase = getServiceClient();
+  await supabase.from("game_players").update({ missed_turns_in_row: 0 }).eq("game_id", gameId);
+}

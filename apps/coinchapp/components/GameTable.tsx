@@ -1,0 +1,423 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/client/i18n";
+import { useOptimisticPlay } from "@/lib/client/useOptimisticPlay";
+import { CAPOT_VALUE, cardId, GENERALE_VALUE, isTrump, RANKS, teamOf, trumpStrength, type Bid, type Card, type PlayerView, type TrumpMode } from "@/lib/coinche";
+import type { GameView } from "@/lib/server/view";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
+import { BiddingPanel, type BidPayload, type CurrentLiveBid } from "./BiddingPanel";
+import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
+import { EmojiButton } from "./EmojiButton";
+import { GameHud } from "./GameHud";
+import { GameTableScene } from "./GameTableScene";
+import { playerName, relativeSeat } from "./gameTableHelpers";
+import { HandCardSlot } from "./HandCardSlot";
+import { isRedSuit, trumpModeLabel } from "./labels";
+import { SelfNameChip } from "./SelfNameChip";
+import { TableShell } from "./TableShell";
+
+/** This table only ever renders a Coinche game: narrow the shared, multi-game
+ *  `GameView` down to its Coinche-specific view/botViews shape. */
+export type CoincheGameView = Omit<GameView, "view" | "botViews"> & {
+  view: PlayerView | null;
+  botViews?: Record<number, PlayerView>;
+};
+
+export interface GameActions {
+  onBid: (payload: BidPayload) => Promise<void> | void;
+  onPlay: (card: Card) => Promise<void> | void;
+  onNextDeal: () => Promise<void> | void;
+  /** Online only: take over running the bots. */
+  onBecomeHost?: () => Promise<void> | void;
+  /** Online only: force a manual re-sync (refetch + rebuild the realtime channel). */
+  onForceSync?: () => void;
+  /** Local only: restart the game from scratch with same settings. */
+  onReset?: () => void;
+  /** Local only: re-deal the current hand (no card played yet). */
+  onReshuffle?: () => void;
+  /** Send an emoji or GIF reaction visible to all players. */
+  onSendReaction?: (pick: ReactionPick) => void;
+  /** Online only: from the finished screen, start a fresh match in the same room. */
+  onRematch?: () => Promise<void> | void;
+}
+
+const SUIT_ORDER: Record<string, number> = { S: 0, H: 1, C: 2, D: 3 };
+
+/**
+ * Two triggers — both require the first card to be a non-trump Ace:
+ *   A) 2nd card is a trump  → BIM fires immediately (trickCards.length === 2)
+ *   B) 4th card is a trump AND cards 2 & 3 were not trumps → BIM at the last card
+ * Any other configuration never fires (c'est tout).
+ */
+function computeBimKey(
+  view: { trump: import("@/lib/coinche").TrumpMode | null; tricks: import("@/lib/coinche").Trick[] },
+  trickCards: { seat: number; card: Card }[],
+): string | null {
+  const { trump, tricks } = view;
+  if (!trump || trump === "SA" || trump === "TA") return null;
+  if (trickCards.length < 2) return null;
+  const first = trickCards[0];
+  if (first.card.rank !== "A" || isTrump(first.card, trump)) return null;
+  const n = trickCards.length;
+  const idx = tricks.length;
+  // Trigger A: 2nd card immediately cuts the Ace
+  if (n === 2 && isTrump(trickCards[1].card, trump)) {
+    const c = trickCards[1];
+    return `${idx}:a:${c.seat}:${cardId(c.card)}`;
+  }
+  // Trigger B: 4th card cuts the Ace (cards 2 and 3 were not trumps)
+  if (
+    n === 4 &&
+    !isTrump(trickCards[1].card, trump) &&
+    !isTrump(trickCards[2].card, trump) &&
+    isTrump(trickCards[3].card, trump)
+  ) {
+    const c = trickCards[3];
+    return `${idx}:b:${c.seat}:${cardId(c.card)}`;
+  }
+  return null;
+}
+
+function deriveLiveBid(bids: Bid[]): { bid: Bid; coinched: boolean; surcoinched: boolean } | null {
+  let highest: Bid | undefined;
+  let coinched = false;
+  let surcoinched = false;
+  for (const b of bids) {
+    if (b.type === "bid") {
+      highest = b;
+      coinched = false;
+      surcoinched = false;
+    } else if (b.type === "coinche") {
+      coinched = true;
+    } else if (b.type === "surcoinche") {
+      surcoinched = true;
+    }
+  }
+  if (!highest) return null;
+  return { bid: highest, coinched, surcoinched };
+}
+
+function sortHand(hand: Card[], trump: TrumpMode | null): Card[] {
+  return [...hand].sort((a, b) => {
+    const aTrump = isTrump(a, trump);
+    const bTrump = isTrump(b, trump);
+    if (aTrump !== bTrump) return aTrump ? 1 : -1;
+    if (aTrump && bTrump) return trumpStrength(a) - trumpStrength(b);
+    if (a.suit !== b.suit) return SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
+    return RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
+  });
+}
+
+export function GameTable({
+  gv,
+  actions,
+  reactions,
+  selfAvatar,
+}: {
+  gv: CoincheGameView;
+  actions: GameActions;
+  reactions?: Map<number, TableReaction>;
+  /** Set only from online GameRoom. Undefined hides the local-player chip. */
+  selfAvatar?: string;
+}) {
+  const view = gv.view!;
+  const mySeat = gv.mySeat!;
+  const [emojiOn, setEmojiOn] = useState(true);
+  const { legalSet, myTurnToPlay, optimisticHand, trickCards, preSelectedId, tapCard } = useOptimisticPlay(
+    view,
+    mySeat,
+    cardId,
+    actions.onPlay,
+  );
+
+  useEffect(() => {
+    // Post-hydration browser read: deferred to after mount to avoid an SSR/client mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (localStorage.getItem("coinchapp-emoji") === "false") setEmojiOn(false);
+  }, []);
+
+  function toggleEmoji() {
+    setEmojiOn((v) => {
+      localStorage.setItem("coinchapp-emoji", String(!v));
+      return !v;
+    });
+  }
+  const seats = {
+    top: relativeSeat(mySeat, 2),
+    left: relativeSeat(mySeat, 3),
+    right: relativeSeat(mySeat, 1),
+    bottom: mySeat,
+  };
+  const trickBySeat = new Map<number, Card>(trickCards.map((c) => [c.seat, c.card]));
+  const lastTrickBySeat = view.lastTrick
+    ? new Map<number, Card>(view.lastTrick.cards.map((c) => [c.seat, c.card]))
+    : null;
+  const lastTrickKey = view.lastTrick
+    ? view.lastTrick.cards.map((played) => `${played.seat}:${cardId(played.card)}`).join("|")
+    : null;
+  const lastTrickWinner = view.lastTrick?.winner ?? null;
+  const bimTrickKey = computeBimKey(view, trickCards);
+
+  return (
+    <TableShell dataId="game-table">
+      <GameHud
+        view={view}
+        players={gv.players}
+        infoCode={gv.roomCode}
+        onReset={actions.onReset}
+        onReshuffle={actions.onReshuffle}
+        emojiControls={actions.onSendReaction ? { enabled: emojiOn, onToggle: toggleEmoji } : undefined}
+        host={
+          actions.onBecomeHost && actions.onForceSync
+            ? {
+                isHost: gv.isHost,
+                hostName: gv.hostSeat !== null ? playerName(gv, gv.hostSeat) : null,
+                onBecomeHost: actions.onBecomeHost,
+                onForceSync: actions.onForceSync,
+              }
+            : undefined
+        }
+      />
+      <div className="relative h-0 min-h-0 flex-1">
+        <GameTableScene
+          gv={gv}
+          view={view}
+          seats={seats}
+          trickBySeat={trickBySeat}
+          lastTrickBySeat={lastTrickBySeat}
+          lastTrickKey={lastTrickKey}
+          lastTrickWinner={lastTrickWinner}
+          bimTrickKey={bimTrickKey}
+          reactions={reactions}
+          onNextDeal={actions.onNextDeal}
+          nextDealGate={gv.nextDealGate}
+          onRematch={actions.onRematch}
+        />
+        {emojiOn && actions.onSendReaction && (
+          <EmojiButton
+            myReaction={reactions?.get(mySeat)}
+            onSelect={actions.onSendReaction}
+          />
+        )}
+        <ActionDock
+          view={view}
+          hand={optimisticHand}
+          players={gv.players}
+          mySeat={mySeat}
+          legalSet={legalSet}
+          myTurnToPlay={myTurnToPlay}
+          preSelectedId={preSelectedId}
+          onBid={actions.onBid}
+          onCardTap={tapCard}
+          selfName={selfAvatar !== undefined ? playerName(gv, mySeat) : undefined}
+          selfAvatar={selfAvatar}
+        />
+      </div>
+    </TableShell>
+  );
+}
+
+const HAND_STEP_RATIO = 40 / 64;
+const HAND_EDGE_MARGIN = 12;
+const DEFAULT_MAX_FAN_WIDTH = 340;
+
+function HandFan({
+  hand,
+  trump,
+  legalSet,
+  myTurnToPlay,
+  preSelectedId,
+  onCardTap,
+}: {
+  hand: Card[];
+  trump: TrumpMode | null;
+  legalSet: Set<string>;
+  myTurnToPlay: boolean;
+  preSelectedId: string | null;
+  onCardTap: (card: Card) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [maxFanWidth, setMaxFanWidth] = useState(DEFAULT_MAX_FAN_WIDTH);
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-lg-w", 64);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setMaxFanWidth(el.clientWidth - HAND_EDGE_MARGIN * 2);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const sorted = sortHand(hand, trump);
+  const n = sorted.length;
+  const maxStep = cardW * HAND_STEP_RATIO;
+  const step = n > 1 ? Math.min(maxStep, Math.max(0, maxFanWidth - cardW) / (n - 1)) : maxStep;
+  const fanW = n > 1 ? cardW + (n - 1) * step : cardW;
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative flex h-[calc(var(--card-lg-w)*1.5+2.75rem)] w-full items-end justify-center"
+      data-id="my-hand"
+    >
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
+      <div className="relative h-full" style={{ width: fanW }}>
+        {sorted.map((card, i) => {
+          const id = cardId(card);
+          const isPlayable = myTurnToPlay && legalSet.has(id);
+          const isPreSelected = preSelectedId === id;
+          return (
+            <HandCardSlot
+              key={id}
+              card={card}
+              left={i * step}
+              zIndex={isPreSelected ? 60 + i : isPlayable ? 50 + i : i}
+              index={i}
+              total={n}
+              isPlayable={isPlayable}
+              isDimmed={myTurnToPlay && !isPlayable}
+              isPreSelected={isPreSelected}
+              myTurnToPlay={myTurnToPlay}
+              dataId={`hand-card-${id}`}
+              onTap={() => onCardTap(card)}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ActionDock({
+  view,
+  hand,
+  players,
+  mySeat,
+  legalSet,
+  myTurnToPlay,
+  preSelectedId,
+  onBid,
+  onCardTap,
+  selfName,
+  selfAvatar,
+}: {
+  view: PlayerView;
+  hand: Card[];
+  players?: GameView["players"];
+  mySeat: number;
+  legalSet: Set<string>;
+  myTurnToPlay: boolean;
+  preSelectedId: string | null;
+  onBid: (payload: BidPayload) => Promise<void> | void;
+  onCardTap: (card: Card) => void;
+  selfName?: string;
+  selfAvatar?: string;
+}) {
+  const [previewTrump, setPreviewTrump] = useState<TrumpMode | null>(null);
+  return (
+    <section className="absolute inset-x-0 bottom-0 z-20 px-0 pb-1" data-id="action-area">
+      {selfName !== undefined && (
+        <SelfNameChip name={selfName} avatarSrc={selfAvatar} />
+      )}
+      <BiddingStatus view={view} players={players} mySeat={mySeat} onBid={onBid} onSuitChange={setPreviewTrump} />
+      <HandFan
+        hand={hand}
+        trump={view.trump ?? previewTrump}
+        legalSet={legalSet}
+        myTurnToPlay={myTurnToPlay}
+        preSelectedId={preSelectedId}
+        onCardTap={onCardTap}
+      />
+    </section>
+  );
+}
+
+function BiddingStatus({
+  view,
+  players,
+  mySeat,
+  onBid,
+  onSuitChange,
+}: {
+  view: PlayerView;
+  players?: GameView["players"];
+  mySeat: number;
+  onBid: (payload: BidPayload) => Promise<void> | void;
+  onSuitChange: (suit: TrumpMode | null) => void;
+}) {
+  const { locale } = useI18n();
+  if (view.phase !== "bidding") return null;
+  if (!view.bidOptions) return null;
+  const derived = deriveLiveBid(view.bids);
+  const currentLiveBid: CurrentLiveBid | null = derived
+    ? {
+        label: `${derived.bid.value} ${trumpModeLabel(derived.bid.suit!, locale)}${derived.surcoinched ? " ×4" : derived.coinched ? " ×2" : ""}`,
+        isRed:
+          derived.bid.suit !== undefined &&
+          derived.bid.suit !== "TA" &&
+          derived.bid.suit !== "SA" &&
+          isRedSuit(derived.bid.suit),
+        bidderName:
+          derived.bid.seat === mySeat
+            ? "Toi"
+            : (players?.find((player) => player.seat === derived.bid.seat)?.displayName ?? null),
+        bidderTeam: teamOf(derived.bid.seat),
+      }
+    : null;
+  return (
+    <div className="mx-3 mb-2 rounded-2xl bg-[var(--surface-overlay)] p-3 shadow-xl" data-id="bidding-status-panel">
+      <BidHistory bids={view.bids} players={players} mySeat={mySeat} />
+      <BiddingPanel options={view.bidOptions} currentLiveBid={currentLiveBid} onBid={onBid} onSuitChange={onSuitChange} />
+    </div>
+  );
+}
+
+function BidHistory({
+  bids,
+  players,
+  mySeat,
+}: {
+  bids: Bid[];
+  players?: GameView["players"];
+  mySeat: number;
+}) {
+  const { locale } = useI18n();
+  if (bids.length === 0) return null;
+  return (
+    <div className="mb-2 max-h-24 overflow-y-auto" data-id="bid-history">
+      {bids.map((bid, i) => {
+        const isMe = bid.seat === mySeat;
+        const name = isMe
+          ? "Toi"
+          : (players?.find((p) => p.seat === bid.seat)?.displayName ?? `J${bid.seat + 1}`);
+        const teamColor = teamOf(bid.seat) === "A" ? "var(--team-a)" : "var(--team-b)";
+        let label: string;
+        let labelClass: string;
+        if (bid.type === "pass") {
+          label = "Passe";
+          labelClass = "text-[var(--card-face)]/40";
+        } else if (bid.type === "bid") {
+          const isRed = bid.suit === "H" || bid.suit === "D";
+          const val = bid.value === CAPOT_VALUE ? "Capot" : bid.value === GENERALE_VALUE ? "Générale" : String(bid.value);
+          label = `${val}${bid.suit ? ` ${trumpModeLabel(bid.suit, locale)}` : ""}`;
+          labelClass = `font-bold ${isRed ? "text-[var(--accent-red)]" : "text-[var(--card-face)]"}`;
+        } else if (bid.type === "coinche") {
+          label = "Coinche";
+          labelClass = "font-bold text-[var(--accent-yellow)]";
+        } else {
+          label = "Surcoinche";
+          labelClass = "font-bold text-[var(--accent-red)]";
+        }
+        return (
+          <div key={i} className="flex items-center justify-between gap-2 px-1 py-0.5" data-id={`bid-history-row-${i}`}>
+            <span className="text-xs font-bold" style={{ color: teamColor }}>{name}</span>
+            <span className={`text-xs ${labelClass}`}>{label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

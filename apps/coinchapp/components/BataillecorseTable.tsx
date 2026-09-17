@@ -1,0 +1,546 @@
+"use client";
+
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
+import Link from "next/link";
+import { SLAP_GRACE_MS, type PlayerView } from "@/lib/bataillecorse";
+import { formatText, useI18n } from "@/lib/client/i18n";
+import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
+import type { GameView } from "@/lib/server/view";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
+import { CardBack, PlayingCard } from "./PlayingCard";
+import { EmojiButton } from "./EmojiButton";
+import { ReactionBubble } from "./ReactionBubble";
+import { GameInfoButton, HostRow, type HostControls } from "./GameHud";
+import { playedCardEnterStyle, type EnterDirection } from "./TrickStage";
+import { playerName } from "./gameTableHelpers";
+import { TableShell } from "./TableShell";
+
+/** This table only ever renders a la Bataille Corse game: narrow the shared,
+ *  multi-game `GameView` down to its own view/botViews shape. */
+export type BataillecorseGameView = Omit<GameView, "view" | "botViews"> & {
+  view: PlayerView | null;
+  botViews?: Record<number, PlayerView>;
+};
+
+export interface BataillecorseActions {
+  onFlip: () => Promise<void> | void;
+  /** `reactionMs` is measured entirely client-side (see docs/DECISIONS.md);
+   *  `observedWindowId` is whichever slap window this client last saw open. */
+  onSlap: (reactionMs: number, observedWindowId: number | null) => Promise<void> | void;
+  onBecomeHost?: () => Promise<void> | void;
+  onForceSync?: () => void;
+  onReset?: () => void;
+  onSendReaction?: (pick: ReactionPick) => void;
+  onRematch?: () => Promise<void> | void;
+}
+
+/** How long a "pile won"/"false slap" banner stays visible, diffed by event
+ *  id so it flashes exactly once per occurrence (same pattern as Président's
+ *  `lastBurn`/`lastSkip`, see docs/DECISIONS.md). */
+const FLASH_MS = 1800;
+
+/** How long the "your reaction time" readout stays on screen after a slap attempt. */
+const REACTION_READOUT_MS = 3000;
+
+function useFlash(eventId: number | undefined): boolean {
+  const [visible, setVisible] = useState(false);
+  const seenRef = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (eventId === undefined || eventId === seenRef.current) return;
+    seenRef.current = eventId;
+    setVisible(true);
+    const timer = setTimeout(() => setVisible(false), FLASH_MS);
+    return () => clearTimeout(timer);
+  }, [eventId]);
+  return visible;
+}
+
+/** Which side the pile's newest card should slide in from: whichever seat's
+ *  stock count just went down played it. Adjusted during render (React's
+ *  documented "reset state on prop change" pattern, same as Président's
+ *  `usePileDisplay`) so it is always correct by the time the new card's key
+ *  first mounts. */
+function usePileEnterDirection(view: PlayerView): EnterDirection {
+  const [dir, setDir] = useState<EnterDirection>("bottom");
+  const [track, setTrack] = useState({ pileLength: view.pile.length, myStockCount: view.myStockCount });
+  if (view.pile.length !== track.pileLength) {
+    if (view.pile.length > track.pileLength) {
+      setDir(view.myStockCount < track.myStockCount ? "bottom" : "top");
+    }
+    setTrack({ pileLength: view.pile.length, myStockCount: view.myStockCount });
+  }
+  return dir;
+}
+
+/** The instant (`performance.now()`) *this client* first saw the currently
+ *  open slap window, for measuring a genuine local reaction time - read only
+ *  from the `tapSlap` event handler, never during render (`.current` is a
+ *  ref, not state, and mutated inside an effect, not the render body).
+ *  Uses `useLayoutEffect` (not `useEffect`): a plain effect only runs after
+ *  the browser has already painted the new frame, which is late enough that
+ *  a fast human reacting to the very frame that opened the window could tap
+ *  before it fires, wrongly reading back as "no window seen yet" (reaction
+ *  measured as 0). A layout effect runs before paint, so by the time the
+ *  player can actually see the window, this ref is already set. */
+function useWindowSeenAtRef(slapWindow: PlayerView["slapWindow"]): RefObject<{ id: number; perfMs: number } | null> {
+  const ref = useRef<{ id: number; perfMs: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!slapWindow || ref.current?.id === slapWindow.id) return;
+    ref.current = { id: slapWindow.id, perfMs: performance.now() };
+  }, [slapWindow]);
+  return ref;
+}
+
+function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
+  const value = (ms / 1000).toFixed(3);
+  return locale === "fr" ? value.replace(".", ",") : value;
+}
+
+/** The opponent's own locally-measured reaction time for the slap that just
+ *  resolved (see `PileWinEvent.reactionMsBySeat`) - `null` once nobody has
+ *  won a slap yet, or that seat never claimed (won uncontested via
+ *  `resolveStaleSlapWindow`). Diffed by event id so it only (re)appears once
+ *  per resolution, auto-hiding the same way `myReactionMs` does. */
+function useOpponentReactionMs(lastPileWin: PlayerView["lastPileWin"], opponentSeat: number): number | null {
+  const [value, setValue] = useState<number | null>(null);
+  const seenIdRef = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    const id = lastPileWin?.id;
+    const ms = lastPileWin?.reason === "slap" ? lastPileWin.reactionMsBySeat?.[opponentSeat as 0 | 1] : undefined;
+    if (id === undefined || id === seenIdRef.current || ms === undefined) return;
+    seenIdRef.current = id;
+    setValue(ms);
+    const timer = setTimeout(() => setValue(null), REACTION_READOUT_MS);
+    return () => clearTimeout(timer);
+  }, [lastPileWin, opponentSeat]);
+  return value;
+}
+
+/** Whether the currently open slap window should visually stand out (red
+ *  pulse) yet. Deliberately delayed by `SLAP_GRACE_MS` (the same window a
+ *  claim has to land in) instead of firing the instant the pattern appears:
+ *  revealing it immediately would hand away the "spot it yourself" reflex
+ *  test this game is actually about - the highlight only kicks in as a
+ *  last-moment nudge, right as the window is about to auto-resolve. */
+function useSlapWindowUrgent(slapWindow: PlayerView["slapWindow"]): boolean {
+  const [urgentWindowId, setUrgentWindowId] = useState<number | null>(null);
+  useEffect(() => {
+    if (!slapWindow) return;
+    const remaining = slapWindow.openedAtMs + SLAP_GRACE_MS - Date.now();
+    const timer = setTimeout(() => setUrgentWindowId(slapWindow.id), Math.max(0, remaining));
+    return () => clearTimeout(timer);
+  }, [slapWindow]);
+  return slapWindow !== null && slapWindow.id === urgentWindowId;
+}
+
+export function BataillecorseTable({
+  gv,
+  actions,
+  reactions,
+  selfAvatar,
+}: {
+  gv: BataillecorseGameView;
+  actions: BataillecorseActions;
+  reactions?: Map<number, TableReaction>;
+  selfAvatar?: string;
+}) {
+  const { locale, t } = useI18n();
+  const view = gv.view!;
+  const mySeat = gv.mySeat!;
+  const opponentSeat = mySeat === 0 ? 1 : 0;
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [myReactionMs, setMyReactionMs] = useState<number | null>(null);
+  const windowSeenAtRef = useWindowSeenAtRef(view.slapWindow);
+  const reactionHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
+    };
+  }, []);
+
+  const pileWinFlash = useFlash(view.lastPileWin?.id);
+  const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
+  const pileEnterDirection = usePileEnterDirection(view);
+  const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
+  const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
+  const myTurnToFlip = view.phase === "playing" && view.turn === mySeat && view.slapWindow === null;
+  const owesTribute = view.tribute?.seat === mySeat;
+
+  async function tapFlip() {
+    if (!myTurnToFlip || busy) return;
+    setBusy(true);
+    try {
+      await actions.onFlip();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function tapSlap() {
+    if (view.phase !== "playing") return;
+    const seen = view.slapWindow && windowSeenAtRef.current?.id === view.slapWindow.id ? windowSeenAtRef.current : null;
+    const reactionMs = seen ? performance.now() - seen.perfMs : 0;
+    const observedWindowId = view.slapWindow?.id ?? view.lastClosedSlapWindowId ?? null;
+
+    setMyReactionMs(reactionMs);
+    if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
+    reactionHideTimerRef.current = setTimeout(() => setMyReactionMs(null), REACTION_READOUT_MS);
+
+    await actions.onSlap(reactionMs, observedWindowId);
+  }
+
+  return (
+    <TableShell dataId="bataillecorse-table">
+      <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 flex items-center justify-between px-3">
+        <Link
+          href="/"
+          aria-label={t("back")}
+          data-id="bataillecorse-back"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--card-face)] text-5xl font-black leading-none text-[var(--surface)] shadow-lg"
+        >
+          ‹
+        </Link>
+        <p className="rounded-full bg-[var(--surface-overlay)]/70 px-3 py-1 text-xs font-medium text-[var(--card-face)]/70" data-id="bataillecorse-stock-tally">
+          {view.myStockCount} — {view.opponentStockCount}
+        </p>
+        <GameInfoButton label={t("gameInfo")} onClick={() => setPanelOpen(true)} />
+      </header>
+
+      {panelOpen && (
+        <InfoPanel
+          host={
+            actions.onBecomeHost && actions.onForceSync
+              ? { isHost: gv.isHost, hostName: gv.hostSeat !== null ? playerName(gv, gv.hostSeat, locale) : null, onBecomeHost: actions.onBecomeHost, onForceSync: actions.onForceSync }
+              : undefined
+          }
+          onReset={actions.onReset}
+          onClose={() => setPanelOpen(false)}
+        />
+      )}
+
+      <div className="relative h-0 min-h-0 flex-1" data-id="bataillecorse-scene">
+        <SeatRow
+          label={playerName(gv, opponentSeat, locale)}
+          stockCount={view.opponentStockCount}
+          isTurn={view.turn === opponentSeat}
+          reaction={reactions?.get(opponentSeat)}
+          dataId="bataillecorse-opponent-seat"
+          className="absolute inset-x-0 top-[calc(var(--table-hud-top)+3.5rem)]"
+        />
+
+        <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-3" data-id="bataillecorse-center-block">
+          {/* Tapping the pile itself is the slap gesture: a very light circle
+              around the cards is the whole hit target, not a separate button. */}
+          <button
+            type="button"
+            data-id="bataillecorse-slap-button"
+            onClick={tapSlap}
+            disabled={view.phase !== "playing"}
+            aria-label={t("slapPileButton")}
+            className={[
+              "flex h-[var(--slap-circle-size)] w-[var(--slap-circle-size)] items-center justify-center rounded-full transition-all active:scale-95",
+              slapWindowUrgent
+                ? "animate-pulse bg-[var(--accent-red)]/15 ring-4 ring-[var(--accent-red)]"
+                : "bg-white/5 ring-1 ring-white/20",
+            ].join(" ")}
+          >
+            <PileStack cards={view.pile} enterFrom={pileEnterDirection} />
+          </button>
+
+          <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
+            {view.tribute && (
+              <p
+                className="max-w-[85%] rounded-full bg-[var(--surface-overlay)] px-4 py-1.5 text-center text-xs font-bold"
+                data-id="bataillecorse-tribute-banner"
+              >
+                {formatText(t("tributeOwed"), {
+                  player: owesTribute ? t("you") : playerName(gv, opponentSeat, locale),
+                  attempts: view.tribute.attemptsLeft,
+                })}
+              </p>
+            )}
+            {pileWinFlash && view.lastPileWin && (
+              <p className="rounded-full bg-[var(--accent-yellow)] px-4 py-1.5 text-center text-xs font-black text-[var(--surface)]" data-id="bataillecorse-pile-win-flash">
+                {formatText(t("pileWonBanner"), {
+                  player: view.lastPileWin.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
+                  count: view.lastPileWin.cardCount,
+                })}
+              </p>
+            )}
+            {falseSlapFlash && view.lastFalseSlap && (
+              <p className="rounded-full bg-[var(--accent-red)] px-4 py-1.5 text-center text-xs font-black text-[var(--card-face)]" data-id="bataillecorse-false-slap-flash">
+                {formatText(t("falseSlapBanner"), {
+                  player: view.lastFalseSlap.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
+                })}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-1.5" data-id="bataillecorse-self-seat">
+          {selfAvatar !== undefined && (
+            <p className="text-xs font-bold uppercase text-[var(--card-face)]/80" data-id="bataillecorse-self-name">
+              {playerName(gv, mySeat, locale)}
+            </p>
+          )}
+          <StockPile
+            count={view.myStockCount}
+            dataId="bataillecorse-my-stock"
+            scale={1.5}
+            onClick={tapFlip}
+            disabled={!myTurnToFlip || busy}
+          />
+        </div>
+
+        {(myReactionMs !== null || opponentReactionMs !== null) && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-30 flex flex-col items-center gap-1" data-id="bataillecorse-reaction-times">
+            {myReactionMs !== null && (
+              <span className="rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
+                {formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) })}
+              </span>
+            )}
+            {opponentReactionMs !== null && (
+              <span className="rounded-full bg-black/40 px-4 py-1.5 text-xs font-bold text-white/90 shadow-lg" data-id="bataillecorse-opponent-reaction-time">
+                {formatText(t("opponentReactionTimeLabel"), {
+                  player: playerName(gv, opponentSeat, locale),
+                  s: formatReactionSeconds(opponentReactionMs, locale),
+                })}
+              </span>
+            )}
+          </div>
+        )}
+
+        {actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
+      </div>
+
+      {view.phase === "finished" && (
+        <FinishedOverlay gv={gv} view={view} onRematch={actions.onRematch} onReset={actions.onReset} />
+      )}
+    </TableShell>
+  );
+}
+
+function SeatRow({
+  label,
+  stockCount,
+  isTurn,
+  reaction,
+  dataId,
+  className,
+}: {
+  label: string;
+  stockCount: number;
+  isTurn: boolean;
+  reaction?: TableReaction;
+  dataId: string;
+  className: string;
+}) {
+  return (
+    <div className={`flex flex-col items-center gap-1.5 ${className}`} data-id={dataId}>
+      <p className={`text-xs font-bold uppercase ${isTurn ? "underline decoration-2" : ""}`}>{label}</p>
+      <StockPile count={stockCount} />
+      {reaction && <ReactionBubble reaction={reaction} size="md" dataId="bataillecorse-opponent-reaction" />}
+    </div>
+  );
+}
+
+/** Layer step as a fraction of `--card-sm-w` (2px when that width was 40px). */
+const STOCK_LAYER_STEP_RATIO = 2 / 40;
+
+/** A face-down draw pile: layered card-backs (not just one) so it reads as an
+ *  actual stack rather than a single flat card, collapsing to a single card
+ *  once only one is left. The remaining count is written directly on the
+ *  front card's back (just the number, no unit) instead of a separate label.
+ *  `scale` grows the whole stack from its bottom-left anchor without
+ *  disturbing layout around it (the reserved box grows to match). When
+ *  `onClick` is given (own stock only - see `tapFlip`), tapping the pile
+ *  itself is how you play: there is no separate "Jouer" button. */
+function StockPile({
+  count,
+  dataId,
+  scale = 1,
+  onClick,
+  disabled,
+}: {
+  count: number;
+  dataId?: string;
+  scale?: number;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-sm-w", 40);
+  const layers = count === 0 ? 0 : count === 1 ? 1 : 3;
+  const cardH = cardW * 1.5;
+  const step = cardW * STOCK_LAYER_STEP_RATIO * scale;
+  const width = cardW * scale + step * Math.max(0, layers - 1);
+  const height = cardH * scale + step * Math.max(0, layers - 1);
+  const Tag = onClick ? "button" : "div";
+  return (
+    <Tag
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      disabled={onClick ? disabled : undefined}
+      className={onClick ? "relative transition-transform active:scale-95 disabled:opacity-50" : "relative"}
+      style={{ width, height }}
+      data-id={dataId}
+    >
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
+      {Array.from({ length: layers }, (_, i) => {
+        const isFront = i === layers - 1;
+        return (
+          <div key={i} className="absolute origin-bottom-left" style={{ left: i * step, bottom: i * step, transform: `scale(${scale})` }}>
+            <CardBack size="sm" />
+            {isFront && (
+              <span
+                className="absolute inset-0 flex items-center justify-center text-lg font-black text-white/60 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+                data-id={dataId ? `${dataId}-count` : undefined}
+              >
+                {count}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </Tag>
+  );
+}
+
+/** Fixed left/right/tilt offsets for the 2 cards sitting behind the current
+ *  top card, so the pile reads as a scattered discard heap rather than a
+ *  neat stack - same idea as Président's `HISTORY_OFFSETS` (`PresidentTable.tsx`). */
+const HISTORY_OFFSETS = [
+  { x: 16, y: 8, rot: 9 },
+  { x: -15, y: 14, rot: -8 },
+];
+
+function cardKey(card: PlayerView["pile"][number]): string {
+  return `${card.rank}${card.suit}`;
+}
+
+/** The center pile: the current top card slides in from whichever seat just
+ *  played it (`played-card-enter`, same animation every other game's table
+ *  uses - see `TrickStage.tsx`), while the 1-2 cards behind it sit scattered
+ *  and dimmed, always at least 2 of them visible when available. */
+function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom: EnterDirection }) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
+  const shown = cards.slice(-3);
+  if (shown.length === 0) {
+    return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
+  }
+  return (
+    <div className="relative aspect-[2/3] w-[var(--card-md-w)]" data-id="bataillecorse-pile" style={{ transform: "scale(1.5)" }}>
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
+      {shown.map((card, i) => {
+        const isTop = i === shown.length - 1;
+        const depthFromTop = shown.length - 1 - i;
+        const base = HISTORY_OFFSETS[(depthFromTop - 1 + HISTORY_OFFSETS.length) % HISTORY_OFFSETS.length];
+        const offset = { x: (base.x / 56) * cardW, y: (base.y / 56) * cardW, rot: base.rot };
+        return (
+          <div
+            key={cardKey(card)}
+            className="absolute left-0 top-0"
+            style={isTop ? { zIndex: i } : { transform: `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rot}deg)`, zIndex: i }}
+            data-id={isTop ? "bataillecorse-pile-current" : `bataillecorse-pile-history-${depthFromTop}`}
+          >
+            {isTop ? (
+              <div className="played-card-enter will-change-transform" style={playedCardEnterStyle(enterFrom)}>
+                <PlayingCard card={card} size="md" dataId="bataillecorse-pile-current-card" />
+              </div>
+            ) : (
+              <PlayingCard
+                card={card}
+                size="md"
+                dimmed
+                showRightIndex
+                dataId={`bataillecorse-pile-history-card-${depthFromTop}`}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function InfoPanel({ host, onReset, onClose }: { host?: HostControls; onReset?: () => void; onClose: () => void }) {
+  const { t, locale, setLocale } = useI18n();
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-6" data-id="bataillecorse-info-overlay" onClick={onClose}>
+      <div className="w-full max-w-xs rounded-2xl bg-[var(--surface)] p-5 shadow-2xl" data-id="bataillecorse-info-panel" onClick={(e) => e.stopPropagation()}>
+        <p className="mb-4 text-center text-lg font-black text-[var(--card-face)]">{t("gameInfo")}</p>
+        {host && <HostRow host={host} onClose={onClose} />}
+        {onReset && (
+          <button
+            data-id="bataillecorse-reset-button"
+            onClick={() => { onReset(); onClose(); }}
+            className="mt-2 w-full rounded-lg bg-[var(--accent-red)]/80 py-2 font-bold text-[var(--card-face)]"
+          >
+            {t("restartGame")}
+          </button>
+        )}
+        <div className="mb-3 mt-3 flex items-center justify-between" data-id="bataillecorse-language-row">
+          <span className="text-sm text-[var(--card-face)]/80">{t("language")}</span>
+          <div className="flex gap-1">
+            {(["fr", "en"] as const).map((lang) => (
+              <button
+                key={lang}
+                onClick={() => setLocale(lang)}
+                className={`rounded px-2 py-1 text-xs font-bold ${locale === lang ? "bg-[var(--accent-cyan)] text-[var(--surface)]" : "bg-[var(--card-face)]/10 text-[var(--card-face)]/70"}`}
+              >
+                {lang.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+        <button onClick={onClose} className="mt-4 w-full rounded-lg bg-[var(--card-face)]/14 py-2 font-bold text-[var(--card-face)]" data-id="bataillecorse-info-close-button">
+          {t("close")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FinishedOverlay({
+  gv,
+  view,
+  onRematch,
+  onReset,
+}: {
+  gv: BataillecorseGameView;
+  view: PlayerView;
+  onRematch?: () => Promise<void> | void;
+  onReset?: () => void;
+}) {
+  const { t, locale } = useI18n();
+  const iWon = view.winner === gv.mySeat;
+  return (
+    <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 px-6" data-id="bataillecorse-finished-overlay">
+      <div className="w-full max-w-xs rounded-2xl bg-[var(--surface)] p-6 text-center shadow-2xl">
+        <p className="mb-1 text-sm font-bold uppercase text-[var(--card-face)]/60">{t("gameFinished")}</p>
+        <p className="mb-4 text-2xl font-black text-[var(--card-face)]" data-id="bataillecorse-winner-name">
+          {iWon ? t("youWin") : formatText(t("bataillecorseWinnerBanner"), { player: playerName(gv, view.winner ?? 0, locale) })}
+        </p>
+        {onRematch && (
+          <button
+            data-id="bataillecorse-rematch-button"
+            onClick={() => void onRematch()}
+            className="mb-2 w-full rounded-lg bg-[var(--accent-cyan)] py-2 font-bold text-[var(--surface)]"
+          >
+            {t("newGame")}
+          </button>
+        )}
+        {onReset && (
+          <button
+            data-id="bataillecorse-play-again-button"
+            onClick={onReset}
+            className="w-full rounded-lg bg-[var(--accent-yellow)] py-2 font-bold text-[var(--surface)]"
+          >
+            {t("newGame")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

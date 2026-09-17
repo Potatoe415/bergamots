@@ -1,0 +1,531 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { cardStrength, ROUND_AUTO_ADVANCE_MS, type Card, type PlayerView } from "@/lib/bouilla";
+import { useDelayedVisible } from "@/lib/client/useDelayedVisible";
+import { useI18n } from "@/lib/client/i18n";
+import { useOptimisticPlay } from "@/lib/client/useOptimisticPlay";
+import type { GameView } from "@/lib/server/view";
+import { BouillaRoundOverlay } from "./BouillaRoundOverlay";
+import { BouillaScoreboard } from "./BouillaScoreboard";
+import { ROUND_LABEL, ROUND_PENALTY_LABEL } from "./bouillaLabels";
+import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
+import { EmojiButton } from "./EmojiButton";
+import { ReactionBubble } from "./ReactionBubble";
+import { isConnected, playerName, relativeSeat } from "./gameTableHelpers";
+import { GameInfoButton, HostRow, type EmojiControls, type HostControls } from "./GameHud";
+import { HandCardSlot } from "./HandCardSlot";
+import { PlayerBadge } from "./PlayerBadge";
+import { SelfNameChip } from "./SelfNameChip";
+import { CardBackFanH, CardBackStackV, CompletedTrickHold, PlayedCardStage, type TableSeats } from "./TrickStage";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
+import { TableShell } from "./TableShell";
+
+/** This table only ever renders a Bouilla game: narrow the shared, multi-game
+ *  `GameView` down to its Bouilla-specific view/botViews shape. */
+export type BouillaGameView = Omit<GameView, "view" | "botViews"> & {
+  view: PlayerView | null;
+  botViews?: Record<number, PlayerView>;
+};
+
+export interface BouillaActions {
+  onPlay: (card: Card) => Promise<void> | void;
+  onNextRound: () => Promise<void> | void;
+  /** Online only: take over running the bots. */
+  onBecomeHost?: () => Promise<void> | void;
+  /** Online only: force a manual re-sync. */
+  onForceSync?: () => void;
+  /** Local only: restart the game from scratch. */
+  onReset?: () => void;
+  /** Send an emoji or GIF reaction visible to all players. */
+  onSendReaction?: (pick: ReactionPick) => void;
+  /** Online only: from the finished screen, start a fresh match in the same room. */
+  onRematch?: () => Promise<void> | void;
+}
+
+/** Bouilla hands start at 13 cards - almost double Coinche's 8 - so opponent
+ *  fans/stacks are allowed to go wider before capping. */
+const MAX_HAND_COUNT = 13;
+
+function cardKey(card: Card): string {
+  return `${card.rank}${card.suit}`;
+}
+
+export function BouillaTable({
+  gv,
+  actions,
+  reactions,
+  selfAvatar,
+}: {
+  gv: BouillaGameView;
+  actions: BouillaActions;
+  reactions?: Map<number, TableReaction>;
+  /** Set only from online GameRoom. Undefined hides the local-player chip. */
+  selfAvatar?: string;
+}) {
+  const { locale } = useI18n();
+  const view = gv.view!;
+  const mySeat = gv.mySeat!;
+  const [scoreboardOpen, setScoreboardOpen] = useState(false);
+  const [emojiOn, setEmojiOn] = useState(true);
+  const { legalSet, myTurnToPlay, optimisticHand, trickCards, preSelectedId, tapCard } = useOptimisticPlay(
+    view,
+    mySeat,
+    cardKey,
+    actions.onPlay,
+  );
+
+  useEffect(() => {
+    // Post-hydration browser read: deferred to after mount to avoid an SSR/client mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (localStorage.getItem("coinchapp-emoji") === "false") setEmojiOn(false);
+  }, []);
+
+  function toggleEmoji() {
+    setEmojiOn((v) => {
+      localStorage.setItem("coinchapp-emoji", String(!v));
+      return !v;
+    });
+  }
+
+  const seats: TableSeats = {
+    top: relativeSeat(mySeat, 2),
+    left: relativeSeat(mySeat, 3),
+    right: relativeSeat(mySeat, 1),
+    bottom: mySeat,
+  };
+  const trickBySeat = new Map<number, Card>(trickCards.map((p) => [p.seat, p.card]));
+  const lastTrickBySeat = view.lastTrick
+    ? new Map<number, Card>(view.lastTrick.cards.map((p) => [p.seat, p.card]))
+    : null;
+  const lastTrickKey = view.lastTrick
+    ? view.lastTrick.cards.map((p) => `${p.seat}:${cardKey(p.card)}`).join("|")
+    : null;
+  const lastTrickWinner = view.lastTrick?.winner ?? null;
+  const roundOverlayVisible = useDelayedVisible(!!view.lastRoundResult || view.phase === "finished", 2000);
+
+  // Online only (`gv.turnStartedAt` is null in local/ad-hoc): the server force-advances
+  // the round after `ROUND_AUTO_ADVANCE_MS` regardless of who pressed "Partie suivante"
+  // (see `advanceScoringTimeout`), but only actually runs that check inside `getView` -
+  // schedule one proactive re-sync right at the deadline so it isn't stuck waiting on the
+  // slower 15s safety-net poll.
+  const onForceSync = actions.onForceSync;
+  useEffect(() => {
+    if (view.phase !== "scoring" || gv.turnStartedAt === null || !onForceSync) return;
+    const delay = Math.max(0, gv.turnStartedAt + ROUND_AUTO_ADVANCE_MS - Date.now());
+    const timer = window.setTimeout(onForceSync, delay + 200);
+    return () => window.clearTimeout(timer);
+  }, [view.phase, gv.turnStartedAt, onForceSync]);
+
+  return (
+    <TableShell dataId="bouilla-table">
+      <BouillaHud
+        gv={gv}
+        view={view}
+        onOpenScoreboard={() => setScoreboardOpen(true)}
+        onReset={actions.onReset}
+        host={
+          actions.onBecomeHost && actions.onForceSync
+            ? { isHost: gv.isHost, hostName: gv.hostSeat !== null ? playerName(gv, gv.hostSeat, locale) : null, onBecomeHost: actions.onBecomeHost, onForceSync: actions.onForceSync }
+            : undefined
+        }
+        emojiControls={actions.onSendReaction ? { enabled: emojiOn, onToggle: toggleEmoji } : undefined}
+      />
+      <div className="relative h-0 min-h-0 flex-1" data-id="bouilla-table-scene">
+        <div
+          className="absolute inset-x-[11%] bottom-[19%] top-[29%] rounded-[3rem] bg-[rgba(255,250,242,0.08)] shadow-[inset_0_0_55px_rgba(22,200,240,0.22)] ring-[10px] ring-[rgba(242,196,79,0.18)]"
+          data-id="bouilla-central-felt"
+        />
+        {/* Hidden once the round overlay is up: their usual spots sit under its centered score
+            table, so their name+reaction badges move to `OpponentReactionsBar` below instead. */}
+        {!roundOverlayVisible && (
+          <>
+            <OpponentTop gv={gv} view={view} seat={seats.top} reaction={reactions?.get(seats.top)} />
+            <OpponentSide gv={gv} view={view} seat={seats.left} side="left" reaction={reactions?.get(seats.left)} />
+            <OpponentSide gv={gv} view={view} seat={seats.right} side="right" reaction={reactions?.get(seats.right)} />
+          </>
+        )}
+        <PlayedCardStage seats={seats} trickBySeat={trickBySeat} />
+        {lastTrickBySeat && lastTrickKey && (
+          <CompletedTrickHold key={lastTrickKey} seats={seats} trickBySeat={lastTrickBySeat} winner={lastTrickWinner} />
+        )}
+        {roundOverlayVisible && <OpponentReactionsBar gv={gv} seats={seats} reactions={reactions} />}
+        <BouillaRoundOverlay
+          gv={gv}
+          view={view}
+          visible={roundOverlayVisible}
+          onNextRound={actions.onNextRound}
+          nextRoundGate={gv.nextDealGate}
+          onRematch={actions.onRematch}
+        />
+        {selfAvatar !== undefined && !roundOverlayVisible && (
+          <div className="absolute inset-x-0 bottom-[9.4rem] z-20" data-id="bouilla-self-name-wrap">
+            <SelfNameChip name={playerName(gv, mySeat, locale)} avatarSrc={selfAvatar} />
+          </div>
+        )}
+        {emojiOn && actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
+        {/* Hidden once scoring/finished: "kingSpades" can end a round with cards still
+            in hand (see lib/bouilla/trick.ts), which would otherwise show through the
+            round overlay above. */}
+        {view.phase === "playing" && (
+          <HandFan
+            hand={optimisticHand}
+            legalSet={legalSet}
+            myTurnToPlay={myTurnToPlay}
+            preSelectedId={preSelectedId}
+            onCardTap={tapCard}
+          />
+        )}
+      </div>
+      {scoreboardOpen && <BouillaScoreboard gv={gv} view={view} onClose={() => setScoreboardOpen(false)} />}
+    </TableShell>
+  );
+}
+
+function BouillaHud({
+  gv,
+  view,
+  onOpenScoreboard,
+  emojiControls,
+  onReset,
+  host,
+}: {
+  gv: BouillaGameView;
+  view: PlayerView;
+  onOpenScoreboard: () => void;
+  emojiControls?: EmojiControls;
+  onReset?: () => void;
+  host?: HostControls;
+}) {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { locale, t } = useI18n();
+  return (
+    <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 px-3" data-id="bouilla-header">
+      <div className="flex items-start justify-between">
+        <IconLink href="/" label={t("backHome")} dataId="bouilla-back">‹</IconLink>
+        <div className="flex flex-col items-center">
+          <button
+            type="button"
+            data-id="bouilla-round-name"
+            onClick={onOpenScoreboard}
+            className="rounded-full bg-[var(--surface-overlay)] px-4 py-1 text-base font-black text-[var(--card-face)]"
+          >
+            {ROUND_LABEL[locale][view.round]} ({view.roundIndex + 1}/6)
+          </button>
+          <p className="mt-1 text-xs text-[var(--card-face)]/70" data-id="bouilla-round-penalty">
+            {ROUND_PENALTY_LABEL[locale][view.round]}
+          </p>
+        </div>
+        <GameInfoButton label={t("settings")} onClick={() => setSettingsOpen(true)} />
+      </div>
+      {settingsOpen && (
+        <BouillaSettingsPanel
+          gv={gv}
+          host={host}
+          onReset={onReset}
+          emojiControls={emojiControls}
+          onOpenScoreboard={() => {
+            setSettingsOpen(false);
+            onOpenScoreboard();
+          }}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
+    </header>
+  );
+}
+
+function BouillaSettingsPanel({
+  gv,
+  host,
+  onReset,
+  emojiControls,
+  onOpenScoreboard,
+  onClose,
+}: {
+  gv: BouillaGameView;
+  host?: HostControls;
+  onReset?: () => void;
+  emojiControls?: EmojiControls;
+  onOpenScoreboard: () => void;
+  onClose: () => void;
+}) {
+  const { t } = useI18n();
+  return (
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 px-6"
+      data-id="bouilla-settings-overlay"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-xs rounded-2xl bg-[var(--surface)] p-5 shadow-2xl"
+        data-id="bouilla-settings-panel"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="mb-4 text-center text-lg font-black text-[var(--card-face)]">{t("settings")}</p>
+
+        {gv.roomCode && gv.roomCode !== "P2P" && (
+          <div className="mb-3 flex items-center justify-between" data-id="bouilla-info-code-row">
+            <span className="text-sm text-[var(--card-face)]/80">{t("gameInfoNumber")}</span>
+            <span className="rounded-md bg-[var(--card-face)]/10 px-2 py-1 text-sm font-black tracking-widest text-[var(--card-face)]" data-id="bouilla-info-code-value">
+              {gv.roomCode}
+            </span>
+          </div>
+        )}
+
+        <button
+          data-id="bouilla-settings-scoreboard-button"
+          onClick={onOpenScoreboard}
+          className="mb-3 w-full rounded-lg bg-[var(--card-face)]/14 py-2 font-bold text-[var(--card-face)]"
+        >
+          {t("scoreboard")}
+        </button>
+
+        {emojiControls && (
+          <div className="mb-3 flex items-center justify-between" data-id="bouilla-emoji-toggle-row">
+            <span className="text-sm text-[var(--card-face)]/80">{t("emojiReactions")}</span>
+            <button
+              data-id="bouilla-emoji-toggle-button"
+              onClick={emojiControls.onToggle}
+              aria-pressed={emojiControls.enabled}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
+                emojiControls.enabled ? "bg-[var(--accent-green)]" : "bg-[var(--card-face)]/20"
+              }`}
+            >
+              <span
+                className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform duration-200 ${
+                  emojiControls.enabled ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        )}
+
+        {host && <HostRow host={host} onClose={onClose} />}
+        {onReset && (
+          <button
+            data-id="bouilla-settings-reset-button"
+            onClick={() => {
+              onReset();
+              onClose();
+            }}
+            className="mt-2 w-full rounded-lg bg-[var(--accent-red)]/80 py-2 font-bold text-[var(--card-face)]"
+          >
+            {t("restartGame")}
+          </button>
+        )}
+        <button
+          data-id="bouilla-settings-close-button"
+          onClick={onClose}
+          className="mt-4 w-full rounded-lg bg-[var(--card-face)]/14 py-2 font-bold text-[var(--card-face)]"
+        >
+          {t("close")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function IconLink({ href, label, dataId, children }: { href: string; label: string; dataId: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      aria-label={label}
+      data-id={dataId}
+      className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--card-face)] text-5xl font-black leading-none text-[var(--surface)] shadow-lg"
+    >
+      {children}
+    </a>
+  );
+}
+
+function OpponentTop({
+  gv,
+  view,
+  seat,
+  reaction,
+}: {
+  gv: BouillaGameView;
+  view: PlayerView;
+  seat: number;
+  reaction?: TableReaction;
+}) {
+  const { locale } = useI18n();
+  return (
+    <div className="absolute left-1/2 top-[13%] flex -translate-x-1/2 flex-col items-center" data-id="bouilla-table-top">
+      <CardBackFanH count={view.handCounts[seat]} maxCount={MAX_HAND_COUNT} />
+      <div className="mt-2" data-id="bouilla-table-top-badge">
+        <PlayerBadge
+          name={playerName(gv, seat, locale)}
+          team={seat % 2 === 0 ? "A" : "B"}
+          isTurn={view.turn === seat}
+          isDealer={view.dealer === seat}
+          isThinking={view.phase === "playing" && view.turn === seat}
+          connected={isConnected(gv, seat)}
+          reaction={reaction}
+          dataId={`bouilla-player-seat-${seat}`}
+        />
+      </div>
+    </div>
+  );
+}
+
+function OpponentSide({
+  gv,
+  view,
+  seat,
+  side,
+  reaction,
+}: {
+  gv: BouillaGameView;
+  view: PlayerView;
+  seat: number;
+  side: "left" | "right";
+  reaction?: TableReaction;
+}) {
+  const { locale } = useI18n();
+  const sideClass = side === "left" ? "left-0 flex-row" : "right-0 flex-row-reverse";
+  const handShiftClass = side === "left" ? "-translate-x-3/4" : "translate-x-3/4";
+  const badgeNudgeClass = side === "left" ? "-ml-[50px]" : "-mr-[50px]";
+  const badgeRotateClass = side === "right" ? "rotate-180" : "";
+  return (
+    <div className={`absolute top-[41%] flex items-center gap-0 ${sideClass}`} data-id={`bouilla-table-${side}`}>
+      <div className={handShiftClass}>
+        <CardBackStackV count={view.handCounts[seat]} maxCount={MAX_HAND_COUNT} />
+      </div>
+      <div className={`${badgeNudgeClass} ${badgeRotateClass}`}>
+        <PlayerBadge
+          name={playerName(gv, seat, locale)}
+          team={seat % 2 === 0 ? "A" : "B"}
+          isTurn={view.turn === seat}
+          isDealer={view.dealer === seat}
+          isThinking={view.phase === "playing" && view.turn === seat}
+          connected={isConnected(gv, seat)}
+          reaction={reaction}
+          orientation="vertical"
+          dataId={`bouilla-player-seat-${seat}`}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Opponents' name + live emoji reaction, relocated to a bottom row while the round overlay's
+ *  score table covers their usual top/side spots - keeps them visible without overlapping it. */
+function OpponentReactionsBar({
+  gv,
+  seats,
+  reactions,
+}: {
+  gv: BouillaGameView;
+  seats: TableSeats;
+  reactions?: Map<number, TableReaction>;
+}) {
+  const { locale } = useI18n();
+  const opponentSeats = [seats.top, seats.left, seats.right];
+  return (
+    <div className="absolute inset-x-4 bottom-3 z-30 flex items-end justify-center gap-6 pr-14" data-id="round-end-reactions-bar">
+      {opponentSeats.map((seat) => {
+        const reaction = reactions?.get(seat);
+        return (
+          <div key={seat} className="flex flex-col items-center gap-1" data-id={`round-end-reaction-${seat}`}>
+            {reaction && (
+              <ReactionBubble
+                reaction={reaction}
+                size="sm"
+                dataId={reaction.kind === "gif" ? "player-gif-reaction" : "player-emoji-reaction"}
+              />
+            )}
+            <span className="max-w-[5rem] truncate text-xs font-bold text-[var(--card-face)]">
+              {playerName(gv, seat, locale)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const HAND_STEP_RATIO = 36 / 64;
+const HAND_EDGE_MARGIN = 12;
+/** Fallback max fan width for the very first paint, before the container's real
+ *  width is measured (see `HandFan`) - avoids a hardcoded guess driving layout
+ *  on phones narrower or wider than this. */
+const DEFAULT_MAX_FAN_WIDTH = 340;
+
+/** Same suit order as Coinche's hand (`GameTable.tsx`'s `SUIT_ORDER`), kept in
+ *  sync for a consistent hand layout across both games. No trump in Bouilla, so
+ *  cards only ever sort by suit then rank (`cardStrength`, ace-high). */
+const SUIT_ORDER: Record<string, number> = { S: 0, H: 1, C: 2, D: 3 };
+
+function sortHand(hand: Card[]): Card[] {
+  return [...hand].sort((a, b) => {
+    if (a.suit !== b.suit) return SUIT_ORDER[a.suit] - SUIT_ORDER[b.suit];
+    return cardStrength(a) - cardStrength(b);
+  });
+}
+
+function HandFan({
+  hand,
+  legalSet,
+  myTurnToPlay,
+  preSelectedId,
+  onCardTap,
+}: {
+  hand: Card[];
+  legalSet: Set<string>;
+  myTurnToPlay: boolean;
+  preSelectedId: string | null;
+  onCardTap: (card: Card) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [maxFanWidth, setMaxFanWidth] = useState(DEFAULT_MAX_FAN_WIDTH);
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-lg-w", 64);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setMaxFanWidth(el.clientWidth - HAND_EDGE_MARGIN * 2);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const sorted = sortHand(hand);
+  const n = sorted.length;
+  const maxStep = cardW * HAND_STEP_RATIO;
+  const step = n > 1 ? Math.min(maxStep, Math.max(0, maxFanWidth - cardW) / (n - 1)) : maxStep;
+  const fanW = n > 1 ? cardW + (n - 1) * step : cardW;
+
+  return (
+    <section className="absolute inset-x-0 bottom-0 z-20 pb-3" data-id="bouilla-action-area">
+      <div ref={containerRef} className="relative flex h-[calc(var(--card-lg-w)*1.5+2.75rem)] w-full items-end justify-center" data-id="bouilla-my-hand">
+        <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
+        <div className="relative h-full" style={{ width: fanW }}>
+          {sorted.map((card, i) => {
+            const key = cardKey(card);
+            const isPlayable = myTurnToPlay && legalSet.has(key);
+            const isPreSelected = preSelectedId === key;
+            return (
+              <HandCardSlot
+                key={key}
+                card={card}
+                left={i * step}
+                zIndex={isPreSelected ? 60 + i : isPlayable ? 50 + i : i}
+                index={i}
+                total={n}
+                isPlayable={isPlayable}
+                isDimmed={myTurnToPlay && !isPlayable}
+                isPreSelected={isPreSelected}
+                myTurnToPlay={myTurnToPlay}
+                dataId={`bouilla-hand-card-${key}`}
+                onTap={() => onCardTap(card)}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
