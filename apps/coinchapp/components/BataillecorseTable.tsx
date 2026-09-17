@@ -40,8 +40,13 @@ export interface BataillecorseActions {
  *  `lastBurn`/`lastSkip`, see docs/DECISIONS.md). */
 const FLASH_MS = 1800;
 
-/** How long the "your reaction time" readout stays on screen after a slap attempt. */
-const REACTION_READOUT_MS = 3000;
+/** How long the "your reaction time" readout stays on screen after a slap
+ *  attempt - both players' own readout, each under their own deck. */
+const REACTION_READOUT_MS = 5000;
+
+/** How long the winner's deck glows like it just caught fire from grabbing
+ *  the pile - see `.bataillecorse-deck-fire` (`app/globals.css`). */
+const FIRE_MS = 2600;
 
 function useFlash(eventId: number | undefined): boolean {
   const [visible, setVisible] = useState(false);
@@ -54,6 +59,23 @@ function useFlash(eventId: number | undefined): boolean {
     return () => clearTimeout(timer);
   }, [eventId]);
   return visible;
+}
+
+/** Which seat's deck should glow like it's on fire right now, for `FIRE_MS`
+ *  after that seat wins a pile - diffed by event id, same one-shot-per-
+ *  occurrence pattern as `useFlash`, just returning the seat instead of a
+ *  plain boolean since either deck can be the one lighting up. */
+function useWinnerFireSeat(lastPileWin: PlayerView["lastPileWin"]): PlayerView["mySeat"] | null {
+  const [seat, setSeat] = useState<PlayerView["mySeat"] | null>(null);
+  const seenRef = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (!lastPileWin || lastPileWin.id === seenRef.current) return;
+    seenRef.current = lastPileWin.id;
+    setSeat(lastPileWin.seat);
+    const timer = setTimeout(() => setSeat(null), FIRE_MS);
+    return () => clearTimeout(timer);
+  }, [lastPileWin]);
+  return seat;
 }
 
 /** Which side the pile's newest card should slide in from: whichever seat's
@@ -77,8 +99,10 @@ function usePileEnterDirection(view: PlayerView): EnterDirection {
  *  it's actually cleared: the server clears `pile` in the very same update
  *  that reports the win (see `awardPile` in `engine.ts`), so without this the
  *  cards that formed the pattern never get seen at all - they'd vanish on
- *  the same frame the win banner appears. */
-const HOLD_PILE_MS = 2000;
+ *  the same frame the win banner appears. Must cover the full
+ *  `.bataillecorse-pile-fly` animation (3400ms, `app/globals.css`) so the
+ *  sweep never gets cut off mid-flight by the real pile snapping to empty. */
+const HOLD_PILE_MS = 3600;
 
 /** Freezes the pile at whatever it looked like the instant before a pile-win
  *  clears it, for `HOLD_PILE_MS`, then releases it back to the real (now
@@ -126,8 +150,12 @@ function useWindowSeenAtRef(slapWindow: PlayerView["slapWindow"]): RefObject<{ i
   return ref;
 }
 
-function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
-  const value = (ms / 1000).toFixed(3);
+/** `{s}` in `myReactionTimeLabel`/`opponentReactionTimeLabel` - the raw
+ *  millisecond value itself (not converted to seconds), 2 decimal places:
+ *  `performance.now()` has sub-millisecond precision, so this is genuine
+ *  reflex-level detail, not padding. */
+function formatReactionMs(ms: number, locale: "fr" | "en"): string {
+  const value = ms.toFixed(2);
   return locale === "fr" ? value.replace(".", ",") : value;
 }
 
@@ -203,7 +231,14 @@ export function BataillecorseTable({
     pileFlying && view.lastPileWin ? (view.lastPileWin.seat === mySeat ? "down" : "up") : null;
   const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
   const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
+  const winnerFireSeat = useWinnerFireSeat(view.lastPileWin);
   const owesTribute = view.tribute?.seat === mySeat;
+  const myReactionLabel =
+    myReactionMs !== null ? formatText(t("myReactionTimeLabel"), { s: formatReactionMs(myReactionMs, locale) }) : null;
+  const opponentReactionLabel =
+    opponentReactionMs !== null
+      ? formatText(t("opponentReactionTimeLabel"), { player: playerName(gv, opponentSeat, locale), s: formatReactionMs(opponentReactionMs, locale) })
+      : null;
 
   async function tapSlap() {
     if (view.phase !== "playing") return;
@@ -253,6 +288,8 @@ export function BataillecorseTable({
           stockCount={view.opponentStockCount}
           isTurn={view.turn === opponentSeat}
           reaction={reactions?.get(opponentSeat)}
+          reactionLabel={opponentReactionLabel}
+          fire={winnerFireSeat === opponentSeat}
           dataId="bataillecorse-opponent-seat"
           className="absolute inset-x-0 top-[calc(var(--table-hud-top)+3.5rem)]"
         />
@@ -316,32 +353,23 @@ export function BataillecorseTable({
               {playerName(gv, mySeat, locale)}
             </p>
           )}
+          {/* Above the deck (toward the pile), not below - the opponent's own
+              readout sits below theirs instead (`SeatRow`), since their deck
+              is already up near the pile the other way. */}
+          {myReactionLabel && (
+            <span className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
+              {myReactionLabel}
+            </span>
+          )}
           <StockPile
             count={optimisticStockCount}
             dataId="bataillecorse-my-stock"
             scale={1.5}
             onClick={tapFlip}
             disabled={!myTurnToFlip || pendingFlip}
+            fire={winnerFireSeat === mySeat}
           />
         </div>
-
-        {(myReactionMs !== null || opponentReactionMs !== null) && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-30 flex flex-col items-center gap-1" data-id="bataillecorse-reaction-times">
-            {myReactionMs !== null && (
-              <span className="rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
-                {formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) })}
-              </span>
-            )}
-            {opponentReactionMs !== null && (
-              <span className="rounded-full bg-black/40 px-4 py-1.5 text-xs font-bold text-white/90 shadow-lg" data-id="bataillecorse-opponent-reaction-time">
-                {formatText(t("opponentReactionTimeLabel"), {
-                  player: playerName(gv, opponentSeat, locale),
-                  s: formatReactionSeconds(opponentReactionMs, locale),
-                })}
-              </span>
-            )}
-          </div>
-        )}
 
         {actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
       </div>
@@ -358,6 +386,8 @@ function SeatRow({
   stockCount,
   isTurn,
   reaction,
+  reactionLabel,
+  fire,
   dataId,
   className,
 }: {
@@ -365,13 +395,23 @@ function SeatRow({
   stockCount: number;
   isTurn: boolean;
   reaction?: TableReaction;
+  /** The opponent's own reaction-time readout, pre-formatted by the parent
+   *  (needs `t`/`locale`, which this presentational row doesn't otherwise
+   *  need) - shown right under their deck, same as the player's own. */
+  reactionLabel?: string | null;
+  fire?: boolean;
   dataId: string;
   className: string;
 }) {
   return (
     <div className={`flex flex-col items-center gap-1.5 ${className}`} data-id={dataId}>
       <p className={`text-xs font-bold uppercase ${isTurn ? "underline decoration-2" : ""}`}>{label}</p>
-      <StockPile count={stockCount} />
+      <StockPile count={stockCount} fire={fire} />
+      {reactionLabel && (
+        <span className="pointer-events-none rounded-full bg-black/40 px-3 py-1 text-[11px] font-bold text-white/90 shadow-lg" data-id="bataillecorse-opponent-reaction-time">
+          {reactionLabel}
+        </span>
+      )}
       {reaction && <ReactionBubble reaction={reaction} size="md" dataId="bataillecorse-opponent-reaction" />}
     </div>
   );
@@ -387,19 +427,24 @@ const STOCK_LAYER_STEP_RATIO = 2 / 40;
  *  `scale` grows the whole stack from its bottom-left anchor without
  *  disturbing layout around it (the reserved box grows to match). When
  *  `onClick` is given (own stock only - see `tapFlip`), tapping the pile
- *  itself is how you play: there is no separate "Jouer" button. */
+ *  itself is how you play: there is no separate "Jouer" button. `fire`
+ *  makes the whole stack glow like it just caught fire (see `FIRE_MS`/
+ *  `useWinnerFireSeat`, `.bataillecorse-deck-fire` in `app/globals.css`) -
+ *  the deck that just won the pile. */
 function StockPile({
   count,
   dataId,
   scale = 1,
   onClick,
   disabled,
+  fire,
 }: {
   count: number;
   dataId?: string;
   scale?: number;
   onClick?: () => void;
   disabled?: boolean;
+  fire?: boolean;
 }) {
   const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-sm-w", 40);
   const layers = count === 0 ? 0 : count === 1 ? 1 : 3;
@@ -413,7 +458,7 @@ function StockPile({
       type={onClick ? "button" : undefined}
       onClick={onClick}
       disabled={onClick ? disabled : undefined}
-      className={onClick ? "relative transition-transform active:scale-95 disabled:opacity-50" : "relative"}
+      className={[onClick ? "relative transition-transform active:scale-95 disabled:opacity-50" : "relative", fire ? "bataillecorse-deck-fire" : ""].join(" ")}
       style={{ width, height }}
       data-id={dataId}
     >
@@ -450,9 +495,16 @@ function cardKey(card: PlayerView["pile"][number]): string {
   return `${card.rank}${card.suit}`;
 }
 
-/** Pixels the pile sweeps toward the winner's stock before shrinking away -
- *  see `.bataillecorse-pile-fly` (`app/globals.css`). */
-const PILE_FLY_DISTANCE_PX = 220;
+/** How far the pile sweeps toward the winner's stock before shrinking away -
+ *  see `.bataillecorse-pile-fly` (`app/globals.css`). In `svh` (viewport
+ *  height), not a fixed px value: `TableShell` is full-viewport and the
+ *  opponent's stock (near the top) and the player's own (near the bottom)
+ *  both sit roughly this far from the center pile regardless of device
+ *  height. Deliberately generous (nearly half the screen) so the sweep
+ *  actually lands on the deck instead of stopping short partway there -
+ *  overshooting slightly is fine since the stack has already faded out
+ *  (`opacity: 0`) by the time it gets there. */
+const PILE_FLY_DISTANCE_SVH = 46;
 
 /** The center pile: the current top card slides in from whichever seat just
  *  played it (`played-card-enter`, same animation every other game's table
@@ -491,7 +543,7 @@ function PileStack({
       style={
         {
           transform: "scale(1.5)",
-          ...(fly ? { "--pile-fly-y": `${fly.toward === "down" ? PILE_FLY_DISTANCE_PX : -PILE_FLY_DISTANCE_PX}px` } : {}),
+          ...(fly ? { "--pile-fly-y": `${fly.toward === "down" ? PILE_FLY_DISTANCE_SVH : -PILE_FLY_DISTANCE_SVH}svh` } : {}),
         } as React.CSSProperties
       }
     >
