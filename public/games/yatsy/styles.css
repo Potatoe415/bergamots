@@ -94,6 +94,25 @@ select {
   display: none;
 }
 
+/* TEMP: visible build tag so cache/deploy fixes can be confirmed at a
+   glance (this game has a service worker with a cache-first fetch
+   strategy — sw.js — so a stale phone/browser can silently keep serving
+   old CSS/JS after a fix ships; bump this string whenever CACHE_NAME in
+   sw.js is bumped, so "still on the old version" is obvious without
+   opening devtools). Requested 2026-09-17; remove once no longer needed. */
+.build-tag {
+  position: fixed;
+  left: 50%;
+  bottom: max(0.3rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
+  color: rgba(87, 99, 110, 0.55);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
 .home-icon {
   position: relative;
   width: 0.92rem;
@@ -1504,7 +1523,10 @@ body.player-two-turn.scoring-phase .player-cell.player-two.valid {
   align-items: center;
   justify-content: center;
   gap: 0.8rem;
-  padding: 1rem 1.2rem;
+  /* Right padding reserves the .emoji-trigger-button's footprint (it floats
+     at `right: 0` over this same corner via .emoji-trigger) so the centered
+     label/chips can never grow into it and overlap it on narrow screens. */
+  padding: 1rem calc(1.2rem + 2.7rem + 0.35rem) 1rem 1.2rem;
   font-weight: 1000;
   cursor: pointer;
 }
@@ -2314,7 +2336,9 @@ body.player-two-turn .player-cell.valid {
 
   .roll-button {
     gap: 0.6rem;
-    padding: 0.82rem 0.9rem;
+    /* Same reservation as the base rule, resized for the smaller
+       .emoji-trigger-button used below this breakpoint (2.3rem). */
+    padding: 0.82rem calc(0.9rem + 2.3rem + 0.3rem) 0.82rem 0.9rem;
   }
 
   .roll-label {
