@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 
 # Design-tool working directory (mockup staging, not part of the app)
 temp-design/
+
+# Turborepo local cache
+.turbo/

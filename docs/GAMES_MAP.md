@@ -68,14 +68,19 @@ repo's game-scoped rules.
 | `tranquil` | `apps/tranquil/` (npm workspaces: `shared` + `client` + `api`) | tranquil-woad.vercel.app, its own Vercel project |
 | `coinche`, `bouilla`, `president`, `bataillecorse` | `apps/coinchapp/` (Next.js App Router) | coinchapp.vercel.app, its own Vercel project |
 
-Colocating the code did **not** move the deployment: each app's Vercel
-project still builds from its own original GitHub repo today. Repointing
-Vercel to build from `apps/<name>/` in *this* repo (so the original repos
-can be archived) is a separate, deliberately not-yet-done step — see
-`docs/BACKLOG.md` — because it means a live domain/build-source cutover,
-not just a file move. Hub tile thumbnails for these games stay where they
-always were, unaffected by this: `public/games/coinchapp/assets/` and
+Colocating the code did **not** move the deployment on its own: Vercel
+repointing is being done separately, app by app (`coinchapp`'s is in
+progress — see `docs/BACKLOG.md` — `tranquil`'s has not started). Hub
+tile thumbnails for these games stay where they always were, unaffected
+by this: `public/games/coinchapp/assets/` and
 `public/games/tranquil/assets/`.
+
+**Local task orchestration** (build/lint caching, not deployment) uses
+Turborepo (`turbo.json`, root `package.json`): `npm run build:all` /
+`lint:all` run the hub's + `coinchapp`'s tasks with caching. `tranquil`
+is excluded from this — it has its own nested npm workspaces
+(`shared`+`client`), which cannot nest inside the root's; it keeps
+building itself independently. See `docs/DECISIONS.md` 2026-09-17.
 
 ### Not colocated (code lives in a separate, untouched repo)
 
