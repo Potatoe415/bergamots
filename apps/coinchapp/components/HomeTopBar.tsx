@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/client/i18n";
+import { getMatchResultStats, type MatchResultStats } from "@/lib/client/matchResultStats";
 import { RulesModal } from "./RulesModal";
 import type { GameType } from "@/lib/supabase/types";
 
@@ -24,6 +25,14 @@ export function HomeTopBar({ game }: { game?: GameType }) {
   const { locale, setLocale, t } = useI18n();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [rulesOpen, setRulesOpen] = useState(false);
+  const [stats, setStats] = useState<MatchResultStats | null>(null);
+
+  useEffect(() => {
+    // Post-hydration browser read, refreshed on every open: mirrors the
+    // localStorage-read-in-effect precedent used elsewhere in this app.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (settingsOpen) setStats(getMatchResultStats());
+  }, [settingsOpen]);
 
   return (
     <>
@@ -82,6 +91,13 @@ export function HomeTopBar({ game }: { game?: GameType }) {
               EN
             </button>
           </div>
+
+          <p className="mb-1 mt-2 px-1 text-xs font-bold uppercase tracking-wide text-[var(--card-face)]/60">
+            {t("myStats")}
+          </p>
+          <p className="px-1 text-sm font-bold text-[var(--card-face)]" data-id="home-settings-stats">
+            {t("winsCount")} {stats?.wins ?? 0} · {t("lossesCount")} {stats?.losses ?? 0}
+          </p>
 
           {game && (
             <button

@@ -125,6 +125,9 @@ const en: Record<string, string> = {
   'settings.soundOnMyTurn': 'Play a sound on my turn',
   'settings.restartGame': '↺ Restart game',
   'settings.roomCode': 'Room code',
+  'settings.myStats': 'My stats',
+  'settings.wins': 'Wins',
+  'settings.losses': 'Losses',
 };
 
 const fr: Record<string, string> = {
@@ -243,6 +246,9 @@ const fr: Record<string, string> = {
   'settings.soundOnMyTurn': 'Jouer un son à mon tour',
   'settings.restartGame': '↺ Recommencer la partie',
   'settings.roomCode': 'Code de salle',
+  'settings.myStats': 'Mes stats',
+  'settings.wins': 'Victoires',
+  'settings.losses': 'Défaites',
 };
 
 const translations: Record<Lang, Record<string, string>> = { en, fr };

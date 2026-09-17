@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { PlayerView } from "@/lib/president";
 import { formatText, useI18n } from "@/lib/client/i18n";
+import { useRecordMatchResult } from "@/lib/client/matchResultStats";
 import type { GameView, NextDealGate } from "@/lib/server/view";
 import { playerName } from "./gameTableHelpers";
 import { PresidentScoreTable } from "./PresidentScoreboard";
@@ -31,10 +32,10 @@ export function PresidentRoundOverlay({
   const [rematchBusy, setRematchBusy] = useState(false);
   const result = view.lastRoundResult;
   const finished = view.phase === "finished";
+  const iAmWinner = finished && !!view.winners?.includes(view.mySeat);
+  useRecordMatchResult(gv.gameId, finished, iAmWinner);
 
   if (!visible) return null;
-
-  const iAmWinner = finished && !!view.winners?.includes(view.mySeat);
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center bg-[var(--surface-overlay)] px-4" data-id="president-round-overlay">

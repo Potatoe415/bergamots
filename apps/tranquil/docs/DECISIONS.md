@@ -116,3 +116,13 @@ Context: Bergamots now forwards a tiny JPEG as `?avatar=` so the player can see 
 Rationale: Same launch-URL channel as `?name=`. Passing `selfAvatar` only on the `mode === 'online'` `GameBoard` is the smallest gate. No schema/API change.
 Consequences: A direct visit with no `?avatar=` looks exactly as before. `docs/PRODUCT.md` / `docs/TECH.md` were not edited autonomously.
 Alternatives_Rejected: Showing the photo in local/bot modes too — rejected, user asked for online only. Syncing avatars through game state so the opponent can see them — rejected, not asked for.
+
+---
+
+## 2026-09-17 — Win/loss counter, client-only, own `SettingsPanel`
+
+Decision: Added `client/src/lib/matchResultStats.ts` (`getMatchResultStats()` / `recordMatchResult(won)`), backed by a new `localStorage` key (`tranquil-match-results`). `GameOver`'s existing mount-only effect (the one that already plays the win/lose sound) now also calls `recordMatchResult(won)` once per finished match. Displayed in the existing shared `SettingsPanel` (used by both `Lobby` and `GameBoard`), next to the sound toggle.
+Context: Part of a cross-repo request (root `muchogames` + `coinchapp` + this app) to add wins/losses stats to every card game, including this one. User confirmed via an explicit question: stay client-only/per-browser (no accounts), this app shows its own stats in its own UI rather than trying to sync back to the Bergamots hub's `/profile` (a different origin — cannot reach this app's `localStorage`).
+Rationale: Tranquil is cooperative (`winner: 'players' | 'game'` — every player at the table shares the same outcome), unlike the competitive coinchapp games, so there is no "my seat" ambiguity to resolve and no dedup key was needed: `GameOver` only ever mounts once per finished match (it is conditionally rendered, and a rematch/new game re-mounts it fresh), so its existing `useEffect(..., [])` was already the exact "fires once" hook the stat needed, with no page-refresh-mid-finished-screen risk since this app has no state-persistence-across-reload for a finished game (unlike coinchapp's local-mode service worker).
+Consequences: No new dedup/session-storage plumbing needed, unlike the sibling coinchapp change. `docs/PRODUCT.md` is currently all "TBD" here, so no Out-of-Scope line needed updating (unlike the root repo and coinchapp, both of which had one).
+Alternatives_Rejected: Per-player win/loss (impossible here — the game is cooperative, both players always share the same result). Syncing to the hub's `/profile` — rejected, different origin, no channel for it.

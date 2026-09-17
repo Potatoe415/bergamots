@@ -162,6 +162,14 @@
   text-align: center;
 }
 
+.profile-game-results {
+  margin: 0.35rem 0 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
 .profile-favorites-title {
   margin: 8px 0 0;
   font-family: "Baloo 2", cursive;

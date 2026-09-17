@@ -12,6 +12,7 @@
   const AVATAR_KEY = "bergamots-player-avatar";
   const AVATAR_THUMB_KEY = "bergamots-player-avatar-thumb";
   const LAUNCH_COUNTS_KEY = "bergamots-launch-counts";
+  const GAME_RESULTS_KEY = "bergamots-game-results";
 
   function getName(fallback) {
     try {
@@ -105,17 +106,61 @@
       .slice(0, cap);
   }
 
+  function readGameResults() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(GAME_RESULTS_KEY) || "{}");
+      const wins = Number(parsed && parsed.wins);
+      const losses = Number(parsed && parsed.losses);
+      return {
+        wins: Number.isFinite(wins) && wins > 0 ? Math.floor(wins) : 0,
+        losses: Number.isFinite(losses) && losses > 0 ? Math.floor(losses) : 0
+      };
+    } catch {
+      return { wins: 0, losses: 0 };
+    }
+  }
+
+  function getWins() {
+    return readGameResults().wins;
+  }
+
+  function getLosses() {
+    return readGameResults().losses;
+  }
+
+  // Records a finished game's outcome for the local player. Callers (e.g.
+  // Yatzy's finishGame()) must only call this when there is an unambiguous
+  // "me" (online seat, or solo vs robot) - never for a same-device 2-player
+  // local match, where both players share this browser.
+  function recordGameResult(won) {
+    const results = readGameResults();
+    if (won) {
+      results.wins += 1;
+    } else {
+      results.losses += 1;
+    }
+    try {
+      localStorage.setItem(GAME_RESULTS_KEY, JSON.stringify(results));
+    } catch {
+      // Storage unavailable or quota exceeded - stat just won't persist.
+    }
+  }
+
   window.PlayerProfile = {
     NAME_KEY: NAME_KEY,
     AVATAR_KEY: AVATAR_KEY,
     AVATAR_THUMB_KEY: AVATAR_THUMB_KEY,
     LAUNCH_COUNTS_KEY: LAUNCH_COUNTS_KEY,
+    GAME_RESULTS_KEY: GAME_RESULTS_KEY,
     getName: getName,
     setName: setName,
     getAvatar: getAvatar,
     getAvatarThumb: getAvatarThumb,
     setAvatar: setAvatar,
     getLaunchTotal: getLaunchTotal,
-    getFavoriteLaunches: getFavoriteLaunches
+    getFavoriteLaunches: getFavoriteLaunches,
+    getWins: getWins,
+    getLosses: getLosses,
+    recordGameResult: recordGameResult
   };
 })();

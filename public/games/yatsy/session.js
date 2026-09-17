@@ -32,6 +32,7 @@ window.YATZY_SESSION = {
       buildEmptyScorecard,
       isScoreboardFull,
       applyWinnerFromScores,
+      recordGameResultIfNeeded,
       animateDiceIntoScoreCell,
       maybeTriggerOnlineYatzyCelebration,
       handleEmojiReceived,
@@ -584,6 +585,7 @@ window.YATZY_SESSION = {
 
     if (targetState.gameOver) {
       applyWinnerFromScores(targetState);
+      recordGameResultIfNeeded(targetState);
     }
   }
 

@@ -61,6 +61,12 @@ via `<script src="/shared/js/player-profile.js">`.
   propagated to other games (too large for a URL param).
 - `getLaunchTotal()` / `getFavoriteLaunches(limit = 5)` — read-only
   aggregates over `bergamots-launch-counts` (written by `analytics.js`).
+- `getWins()` / `getLosses()` / `recordGameResult(won)` — combined
+  win/loss counter (`bergamots-game-results`), read on `/profile`. Only
+  Yatzy calls `recordGameResult` today, and only when there is an
+  unambiguous local player (online seat, or solo vs robot) — never for a
+  same-device 2-player local match. Not propagated cross-origin; the
+  `coinchapp`/`tranquil` apps keep their own separate local counters.
 
 Cross-origin games (`kind: "external"`, e.g. Coinche/Bouilla/Tranquil)
 cannot reach this `localStorage` at all — the hub instead forwards the name

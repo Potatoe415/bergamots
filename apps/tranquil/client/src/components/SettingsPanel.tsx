@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSettings } from '../settings';
 import { useT, LanguageSwitcher } from '../i18n';
+import { getMatchResultStats } from '../lib/matchResultStats';
 
 interface Props {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface Props {
 export default function SettingsPanel({ onClose, onRestartGame, roomCode }: Props) {
   const t = useT();
   const { settings, update } = useSettings();
+  const [stats] = useState(() => getMatchResultStats());
 
   function handleRestart() {
     onClose();
@@ -50,6 +52,13 @@ export default function SettingsPanel({ onClose, onRestartGame, roomCode }: Prop
           <div className="flex items-center justify-between gap-3">
             <span className="text-white/80 text-sm">{t('settings.language')}</span>
             <LanguageSwitcher />
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-white/80 text-sm">{t('settings.myStats')}</span>
+            <span className="text-sm font-bold text-white/90">
+              {t('settings.wins')} {stats.wins} · {t('settings.losses')} {stats.losses}
+            </span>
           </div>
 
           <label className="flex items-center justify-between gap-3 cursor-pointer">

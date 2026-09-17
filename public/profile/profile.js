@@ -45,7 +45,9 @@ const MESSAGES = {
     launchesOne: "1 jeu lancé",
     launchesMany: "{count} jeux lancés",
     favoritesTitle: "Jeux préférés",
-    favoritesEmpty: "Tes jeux les plus lancés apparaîtront ici."
+    favoritesEmpty: "Tes jeux les plus lancés apparaîtront ici.",
+    winsLabel: "Victoires",
+    lossesLabel: "Défaites"
   },
   en: {
     documentTitle: "Profile — Muchogames",
@@ -72,7 +74,9 @@ const MESSAGES = {
     launchesOne: "1 game launched",
     launchesMany: "{count} games launched",
     favoritesTitle: "Favorite games",
-    favoritesEmpty: "Your most launched games will show up here."
+    favoritesEmpty: "Your most launched games will show up here.",
+    winsLabel: "Wins",
+    lossesLabel: "Losses"
   },
   es: {
     documentTitle: "Perfil — Muchogames",
@@ -99,7 +103,9 @@ const MESSAGES = {
     launchesOne: "1 juego iniciado",
     launchesMany: "{count} juegos iniciados",
     favoritesTitle: "Juegos favoritos",
-    favoritesEmpty: "Tus juegos más lanzados aparecerán aquí."
+    favoritesEmpty: "Tus juegos más lanzados aparecerán aquí.",
+    winsLabel: "Victorias",
+    lossesLabel: "Derrotas"
   }
 };
 

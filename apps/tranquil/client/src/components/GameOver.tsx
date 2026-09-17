@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useT } from '../i18n';
 import { useSettings } from '../settings';
 import { playWinSound, playLoseSound } from '../sounds';
+import { recordMatchResult } from '../lib/matchResultStats';
 
 interface Props {
   winner: 'players' | 'game';
@@ -21,6 +22,7 @@ export default function GameOver({ winner, onRematch, onMenu }: Props) {
     if (soundOnMyTurn) {
       if (won) playWinSound(); else playLoseSound();
     }
+    recordMatchResult(won);
     return () => cancelAnimationFrame(frame);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

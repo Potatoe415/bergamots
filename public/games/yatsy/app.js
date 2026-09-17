@@ -133,6 +133,10 @@ let undoScoreTimeoutId = null;
 let robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
 let robotQueuedScoreCategory = null;
 let scoringAnimationInFlight = false;
+// Guards PlayerProfile.recordGameResult() to fire exactly once per game,
+// regardless of whether gameOver arrives locally (finishGame()) or via
+// remote sync (session.js's hydrateFromRemoteGameState) - reset in resetGame().
+let localResultRecorded = false;
 let extraRollTapCount = 0;
 let bonusRollUsedThisTurn = false;
 const UNDO_SCORE_WINDOW_MS = 5000;
@@ -275,6 +279,7 @@ const session = window.YATZY_SESSION.createSessionController({
   buildEmptyScorecard,
   isScoreboardFull,
   applyWinnerFromScores,
+  recordGameResultIfNeeded,
   animateDiceIntoScoreCell,
   maybeTriggerOnlineYatzyCelebration,
   handleEmojiReceived,
@@ -995,6 +1000,7 @@ function resetGame({
   robotStepDelayMs = getRobotDelayMs(ROBOT_CONFIG.rollDelayMs);
   resetBonusRollHunt();
   resetDefeatModeTapCount();
+  localResultRecorded = false;
 
   const freshState = createInitialState();
   freshState.screen = screen;
@@ -1500,6 +1506,35 @@ function isScoreboardFull(scoreMatrix = state.scores) {
 function finishGame() {
   state.gameOver = true;
   applyWinnerFromScores(state);
+  recordGameResultIfNeeded(state);
+}
+
+// Only "robot" (human vs bot) and "online" (real seat) have an unambiguous
+// "me" to attribute a result to. "solo" mode is 2 human players sharing this
+// device (misleadingly named - see index.html's splash buttons), so no
+// single local player's win/loss can be recorded there.
+function resolveLocalResultPlayerIndex(targetState) {
+  if (targetState.setup.mode === "online") {
+    return Number.isInteger(targetState.session.localPlayerIndex)
+      ? targetState.session.localPlayerIndex
+      : null;
+  }
+  if (targetState.setup.mode === "robot") {
+    return 0;
+  }
+  return null;
+}
+
+function recordGameResultIfNeeded(targetState) {
+  if (!targetState.gameOver || localResultRecorded) return;
+  localResultRecorded = true;
+
+  const localIndex = resolveLocalResultPlayerIndex(targetState);
+  if (localIndex === null || !window.PlayerProfile) return;
+
+  const totals = [calculateGrandTotal(targetState.scores[0]), calculateGrandTotal(targetState.scores[1])];
+  if (totals[0] === totals[1]) return;
+  window.PlayerProfile.recordGameResult(totals[localIndex] > totals[localIndex === 0 ? 1 : 0]);
 }
 
 function applyWinnerFromScores(targetState) {

@@ -5,6 +5,7 @@ export async function initLaunchStats(copy) {
   const totalNode = document.getElementById("profile-launches-total");
   const list = document.getElementById("profile-favorites-list");
   const empty = document.getElementById("profile-favorites-empty");
+  const resultsNode = document.getElementById("profile-game-results");
   if (!totalNode || !list || !empty || !window.PlayerProfile) return;
 
   const titles = await loadGameCatalog();
@@ -14,6 +15,14 @@ export async function initLaunchStats(copy) {
   totalNode.textContent = formatLaunches(total, copy);
   empty.textContent = copy.favoritesEmpty;
   renderFavorites(list, empty, favorites, titles);
+  renderGameResults(resultsNode, copy);
+}
+
+function renderGameResults(resultsNode, copy) {
+  if (!resultsNode) return;
+  const wins = window.PlayerProfile.getWins();
+  const losses = window.PlayerProfile.getLosses();
+  resultsNode.textContent = `${copy.winsLabel} ${wins} · ${copy.lossesLabel} ${losses}`;
 }
 
 function formatLaunches(count, copy) {

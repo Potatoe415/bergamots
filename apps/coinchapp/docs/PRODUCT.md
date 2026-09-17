@@ -22,7 +22,7 @@ Core_Features:
 - Synchronisation temps réel entre joueurs.
 
 Out_Of_Scope:
-- Comptes utilisateurs, statistiques persistantes, classement (pour l'instant).
+- Comptes utilisateurs, classement (pour l'instant). Exception limitée : un compteur combiné victoires/défaites, tous les 4 jeux confondus, stocké uniquement en local (`localStorage`, aucun compte ni backend, ne suit pas le joueur entre appareils).
 - Spectateurs, chat, variantes régionales avancées.
 - Annonce manuelle Belote/Rebelote (auto-détectée pour l'instant).
 

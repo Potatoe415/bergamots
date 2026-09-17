@@ -26,7 +26,7 @@ Core_Features:
 
 Out_Of_Scope:
 - Centralized user accounts / persisted identity for players. Players stay anonymous by default. The one optional exception is the hub's Google login status (see Core_Features): it has no server session and does not identify a player to any game or backend. It does keep the signed-in email client-side (`localStorage`) to display it in the UI — see `docs/TECH.md` — but this is a UI convenience, not an account: nothing is sent to, or stored by, any server. The admin stats page remains separately gated by a single shared password, with no account, session, or user record.
-- Persistent scores/progress across sessions (scores are per game session; Yatzy game state persists only for the lifetime of a room, up to 48h TTL for purge).
+- Persistent scores/progress across sessions, with one narrow exception: a simple wins/losses counter (Yatzy on this hub; a separate one inside each of `coinchapp` and `tranquil`), scoped to the local browser only via `localStorage` — no account, no backend, no cross-device sync. Round/hand scores otherwise stay per game session; Yatzy game state persists only for the lifetime of a room, up to 48h TTL for purge.
 - Visitor-level analytics: launch counts are aggregate only, with no IP, user agent, device, country, or session identifier stored. Reaffirmed on 2026-08-30, when unique visitors, live presence, devices and countries were considered for the stats page and deliberately declined rather than overlooked.
 
 User_Roles:

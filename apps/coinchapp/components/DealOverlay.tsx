@@ -4,16 +4,19 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { formatText, useI18n } from "@/lib/client/i18n";
 import type { PlayerView } from "@/lib/coinche";
+import { useRecordMatchResult } from "@/lib/client/matchResultStats";
 import type { NextDealGate } from "@/lib/server/view";
 import { formatContract } from "./labels";
 
 export function DealOverlay({
+  gameId,
   view,
   visible,
   onNextDeal,
   nextDealGate,
   onRematch,
 }: {
+  gameId: string;
   view: PlayerView;
   /** Delayed past the trick-collect animation - see `useDelayedVisible` (computed by the caller,
    *  which also needs it to know when to move opponents' badges out of the overlay's way). */
@@ -28,11 +31,12 @@ export function DealOverlay({
   const [rematchBusy, setRematchBusy] = useState(false);
   const result = view.lastDeal;
   const finished = view.phase === "finished";
+  const myTeam = view.mySeat % 2 === 0 ? "A" : "B";
+  useRecordMatchResult(gameId, finished, view.winner === myTeam);
 
   if (!visible) return null;
 
   const contractMade = result?.contractMade ?? true;
-  const myTeam = view.mySeat % 2 === 0 ? "A" : "B";
   const iWon = result
     ? (myTeam === result.contract.team) === result.contractMade
     : true;

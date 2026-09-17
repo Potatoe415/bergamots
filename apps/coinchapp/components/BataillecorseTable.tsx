@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "re
 import Link from "next/link";
 import { SLAP_GRACE_MS, type PlayerView } from "@/lib/bataillecorse";
 import { formatText, useI18n } from "@/lib/client/i18n";
+import { useRecordMatchResult } from "@/lib/client/matchResultStats";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
 import type { GameView } from "@/lib/server/view";
 import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
@@ -631,6 +632,7 @@ function FinishedOverlay({
 }) {
   const { t, locale } = useI18n();
   const iWon = view.winner === gv.mySeat;
+  useRecordMatchResult(gv.gameId, true, iWon);
   return (
     <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 px-6" data-id="bataillecorse-finished-overlay">
       <div className="w-full max-w-xs rounded-2xl bg-[var(--surface)] p-6 text-center shadow-2xl">
