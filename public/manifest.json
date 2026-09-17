@@ -1,6 +1,6 @@
 {
-  "name": "Bergamots",
-  "short_name": "Bergamots",
+  "name": "Muchogames",
+  "short_name": "Muchogames",
   "description": "Hub de jeux de soirée multijoueurs sans friction.",
   "start_url": "/?source=pwa",
   "display": "standalone",

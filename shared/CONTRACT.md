@@ -57,7 +57,7 @@ via `<script src="/shared/js/player-profile.js">`.
 
 - `getName(fallback)` / `setName(name)` — `bergamots-player-name`.
 - `getAvatar()` / `setAvatar(dataUrl, thumbUrl)` / `getAvatarThumb()` —
-  `bergamots-player-avatar` (+ thumb). Avatar is Bergamots-only: never
+  `bergamots-player-avatar` (+ thumb). Avatar is Muchogames-only: never
   propagated to other games (too large for a URL param).
 - `getLaunchTotal()` / `getFavoriteLaunches(limit = 5)` — read-only
   aggregates over `bergamots-launch-counts` (written by `analytics.js`).

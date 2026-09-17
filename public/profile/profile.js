@@ -21,7 +21,7 @@ const LANGUAGE_FLAGS = [
 
 const MESSAGES = {
   fr: {
-    documentTitle: "Profil — Bergamots",
+    documentTitle: "Profil — Muchogames",
     title: "Profil",
     avatarAlt: "Avatar du joueur",
     changeAvatar: "Changer l'avatar",
@@ -48,7 +48,7 @@ const MESSAGES = {
     favoritesEmpty: "Tes jeux les plus lancés apparaîtront ici."
   },
   en: {
-    documentTitle: "Profile — Bergamots",
+    documentTitle: "Profile — Muchogames",
     title: "Profile",
     avatarAlt: "Player avatar",
     changeAvatar: "Change avatar",
@@ -75,7 +75,7 @@ const MESSAGES = {
     favoritesEmpty: "Your most launched games will show up here."
   },
   es: {
-    documentTitle: "Perfil — Bergamots",
+    documentTitle: "Perfil — Muchogames",
     title: "Perfil",
     avatarAlt: "Avatar del jugador",
     changeAvatar: "Cambiar avatar",

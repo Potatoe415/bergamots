@@ -4,9 +4,9 @@ Status: Living document. Never edit autonomously — confirm with user first.
 
 ---
 
-Project_Name: Bergamots
+Project_Name: Muchogames
 Objective: Provide a single hub to browse and launch a curated collection of party/group games from one page, with zero setup per game (no accounts, no install).
-Problem: Party/group games are scattered across apps and links; Bergamots centralizes them behind one dashboard with a consistent look and multilingual support.
+Problem: Party/group games are scattered across apps and links; Muchogames centralizes them behind one dashboard with a consistent look and multilingual support.
 
 Target_Users:
 - Groups of friends/family playing together in person (word-guessing games, riddles, dice games, quizzes).
@@ -22,7 +22,7 @@ Core_Features:
 - Multilingual support (FR/EN/ES) for rules and word/question content, driven by JSON fields rather than code.
 - Admin stats page (`public/admin/`, reachable at `/admin`): password-protected page showing how often each game is launched from the hub, over a period the admin picks (7 days / 30 days / 6 months), with a total for that period, a daily trend chart and a ranking by game. Read-only; it cannot edit any content.
 - Google login status on the hub (`auth.js`): a top-right icon lets a visitor sign in with a Google/Gmail account or sign out. When signed in, the popover shows the signed-in email and a "Profil" link to a profile page (`/profile`).
-- Profile page (`/profile`, `public/profile/`): an editable "Nom" text field and an Avatar (upload, saved client-side). Nom is auto-filled once from the Google account's display name on first sign-in (never overwrites a name the player already set themselves). The name pre-fills Yatzy's own name field (same origin) and, as a `?name=` link parameter, the pseudo field already present in Coinche, Bouilla and Tranquil (separate apps on other domains) — always a soft pre-fill, never required, never overwriting what a player types in that game. The Avatar is Bergamots-only and does not travel to other games. See `docs/TECH.md` "Player identity contract" for the mechanism any future game should follow.
+- Profile page (`/profile`, `public/profile/`): an editable "Nom" text field and an Avatar (upload, saved client-side). Nom is auto-filled once from the Google account's display name on first sign-in (never overwrites a name the player already set themselves). The name pre-fills Yatzy's own name field (same origin) and, as a `?name=` link parameter, the pseudo field already present in Coinche, Bouilla and Tranquil (separate apps on other domains) — always a soft pre-fill, never required, never overwriting what a player types in that game. The Avatar is Muchogames-only and does not travel to other games. See `docs/TECH.md` "Player identity contract" for the mechanism any future game should follow.
 
 Out_Of_Scope:
 - Centralized user accounts / persisted identity for players. Players stay anonymous by default. The one optional exception is the hub's Google login status (see Core_Features): it has no server session and does not identify a player to any game or backend. It does keep the signed-in email client-side (`localStorage`) to display it in the UI — see `docs/TECH.md` — but this is a UI convenience, not an account: nothing is sent to, or stored by, any server. The admin stats page remains separately gated by a single shared password, with no account, session, or user record.

@@ -1,4 +1,4 @@
-## Bergamots
+## Muchogames
 
 Vanilla HTML/CSS/JavaScript multi-game hub powered by Vite. Data-driven: games are listed in `public/hub-config.json`; word-based games use the universal **wordplayer** (single HTML shell + `public/data/<gameId>/words.json` per game).
 
@@ -68,4 +68,4 @@ No changes to `hub.js` or `vite.config.js` are required; wordplayer discovers th
 
 - Reuse `shared/css/base.css` and `shared/js/` from custom game HTML/JS to keep the look and behavior consistent.
 
-# Bergamots
+# Muchogames

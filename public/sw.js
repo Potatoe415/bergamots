@@ -1,4 +1,4 @@
-const CACHE_NAME = "bergamots-v1";
+const CACHE_NAME = "muchogames-v1";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();

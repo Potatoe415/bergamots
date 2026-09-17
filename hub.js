@@ -62,8 +62,8 @@ function setupHubShareButton() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Bergamots",
-          text: "Découvre Bergamots, la plateforme de jeux de soirée multijoueurs !",
+          title: "Muchogames",
+          text: "Découvre Muchogames, la plateforme de jeux de soirée multijoueurs !",
           url: url
         });
       } else if (navigator.clipboard?.writeText) {

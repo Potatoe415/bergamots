@@ -380,7 +380,7 @@ async function initializeWordPlayer() {
 }
 
 function hydrateUserInterface(gameEntry) {
-  document.title = `${gameEntry.title} - Bergamots`;
+  document.title = `${gameEntry.title} - Muchogames`;
 
   const bannerElement = document.getElementById(DOM.banner);
   if (!bannerElement || !gameEntry.thumbnail) {

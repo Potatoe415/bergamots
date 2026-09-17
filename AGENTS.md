@@ -26,7 +26,7 @@ Do not load `docs/DECISIONS.md`, `docs/DATA_MODEL.md`, or `docs/RUNBOOK.md` by d
 
 ### Game-scoped work
 
-Bergamots hosts many independent games. Treat each one as its own context
+Muchogames hosts many independent games. Treat each one as its own context
 boundary — this keeps token usage low and stops one game's logic from
 bleeding into another's.
 
@@ -118,7 +118,7 @@ If unsure: add an Open_Question to `STATE.md`, not a decision entry.
 ## 5. Language Rules
 
 - Code, filenames, comments, commits, docs: English.
-- User-facing copy: language defined by the product (Bergamots ships FR/EN/ES in-game copy).
+- User-facing copy: language defined by the product (Muchogames ships FR/EN/ES in-game copy).
 - No corporate filler. No vague summaries.
 - Use concrete facts, paths, commands, and decisions.
 
@@ -171,7 +171,7 @@ If unsure: add an Open_Question to `STATE.md`, not a decision entry.
 - `data-id` values must not change unless the element's purpose changes. Treat them like a public API.
 - When modifying an existing element, preserve its `data-id` unless the element's role has changed.
 
-### Project-specific conventions (Bergamots)
+### Project-specific conventions (Muchogames)
 - No duplicated shared code: use `shared/` for logic/styles used by 2+ games.
 - Game assets/data live under `public/games/<id>/` and `public/data/<id>/`; the hub reads `public/hub-config.json`.
 - No assets at repo root.

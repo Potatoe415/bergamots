@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/client/i18n";
 
-const BERGAMOTS_HUB_URL = "https://bergamots.vercel.app/";
+const BERGAMOTS_HUB_URL = "https://muchogames.vercel.app/";
 
 /** Back-to-hub + settings (language) controls shown on the home splash screens
  *  (`/` and `/bouilla`). Both sit at z-20: their sibling content (`splash-actions`,
