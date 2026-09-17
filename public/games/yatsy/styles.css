@@ -25,6 +25,18 @@
   box-sizing: border-box;
 }
 
+/* Almost every size in this file is in `rem`, so scaling the root font-size
+   fluidly with viewport width shrinks the whole board together as the
+   screen narrows, instead of only at the two fixed breakpoints below. That
+   closes the "dead zone" between them (~431-699px) where nothing used to
+   shrink even though the board kept losing width, which is what caused
+   score-board cells/icons/buttons to overflow into each other on
+   in-between phone widths. 16px at >=700px (unchanged from before this
+   rule existed) down to 13px at <=320px. */
+html {
+  font-size: clamp(13px, calc(10.5px + 0.79vw), 16px);
+}
+
 html,
 body {
   margin: 0;
