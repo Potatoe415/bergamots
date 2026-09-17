@@ -63,16 +63,16 @@ lint/format/build (`eslint.config.mjs`, `.prettierignore`). Read *that
 app's own* `AGENTS.md`/`STATE.md` before working inside it, not this
 repo's game-scoped rules.
 
-| id (in `hub-config.json`) | code lives at | still deploys at (unchanged so far) |
+| id (in `hub-config.json`) | code lives at | deploys at |
 |---|---|---|
-| `tranquil` | `apps/tranquil/` (npm workspaces: `shared` + `client` + `api`) | tranquil-woad.vercel.app, its own Vercel project |
-| `coinche`, `bouilla`, `president`, `bataillecorse` | `apps/coinchapp/` (Next.js App Router) | coinchapp.vercel.app, its own Vercel project |
+| `tranquil` | `apps/tranquil/` (npm workspaces: `shared` + `client` + `api`) | tranquil-woad.vercel.app — **still its own original Vercel project**, repoint not started |
+| `coinche`, `bouilla`, `president`, `bataillecorse` | `apps/coinchapp/` (Next.js App Router) | coinchapp.vercel.app — **now `coinchapp-monorepo`, built from this repo's `apps/coinchapp/`** (repointed + domain moved 2026-09-17, see `docs/DECISIONS.md`) |
 
-Colocating the code did **not** move the deployment on its own: Vercel
-repointing is being done separately, app by app (`coinchapp`'s is in
-progress — see `docs/BACKLOG.md` — `tranquil`'s has not started). Hub
-tile thumbnails for these games stay where they always were, unaffected
-by this: `public/games/coinchapp/assets/` and
+Colocating the code did not automatically move the deployment — that
+Vercel repoint is done per-app, separately: `coinchapp`'s is complete and
+live; `tranquil`'s has not started (see `docs/BACKLOG.md`). Hub tile
+thumbnails for these games stay where they always were, unaffected by
+this: `public/games/coinchapp/assets/` and
 `public/games/tranquil/assets/`.
 
 **Local task orchestration** (build/lint caching, not deployment) uses
