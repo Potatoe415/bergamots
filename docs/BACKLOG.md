@@ -5,6 +5,8 @@ Status: Living document. Always reflects current state.
 ---
 
 ## Now
+- [ ] Repoint the `coinchapp` and `tranquil` Vercel projects to build from this repo (`apps/coinchapp/`, `apps/tranquil/` as Root Directory) instead of their original standalone repos, now that the code is colocated (2026-09-17, see `docs/DECISIONS.md`). Live domain/build-source cutover — needs its own go-ahead and live verification (create the new Vercel project via Git import, confirm a preview deployment works, move the production domain, only then proceed to the item below). Not started.
+- [ ] Archive the original `coinchapp` and `tranquil` GitHub repos — only after the item above is verified live in production, per the user's 2026-09-17 decision to archive (not delete) them once migrated.
 - [ ] Confirm `/admin` renders and logs in from a real browser. The 2026-08-30 fix was verified at HTTP level only (every resource 200 with the right MIME, CSP checked against the full resource list) because the browser MCP would not register, so the render and the login round-trip are unconfirmed in a browser.
 - [ ] Delete the verification row from the live test: `delete from public.muchogames_events where game_id = '__verification__';`. Harmless, but it currently sits at the top of the `/admin` ranking.
 - [ ] Rotate `ADMIN_PASSWORD` — the value set on 2026-08-30 is a short demo password used to test the flow. It doubles as the HMAC key signing session tokens, so a weak value weakens the tokens as well, and the throttle does not compensate: it is in-memory, so it is per warm serverless instance and resets on cold start. Use a long random value: `vercel env add ADMIN_PASSWORD production --sensitive --force`, then redeploy.

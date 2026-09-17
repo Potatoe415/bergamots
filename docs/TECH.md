@@ -4,7 +4,7 @@ Status: Living document. Never edit autonomously — confirm with user first.
 
 ---
 
-Stack_Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3. No UI framework (no React/Vue/Angular). Vite as dev server and bundler.
+Stack_Frontend: Vanilla JavaScript (ES6+), HTML5, CSS3. No UI framework (no React/Vue/Angular). Vite as dev server and bundler. This describes the hub-spoke surface (`index.html`, `wordplayer.html`, everything under `public/games/`) only. `apps/coinchapp/` (Next.js/React/TypeScript) and `apps/tranquil/` (Vite/React/TypeScript, npm workspaces) are colocated, self-governing sub-apps — see `docs/GAMES_MAP.md` and `docs/DECISIONS.md` 2026-09-17 — not part of this stack description and not built/linted by this repo's root tooling.
 Stack_Backend: Vercel Serverless Functions (Node.js) back the two dynamic features: `api/yatsy/games/*` is the server-side authority for Yatzy matchmaking/real-time state sync, and `api/track.js` + `api/admin/stats.js` record and aggregate hub launch counts. The rest of the site remains static.
 Database: No general-purpose database. Game content is static JSON shipped in `public/data/` and `public/hub-config.json`. Supabase (Postgres) stores only ephemeral Yatzy room state and append-only hub launch events (see `docs/DATA_MODEL.md`), using the shared `multigames-db` Supabase project (also used by `coinchapp`), with tables namespaced (`yatzy_*`, `muchogames_*`) to avoid collisions.
 Runtime: Node.js for tooling (Vite, ESLint, Prettier, CI) and for the `api/yatsy/games/*` serverless functions. Browser runtime for the app itself.

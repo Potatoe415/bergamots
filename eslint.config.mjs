@@ -4,7 +4,13 @@ import prettier from "eslint-config-prettier";
 import globals from "globals";
 
 export default [
-  { ignores: ["dist/**", ".vercel/**", "public/games/**/vendor/**"] },
+  {
+    // apps/** (coinchapp, tranquil) are self-governing sub-apps colocated for
+    // Git history + LLM context, each with its own eslint config/TypeScript
+    // setup — see docs/GAMES_MAP.md. This repo's JS-only config would either
+    // skip their .ts/.tsx files silently or misconfigure their globals.
+    ignores: ["dist/**", ".vercel/**", "public/games/**/vendor/**", "apps/**"]
+  },
 
   js.configs.recommended,
 

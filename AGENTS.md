@@ -46,6 +46,16 @@ bleeding into another's.
 - Adding a new game: follow `docs/GAMES_MAP.md`'s "Adding a new game"
   steps (new folder, one row in the map, a `NOTES.md` once the main file
   passes ~150–200 lines).
+- `apps/<name>/` (`coinchapp`, `tranquil`) are **self-governing colocated
+  sub-apps** — separate stacks (Next.js/React/TypeScript), separate
+  `package.json`/lint/build tooling, each with its own `AGENTS.md`/
+  `STATE.md`/`docs/`. Colocated in this Git repo for history + LLM context
+  only, per `docs/GAMES_MAP.md`. A task inside `apps/<name>/` follows
+  *that app's own* `AGENTS.md`, not this repo's vanilla-JS/size-limit/
+  `data-id` rules above. Never run this repo's root `npm run
+  lint`/`format`/`build` expecting it to cover `apps/**` — it deliberately
+  ignores that tree (see `eslint.config.mjs`, `.prettierignore`); build/lint
+  each app from inside its own folder instead.
 
 ---
 

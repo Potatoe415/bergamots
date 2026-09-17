@@ -45,17 +45,44 @@ not this folder. Pre-existing dead code, left untouched per `AGENTS.md`.
 that contract, not the shared source, unless it doesn't answer your
 question.
 
-## External games (code lives outside this repo)
+## External games (launch is a plain URL, `kind: "external"` in `hub-config.json`)
 
-Nothing to open here beyond a thumbnail. Launch is a plain URL in
-`hub-config.json` (`kind: "external"`).
+"External" describes how a game **launches** (a URL, not an in-repo
+page) — independent of where its *code* physically lives. Two different
+situations exist today:
 
-| id | deployed at | repo | what's in *this* repo |
-|---|---|---|---|
-| `easyfrog` | easyfrog.web.app | separate, not tracked here | thumbnail only |
-| `tranquil` | tranquil-woad.vercel.app | `tranquil` | thumbnail only |
-| `coinche`, `bouilla`, `president`, `bataillecorse` | coinchapp.vercel.app | `coinchapp` | shared thumbnails under `public/games/coinchapp/assets/` |
-| `gameboy-web` | gameboy-web.vercel.app | `gameboy-web` | thumbnail only |
+### Colocated (code lives in this repo, under `apps/`)
+
+`coinchapp` and `tranquil` were imported via `git subtree` on 2026-09-17
+(full history preserved) so their code, history, and docs sit in this
+repo for easier LLM context — see `docs/DECISIONS.md`. **They are not
+part of the hub-spoke/vanilla-JS architecture**: each is a separate,
+self-governing project (own `package.json`, own `AGENTS.md`, own
+lint/build) and is explicitly excluded from this repo's root
+lint/format/build (`eslint.config.mjs`, `.prettierignore`). Read *that
+app's own* `AGENTS.md`/`STATE.md` before working inside it, not this
+repo's game-scoped rules.
+
+| id (in `hub-config.json`) | code lives at | still deploys at (unchanged so far) |
+|---|---|---|
+| `tranquil` | `apps/tranquil/` (npm workspaces: `shared` + `client` + `api`) | tranquil-woad.vercel.app, its own Vercel project |
+| `coinche`, `bouilla`, `president`, `bataillecorse` | `apps/coinchapp/` (Next.js App Router) | coinchapp.vercel.app, its own Vercel project |
+
+Colocating the code did **not** move the deployment: each app's Vercel
+project still builds from its own original GitHub repo today. Repointing
+Vercel to build from `apps/<name>/` in *this* repo (so the original repos
+can be archived) is a separate, deliberately not-yet-done step — see
+`docs/BACKLOG.md` — because it means a live domain/build-source cutover,
+not just a file move. Hub tile thumbnails for these games stay where they
+always were, unaffected by this: `public/games/coinchapp/assets/` and
+`public/games/tranquil/assets/`.
+
+### Not colocated (code lives in a separate, untouched repo)
+
+| id | deployed at | repo |
+|---|---|---|
+| `easyfrog` | easyfrog.web.app | separate, not tracked here |
+| `gameboy-web` | gameboy-web.vercel.app | `gameboy-web` |
 
 ---
 
