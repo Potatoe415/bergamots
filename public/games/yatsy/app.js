@@ -97,6 +97,9 @@ const elements = {
   settingsButton: document.getElementById("settings-button"),
   settingsPanel: document.getElementById("settings-panel"),
   settingsList: document.getElementById("settings-list"),
+  settingsRulesSection: document.getElementById("settings-rules-section"),
+  settingsRulesTitle: document.getElementById("settings-rules-title"),
+  settingsRulesContent: document.getElementById("settings-rules-content"),
   scoreSummary: document.getElementById("score-summary"),
   scoreboard: document.getElementById("scoreboard"),
   diceRow: document.getElementById("dice-row"),
@@ -272,6 +275,29 @@ render();
 restoreOnlineSession();
 handleDeepLinkJoin();
 registerOfflineSupport();
+void refreshSettingsRules();
+
+// Dynamic import (not a static one): every other file here is a classic
+// script sharing one global scope (see eslint.config.mjs) - a static import
+// would force this file alone into module scope. The language is fixed for
+// the whole session (see `initialSetupLanguage`, no in-game switcher), so
+// this only ever needs to run once.
+async function refreshSettingsRules() {
+  if (!elements.settingsRulesSection || !elements.settingsRulesContent) return;
+
+  const { loadRulesIfExists } = await import("/shared/js/engine.js");
+  const html = await loadRulesIfExists("yatsy", state.setup.language);
+  if (!html) {
+    elements.settingsRulesSection.style.display = "none";
+    return;
+  }
+
+  if (elements.settingsRulesTitle) {
+    elements.settingsRulesTitle.textContent = t("splash.rules");
+  }
+  elements.settingsRulesContent.innerHTML = html;
+  elements.settingsRulesSection.style.display = "";
+}
 
 function getRobotDelayMs(delayMs, enforceMinimum = true) {
   if (!enforceMinimum) {

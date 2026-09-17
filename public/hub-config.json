@@ -97,14 +97,6 @@
     "thumbnail": "/games/yatsy/assets/thumbnail-yatsy.jpg"
   },
   {
-    "id": "diceduel",
-    "title": "Dice Duel",
-    "kind": "custom",
-    "category": "cartesdes",
-    "launch": "/games/diceduel/index.html",
-    "thumbnail": "/games/diceduel/assets/thumbnail.svg"
-  },
-  {
     "id": "tranquil",
     "title": "Tranquil",
     "kind": "external",

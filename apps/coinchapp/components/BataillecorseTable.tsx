@@ -73,6 +73,40 @@ function usePileEnterDirection(view: PlayerView): EnterDirection {
   return dir;
 }
 
+/** How long the pile stays visible after a "double"/"sandwich" win before
+ *  it's actually cleared: the server clears `pile` in the very same update
+ *  that reports the win (see `awardPile` in `engine.ts`), so without this the
+ *  cards that formed the pattern never get seen at all - they'd vanish on
+ *  the same frame the win banner appears. */
+const HOLD_PILE_MS = 2000;
+
+/** Freezes the pile at whatever it looked like the instant before a pile-win
+ *  clears it, for `HOLD_PILE_MS`, then releases it back to the real (now
+ *  empty, or freshly-refilled) `view.pile`. Adjusted during render (React's
+ *  documented "reset state on prop change" pattern, same as
+ *  `usePileEnterDirection` above) so the frozen cards are already there on
+ *  the very first frame the server reports an empty pile - no separate
+ *  effect-driven extra frame where the pile flashes empty first.
+ *  `flying` is true for that whole hold: drives the "cards fly into the
+ *  winner's stock" sweep in `PileStack` (`.bataillecorse-pile-fly`, see
+ *  `app/globals.css`) instead of the pile just vanishing. */
+function useDisplayPile(
+  pile: PlayerView["pile"],
+  winEventId: number | undefined,
+): { pile: PlayerView["pile"]; flying: boolean } {
+  const [track, setTrack] = useState({ pile, winEventId, frozen: null as PlayerView["pile"] | null });
+  if (pile !== track.pile) {
+    const justWon = winEventId !== undefined && winEventId !== track.winEventId;
+    setTrack({ pile, winEventId, frozen: justWon ? track.pile : track.frozen });
+  }
+  useEffect(() => {
+    if (track.frozen === null) return;
+    const timer = setTimeout(() => setTrack((t) => ({ ...t, frozen: null })), HOLD_PILE_MS);
+    return () => clearTimeout(timer);
+  }, [track.frozen]);
+  return { pile: track.frozen ?? pile, flying: track.frozen !== null };
+}
+
 /** The instant (`performance.now()`) *this client* first saw the currently
  *  open slap window, for measuring a genuine local reaction time - read only
  *  from the `tapSlap` event handler, never during render (`.current` is a
@@ -164,6 +198,9 @@ export function BataillecorseTable({
   const pileWinFlash = useFlash(view.lastPileWin?.id);
   const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
   const pileEnterDirection = usePileEnterDirection(view);
+  const { pile: displayPile, flying: pileFlying } = useDisplayPile(view.pile, view.lastPileWin?.id);
+  const pileFlyTarget: "up" | "down" | null =
+    pileFlying && view.lastPileWin ? (view.lastPileWin.seat === mySeat ? "down" : "up") : null;
   const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
   const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
   const owesTribute = view.tribute?.seat === mySeat;
@@ -236,7 +273,11 @@ export function BataillecorseTable({
                 : "bg-white/5 ring-1 ring-white/20",
             ].join(" ")}
           >
-            <PileStack cards={view.pile} enterFrom={pileEnterDirection} pendingSelfFlip={pendingFlip} />
+            <PileStack
+              cards={displayPile}
+              enterFrom={pileEnterDirection}
+              fly={pileFlyTarget ? { key: view.lastPileWin!.id, toward: pileFlyTarget } : undefined}
+            />
           </button>
 
           <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
@@ -409,32 +450,51 @@ function cardKey(card: PlayerView["pile"][number]): string {
   return `${card.rank}${card.suit}`;
 }
 
+/** Pixels the pile sweeps toward the winner's stock before shrinking away -
+ *  see `.bataillecorse-pile-fly` (`app/globals.css`). */
+const PILE_FLY_DISTANCE_PX = 220;
+
 /** The center pile: the current top card slides in from whichever seat just
  *  played it (`played-card-enter`, same animation every other game's table
  *  uses - see `TrickStage.tsx`), while the 1-2 cards behind it sit scattered
- *  and dimmed, always at least 2 of them visible when available.
+ *  and dimmed, always at least 2 of them visible when available. Every card
+ *  shown here is always face-up: a flip's real value only ever reaches this
+ *  component once the server has confirmed it (see `useDisplayPile` above
+ *  for why the pile also lingers face-up for a moment after a win instead of
+ *  vanishing instantly).
  *
- *  `pendingSelfFlip`: the instant the local player taps their own stock (see
- *  `useOptimisticFlip`), a face-down card lands here right away - simulating
- *  the flip landing immediately instead of leaving the pile visibly frozen
- *  until the network round trip resolves. It is removed the moment the
- *  server's real card takes its place. */
+ *  `fly`: set for that same lingering window when the win is the *current*
+ *  one being shown - animates the whole gathered stack sweeping toward
+ *  whichever seat just won it (up = opponent's stock, down = the player's
+ *  own) and shrinking away, instead of just vanishing. Keyed by the win
+ *  event's id so a second, later win restarts the sweep rather than being a
+ *  no-op remount. */
 function PileStack({
   cards,
   enterFrom,
-  pendingSelfFlip,
+  fly,
 }: {
   cards: PlayerView["pile"];
   enterFrom: EnterDirection;
-  pendingSelfFlip?: boolean;
+  fly?: { key: number; toward: "up" | "down" };
 }) {
   const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const shown = cards.slice(-3);
-  if (shown.length === 0 && !pendingSelfFlip) {
+  if (shown.length === 0) {
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
   return (
-    <div className="relative aspect-[2/3] w-[var(--card-md-w)]" data-id="bataillecorse-pile" style={{ transform: "scale(1.5)" }}>
+    <div
+      key={fly ? `fly-${fly.key}` : "pile"}
+      className={`relative aspect-[2/3] w-[var(--card-md-w)] ${fly ? "bataillecorse-pile-fly" : ""}`}
+      data-id="bataillecorse-pile"
+      style={
+        {
+          transform: "scale(1.5)",
+          ...(fly ? { "--pile-fly-y": `${fly.toward === "down" ? PILE_FLY_DISTANCE_PX : -PILE_FLY_DISTANCE_PX}px` } : {}),
+        } as React.CSSProperties
+      }
+    >
       <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       {shown.map((card, i) => {
         const isTop = i === shown.length - 1;
@@ -464,15 +524,6 @@ function PileStack({
           </div>
         );
       })}
-      {pendingSelfFlip && (
-        <div
-          className="absolute left-0 top-0 played-card-enter will-change-transform"
-          style={{ ...playedCardEnterStyle("bottom"), zIndex: shown.length }}
-          data-id="bataillecorse-pile-pending-flip"
-        >
-          <CardBack size="md" />
-        </div>
-      )}
     </div>
   );
 }

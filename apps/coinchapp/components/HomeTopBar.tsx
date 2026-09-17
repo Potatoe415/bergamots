@@ -2,17 +2,28 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/client/i18n";
+import { RulesModal } from "./RulesModal";
+import type { GameType } from "@/lib/supabase/types";
 
 const BERGAMOTS_HUB_URL = "https://muchogames.vercel.app/";
 
-/** Back-to-hub + settings (language) controls shown on the home splash screens
- *  (`/` and `/bouilla`). Both sit at z-20: their sibling content (`splash-actions`,
- *  `home-footer-actions`) is `relative z-10` in the same stacking context, so
- *  without a higher z-index its empty padding/margin area intercepts clicks on
- *  these buttons even though nothing is visibly drawn there. */
-export function HomeTopBar() {
+/** Back-to-hub + settings (language, rules) controls shown on every home splash
+ *  screen (`/`, `/coinche`, `/bouilla`, `/president`, `/bataillecorse`) - the
+ *  same back (top-left) / paramètres (top-right) chrome everywhere, never a
+ *  per-game reimplementation (see `AGENTS.md` "shared base" rule). Both sit at
+ *  z-20: their sibling content (`splash-actions`, `home-footer-actions`) is
+ *  `relative z-10` in the same stacking context, so without a higher z-index
+ *  its empty padding/margin area intercepts clicks on these buttons even
+ *  though nothing is visibly drawn there.
+ *
+ *  `game`: when set, adds a "Rules" entry to the settings panel for that
+ *  specific game (opens `RulesModal`) - the single access point for rules,
+ *  not a separate button elsewhere on the page. Omitted on the game-picker
+ *  home screen (`/`), which isn't about one specific game. */
+export function HomeTopBar({ game }: { game?: GameType }) {
   const { locale, setLocale, t } = useI18n();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   return (
     <>
@@ -71,8 +82,24 @@ export function HomeTopBar() {
               EN
             </button>
           </div>
+
+          {game && (
+            <button
+              type="button"
+              data-id="home-settings-rules-button"
+              onClick={() => {
+                setSettingsOpen(false);
+                setRulesOpen(true);
+              }}
+              className="mt-2 w-full rounded-xl bg-black/10 px-2 py-1.5 text-sm font-bold text-[var(--card-face)]"
+            >
+              {t("rulesButton")}
+            </button>
+          )}
         </div>
       )}
+
+      {rulesOpen && game && <RulesModal game={game} onClose={() => setRulesOpen(false)} />}
     </>
   );
 }

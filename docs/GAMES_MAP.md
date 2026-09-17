@@ -33,13 +33,12 @@ not this folder. Pre-existing dead code, left untouched per `AGENTS.md`.
 
 | id | folder | main file(s) — lines | shared deps | `NOTES.md`? |
 |---|---|---|---|---|
-| `blackstories` | `public/games/blackstories/` | `blackstories.js` (251) | header, profile | no |
+| `blackstories` | `public/games/blackstories/` | `blackstories.js` (266) | engine, header, profile | no |
 | `olemains` | `public/games/olemains/` | 6 files, ~510 total (already split, none >300) | engine, header, profile | no |
 | `cafards` | `public/games/cafards/` | `game.js` (238) | header, profile | no |
-| `millionaire` | `public/games/millionaire/` | `app.js` (1069, **over 300-line limit**) | header, profile | no — see `docs/BACKLOG.md` |
+| `millionaire` | `public/games/millionaire/` | `app.js` (1089, **over 300-line limit**) | engine, header, profile | no — see `docs/BACKLOG.md` |
 | `pyramide` | `public/games/pyramide/` | `app.js` (847), `i18n.js` (317) — **both over limit** | header, profile | no — see `docs/BACKLOG.md` |
-| `yatsy` | `public/games/yatsy/` | 14 files; `app.js` (1216), `i18n.js` (392), `render.js` (633), `session.js` (575) — **4 files over limit** | header, profile, Supabase | no — see `docs/BACKLOG.md` Later |
-| `diceduel` | `public/games/diceduel/js/` | `engine.js` (327), `ui.js` (303) — both just over limit | header, profile | no |
+| `yatsy` | `public/games/yatsy/` | 14 files; `app.js` (1239), `i18n.js` (395), `render.js` (633), `session.js` (575) — **4 files over limit** | engine, header, profile, Supabase | no — see `docs/BACKLOG.md` Later |
 
 "Shared deps" = which `shared/CONTRACT.md` modules the game imports. Read
 that contract, not the shared source, unless it doesn't answer your

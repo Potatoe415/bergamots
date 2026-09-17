@@ -16,6 +16,8 @@
   - id (recommended; if missing we generate one)
 */
 
+import { loadRulesIfExists } from "../../shared/js/engine.js";
+
 const els = {
   title: document.getElementById("title"),
   shortStory: document.getElementById("shortStory"),
@@ -32,6 +34,8 @@ const els = {
   illusImg: document.getElementById("illusImg"),
   settingsButton: document.getElementById("settingsButton"),
   settingsPanel: document.getElementById("settingsPanel"),
+  rulesSection: document.getElementById("rulesSection"),
+  rulesContent: document.getElementById("rulesContent"),
   splashScreen: document.getElementById("splashScreen"),
   gameContainer: document.getElementById("gameContainer"),
   startButton: document.getElementById("startButton"),
@@ -114,6 +118,19 @@ function setLangUI(lang) {
     btn.setAttribute("aria-pressed", isActive ? "true" : "false");
   });
 }
+async function refreshRules() {
+  if (!els.rulesSection || !els.rulesContent) return;
+
+  const html = await loadRulesIfExists("blackstories", currentLang);
+  if (!html) {
+    els.rulesSection.style.display = "none";
+    return;
+  }
+
+  els.rulesContent.innerHTML = html;
+  els.rulesSection.style.display = "";
+}
+
 function setReveal(state) {
   revealed = !!state;
   els.fullStory.classList.toggle("hidden", !revealed);
@@ -274,6 +291,7 @@ function bindEvents() {
     btn.addEventListener("click", () => {
       setLangUI(btn.dataset.lang);
       resetHistoryAndStart();
+      void refreshRules();
     });
   });
 
@@ -303,6 +321,7 @@ async function init() {
   bindEvents();
   await loadAll();
   resetHistoryAndStart();
+  await refreshRules();
 }
 
 init();

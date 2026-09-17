@@ -239,6 +239,41 @@ select {
   color: #fffaf1;
 }
 
+.settings-rules-section {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 0.06rem solid rgba(255, 250, 241, 0.18);
+}
+
+.settings-rules-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 250, 241, 0.6);
+}
+
+.settings-rules-content {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #fffaf1;
+}
+
+.settings-rules-content h2 {
+  margin: 0.6rem 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+.settings-rules-content h2:first-child {
+  margin-top: 0;
+}
+
+.settings-rules-content ul {
+  margin: 0 0 0.4rem;
+  padding-left: 1.1rem;
+}
+
 .splash-actions {
   position: relative;
   z-index: 10;

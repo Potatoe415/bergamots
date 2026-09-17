@@ -46,28 +46,6 @@ export default [
     }
   },
 
-  // diceduel loads its four files as classic scripts (no type="module"), so they
-  // share one global scope: STATES comes from engine.js, Engine from
-  // window.Engine, UI from ui.js. Declare them instead of adding imports the
-  // runtime does not use.
-  {
-    files: ["public/games/diceduel/js/*.js"],
-    languageOptions: {
-      sourceType: "script",
-      globals: {
-        Engine: "readonly",
-        STATES: "readonly",
-        Storage: "writable",
-        UI: "readonly"
-      }
-    },
-    rules: {
-      // These files are where those globals are defined, so the declaration is
-      // not a redeclaration. Double declarations inside one file still error.
-      "no-redeclare": ["error", { builtinGlobals: false }]
-    }
-  },
-
   // Service worker: self, caches and clients instead of window and document.
   {
     files: ["**/sw.js"],

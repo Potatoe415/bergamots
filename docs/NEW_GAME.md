@@ -66,9 +66,9 @@ See `docs/GAMES_MAP.md` for what each looks like today.
   `/shared/js/game-header.js`'s `initOptionsPanel(triggerEl, panelEl)`
   (see `shared/CONTRACT.md`) — do not reimplement it.
 - Load `/shared/css/base.css` too, unless the game deliberately needs a
-  fully custom skin (a few existing games — `millionaire`, `cafards`,
-  `diceduel` — opt out on purpose; that's a valid choice, not the
-  default). It provides `var(--font-sans)` and the base reset/background.
+  fully custom skin (a few existing games — `millionaire`, `cafards` — opt
+  out on purpose; that's a valid choice, not the default). It provides
+  `var(--font-sans)` and the base reset/background.
 - A game may still have its own distinct color scheme/skin — that's
   expected and already true across the catalog — but the *structural*
   chrome (header, options panel, back button, rules modal) must stay the

@@ -27,9 +27,11 @@ export interface UseOptimisticFlipResult {
  * ad-hoc play gets everywhere else. Unlike a trick-taking play, though, the
  * flipped card's *value* is hidden even from its own owner (see
  * `redact.ts`), so it can never be predicted client-side - only *that a
- * flip happened* is simulated instantly (own stock shrinks, a face-down
- * card lands center-table via `pendingFlip` in `BataillecorseTable`); the
- * real face still waits for the server's answer.
+ * flip happened* is simulated instantly (own stock shrinks via
+ * `optimisticStockCount`); the actual card is only ever shown once the
+ * server's real, face-up answer lands in `view.pile` - never a placeholder
+ * card-back in the center pile, which would just be a needless delay before
+ * showing the real face (see docs/DECISIONS.md).
  */
 export function useOptimisticFlip(
   view: PlayerView,

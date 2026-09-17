@@ -122,6 +122,30 @@ select option {
   }
 }
 
+/* La Bataille Corse's pile-win sweep: unlike `.trick-collect-card` (4 seats'
+   cards gathering to center first), the pile is already one gathered stack
+   at center, so it only needs to fly toward the winner's stock and shrink -
+   no separate gather step. Starts from the pile's own resting `scale(1.5)`
+   (`BataillecorseTable.tsx`'s `PileStack`) instead of `trick-collect`'s
+   `scale(1)` base, so the size doesn't jump-cut the instant the win lands. */
+.bataillecorse-pile-fly {
+  animation: bataillecorse-pile-fly 1300ms cubic-bezier(0.4, 0, 0.6, 1) both;
+  will-change: transform, opacity;
+}
+
+@keyframes bataillecorse-pile-fly {
+  0%,
+  35% {
+    opacity: 1;
+    transform: scale(1.5) translate3d(0, 0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translate3d(0, var(--pile-fly-y, 0px), 0);
+  }
+}
+
 .belote-flash {
   animation: belote-flash 2200ms cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform;

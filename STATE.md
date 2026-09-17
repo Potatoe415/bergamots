@@ -7,16 +7,15 @@ History lives in `docs/DECISIONS.md` (decisions) and `docs/BACKLOG.md` (tasks).
 
 Status: Active project on Vercel + Supabase. GameBoy Web hub tile launches the user's Vercel app. Tile art is the original Game Boy photo. Yatzy reactions now include Giphy GIFs next to emojis. `GIPHY_API_KEY` is set on the `muchogames` Vercel project's Production + Preview (renamed from `bergamots` 2026-09-17). Hub has a Google Sign-In icon (rightmost, real `GOOGLE_CLIENT_ID` from Google Cloud project "muchogames") showing the signed-in email + a "Profil" link. Login confirmed working on `muchogames.vercel.app`, still failing on the custom domain `muchogames.win`. `/profile` has Nom + a single clickable Avatar (no separate change button), copy in FR/EN/ES from `bergamots-lang`. Yatzy shows the name only on the Play Online step. Coinche/Bouilla (`coinchapp`)/Tranquil (`tranquil`) get `?name=` and a tiny `?avatar=` thumb from `hub.js`. See `docs/DECISIONS.md` 2026-09-06.
 Current_Goal: V2 of the "refonte": `coinchapp` fully migrated (code + deployment, live in production) and post-migration cleanup done. `tranquil` still colocated (code only) but not yet repointed on Vercel. Also still: add viral sharing and PWA installation to increase retention/acquisition.
-Last_Action: Continued the "bergamots" → "muchogames" rename (in progress since `docs/DECISIONS.md` 2026-09-06, tracked in `docs/BACKLOG.md`). User renamed the Vercel project itself (was `bergamots`, now `muchogames`). Agent updated: `package.json`/`package-lock.json` name, `README.md`, `index.html`/`public/manifest.json`/`public/profile`/`public/games/pictionary`/`wordplayer.js` titles, `hub.js` share text, `public/sw.js` cache name (`bergamots-v1`→`muchogames-v1`), the hardcoded `https://bergamots.vercel.app/` back-links in `apps/coinchapp/components/HomeTopBar.tsx` and `apps/tranquil/client/src/components/Lobby.tsx` (now `muchogames.vercel.app`, avoiding a broken hub link from those two sibling apps), and brand mentions in `AGENTS.md`/`docs/PRODUCT.md`/`docs/TECH.md`/`docs/RUNBOOK.md`/`shared/CONTRACT.md`. Deliberately left untouched: `localStorage` keys (`bergamots-lang`, `bergamots-player-name`, etc.), `yatzy_*` Supabase table names, and `docs/DECISIONS.md`/`docs/DATA_MODEL.md` historical entries — those affect real user data and are a separate decision from this cosmetic rename. User renamed `Potatoe415/bergamots` → `Potatoe415/muchogames` on GitHub; agent updated the local `origin` remote to match and verified it resolves (`git ls-remote`). `muchogames.win` needed no DNS change (Vercel domains attach by project ID, not name) — flagged to the user to double-check "Valid Configuration" in the Vercel dashboard directly (MCP Vercel connection has no access to this project: `get_project`/`list_projects` both return empty/404, likely a different linked account) and to add `muchogames.vercel.app` to Google Cloud Console's Authorized JavaScript origins since `bergamots.vercel.app` is now dead. Not yet committed/pushed.
+Last_Action: Committed and pushed everything pending: the Rules-section consistency pass (Black Stories/Millionaire/Yatzy), the Dice Duel removal, and `package.json`/`package-lock.json`/`version.js` bumped `0.0.3` → `0.0.4` (hub footer badge now `V0.0.4`) at the user's explicit request. `npm run check` (lint/format/build) and `apps/coinchapp`'s own `tsc`/`vitest`/`next build` all pass.
 Next_Actions:
-- Commit and push this rename round, plus the still-pending Yatzy layout fix (`styles.css` + `sw.js` v34) and the prior cleanup round's doc updates (`docs/BACKLOG.md`, `docs/DECISIONS.md`, `docs/GAMES_MAP.md`).
 - User: confirm `muchogames.win` still shows "Valid Configuration" in Vercel, and add `muchogames.vercel.app` to Google Cloud Console's Authorized JavaScript origins.
 - Ask the user to confirm the Yatzy layout fix on the friend's actual Motorola Edge 50 Fusion once deployed (hard-refresh/reopen so the new service worker version takes over).
 - User: delete `Potatoe415/coinchapp` on GitHub (Settings → Danger Zone) — history already preserved inside `bergamots` via the earlier `git subtree` import, nothing is lost.
 - User, optional: run `delete from public.games where room_code = 'JQW';` in Supabase, or let the 48h TTL cron handle it.
 - Repeat the same Vercel repoint for `tranquil` (`prj_FnorlK5RzjApMxvvVAXIhEvlxBdF`) — not started. Don't assume "delete" carries over for its old repo — ask again when that migration is done.
 - Rotate the Vercel token pasted in chat earlier, once `tranquil`'s migration is also done.
-- Optional, on request: author a `NOTES.md` for each already-oversized game (`millionaire`, `pyramide`, `yatsy`, `diceduel`) — deliberately skipped this pass since the ask was forward-looking.
+- Optional, on request: author a `NOTES.md` for each already-oversized game (`millionaire`, `pyramide`, `yatsy`) — deliberately skipped this pass since the ask was forward-looking.
 - Commit and push the "La Bataille Corse" Hub tile once confirmed visually (tile art, position next to Président, launch works with name/avatar params).
 - Commit and push the GIF picker squash fix and the Président tile + coinche launch-URL fix, once both confirmed on real devices.
 - Add visual tags (player count, duration, type) to Hub game tiles.
@@ -28,7 +27,6 @@ Next_Actions:
 - Ask whether PRODUCT/TECH should drop "avatar is Bergamots-only".
 - Confirm `/profile` crop then saved file stays under 50 KB.
 - Rotate `ADMIN_PASSWORD` and copy `SUPABASE_URL` to Preview.
-- Decide what to do about the GitHub branch-protection rule.
 - `public/games/yatsy/app.js` (1187 lines) still exceeds the 300-line limit; remainder is the core game engine (dice/turn/scoring/robot AI/defeat mode), see `docs/BACKLOG.md` Later for the proposed feature-based cut.
 
 Open_Questions:
@@ -39,6 +37,7 @@ Open_Questions:
 - Rename: only `muchogames_events` uses the new name.
 - Whether to raise `printWidth` from 80 to 100.
 - Whether PRODUCT should stay "max 3 rolls" given the online joke extra roll.
+- GitHub branch-protection rule on `main` requires a PR; user currently bypasses it on every push. Deferred — revisit later (remove the rule, or actually switch to PRs).
 
 Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - `public/games/**` (except `yatsy`, already un-ignored) is excluded from `format:check` on purpose.
@@ -48,8 +47,8 @@ Known_Issues (pre-existing, flagged by the audit, tracked in `docs/BACKLOG.md`):
 - `public/games/yatsy/app.js` is still 1187 lines against the 300-line project limit; `storage.js`, `render.js`, and `session.js` have been split out so far, remainder is the core game engine.
 
 Recent_Changes:
+- 2026-09-17 Removed Dice Duel entirely (game folder, `hub-config.json`, `docs/GAMES_MAP.md`, `eslint.config.mjs` special-case block) at user request, after flagging it as the one game with zero i18n.
+- 2026-09-17 Added a "Règles" panel section (`loadRulesIfExists`) + `rules_fr/en/es.html` to Black Stories, Millionaire, and Yatzy, matching the shared back/paramètres convention; Yatzy `sw.js` v34→v35.
+- 2026-09-17 Hub footer badge: `version.js` `APP_VERSION` `V0.0.2` → `V0.0.3` to match `package.json`.
 - 2026-09-17 GitHub repo renamed `bergamots`→`muchogames` (user); local `origin` remote updated and verified.
 - 2026-09-17 Continued bergamots→muchogames rename: `package.json`/README/titles/manifest/`sw.js` cache name updated; fixed hardcoded `bergamots.vercel.app` hub links in coinchapp/tranquil; `AGENTS.md`/PRODUCT/TECH/RUNBOOK/CONTRACT brand mentions updated. localStorage keys, Supabase table names left pending.
-- 2026-09-17 Fixed Yatzy layout overlap bug on wide-phone viewports (Motorola Edge 50 Fusion): fluid `.score-group`/`h1` sizing instead of breakpoint-only, `sw.js` v33→v34.
-- 2026-09-17 Post-migration cleanup: deleted old `coinchapp` Vercel project, renamed `coinchapp-monorepo` → `coinchapp`. GitHub repo deletion + test-data cleanup left as user steps.
-- 2026-09-17 `coinchapp` Vercel migration completed: verified live (real game created, GIF picker tested), domain moved. Fully done, in production.

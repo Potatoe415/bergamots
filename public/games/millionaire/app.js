@@ -1,3 +1,5 @@
+import { loadRulesIfExists } from "../../shared/js/engine.js";
+
 const CONFIG = {
   totalRounds: 15,
   timer: {
@@ -117,7 +119,7 @@ function readHubLanguage() {
 const I18N = {
   fr: {
     htmlLang: "fr", brandEyebrow: "Defi quiz TV", brandTitle: "Qui veut gagner des millions ?", ladderEyebrow: "Progression", ladderTitle: "Echelle en 15 paliers",
-    heroLabel: "Gain maximal", heroCopy: "15 questions. 4 jokers. 2 paliers garantis.", modeTag: "Mode classique", languageLabel: "Langue",
+    heroLabel: "Gain maximal", heroCopy: "15 questions. 4 jokers. 2 paliers garantis.", modeTag: "Mode classique", languageLabel: "Langue", rulesLabel: "Regles",
     questionsStatLabel: "Questions", safeStatLabel: "Paliers surs", timerStatLabel: "Minuteur", timerOptional: "Optionnel", startGameButton: "Commencer",
     timerOn: "Minuteur : active", timerOff: "Minuteur : coupe", dataChip: "Donnees",
     musicOn: "Music: On", musicOff: "Music: Off",
@@ -147,7 +149,7 @@ const I18N = {
   },
   en: {
     htmlLang: "en", brandEyebrow: "TV Quiz Challenge", brandTitle: "Who Wants to Be a Millionaire?", ladderEyebrow: "Progress", ladderTitle: "15-Step Ladder",
-    heroLabel: "Top prize", heroCopy: "15 questions. 4 lifelines. 2 guaranteed milestones.", modeTag: "Classic Mode", languageLabel: "Language",
+    heroLabel: "Top prize", heroCopy: "15 questions. 4 lifelines. 2 guaranteed milestones.", modeTag: "Classic Mode", languageLabel: "Language", rulesLabel: "Rules",
     questionsStatLabel: "Questions", safeStatLabel: "Safe steps", timerStatLabel: "Timer", timerOptional: "Optional", startGameButton: "Start Game",
     timerOn: "Timer: On", timerOff: "Timer: Off", dataChip: "Data",
     musicOn: "Music: On", musicOff: "Music: Off",
@@ -177,7 +179,7 @@ const I18N = {
   },
   es: {
     htmlLang: "es", brandEyebrow: "Desafio de concurso", brandTitle: "Quien quiere ser millonario?", ladderEyebrow: "Progreso", ladderTitle: "Escalera de 15 niveles",
-    heroLabel: "Premio maximo", heroCopy: "15 preguntas. 4 comodines. 2 niveles asegurados.", modeTag: "Modo clasico", languageLabel: "Idioma",
+    heroLabel: "Premio maximo", heroCopy: "15 preguntas. 4 comodines. 2 niveles asegurados.", modeTag: "Modo clasico", languageLabel: "Idioma", rulesLabel: "Reglas",
     questionsStatLabel: "Preguntas", safeStatLabel: "Niveles seguros", timerStatLabel: "Temporizador", timerOptional: "Opcional", startGameButton: "Empezar",
     timerOn: "Temporizador: activado", timerOff: "Temporizador: desactivado", dataChip: "Datos",
     musicOn: "Music: On", musicOff: "Music: Off",
@@ -215,6 +217,7 @@ const I18N = {
     heroCopy: "15 preguntas. 4 comodines. 2 niveles asegurados.",
     modeTag: "Modo clasico",
     languageLabel: "Idioma",
+    rulesLabel: "Reglas",
     questionsStatLabel: "Preguntas",
     safeStatLabel: "Niveles seguros",
     timerStatLabel: "Temporizador",
@@ -310,7 +313,7 @@ const state = {
 };
 
 const elements = {
-  languageSelect: document.querySelector("#languageSelect"), brandEyebrow: document.querySelector("#brandEyebrow"), brandTitle: document.querySelector("#brandTitle"), ladderEyebrow: document.querySelector("#ladderEyebrow"), ladderTitle: document.querySelector("#ladderTitle"), heroLabel: document.querySelector("#heroLabel"), heroCopy: document.querySelector("#heroCopy"), modeTag: document.querySelector("#modeTag"), languageLabel: document.querySelector("#languageLabel"), startGameButton: document.querySelector("#startGameButton"), toggleTimerButton: document.querySelector("#toggleTimerButton"), questionLabel: document.querySelector("#questionLabel"), guaranteedLabel: document.querySelector("#guaranteedLabel"), nextLabel: document.querySelector("#nextLabel"), timerChipLabel: document.querySelector("#timerChipLabel"), audienceEyebrow: document.querySelector("#audienceEyebrow"), audienceTitle: document.querySelector("#audienceTitle"), audienceCopy: document.querySelector("#audienceCopy"), phoneEyebrow: document.querySelector("#phoneEyebrow"), phoneTitle: document.querySelector("#phoneTitle"), errorEyebrow: document.querySelector("#errorEyebrow"), errorTitle: document.querySelector("#errorTitle"), retryLoadButton: document.querySelector("#retryLoadButton"), resultReachedLabel: document.querySelector("#resultReachedLabel"), resultGuaranteedLabel: document.querySelector("#resultGuaranteedLabel"), resultWonLabel: document.querySelector("#resultWonLabel"), playAgainButton: document.querySelector("#playAgainButton"), backHomeButton: document.querySelector("#backHomeButton"),
+  languageSelect: document.querySelector("#languageSelect"), rulesSection: document.querySelector("#rulesSection"), rulesLabel: document.querySelector("#rulesLabel"), rulesContent: document.querySelector("#rulesContent"), brandEyebrow: document.querySelector("#brandEyebrow"), brandTitle: document.querySelector("#brandTitle"), ladderEyebrow: document.querySelector("#ladderEyebrow"), ladderTitle: document.querySelector("#ladderTitle"), heroLabel: document.querySelector("#heroLabel"), heroCopy: document.querySelector("#heroCopy"), modeTag: document.querySelector("#modeTag"), languageLabel: document.querySelector("#languageLabel"), startGameButton: document.querySelector("#startGameButton"), toggleTimerButton: document.querySelector("#toggleTimerButton"), questionLabel: document.querySelector("#questionLabel"), guaranteedLabel: document.querySelector("#guaranteedLabel"), nextLabel: document.querySelector("#nextLabel"), timerChipLabel: document.querySelector("#timerChipLabel"), audienceEyebrow: document.querySelector("#audienceEyebrow"), audienceTitle: document.querySelector("#audienceTitle"), audienceCopy: document.querySelector("#audienceCopy"), phoneEyebrow: document.querySelector("#phoneEyebrow"), phoneTitle: document.querySelector("#phoneTitle"), errorEyebrow: document.querySelector("#errorEyebrow"), errorTitle: document.querySelector("#errorTitle"), retryLoadButton: document.querySelector("#retryLoadButton"), resultReachedLabel: document.querySelector("#resultReachedLabel"), resultGuaranteedLabel: document.querySelector("#resultGuaranteedLabel"), resultWonLabel: document.querySelector("#resultWonLabel"), playAgainButton: document.querySelector("#playAgainButton"), backHomeButton: document.querySelector("#backHomeButton"),
   screens: { start: document.querySelector("#startScreen"), game: document.querySelector("#gameScreen"), result: document.querySelector("#resultScreen") },
   ladderPanel: document.querySelector(".ladder-panel"), ladderList: document.querySelector("#ladderList"), questionCounter: document.querySelector("#questionCounter"), currentPrize: document.querySelector("#currentPrize"), nextPrize: document.querySelector("#nextPrize"), guaranteedPrize: document.querySelector("#guaranteedPrize"), questionText: document.querySelector("#questionText"), answersGrid: document.querySelector("#answersGrid"), timerChip: document.querySelector("#timerChip"), timerValue: document.querySelector("#timerValue"), homeShortcut: document.querySelector("#homeShortcut"), restartShortcut: document.querySelector("#restartShortcut"), optionsShortcut: document.querySelector("#optionsShortcut"), optionsPanel: document.querySelector("#optionsPanel"),
   lifelines: { fiftyFifty: document.querySelector("#lifeline5050"), audience: document.querySelector("#lifelineAudience"), phone: document.querySelector("#lifelinePhone"), swap: document.querySelector("#lifelineSwap") },
@@ -321,6 +324,25 @@ const elements = {
 
 document.addEventListener("DOMContentLoaded", init);
 
+function getRulesLanguageCode() {
+  // "es-419" (Latam) reuses the plain "es" rules text - only the question
+  // bank has a dedicated regional file (see CONFIG.languageFiles).
+  return state.language === "es-419" ? "es" : state.language;
+}
+
+async function refreshRules() {
+  if (!elements.rulesSection || !elements.rulesContent) return;
+
+  const html = await loadRulesIfExists("millionaire", getRulesLanguageCode());
+  if (!html) {
+    elements.rulesSection.style.display = "none";
+    return;
+  }
+
+  elements.rulesContent.innerHTML = html;
+  elements.rulesSection.style.display = "";
+}
+
 function init() {
   bindEvents();
   applyTranslations();
@@ -329,6 +351,7 @@ function init() {
   syncTimerToggle();
   syncMusicToggleUI();
   loadQuestions();
+  void refreshRules();
 }
 
 function bindEvents() {
@@ -434,6 +457,7 @@ function applyTranslations() {
   elements.playAgainButton.textContent = copy.playAgainButton;
   elements.backHomeButton.textContent = copy.backHomeButton;
   elements.languageSelect.value = state.language;
+  if (elements.rulesLabel) elements.rulesLabel.textContent = copy.rulesLabel;
   elements.homeShortcut.setAttribute("aria-label", copy.homeAria);
   elements.restartShortcut.setAttribute("aria-label", copy.restartAria);
   document.querySelector("#audienceModal [data-close-modal]").setAttribute("aria-label", copy.closeAudienceAria);
@@ -457,6 +481,7 @@ async function handleLanguageChange(event) {
   closeModals();
   switchScreen("start");
   applyTranslations();
+  void refreshRules();
   renderLadder();
   await loadQuestions();
 }
