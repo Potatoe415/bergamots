@@ -5,11 +5,11 @@ Status: Living document. Never edit autonomously - confirm with user first.
 ---
 
 Project_Name: Coinche en ligne
-Objective: Permettre de jouer un jeu de cartes (Coinche, la Bouilla, Président à 4, ou la Bataille Corse à 2) dans un navigateur mobile, en ligne avec d'autres joueurs ou contre des bots.
+Objective: Permettre de jouer un jeu de cartes (Coinche, la Bouilla, Président à 4, ou la Bataille Corse à 2) dans un navigateur (téléphone, tablette, ou desktop), en ligne avec d'autres joueurs ou contre des bots.
 Problem: Les jeux de Coinche existants sont souvent des apps natives ou peu adaptés au jeu rapide entre amis via un simple lien.
 
 Target_Users:
-- Joueurs de Coinche occasionnels sur mobile.
+- Joueurs de Coinche occasionnels sur téléphone, tablette, ou navigateur desktop.
 - Groupes d'amis qui veulent lancer une partie rapidement via un code de salon.
 
 Core_Features:
@@ -36,7 +36,7 @@ Success_Criteria:
 - Les coups illégaux sont rejetés par le serveur.
 
 Constraints:
-- Mobile-first, navigateur uniquement.
+- Mobile-first, navigateur uniquement. La table de jeu remplit le viewport (téléphone, tablette, desktop) avec la même topologie (HUD en haut, ovale au centre, main en bas) ; les cartes gardent leurs proportions et s'agrandissent avec l'écran.
 - Déploiement Git + Vercel, données sur Supabase.
 
 Open_Questions:

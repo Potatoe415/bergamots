@@ -103,7 +103,7 @@ export function GameTableScene({
 }) {
   const dealOverlayVisible = useDelayedVisible(!!view.lastDeal || view.phase === "finished", 2000);
   return (
-    <section className="relative z-10 h-[720px] w-full shrink-0" data-id="table-scene">
+    <section className="absolute inset-0 z-10" data-id="table-scene">
       <div
         className="absolute inset-x-[11%] bottom-[19%] top-[29%] rounded-[3rem] bg-[rgba(255,250,242,0.08)] shadow-[inset_0_0_55px_rgba(22,200,240,0.22)] ring-[10px] ring-[rgba(242,196,79,0.18)]"
         data-id="central-felt"

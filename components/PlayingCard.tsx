@@ -1,19 +1,32 @@
+import type { CSSProperties } from "react";
 import type { CardOf, Suit } from "@/lib/cards";
 
 const SUIT_SYMBOL: Record<Suit, string> = { H: "\u2665", D: "\u2666", C: "\u2663", S: "\u2660" };
 const RED_SUITS: Suit[] = ["H", "D"];
 
-const SIZES = {
-  xs: { card: "h-10 w-7", rank: "text-xs", suit: "text-lg" },
-  sm: { card: "h-14 w-10", rank: "text-base", suit: "text-2xl" },
-  md: { card: "h-20 w-14", rank: "text-xl", suit: "text-4xl" },
-  lg: { card: "h-24 w-16", rank: "text-2xl", suit: "text-5xl" },
-} as const;
+export type CardSize = "xs" | "sm" | "md" | "lg";
+
+const CARD_WIDTH: Record<CardSize, string> = {
+  xs: "var(--card-xs-w)",
+  sm: "var(--card-sm-w)",
+  md: "var(--card-md-w)",
+  lg: "var(--card-lg-w)",
+};
+
+function cardBoxStyle(size: CardSize): CSSProperties {
+  const width = CARD_WIDTH[size];
+  return {
+    width,
+    height: `calc(${width} * 1.5)`,
+    aspectRatio: "2 / 3",
+    fontSize: `calc(${width} * 0.28)`,
+  };
+}
 
 /** Any game's card shape (rank set differs per game, suit set is universal). */
 export interface PlayingCardProps {
   card: CardOf<string>;
-  size?: keyof typeof SIZES;
+  size?: CardSize;
   dimmed?: boolean;
   playable?: boolean;
   /** Suppresses `playable`'s always-on gold ring while keeping the card
@@ -43,7 +56,6 @@ export function PlayingCard({
 }: PlayingCardProps) {
   const red = RED_SUITS.includes(card.suit);
   const interactive = !!onClick;
-  const sizeStyle = SIZES[size];
   const Tag = interactive ? "button" : "div";
   return (
     <Tag
@@ -52,9 +64,9 @@ export function PlayingCard({
       disabled={interactive ? !playable : undefined}
       data-id={dataId}
       data-card={`${card.rank}${card.suit}`}
+      style={cardBoxStyle(size)}
       className={[
         "relative overflow-hidden rounded-lg border-2 border-[var(--card-ink)] bg-[var(--card-face)] font-black shadow-[0_2px_0_rgba(32,40,58,0.65)] select-none",
-        sizeStyle.card,
         red ? "text-[var(--accent-red)]" : "text-[var(--card-ink)]",
         dimmed ? "brightness-50 grayscale" : "",
         playable ? "cursor-pointer" : "",
@@ -63,36 +75,33 @@ export function PlayingCard({
         "transition-transform",
       ].join(" ")}
     >
-      <div className="absolute top-1 left-1 flex flex-col items-center leading-none">
-        <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
-        <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
-      </div>
-      {showRightIndex && (
-        <div className="absolute top-1 right-1 flex flex-col items-center leading-none">
-          <span className={`font-black leading-none ${sizeStyle.rank}`}>{card.rank}</span>
-          <span className="leading-none">{SUIT_SYMBOL[card.suit]}</span>
-        </div>
-      )}
-      <span
-        className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] leading-none ${sizeStyle.suit}`}
-      >
+      <CornerIndex rank={card.rank} suit={card.suit} side="left" />
+      {showRightIndex && <CornerIndex rank={card.rank} suit={card.suit} side="right" />}
+      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[35%] text-[2.2em] leading-none">
         {SUIT_SYMBOL[card.suit]}
       </span>
     </Tag>
   );
 }
 
-export function CardBack({ size = "md", dataId }: { size?: keyof typeof SIZES; dataId?: string }) {
-  const sizeStyle = SIZES[size];
+function CornerIndex({ rank, suit, side }: { rank: string; suit: Suit; side: "left" | "right" }) {
+  const pos = side === "left" ? "left-[8%]" : "right-[8%]";
+  return (
+    <div className={`absolute top-[6%] ${pos} flex flex-col items-center leading-none`}>
+      <span className="font-black leading-none">{rank}</span>
+      <span className="text-[0.9em] leading-none">{SUIT_SYMBOL[suit]}</span>
+    </div>
+  );
+}
+
+export function CardBack({ size = "md", dataId }: { size?: CardSize; dataId?: string }) {
   return (
     <div
       data-id={dataId}
-      className={[
-        "relative overflow-hidden rounded-lg border-[0.5px] border-[var(--card-ink)] bg-[var(--card-back)] shadow-[0_2px_0_rgba(32,40,58,0.75)]",
-        sizeStyle.card,
-      ].join(" ")}
+      style={cardBoxStyle(size)}
+      className="relative overflow-hidden rounded-lg border-[0.5px] border-[var(--card-ink)] bg-[var(--card-back)] shadow-[0_2px_0_rgba(32,40,58,0.75)]"
     >
-      <div className="absolute inset-[4px] rounded-sm border-[0.5px] border-[var(--card-back-line)]/60" />
+      <div className="absolute inset-[8%] rounded-sm border-[0.5px] border-[var(--card-back-line)]/60" />
     </div>
   );
 }

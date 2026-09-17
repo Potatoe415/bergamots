@@ -47,7 +47,7 @@ export function GameHud({
   const [panelOpen, setPanelOpen] = useState(false);
   const noCardPlayed = view.tricks.length === 0 && view.currentTrick.cards.length === 0;
   return (
-    <header className="absolute inset-x-0 top-4 z-30 px-3" data-id="game-header">
+    <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 px-3" data-id="game-header">
       <div className="flex items-start justify-between">
         <IconLink href="/" label={t("back")} dataId="game-back">
           ‹

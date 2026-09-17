@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { rankValue, type Card, type Combo, type PlayerView, type Seat } from "@/lib/president";
 import { useDelayedVisible } from "@/lib/client/useDelayedVisible";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
 import { formatText, useI18n } from "@/lib/client/i18n";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
 import type { GameView } from "@/lib/server/view";
@@ -16,6 +17,7 @@ import { TITLE_SHORT_LABEL } from "./presidentLabels";
 import { PresidentRoundOverlay } from "./PresidentRoundOverlay";
 import { PresidentScoreboard } from "./PresidentScoreboard";
 import { SelfNameChip } from "./SelfNameChip";
+import { TableShell } from "./TableShell";
 import { CardBackFanH, CardBackStackV, playedCardEnterStyle, seatDirection, type TableSeats } from "./TrickStage";
 
 /** This table only ever renders a Président game: narrow the shared, multi-game
@@ -168,11 +170,7 @@ export function PresidentTable({
   }, [autoPassOn, mustPass, busy]);
 
   return (
-    <main
-      className="relative mx-auto flex h-svh min-h-[720px] w-full max-w-[460px] flex-1 flex-col overflow-hidden bg-felt text-[var(--card-face)]"
-      data-id="president-table"
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,#3aa59b_0%,#2f877f_48%,#276f69_100%)]" />
+    <TableShell dataId="president-table">
       <PresidentHud
         gv={gv}
         view={view}
@@ -186,8 +184,7 @@ export function PresidentTable({
         emojiControls={actions.onSendReaction ? { enabled: emojiOn, onToggle: toggleEmoji } : undefined}
         autoPassControls={{ enabled: autoPassOn, onToggle: toggleAutoPass }}
       />
-      <div className="flex-1" aria-hidden="true" />
-      <div className="relative h-[720px] w-full shrink-0" data-id="president-table-scene">
+      <div className="relative h-0 min-h-0 flex-1" data-id="president-table-scene">
         <div
           className="absolute inset-x-[11%] bottom-[19%] top-[29%] rounded-[3rem] bg-[rgba(255,250,242,0.08)] shadow-[inset_0_0_55px_rgba(22,200,240,0.22)] ring-[10px] ring-[rgba(242,196,79,0.18)]"
           data-id="president-central-felt"
@@ -241,14 +238,8 @@ export function PresidentTable({
           />
         )}
       </div>
-      {/* Guaranteed minimum, grown from iOS's home-indicator safe area: keeps a visible
-          gap below the hand fan on every device instead of letting this spacer collapse
-          to 0 and leave the cards flush with (or under) the bottom system bar - the
-          equal-`flex-1` sibling above shrinks first to make room, which also has the
-          effect of nudging the whole table upward on short viewports. */}
-      <div className="flex-1 min-h-[calc(env(safe-area-inset-bottom)+12px)]" aria-hidden="true" />
       {scoreboardOpen && <PresidentScoreboard gv={gv} view={view} onClose={() => setScoreboardOpen(false)} />}
-    </main>
+    </TableShell>
   );
 }
 
@@ -272,7 +263,7 @@ function PresidentHud({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { t } = useI18n();
   return (
-    <header className="absolute inset-x-0 top-4 z-30 px-3" data-id="president-header">
+    <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 px-3" data-id="president-header">
       <div className="flex items-start justify-between">
         <IconLink href="/" label={t("backHome")} dataId="president-back">‹</IconLink>
         <div className="flex flex-col items-center">
@@ -727,8 +718,7 @@ function PileArea({ view, seats }: { view: PlayerView; seats: TableSeats }) {
   );
 }
 
-const HAND_STEP = 36;
-const CARD_W_LG = 64;
+const HAND_STEP_RATIO = 36 / 64;
 const HAND_EDGE_MARGIN = 12;
 const DEFAULT_MAX_FAN_WIDTH = 340;
 /** Slight arc for the player's own hand: max upward lift at the center card (px)
@@ -801,16 +791,32 @@ function HandArea({
   onPass: () => void;
 }) {
   const { t } = useI18n();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [maxFanWidth, setMaxFanWidth] = useState(DEFAULT_MAX_FAN_WIDTH);
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-lg-w", 64);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setMaxFanWidth(el.clientWidth - HAND_EDGE_MARGIN * 2);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const sorted = sortHand(hand, sortMode, revolution);
   const n = sorted.length;
-  const step = n > 1 ? Math.min(HAND_STEP, Math.max(0, DEFAULT_MAX_FAN_WIDTH - HAND_EDGE_MARGIN * 2 - CARD_W_LG) / (n - 1)) : HAND_STEP;
-  const fanW = n > 1 ? CARD_W_LG + (n - 1) * step : CARD_W_LG;
+  const maxStep = cardW * HAND_STEP_RATIO;
+  const step = n > 1 ? Math.min(maxStep, Math.max(0, maxFanWidth - cardW) / (n - 1)) : maxStep;
+  const fanW = n > 1 ? cardW + (n - 1) * step : cardW;
   const selectedKeys = new Set(selected.map(cardKey));
   const mid = (n - 1) / 2;
 
   return (
     <section className="absolute inset-x-0 bottom-0 z-20 pb-3" data-id="president-action-area">
-      <div className="relative flex h-[8.5rem] w-full items-end justify-center" data-id="president-my-hand">
+      <div ref={containerRef} className="relative flex h-[calc(var(--card-lg-w)*1.5+2.75rem)] w-full items-end justify-center" data-id="president-my-hand">
+        <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
         <div className="relative h-full" style={{ width: fanW }}>
           {sorted.map((card, i) => {
             const key = cardKey(card);

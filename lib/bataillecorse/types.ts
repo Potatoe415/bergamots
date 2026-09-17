@@ -56,6 +56,12 @@ export interface PileWinEvent {
   seat: Seat;
   cardCount: number;
   reason: "tribute" | "slap";
+  /** Only set when `reason === "slap"`: each seat's own locally-measured
+   *  reaction time that decided the race (see `SlapClaim`) - lets both
+   *  players' UI show the opponent's reflex too, not just their own. Missing
+   *  a seat's entry means that seat never claimed (the other won
+   *  uncontested via `resolveStaleSlapWindow`). */
+  reactionMsBySeat?: Partial<Record<Seat, number>>;
 }
 
 export interface FalseSlapEvent {

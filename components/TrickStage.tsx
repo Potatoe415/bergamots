@@ -1,6 +1,7 @@
 "use client";
 
 import type { CardOf } from "@/lib/cards";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
 import { CardBack, PlayingCard } from "./PlayingCard";
 
 /** Shared trick-stage visuals (played-card entrance, completed-trick collect/fly-off,
@@ -218,7 +219,7 @@ function PlayedSlot({
   delay: number;
 }) {
   if (!card) {
-    return <div className="h-24 w-16 rounded-xl bg-[rgba(32,40,58,0.12)]" data-id={dataId} />;
+    return <div className="aspect-[2/3] w-[var(--card-lg-w)] rounded-xl bg-[rgba(32,40,58,0.12)]" data-id={dataId} />;
   }
   return <AnimatedPlayedCard key={cardKey(card)} card={card} dataId={dataId} enterFrom={enterFrom} delay={delay} />;
 }
@@ -255,19 +256,21 @@ export function playedCardEnterStyle(enterFrom: EnterDirection): React.CSSProper
   return { "--played-card-from": "translate3d(0,210px,0) scale(0.7) rotate(10deg)" } as React.CSSProperties;
 }
 
-const FAN_STEP_H = 22;
-const CARD_W_MD = 56;
+const MD_FAN_STEP_RATIO = 22 / 56;
+const MD_STACK_STEP_RATIO = 7 / 56;
 
 /** Fan of face-down cards for the top opponent's hand, capped at `maxCount` cards
  *  wide (Coinche never holds more than 8; Bouilla starts at 13). */
 export function CardBackFanH({ count, maxCount = 8 }: { count: number; maxCount?: number }) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const n = Math.min(count, maxCount);
-  if (n === 0) return <div className="h-24 w-14" />;
-  const totalW = CARD_W_MD + (n - 1) * FAN_STEP_H;
+  const step = cardW * MD_FAN_STEP_RATIO;
+  const totalW = n > 1 ? cardW + (n - 1) * step : cardW;
   return (
-    <div className="relative h-24" style={{ width: totalW }}>
+    <div className="relative" style={{ width: totalW, height: cardW * 1.5 }}>
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       {Array.from({ length: n }, (_, i) => (
-        <div key={i} className="absolute bottom-0" style={{ left: i * FAN_STEP_H, zIndex: i }}>
+        <div key={i} className="absolute bottom-0" style={{ left: i * step, zIndex: i }}>
           <CardBack size="md" />
         </div>
       ))}
@@ -276,12 +279,16 @@ export function CardBackFanH({ count, maxCount = 8 }: { count: number; maxCount?
 }
 
 export function CardBackStackV({ count, maxCount = 8 }: { count: number; maxCount?: number }) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const n = Math.min(count, maxCount);
-  if (n === 0) return <div className="h-14 w-20" />;
+  const step = cardW * MD_STACK_STEP_RATIO;
+  const landW = cardW * 1.5;
+  const landH = cardW;
   return (
-    <div className="relative w-20" style={{ height: 56 + (n - 1) * 7 }}>
+    <div className="relative" style={{ width: landW, height: n > 1 ? landH + (n - 1) * step : landH }}>
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       {Array.from({ length: n }, (_, i) => (
-        <div key={i} className="absolute" style={{ top: i * 7, zIndex: i }}>
+        <div key={i} className="absolute" style={{ top: i * step, zIndex: i }}>
           <LandscapeCardBack />
         </div>
       ))}
@@ -291,7 +298,7 @@ export function CardBackStackV({ count, maxCount = 8 }: { count: number; maxCoun
 
 function LandscapeCardBack() {
   return (
-    <div className="relative h-14 w-20">
+    <div className="relative h-[var(--card-md-w)] w-[calc(var(--card-md-w)*1.5)]">
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rotate-90">
         <CardBack size="md" />
       </div>

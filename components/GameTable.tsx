@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/client/i18n";
 import { useOptimisticPlay } from "@/lib/client/useOptimisticPlay";
 import { CAPOT_VALUE, cardId, GENERALE_VALUE, isTrump, RANKS, teamOf, trumpStrength, type Bid, type Card, type PlayerView, type TrumpMode } from "@/lib/coinche";
 import type { GameView } from "@/lib/server/view";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
 import { BiddingPanel, type BidPayload, type CurrentLiveBid } from "./BiddingPanel";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
 import { EmojiButton } from "./EmojiButton";
@@ -14,6 +15,7 @@ import { playerName, relativeSeat } from "./gameTableHelpers";
 import { HandCardSlot } from "./HandCardSlot";
 import { isRedSuit, trumpModeLabel } from "./labels";
 import { SelfNameChip } from "./SelfNameChip";
+import { TableShell } from "./TableShell";
 
 /** This table only ever renders a Coinche game: narrow the shared, multi-game
  *  `GameView` down to its Coinche-specific view/botViews shape. */
@@ -158,11 +160,7 @@ export function GameTable({
   const bimTrickKey = computeBimKey(view, trickCards);
 
   return (
-    <main
-      className="relative mx-auto flex h-svh min-h-[720px] w-full max-w-[460px] flex-1 flex-col overflow-hidden bg-felt text-[var(--card-face)]"
-      data-id="game-table"
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,#3aa59b_0%,#2f877f_48%,#276f69_100%)]" />
+    <TableShell dataId="game-table">
       <GameHud
         view={view}
         players={gv.players}
@@ -181,8 +179,7 @@ export function GameTable({
             : undefined
         }
       />
-      <div className="flex-1" aria-hidden="true" />
-      <div className="relative h-[720px] w-full shrink-0">
+      <div className="relative h-0 min-h-0 flex-1">
         <GameTableScene
           gv={gv}
           view={view}
@@ -217,18 +214,13 @@ export function GameTable({
           selfAvatar={selfAvatar}
         />
       </div>
-      {/* Guaranteed minimum, grown from iOS's home-indicator safe area: keeps a visible
-          gap below the hand fan on every device instead of letting this spacer collapse
-          to 0 and leave the cards flush with (or under) the bottom system bar - the
-          equal-`flex-1` sibling above shrinks first to make room, which also has the
-          effect of nudging the whole table upward on short viewports. */}
-      <div className="flex-1 min-h-[calc(env(safe-area-inset-bottom)+12px)]" aria-hidden="true" />
-    </main>
+    </TableShell>
   );
 }
 
-const HAND_STEP = 40;
-const CARD_W_LG = 64;
+const HAND_STEP_RATIO = 40 / 64;
+const HAND_EDGE_MARGIN = 12;
+const DEFAULT_MAX_FAN_WIDTH = 340;
 
 function HandFan({
   hand,
@@ -245,12 +237,33 @@ function HandFan({
   preSelectedId: string | null;
   onCardTap: (card: Card) => void;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [maxFanWidth, setMaxFanWidth] = useState(DEFAULT_MAX_FAN_WIDTH);
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-lg-w", 64);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setMaxFanWidth(el.clientWidth - HAND_EDGE_MARGIN * 2);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const sorted = sortHand(hand, trump);
   const n = sorted.length;
-  const fanW = n > 1 ? CARD_W_LG + (n - 1) * HAND_STEP : CARD_W_LG;
+  const maxStep = cardW * HAND_STEP_RATIO;
+  const step = n > 1 ? Math.min(maxStep, Math.max(0, maxFanWidth - cardW) / (n - 1)) : maxStep;
+  const fanW = n > 1 ? cardW + (n - 1) * step : cardW;
 
   return (
-    <div className="relative flex h-[8.5rem] w-full items-end justify-center" data-id="my-hand">
+    <div
+      ref={containerRef}
+      className="relative flex h-[calc(var(--card-lg-w)*1.5+2.75rem)] w-full items-end justify-center"
+      data-id="my-hand"
+    >
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       <div className="relative h-full" style={{ width: fanW }}>
         {sorted.map((card, i) => {
           const id = cardId(card);
@@ -260,7 +273,7 @@ function HandFan({
             <HandCardSlot
               key={id}
               card={card}
-              left={i * HAND_STEP}
+              left={i * step}
               zIndex={isPreSelected ? 60 + i : isPlayable ? 50 + i : i}
               index={i}
               total={n}

@@ -18,6 +18,8 @@ import { HandCardSlot } from "./HandCardSlot";
 import { PlayerBadge } from "./PlayerBadge";
 import { SelfNameChip } from "./SelfNameChip";
 import { CardBackFanH, CardBackStackV, CompletedTrickHold, PlayedCardStage, type TableSeats } from "./TrickStage";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
+import { TableShell } from "./TableShell";
 
 /** This table only ever renders a Bouilla game: narrow the shared, multi-game
  *  `GameView` down to its Bouilla-specific view/botViews shape. */
@@ -116,11 +118,7 @@ export function BouillaTable({
   }, [view.phase, gv.turnStartedAt, onForceSync]);
 
   return (
-    <main
-      className="relative mx-auto flex h-svh min-h-[720px] w-full max-w-[460px] flex-1 flex-col overflow-hidden bg-felt text-[var(--card-face)]"
-      data-id="bouilla-table"
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,#3aa59b_0%,#2f877f_48%,#276f69_100%)]" />
+    <TableShell dataId="bouilla-table">
       <BouillaHud
         gv={gv}
         view={view}
@@ -133,8 +131,7 @@ export function BouillaTable({
         }
         emojiControls={actions.onSendReaction ? { enabled: emojiOn, onToggle: toggleEmoji } : undefined}
       />
-      <div className="flex-1" aria-hidden="true" />
-      <div className="relative h-[720px] w-full shrink-0" data-id="bouilla-table-scene">
+      <div className="relative h-0 min-h-0 flex-1" data-id="bouilla-table-scene">
         <div
           className="absolute inset-x-[11%] bottom-[19%] top-[29%] rounded-[3rem] bg-[rgba(255,250,242,0.08)] shadow-[inset_0_0_55px_rgba(22,200,240,0.22)] ring-[10px] ring-[rgba(242,196,79,0.18)]"
           data-id="bouilla-central-felt"
@@ -180,14 +177,8 @@ export function BouillaTable({
           />
         )}
       </div>
-      {/* Guaranteed minimum, grown from iOS's home-indicator safe area: keeps a visible
-          gap below the hand fan on every device instead of letting this spacer collapse
-          to 0 and leave the cards flush with (or under) the bottom system bar - the
-          equal-`flex-1` sibling above shrinks first to make room, which also has the
-          effect of nudging the whole table upward on short viewports. */}
-      <div className="flex-1 min-h-[calc(env(safe-area-inset-bottom)+12px)]" aria-hidden="true" />
       {scoreboardOpen && <BouillaScoreboard gv={gv} view={view} onClose={() => setScoreboardOpen(false)} />}
-    </main>
+    </TableShell>
   );
 }
 
@@ -209,7 +200,7 @@ function BouillaHud({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { locale, t } = useI18n();
   return (
-    <header className="absolute inset-x-0 top-4 z-30 px-3" data-id="bouilla-header">
+    <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 px-3" data-id="bouilla-header">
       <div className="flex items-start justify-between">
         <IconLink href="/" label={t("backHome")} dataId="bouilla-back">‹</IconLink>
         <div className="flex flex-col items-center">
@@ -455,9 +446,7 @@ function OpponentReactionsBar({
   );
 }
 
-const HAND_STEP = 36;
-const CARD_W_LG = 64;
-/** Kept clear on each side of the hand fan, whatever the actual screen width. */
+const HAND_STEP_RATIO = 36 / 64;
 const HAND_EDGE_MARGIN = 12;
 /** Fallback max fan width for the very first paint, before the container's real
  *  width is measured (see `HandFan`) - avoids a hardcoded guess driving layout
@@ -491,6 +480,7 @@ function HandFan({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [maxFanWidth, setMaxFanWidth] = useState(DEFAULT_MAX_FAN_WIDTH);
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-lg-w", 64);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -504,12 +494,14 @@ function HandFan({
 
   const sorted = sortHand(hand);
   const n = sorted.length;
-  const step = n > 1 ? Math.min(HAND_STEP, Math.max(0, maxFanWidth - CARD_W_LG) / (n - 1)) : HAND_STEP;
-  const fanW = n > 1 ? CARD_W_LG + (n - 1) * step : CARD_W_LG;
+  const maxStep = cardW * HAND_STEP_RATIO;
+  const step = n > 1 ? Math.min(maxStep, Math.max(0, maxFanWidth - cardW) / (n - 1)) : maxStep;
+  const fanW = n > 1 ? cardW + (n - 1) * step : cardW;
 
   return (
     <section className="absolute inset-x-0 bottom-0 z-20 pb-3" data-id="bouilla-action-area">
-      <div ref={containerRef} className="relative flex h-[8.5rem] w-full items-end justify-center" data-id="bouilla-my-hand">
+      <div ref={containerRef} className="relative flex h-[calc(var(--card-lg-w)*1.5+2.75rem)] w-full items-end justify-center" data-id="bouilla-my-hand">
+        <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
         <div className="relative h-full" style={{ width: fanW }}>
           {sorted.map((card, i) => {
             const key = cardKey(card);

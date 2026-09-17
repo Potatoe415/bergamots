@@ -20,6 +20,25 @@
   --card-back: #4c2d62;
   --card-back-line: #33d6ff;
   --ring-strong: #ffd25d;
+  /* Phone-sized fallbacks when a card renders outside TableShell. */
+  --card-lg-w: 4rem;
+  --card-md-w: 3.5rem;
+  --card-sm-w: 2.5rem;
+  --card-xs-w: 1.75rem;
+  --table-hud-top: 1rem;
+  --slap-circle-size: 15rem;
+}
+
+/* svmin: table is full-viewport, so this matches the plateau's smaller side
+   without relying on cq units inside inherited custom properties (those
+   resolve on the using element and were computing to 0 here). */
+.table-shell-metrics {
+  --card-lg-w: clamp(4rem, 12svmin, 7rem);
+  --card-md-w: calc(var(--card-lg-w) * 0.875);
+  --card-sm-w: calc(var(--card-lg-w) * 0.625);
+  --card-xs-w: calc(var(--card-lg-w) * 0.4375);
+  --table-hud-top: max(1rem, env(safe-area-inset-top, 0px));
+  --slap-circle-size: clamp(15rem, 36svmin, 22rem);
 }
 
 @theme inline {

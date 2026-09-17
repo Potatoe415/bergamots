@@ -124,7 +124,13 @@ describe("attemptSlap", () => {
     expect(resolved.winner).toBeNull();
     expect(resolved.slapWindow).toBeNull();
     expect(resolved.turn).toBe(0);
-    expect(resolved.lastPileWin).toEqual({ id: 0, seat: 0, cardCount: 2, reason: "slap" });
+    expect(resolved.lastPileWin).toEqual({
+      id: 0,
+      seat: 0,
+      cardCount: 2,
+      reason: "slap",
+      reactionMsBySeat: { 0: 150, 1: 900 },
+    });
     expect(resolved.stocks[0]).toEqual([card("9"), card("9"), card("3")]);
   });
 
@@ -179,6 +185,7 @@ describe("resolveStaleSlapWindow", () => {
     expect(next.slapWindow).toBeNull();
     expect(next.turn).toBe(1);
     expect(next.lastPileWin?.seat).toBe(1);
+    expect(next.lastPileWin?.reactionMsBySeat).toEqual({ 1: 400 });
   });
 
   it("closes with no winner when nobody claimed in time", () => {

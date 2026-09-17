@@ -2,16 +2,18 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import Link from "next/link";
-import type { PlayerView } from "@/lib/bataillecorse";
+import { SLAP_GRACE_MS, type PlayerView } from "@/lib/bataillecorse";
 import { formatText, useI18n } from "@/lib/client/i18n";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
 import type { GameView } from "@/lib/server/view";
+import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
 import { CardBack, PlayingCard } from "./PlayingCard";
 import { EmojiButton } from "./EmojiButton";
 import { ReactionBubble } from "./ReactionBubble";
 import { GameInfoButton, HostRow, type HostControls } from "./GameHud";
 import { playedCardEnterStyle, type EnterDirection } from "./TrickStage";
 import { playerName } from "./gameTableHelpers";
+import { TableShell } from "./TableShell";
 
 /** This table only ever renders a la Bataille Corse game: narrow the shared,
  *  multi-game `GameView` down to its own view/botViews shape. */
@@ -94,6 +96,43 @@ function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
   return locale === "fr" ? value.replace(".", ",") : value;
 }
 
+/** The opponent's own locally-measured reaction time for the slap that just
+ *  resolved (see `PileWinEvent.reactionMsBySeat`) - `null` once nobody has
+ *  won a slap yet, or that seat never claimed (won uncontested via
+ *  `resolveStaleSlapWindow`). Diffed by event id so it only (re)appears once
+ *  per resolution, auto-hiding the same way `myReactionMs` does. */
+function useOpponentReactionMs(lastPileWin: PlayerView["lastPileWin"], opponentSeat: number): number | null {
+  const [value, setValue] = useState<number | null>(null);
+  const seenIdRef = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    const id = lastPileWin?.id;
+    const ms = lastPileWin?.reason === "slap" ? lastPileWin.reactionMsBySeat?.[opponentSeat as 0 | 1] : undefined;
+    if (id === undefined || id === seenIdRef.current || ms === undefined) return;
+    seenIdRef.current = id;
+    setValue(ms);
+    const timer = setTimeout(() => setValue(null), REACTION_READOUT_MS);
+    return () => clearTimeout(timer);
+  }, [lastPileWin, opponentSeat]);
+  return value;
+}
+
+/** Whether the currently open slap window should visually stand out (red
+ *  pulse) yet. Deliberately delayed by `SLAP_GRACE_MS` (the same window a
+ *  claim has to land in) instead of firing the instant the pattern appears:
+ *  revealing it immediately would hand away the "spot it yourself" reflex
+ *  test this game is actually about - the highlight only kicks in as a
+ *  last-moment nudge, right as the window is about to auto-resolve. */
+function useSlapWindowUrgent(slapWindow: PlayerView["slapWindow"]): boolean {
+  const [urgentWindowId, setUrgentWindowId] = useState<number | null>(null);
+  useEffect(() => {
+    if (!slapWindow) return;
+    const remaining = slapWindow.openedAtMs + SLAP_GRACE_MS - Date.now();
+    const timer = setTimeout(() => setUrgentWindowId(slapWindow.id), Math.max(0, remaining));
+    return () => clearTimeout(timer);
+  }, [slapWindow]);
+  return slapWindow !== null && slapWindow.id === urgentWindowId;
+}
+
 export function BataillecorseTable({
   gv,
   actions,
@@ -124,6 +163,8 @@ export function BataillecorseTable({
   const pileWinFlash = useFlash(view.lastPileWin?.id);
   const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
   const pileEnterDirection = usePileEnterDirection(view);
+  const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
+  const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
   const myTurnToFlip = view.phase === "playing" && view.turn === mySeat && view.slapWindow === null;
   const owesTribute = view.tribute?.seat === mySeat;
 
@@ -151,13 +192,8 @@ export function BataillecorseTable({
   }
 
   return (
-    <main
-      className="relative mx-auto flex h-svh min-h-[720px] w-full max-w-[460px] flex-1 flex-col overflow-hidden bg-felt text-[var(--card-face)]"
-      data-id="bataillecorse-table"
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_42%,#3aa59b_0%,#2f877f_48%,#276f69_100%)]" />
-
-      <header className="absolute inset-x-0 top-4 z-30 flex items-center justify-between px-3">
+    <TableShell dataId="bataillecorse-table">
+      <header className="absolute inset-x-0 top-[var(--table-hud-top)] z-30 flex items-center justify-between px-3">
         <Link
           href="/"
           aria-label={t("back")}
@@ -184,14 +220,14 @@ export function BataillecorseTable({
         />
       )}
 
-      <div className="relative flex-1" data-id="bataillecorse-scene">
+      <div className="relative h-0 min-h-0 flex-1" data-id="bataillecorse-scene">
         <SeatRow
           label={playerName(gv, opponentSeat, locale)}
           stockCount={view.opponentStockCount}
           isTurn={view.turn === opponentSeat}
           reaction={reactions?.get(opponentSeat)}
           dataId="bataillecorse-opponent-seat"
-          className="absolute inset-x-0 top-16"
+          className="absolute inset-x-0 top-[calc(var(--table-hud-top)+3.5rem)]"
         />
 
         <div className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 flex-col items-center gap-3" data-id="bataillecorse-center-block">
@@ -204,8 +240,8 @@ export function BataillecorseTable({
             disabled={view.phase !== "playing"}
             aria-label={t("slapPileButton")}
             className={[
-              "flex h-60 w-60 items-center justify-center rounded-full transition-all active:scale-95",
-              view.slapWindow
+              "flex h-[var(--slap-circle-size)] w-[var(--slap-circle-size)] items-center justify-center rounded-full transition-all active:scale-95",
+              slapWindowUrgent
                 ? "animate-pulse bg-[var(--accent-red)]/15 ring-4 ring-[var(--accent-red)]"
                 : "bg-white/5 ring-1 ring-white/20",
             ].join(" ")}
@@ -258,11 +294,21 @@ export function BataillecorseTable({
           />
         </div>
 
-        {myReactionMs !== null && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-30 flex justify-center" data-id="bataillecorse-my-reaction-time">
-            <span className="rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg">
-              {formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) })}
-            </span>
+        {(myReactionMs !== null || opponentReactionMs !== null) && (
+          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-30 flex flex-col items-center gap-1" data-id="bataillecorse-reaction-times">
+            {myReactionMs !== null && (
+              <span className="rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
+                {formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) })}
+              </span>
+            )}
+            {opponentReactionMs !== null && (
+              <span className="rounded-full bg-black/40 px-4 py-1.5 text-xs font-bold text-white/90 shadow-lg" data-id="bataillecorse-opponent-reaction-time">
+                {formatText(t("opponentReactionTimeLabel"), {
+                  player: playerName(gv, opponentSeat, locale),
+                  s: formatReactionSeconds(opponentReactionMs, locale),
+                })}
+              </span>
+            )}
           </div>
         )}
 
@@ -272,7 +318,7 @@ export function BataillecorseTable({
       {view.phase === "finished" && (
         <FinishedOverlay gv={gv} view={view} onRematch={actions.onRematch} onReset={actions.onReset} />
       )}
-    </main>
+    </TableShell>
   );
 }
 
@@ -300,10 +346,8 @@ function SeatRow({
   );
 }
 
-/** `CardBack size="sm"` is 40x56px - the base `StockPile` renders at (before `scale`). */
-const STOCK_CARD_W = 40;
-const STOCK_CARD_H = 56;
-const STOCK_LAYER_STEP = 2;
+/** Layer step as a fraction of `--card-sm-w` (2px when that width was 40px). */
+const STOCK_LAYER_STEP_RATIO = 2 / 40;
 
 /** A face-down draw pile: layered card-backs (not just one) so it reads as an
  *  actual stack rather than a single flat card, collapsing to a single card
@@ -326,10 +370,12 @@ function StockPile({
   onClick?: () => void;
   disabled?: boolean;
 }) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-sm-w", 40);
   const layers = count === 0 ? 0 : count === 1 ? 1 : 3;
-  const step = STOCK_LAYER_STEP * scale;
-  const width = STOCK_CARD_W * scale + step * Math.max(0, layers - 1);
-  const height = STOCK_CARD_H * scale + step * Math.max(0, layers - 1);
+  const cardH = cardW * 1.5;
+  const step = cardW * STOCK_LAYER_STEP_RATIO * scale;
+  const width = cardW * scale + step * Math.max(0, layers - 1);
+  const height = cardH * scale + step * Math.max(0, layers - 1);
   const Tag = onClick ? "button" : "div";
   return (
     <Tag
@@ -340,6 +386,7 @@ function StockPile({
       style={{ width, height }}
       data-id={dataId}
     >
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       {Array.from({ length: layers }, (_, i) => {
         const isFront = i === layers - 1;
         return (
@@ -377,16 +424,19 @@ function cardKey(card: PlayerView["pile"][number]): string {
  *  uses - see `TrickStage.tsx`), while the 1-2 cards behind it sit scattered
  *  and dimmed, always at least 2 of them visible when available. */
 function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom: EnterDirection }) {
+  const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const shown = cards.slice(-3);
   if (shown.length === 0) {
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
   return (
-    <div className="relative h-24 w-16" data-id="bataillecorse-pile" style={{ transform: "scale(1.5)" }}>
+    <div className="relative aspect-[2/3] w-[var(--card-md-w)]" data-id="bataillecorse-pile" style={{ transform: "scale(1.5)" }}>
+      <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
       {shown.map((card, i) => {
         const isTop = i === shown.length - 1;
         const depthFromTop = shown.length - 1 - i;
-        const offset = HISTORY_OFFSETS[(depthFromTop - 1 + HISTORY_OFFSETS.length) % HISTORY_OFFSETS.length];
+        const base = HISTORY_OFFSETS[(depthFromTop - 1 + HISTORY_OFFSETS.length) % HISTORY_OFFSETS.length];
+        const offset = { x: (base.x / 56) * cardW, y: (base.y / 56) * cardW, rot: base.rot };
         return (
           <div
             key={cardKey(card)}

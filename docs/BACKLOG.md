@@ -41,3 +41,4 @@ Status: Living document. Always reflects current state.
 - [x] Dedicated splash background art for `/president` (`public/president-full.jpg`, watercolor "Le Président" illustration).
 - [x] Fourth game "la Bataille Corse" (2 players, reflex): local/online/ad-hoc, figure/ace tribute challenges, double/sandwich slap race resolved by comparing each side's own locally-measured reaction time (never network arrival order), false-slap penalty. Seat count generalized (`seatCountFor`) since this is the first non-4-seat game.
 - [x] La Bataille Corse table redesign (tap-the-pile-to-slap, tap-your-own-pile-to-play, deck-style stock piles, reaction-time readout) + configurable 32/54-card deck with jokers + dedicated splash art + taller home-grid tiles.
+- [x] Fluid full-viewport table shell (all 4 games): drop the 460×720 phone column; cards `aspect-ratio 2/3` scaled with `svmin`.

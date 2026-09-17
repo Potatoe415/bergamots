@@ -3,7 +3,7 @@ import { DEFAULT_DECK_SIZE } from "./cards";
 import { deal } from "./deal";
 import { detectSlapPattern } from "./pattern";
 import { resolveTributeEffect } from "./tribute";
-import { SLAP_GRACE_MS, type Card, type DeckSize, type GameState, type Seat, type SlapWindow } from "./types";
+import { SLAP_GRACE_MS, type Card, type DeckSize, type GameState, type PileWinEvent, type Seat, type SlapWindow } from "./types";
 
 export { SLAP_GRACE_MS };
 export { otherSeat } from "./tribute";
@@ -45,8 +45,15 @@ function openSlapWindowIfAny(state: GameState, nowMs: number): GameState {
 
 /** Awards the whole center pile to `winner`, tucked under their stock (they
  *  reach it again once their current stock runs out). Always clears the
- *  tribute/slap window - winning the pile supersedes whatever was pending. */
-function awardPile(state: GameState, winner: Seat, reason: "tribute" | "slap"): GameState {
+ *  tribute/slap window - winning the pile supersedes whatever was pending.
+ *  `reactionMsBySeat` (slap wins only) records each seat's own claimed
+ *  reaction time so both players' UI can show the opponent's reflex too. */
+function awardPile(
+  state: GameState,
+  winner: Seat,
+  reason: "tribute" | "slap",
+  reactionMsBySeat?: PileWinEvent["reactionMsBySeat"],
+): GameState {
   const cardCount = state.pile.length;
   const stocks: [Card[], Card[]] = [[...state.stocks[0]], [...state.stocks[1]]];
   stocks[winner] = [...state.pile, ...stocks[winner]];
@@ -57,7 +64,7 @@ function awardPile(state: GameState, winner: Seat, reason: "tribute" | "slap"): 
     tribute: null,
     slapWindow: null,
     slapClaims: [],
-    lastPileWin: { id: state.nextEventId, seat: winner, cardCount, reason },
+    lastPileWin: { id: state.nextEventId, seat: winner, cardCount, reason, reactionMsBySeat },
     nextEventId: state.nextEventId + 1,
   };
 }
@@ -116,7 +123,8 @@ export function attemptSlap(
     if (slapClaims.length < 2) return { ...state, slapClaims };
     const winner = slapClaims[0].reactionMs <= slapClaims[1].reactionMs ? slapClaims[0].seat : slapClaims[1].seat;
     const closedId = state.slapWindow.id;
-    const next = awardPile({ ...state, slapClaims }, winner, "slap");
+    const reactionMsBySeat = { [slapClaims[0].seat]: slapClaims[0].reactionMs, [slapClaims[1].seat]: slapClaims[1].reactionMs };
+    const next = awardPile({ ...state, slapClaims }, winner, "slap", reactionMsBySeat);
     return checkElimination({ ...next, turn: winner, lastClosedSlapWindowId: closedId });
   }
 
@@ -135,7 +143,8 @@ export function resolveStaleSlapWindow(state: GameState, nowMs: number = Date.no
   if (nowMs - window.openedAtMs < SLAP_GRACE_MS) return state;
   if (state.slapClaims.length === 1) {
     const winner = state.slapClaims[0].seat;
-    const next = awardPile(state, winner, "slap");
+    const reactionMsBySeat = { [winner]: state.slapClaims[0].reactionMs };
+    const next = awardPile(state, winner, "slap", reactionMsBySeat);
     return checkElimination({ ...next, turn: winner, lastClosedSlapWindowId: window.id });
   }
   return { ...state, slapWindow: null, slapClaims: [], lastClosedSlapWindowId: window.id };
