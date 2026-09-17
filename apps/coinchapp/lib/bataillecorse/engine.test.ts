@@ -100,6 +100,19 @@ describe("submitFlip - opening a slap window", () => {
     const next = submitFlip(state, 1, 1234);
     expect(next.slapWindow?.pattern).toBe("sandwich");
   });
+
+  it("opens a window when a tribute's final attempt matches the original challenge rank, even with plain attempts in between", () => {
+    // Payer's own 3 plain attempts (3/5/9) sit between the original As and
+    // the As that finally answers it - still a double once filler is ignored.
+    const state = stateWith({
+      turn: 1,
+      stocks: [[card("K")], [card("A")]],
+      pile: [card("A"), card("3"), card("5"), card("9")],
+      tribute: { seat: 1, attemptsLeft: 1, fromRank: "A" },
+    });
+    const next = submitFlip(state, 1, 1234);
+    expect(next.slapWindow).toEqual({ id: 0, pattern: "double", openedAtMs: 1234 });
+  });
 });
 
 describe("attemptSlap", () => {

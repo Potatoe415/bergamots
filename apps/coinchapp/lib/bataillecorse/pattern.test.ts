@@ -28,4 +28,29 @@ describe("detectSlapPattern", () => {
     const pile = [card("9"), card("9"), card("9")];
     expect(detectSlapPattern(pile)).toBe("double");
   });
+
+  it("detects a figure double across a tribute chain's ordinary filler cards", () => {
+    // As opens a tribute (4 attempts); the payer burns 3 plain attempts
+    // before finally answering with another As - not adjacent on the real
+    // pile, but "right after" once the plain filler is ignored.
+    const pile = [card("A"), card("3"), card("5"), card("9"), card("A")];
+    expect(detectSlapPattern(pile)).toBe("double");
+  });
+
+  it("detects a figure sandwich across a tribute chain (one other figure between)", () => {
+    const pile = [card("K"), card("7"), card("Q"), card("K")];
+    expect(detectSlapPattern(pile)).toBe("sandwich");
+  });
+
+  it("does not resurrect a stale figure pair once a plain card is on top", () => {
+    // The two Kings already had their moment - a later, unrelated plain
+    // card on top must not retroactively open a window for them.
+    const pile = [card("K"), card("K"), card("7")];
+    expect(detectSlapPattern(pile)).toBeNull();
+  });
+
+  it("ignores mismatched figures separated by filler (Valet then As doesn't match)", () => {
+    const pile = [card("J"), card("3"), card("5"), card("A")];
+    expect(detectSlapPattern(pile)).toBeNull();
+  });
 });

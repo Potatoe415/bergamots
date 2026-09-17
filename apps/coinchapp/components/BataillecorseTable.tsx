@@ -151,32 +151,34 @@ function useWindowSeenAtRef(slapWindow: PlayerView["slapWindow"]): RefObject<{ i
   return ref;
 }
 
-/** `{s}` in `myReactionTimeLabel`/`opponentReactionTimeLabel` - the raw
- *  millisecond value itself (not converted to seconds), 2 decimal places:
- *  `performance.now()` has sub-millisecond precision, so this is genuine
- *  reflex-level detail, not padding. */
-function formatReactionMs(ms: number, locale: "fr" | "en"): string {
-  const value = ms.toFixed(2);
+/** `{s}` in `myReactionTimeLabel`/`opponentReactionTimeLabel`/
+ *  `reactionTimesLabel` - the reaction time in seconds, 2 decimal places
+ *  (e.g. "0,54"): `performance.now()` has sub-millisecond precision, but the
+ *  readout is deliberately shown in seconds, not raw ms. */
+function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
+  const value = (ms / 1000).toFixed(2);
   return locale === "fr" ? value.replace(".", ",") : value;
 }
 
-/** The opponent's own locally-measured reaction time for the slap that just
+/** A seat's own locally-measured reaction time for the slap that just
  *  resolved (see `PileWinEvent.reactionMsBySeat`) - `null` once nobody has
  *  won a slap yet, or that seat never claimed (won uncontested via
  *  `resolveStaleSlapWindow`). Diffed by event id so it only (re)appears once
- *  per resolution, auto-hiding the same way `myReactionMs` does. */
-function useOpponentReactionMs(lastPileWin: PlayerView["lastPileWin"], opponentSeat: number): number | null {
+ *  per resolution, auto-hiding after `REACTION_READOUT_MS`. Used both for the
+ *  opponent's own under-their-deck readout (local/ad-hoc) and, in online
+ *  mode, for both seats' combined readout above the player's own deck. */
+function useSeatReactionMs(lastPileWin: PlayerView["lastPileWin"], seat: 0 | 1): number | null {
   const [value, setValue] = useState<number | null>(null);
   const seenIdRef = useRef<number | undefined>(undefined);
   useEffect(() => {
     const id = lastPileWin?.id;
-    const ms = lastPileWin?.reason === "slap" ? lastPileWin.reactionMsBySeat?.[opponentSeat as 0 | 1] : undefined;
+    const ms = lastPileWin?.reason === "slap" ? lastPileWin.reactionMsBySeat?.[seat] : undefined;
     if (id === undefined || id === seenIdRef.current || ms === undefined) return;
     seenIdRef.current = id;
     setValue(ms);
     const timer = setTimeout(() => setValue(null), REACTION_READOUT_MS);
     return () => clearTimeout(timer);
-  }, [lastPileWin, opponentSeat]);
+  }, [lastPileWin, seat]);
   return value;
 }
 
@@ -212,6 +214,10 @@ export function BataillecorseTable({
   const view = gv.view!;
   const mySeat = gv.mySeat!;
   const opponentSeat = mySeat === 0 ? 1 : 0;
+  // `selfAvatar` is only ever passed by `GameRoom` (server-backed online
+  // mode) - local/ad-hoc callers omit it entirely, same signal already used
+  // below to gate the self-name label.
+  const isOnline = selfAvatar !== undefined;
   const [panelOpen, setPanelOpen] = useState(false);
   const { myTurnToFlip, pendingFlip, optimisticStockCount, flip: tapFlip } = useOptimisticFlip(view, mySeat, actions.onFlip);
   const [myReactionMs, setMyReactionMs] = useState<number | null>(null);
@@ -231,14 +237,27 @@ export function BataillecorseTable({
   const pileFlyTarget: "up" | "down" | null =
     pileFlying && view.lastPileWin ? (view.lastPileWin.seat === mySeat ? "down" : "up") : null;
   const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
-  const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
+  const opponentReactionMs = useSeatReactionMs(view.lastPileWin, opponentSeat as 0 | 1);
+  const eventReactionMsMine = useSeatReactionMs(view.lastPileWin, mySeat as 0 | 1);
   const winnerFireSeat = useWinnerFireSeat(view.lastPileWin);
   const owesTribute = view.tribute?.seat === mySeat;
   const myReactionLabel =
-    myReactionMs !== null ? formatText(t("myReactionTimeLabel"), { s: formatReactionMs(myReactionMs, locale) }) : null;
+    myReactionMs !== null ? formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) }) : null;
   const opponentReactionLabel =
     opponentReactionMs !== null
-      ? formatText(t("opponentReactionTimeLabel"), { player: playerName(gv, opponentSeat, locale), s: formatReactionMs(opponentReactionMs, locale) })
+      ? formatText(t("opponentReactionTimeLabel"), { player: playerName(gv, opponentSeat, locale), s: formatReactionSeconds(opponentReactionMs, locale) })
+      : null;
+  // Online only: both seats' reaction time, merged into one readout above
+  // the player's own deck instead of one per side (see docs/DECISIONS.md).
+  // Sourced from the server-confirmed `reactionMsBySeat`, not the instant
+  // local `myReactionMs` (that one also fires on a false slap, which has no
+  // resolved reaction time to compare against the opponent's).
+  const combinedReactionLabel =
+    isOnline && (eventReactionMsMine !== null || opponentReactionMs !== null)
+      ? formatText(t("reactionTimesLabel"), {
+          mine: eventReactionMsMine !== null ? formatReactionSeconds(eventReactionMsMine, locale) : "–",
+          opponent: opponentReactionMs !== null ? formatReactionSeconds(opponentReactionMs, locale) : "–",
+        })
       : null;
 
   async function tapSlap() {
@@ -289,7 +308,7 @@ export function BataillecorseTable({
           stockCount={view.opponentStockCount}
           isTurn={view.turn === opponentSeat}
           reaction={reactions?.get(opponentSeat)}
-          reactionLabel={opponentReactionLabel}
+          reactionLabel={isOnline ? null : opponentReactionLabel}
           fire={winnerFireSeat === opponentSeat}
           dataId="bataillecorse-opponent-seat"
           className="absolute inset-x-0 top-[calc(var(--table-hud-top)+3.5rem)]"
@@ -354,14 +373,25 @@ export function BataillecorseTable({
               {playerName(gv, mySeat, locale)}
             </p>
           )}
-          {/* Above the deck (toward the pile), not below - the opponent's own
-              readout sits below theirs instead (`SeatRow`), since their deck
-              is already up near the pile the other way. */}
-          {myReactionLabel && (
-            <span className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
-              {myReactionLabel}
-            </span>
-          )}
+          {/* Above the deck (toward the pile), not below. Local/ad-hoc: each
+              side gets its own readout (opponent's sits below theirs
+              instead, see `SeatRow`). Online: both seats' times are merged
+              into this one spot instead (`combinedReactionLabel`), in fire
+              yellow, since that is the only place either player looks. */}
+          {isOnline
+            ? combinedReactionLabel && (
+                <span
+                  className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-[var(--accent-yellow)] shadow-lg"
+                  data-id="bataillecorse-reaction-times"
+                >
+                  {combinedReactionLabel}
+                </span>
+              )
+            : myReactionLabel && (
+                <span className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
+                  {myReactionLabel}
+                </span>
+              )}
           <StockPile
             count={optimisticStockCount}
             dataId="bataillecorse-my-stock"
