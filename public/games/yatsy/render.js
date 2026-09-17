@@ -49,6 +49,7 @@ window.YATZY_RENDER = {
     }
 
     renderHeader();
+    renderGameSettingsPanel();
     renderScoreSummary();
     renderScoreboard();
     renderDice();
@@ -183,7 +184,7 @@ window.YATZY_RENDER = {
     appendSettingsToggleRow(
       "reverseDiceSelection",
       t("splash.reverseSelection"),
-      state.setup.reverseDiceSelection
+      state.setup.reverseDiceSelectionByPlayer[0]
     );
     appendSettingsToggleRow(
       "extraRollEasterEgg",
@@ -221,6 +222,68 @@ window.YATZY_RENDER = {
     elements.emojiButton.setAttribute("aria-label", t("controls.sendEmoji"));
     elements.emojiButton.setAttribute("title", t("controls.sendEmoji"));
     emojiController?.syncLabels();
+  }
+
+  // The in-game settings panel (gear button on the header's top row): lets
+  // whichever player is currently taking their turn change the language, or
+  // flip their own dice-selection convention (select dice to reroll instead
+  // of dice to keep) without touching the other player's preference - see
+  // reverseDiceSelectionByPlayer on state.setup.
+  function renderGameSettingsPanel() {
+    if (!elements.gameSettingsButton) {
+      return;
+    }
+
+    elements.gameSettingsButton.setAttribute("aria-label", t("splash.settings"));
+    elements.gameSettingsButton.setAttribute("title", t("splash.settings"));
+    if (elements.gameSettingsTitle) {
+      elements.gameSettingsTitle.textContent = t("splash.settings");
+    }
+    if (elements.gameSettingsClose) {
+      elements.gameSettingsClose.setAttribute("aria-label", t("game.close"));
+    }
+    if (elements.gameSettingsLanguageTitle) {
+      elements.gameSettingsLanguageTitle.textContent = t("splash.language");
+    }
+
+    renderGameLangSelector();
+
+    const currentPlayerName = state.players[state.currentPlayerIndex]?.name || "";
+    const enabled = Boolean(state.setup.reverseDiceSelectionByPlayer[state.currentPlayerIndex]);
+    if (elements.reverseSelectionLabel) {
+      elements.reverseSelectionLabel.textContent = currentPlayerName
+        ? `${t("splash.reverseSelection")} - ${currentPlayerName}`
+        : t("splash.reverseSelection");
+    }
+    if (elements.reverseSelectionToggle) {
+      elements.reverseSelectionToggle.checked = enabled;
+    }
+    if (elements.reverseSelectionPill) {
+      elements.reverseSelectionPill.textContent = enabled ? "ON" : "OFF";
+    }
+  }
+
+  function renderGameLangSelector() {
+    if (!elements.gameLangSelector) {
+      return;
+    }
+
+    const languages = [
+      { code: "fr", title: t("splash.french") },
+      { code: "en", title: t("splash.english") },
+      { code: "es", title: t("splash.spanish") }
+    ];
+
+    elements.gameLangSelector.replaceChildren(...languages.map((language) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `lang-btn${state.setup.language === language.code ? " active" : ""}`;
+      button.dataset.lang = language.code;
+      button.textContent = language.code.toUpperCase();
+      button.title = language.title;
+      button.setAttribute("aria-label", language.title);
+      return button;
+    }));
   }
 
   function renderScoreSummary() {
@@ -530,7 +593,7 @@ window.YATZY_RENDER = {
 
   function renderDice() {
     elements.diceRow.innerHTML = "";
-    const reverseSelectionEnabled = state.setup.reverseDiceSelection;
+    const reverseSelectionEnabled = state.setup.reverseDiceSelectionByPlayer[state.currentPlayerIndex];
 
     state.dice.forEach((die, index) => {
       const dieTile = document.createElement("button");

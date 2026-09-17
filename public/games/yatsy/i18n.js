@@ -30,6 +30,7 @@
         language: "Language",
         english: "English",
         french: "French",
+        spanish: "Spanish",
         rules: "Rules",
         waitingStatus: "Code {code}. Waiting for Player 2...",
         joiningStatus: "Joining {code}...",
@@ -124,6 +125,9 @@
       diceState: {
         kept: "kept",
         free: "free"
+      },
+      game: {
+        close: "Close"
       }
     },
     es: {
@@ -156,6 +160,7 @@
         language: "Idioma",
         english: "Ingles",
         french: "Frances",
+        spanish: "Espanol",
         rules: "Reglas",
         waitingStatus: "Codigo {code}. Esperando al Jugador 2...",
         joiningStatus: "Conectando a {code}...",
@@ -250,6 +255,9 @@
       diceState: {
         kept: "guardado",
         free: "libre"
+      },
+      game: {
+        close: "Cerrar"
       }
     },
     fr: {
@@ -282,6 +290,7 @@
         language: "Langue",
         english: "Anglais",
         french: "Francais",
+        spanish: "Espagnol",
         rules: "Regles",
         waitingStatus: "Code {code}. En attente du Joueur 2...",
         joiningStatus: "Connexion a {code}...",
@@ -376,6 +385,9 @@
       diceState: {
         kept: "garde",
         free: "libre"
+      },
+      game: {
+        close: "Fermer"
       }
     }
   };

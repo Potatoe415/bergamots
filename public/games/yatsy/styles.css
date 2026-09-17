@@ -270,6 +270,45 @@ select {
   color: #fffaf1;
 }
 
+/* In-game settings panel toggle (reverse dice selection) - lives inside the
+   shared white .options-panel-sheet (game-header.css), so unlike
+   .settings-row above (built for the splash panel's dark background) this
+   needs its own dark-on-white colors. */
+.game-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.game-toggle-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2933;
+}
+
+.game-toggle-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.game-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.08);
+  color: #1f2933;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
 .settings-rules-section {
   margin-top: 0.7rem;
   padding-top: 0.7rem;
@@ -658,11 +697,29 @@ select {
 
 .game-header {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  padding: 0 0.35rem;
+}
+
+.game-header-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.9rem;
-  padding: 0 0.35rem;
+}
+
+/* Small icon button opening the in-game settings panel (language, dice
+   selection preference for whichever player is currently taking their
+   turn) - sized to match .home-button on the same row. */
+.game-settings-button {
+  width: 2.2rem;
+  height: 2.2rem;
+  min-width: 2.2rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  flex: 0 0 auto;
 }
 
 .header-title {
@@ -2095,6 +2152,13 @@ body.player-two-turn .player-cell.valid {
     height: 0.7rem;
   }
 
+  .game-settings-button {
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    font-size: 1rem;
+  }
+
   .page {
     padding:
       max(0.6rem, env(safe-area-inset-top))
@@ -2165,11 +2229,14 @@ body.player-two-turn .player-cell.valid {
   }
 
   .game-header {
-    flex-wrap: nowrap;
-    align-items: center;
     gap: 0.35rem;
     margin-bottom: 0.55rem;
     padding: 0 0.15rem;
+  }
+
+  .game-header-row {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
   }
 
   .header-title {

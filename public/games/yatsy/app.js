@@ -114,7 +114,16 @@ const elements = {
   emojiBackdrop: document.getElementById("emoji-picker-backdrop"),
   gameCard: document.getElementById("game-card"),
   gameTitle: document.getElementById("game-title"),
-  restartButton: document.getElementById("restart-button")
+  restartButton: document.getElementById("restart-button"),
+  gameSettingsButton: document.getElementById("game-settings-button"),
+  gameSettingsPanel: document.getElementById("game-settings-panel"),
+  gameSettingsTitle: document.getElementById("game-settings-title"),
+  gameSettingsClose: document.getElementById("game-settings-close"),
+  gameSettingsLanguageTitle: document.getElementById("game-settings-language-title"),
+  gameLangSelector: document.getElementById("game-lang-selector"),
+  reverseSelectionToggle: document.getElementById("game-reverse-selection-toggle"),
+  reverseSelectionLabel: document.getElementById("game-reverse-selection-label"),
+  reverseSelectionPill: document.getElementById("game-reverse-selection-pill")
 };
 
 let yatzyCelebrationTimeoutId = null;
@@ -163,6 +172,15 @@ if (elements.settingsButton && elements.settingsPanel && window.GameHeader) {
 }
 if (elements.settingsList) {
   elements.settingsList.addEventListener("change", handleSettingsInputChange);
+}
+if (elements.gameSettingsButton && elements.gameSettingsPanel && window.GameHeader) {
+  window.GameHeader.initOptionsPanel(elements.gameSettingsButton, elements.gameSettingsPanel);
+}
+if (elements.gameLangSelector) {
+  elements.gameLangSelector.addEventListener("click", handleGameLangSelectorClick);
+}
+if (elements.reverseSelectionToggle) {
+  elements.reverseSelectionToggle.addEventListener("change", handleGameReverseSelectionToggle);
 }
 elements.homeButton.addEventListener("click", handleHomeNavigation);
 const emojiController = window.YATZY_EMOJI
@@ -288,9 +306,9 @@ void refreshSettingsRules();
 
 // Dynamic import (not a static one): every other file here is a classic
 // script sharing one global scope (see eslint.config.mjs) - a static import
-// would force this file alone into module scope. The language is fixed for
-// the whole session (see `initialSetupLanguage`, no in-game switcher), so
-// this only ever needs to run once.
+// would force this file alone into module scope. Re-run by
+// handleLanguageSelection() whenever the splash or in-game language switcher
+// changes state.setup.language, so the splash rules panel stays in sync.
 async function refreshSettingsRules() {
   if (!elements.settingsRulesSection || !elements.settingsRulesContent) return;
 
@@ -438,7 +456,11 @@ function createInitialState() {
     setup: {
       mode: "solo",
       language: initialSetupLanguage,
-      reverseDiceSelection: persistedReverseDiceSelection,
+      // Indexed by player (0/1), not a single shared value: the in-game
+      // settings panel only ever edits the currently active seat's own entry
+      // (see handleGameReverseSelectionToggle), so each player can keep an
+      // independent preference without affecting the other one.
+      reverseDiceSelectionByPlayer: [persistedReverseDiceSelection, persistedReverseDiceSelection],
       extraRollEasterEgg: readPersistedExtraRollEasterEgg(),
       defeatModeEnabled: readPersistedDefeatModeEnabled(),
       rules: cloneRuleSettings(persistedRuleSettings || buildDefaultRuleSettings())
@@ -557,6 +579,24 @@ function persistPlayerNameFromInput() {
 function handleLanguageSelection(language) {
   state.setup.language = language;
   applySetupSettings(state);
+  void refreshSettingsRules();
+  render();
+}
+
+function handleGameLangSelectorClick(event) {
+  const language = event.target.closest("[data-lang]")?.dataset.lang;
+  if (!language) {
+    return;
+  }
+  handleLanguageSelection(language);
+}
+
+// Only ever flips the currently active seat's own preference (see
+// reverseDiceSelectionByPlayer on state.setup): opening this panel during
+// Player 1's turn edits Player 1's entry, during Player 2's/the robot's turn
+// it edits that other entry, never both at once.
+function handleGameReverseSelectionToggle(event) {
+  state.setup.reverseDiceSelectionByPlayer[state.currentPlayerIndex] = Boolean(event.target.checked);
   render();
 }
 
@@ -564,8 +604,9 @@ function handleSettingsInputChange(event) {
   const target = event.target;
   const settingKey = target.dataset.settingKey;
   if (settingKey === "reverseDiceSelection") {
-    state.setup.reverseDiceSelection = Boolean(target.checked);
-    persistReverseDiceSelection(state.setup.reverseDiceSelection);
+    const enabled = Boolean(target.checked);
+    state.setup.reverseDiceSelectionByPlayer = [enabled, enabled];
+    persistReverseDiceSelection(enabled);
     render();
     return;
   }
@@ -959,7 +1000,7 @@ function resetGame({
   freshState.screen = screen;
   freshState.setup.mode = mode;
   freshState.setup.language = language;
-  freshState.setup.reverseDiceSelection = state.setup.reverseDiceSelection;
+  freshState.setup.reverseDiceSelectionByPlayer = [...state.setup.reverseDiceSelectionByPlayer];
   freshState.setup.extraRollEasterEgg = state.setup.extraRollEasterEgg;
   freshState.setup.defeatModeEnabled = state.setup.defeatModeEnabled;
   freshState.setup.rules = cloneRuleSettings(state.setup.rules);
@@ -1049,7 +1090,7 @@ function getRobotDecision() {
 
 function applyRobotHoldPattern(lockMask) {
   let changed = false;
-  const reverseSelectionEnabled = state.setup.reverseDiceSelection;
+  const reverseSelectionEnabled = state.setup.reverseDiceSelectionByPlayer[state.currentPlayerIndex];
 
   state.dice = state.dice.map((die, index) => {
     const shouldLock = Boolean(lockMask & (1 << index));
@@ -1196,7 +1237,7 @@ function handleRoll() {
   clearUndoWindow();
 
   const firstRollOfTurn = state.rollsRemaining === 3 && state.dice.every((die) => die.value === null);
-  const reverseSelectionEnabled = state.setup.reverseDiceSelection;
+  const reverseSelectionEnabled = state.setup.reverseDiceSelectionByPlayer[state.currentPlayerIndex];
   const dieWouldReroll = (die) => firstRollOfTurn || (reverseSelectionEnabled ? die.locked : !die.locked);
   const rerollHeldDice = bonusRollUsedThisTurn && !state.dice.some(dieWouldReroll);
   state.dice = state.dice.map((die) => {
