@@ -17,11 +17,35 @@ Load files on a strict need-to-know basis.
 | Task touches stack, DB, security, infra, or code structure | `docs/TECH.md` |
 | Task touches data model, entities, fields, tables, collections, relationships, indexes, constraints, migrations, queries, or permissions | `docs/DATA_MODEL.md` |
 | Task touches planning or prioritisation | `docs/BACKLOG.md` |
+| Task creates a new game | `docs/NEW_GAME.md` (full checklist — read it in full, not just this row) |
 | About to reverse or modify a prior decision | `docs/DECISIONS.md` |
 | Task contains or implies: run / command / script / setup / start / test / check / lint / build / deploy / migrate / seed / install | `docs/RUNBOOK.md` |
 | Resuming after time away (> 1 day) | `docs/DECISIONS.md` + Recent_Changes in `STATE.md` |
 
 Do not load `docs/DECISIONS.md`, `docs/DATA_MODEL.md`, or `docs/RUNBOOK.md` by default.
+
+### Game-scoped work
+
+Bergamots hosts many independent games. Treat each one as its own context
+boundary — this keeps token usage low and stops one game's logic from
+bleeding into another's.
+
+- Before opening anything under `public/games/` or `public/data/`, check
+  `docs/GAMES_MAP.md` to locate the target game (folder, size, shared
+  deps) instead of browsing.
+- Scope reads and edits to that one game's own folder
+  (`public/games/<id>/` and/or `public/data/<id>/`) plus its single entry
+  in `public/hub-config.json`. Do not open other games' folders. If a
+  task genuinely spans multiple games, name every game in scope up front
+  instead of silently drifting into extra folders.
+- For shared behavior, read `shared/CONTRACT.md` first; only open the
+  actual shared source file if the contract doc doesn't answer the
+  question.
+- If the game's folder has a `NOTES.md`, read that before its main source
+  file(s) for a small/targeted change.
+- Adding a new game: follow `docs/GAMES_MAP.md`'s "Adding a new game"
+  steps (new folder, one row in the map, a `NOTES.md` once the main file
+  passes ~150–200 lines).
 
 ---
 
@@ -183,3 +207,5 @@ Weak criteria ("make it work") require constant clarification. Strong criteria l
 | `docs/BACKLOG.md` | Living document. Always current. |
 | `docs/DECISIONS.md` | Append-only. Never edit past entries. |
 | `docs/RUNBOOK.md` | Update when commands or steps change. |
+| `docs/GAMES_MAP.md` | Living document. Update whenever a game is added, removed, or its shared deps / `NOTES.md` status changes. |
+| `docs/NEW_GAME.md` | Living document. Update whenever a platform-wide technical or visual convention for games changes. |
