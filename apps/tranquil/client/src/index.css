@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --app-height: 100svh;
+  }
+
+  html, body {
+    overscroll-behavior: none;
+  }
+
+  body {
+    @apply bg-ocean-950 text-white min-h-screen;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-ocean-900; }
+  ::-webkit-scrollbar-thumb { @apply bg-ocean-600 rounded-full; }
+}
+
+@layer utilities {
+  @keyframes shrinkWidth {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+  }
+  @keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .animate-fade-in-scale {
+    animation: fadeInScale 0.18s ease-out;
+  }
+
+  @keyframes finishBurstRing {
+    from { transform: scale(0.3); opacity: 0.95; }
+    to   { transform: scale(2.8); opacity: 0; }
+  }
+  .animate-finish-burst {
+    animation: finishBurstRing 0.7s ease-out forwards;
+  }
+  @keyframes finishGlowPulse {
+    0%, 100% { opacity: 0.6; filter: brightness(1); }
+    50%      { opacity: 1;   filter: brightness(1.3); }
+  }
+  .animate-finish-glow {
+    animation: finishGlowPulse 1.4s ease-in-out infinite;
+  }
+}
+
+@layer components {
+  .card-base {
+    @apply rounded-xl border-2 border-white/20 shadow-lg select-none cursor-pointer
+           transition-all duration-150 relative overflow-hidden;
+  }
+  @media (hover: hover) {
+    .card-base:hover {
+      @apply scale-105 shadow-xl border-white/40;
+    }
+  }
+  .card-selected {
+    @apply ring-4 ring-white ring-offset-2 ring-offset-transparent scale-110 z-10;
+  }
+  .cell-highlight {
+    @apply ring-2 ring-yellow-300 ring-offset-1 ring-offset-ocean-950;
+  }
+  .btn {
+    @apply px-5 py-2.5 rounded-xl font-semibold transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-ocean-500 hover:bg-ocean-400 text-white shadow-md hover:shadow-lg;
+  }
+  .btn-danger {
+    @apply btn bg-rose-600 hover:bg-rose-500 text-white;
+  }
+  .btn-ghost {
+    @apply btn border border-white/20 hover:bg-white/10 text-white/80 hover:text-white;
+  }
+  .lobby-btn-size {
+    @apply w-full;
+  }
+  .lobby-btn {
+    @apply w-full px-5 rounded-xl font-semibold transition-all duration-150
+           bg-black/70 hover:bg-black/85 text-white border border-white/10
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .lobby-btn-ghost {
+    @apply w-full px-5 rounded-xl font-semibold transition-all duration-150
+           bg-black/40 hover:bg-black/60 text-white/70 hover:text-white border border-white/10
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  /* Floating circular back/options buttons, pinned to a screen corner via an
+     added "left-4 top-4" or "right-4 top-4" utility class alongside this one
+     — same back-top-left, options-top-right convention used by the sibling
+     Bergamots hub games and coinchapp. */
+  .icon-btn-float {
+    @apply fixed z-20 flex items-center justify-center h-10 w-10 rounded-full
+           bg-black/30 hover:bg-black/50 text-white/80 hover:text-white
+           backdrop-blur-sm shadow-md transition-colors;
+  }
+  .input-field {
+    @apply bg-ocean-800 border border-ocean-600 rounded-lg px-3 py-2
+           text-white placeholder-ocean-500 focus:outline-none focus:border-ocean-400
+           transition-colors;
+  }
+}
