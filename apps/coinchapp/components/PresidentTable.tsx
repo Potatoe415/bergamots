@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { rankValue, type Card, type Combo, type PlayerView, type Seat } from "@/lib/president";
 import { useDelayedVisible } from "@/lib/client/useDelayedVisible";
+import { usePresidentOptimisticPlay } from "@/lib/client/usePresidentOptimisticPlay";
 import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
 import { formatText, useI18n } from "@/lib/client/i18n";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
@@ -72,8 +73,8 @@ export function PresidentTable({
   const [emojiOn, setEmojiOn] = useState(true);
   const [autoPassOn, setAutoPassOn] = useState(true);
   const [selected, setSelected] = useState<Card[]>([]);
-  const [busy, setBusy] = useState(false);
   const [handSort, setHandSort] = useState<HandSortMode>("rank");
+  const { optimisticHand, optimisticPile, busy, play, runExclusive } = usePresidentOptimisticPlay(view);
 
   useEffect(() => {
     // Post-hydration browser read: deferred to after mount to avoid an SSR/client mismatch.
@@ -117,13 +118,8 @@ export function PresidentTable({
   async function tapCard(card: Card) {
     if (!myTurnToPlay || busy) return;
     if (singleCardTurn) {
-      setBusy(true);
-      try {
-        await actions.onPlay({ rank: card.rank, cards: [card] });
-        setSelected([]);
-      } finally {
-        setBusy(false);
-      }
+      await play({ rank: card.rank, cards: [card] }, actions.onPlay);
+      setSelected([]);
       return;
     }
     const key = cardKey(card);
@@ -136,24 +132,14 @@ export function PresidentTable({
 
   async function handlePlay() {
     if (!comboLegal || busy || !selectedRank) return;
-    setBusy(true);
-    try {
-      await actions.onPlay({ rank: selectedRank, cards: selected });
-      setSelected([]);
-    } finally {
-      setBusy(false);
-    }
+    await play({ rank: selectedRank, cards: selected }, actions.onPlay);
+    setSelected([]);
   }
 
   async function handlePass() {
     if (!view.canPass || busy) return;
-    setBusy(true);
-    try {
-      await actions.onPass();
-      setSelected([]);
-    } finally {
-      setBusy(false);
-    }
+    await runExclusive(actions.onPass);
+    setSelected([]);
   }
 
   // When passing is the only legal action (no combo can beat the pile), the
@@ -196,7 +182,7 @@ export function PresidentTable({
             <OpponentBadge gv={gv} view={view} seat={seats.right} position="right" reaction={reactions?.get(seats.right)} />
           </>
         )}
-        <PileArea view={view} seats={seats} />
+        <PileArea view={view} pile={optimisticPile} seats={seats} />
         <SkipFlash gv={gv} view={view} />
         <PresidentCrownedFlash gv={gv} view={view} />
         {view.phase === "exchange" && !roundOverlayVisible && (
@@ -222,7 +208,7 @@ export function PresidentTable({
         {emojiOn && actions.onSendReaction && <EmojiButton myReaction={reactions?.get(mySeat)} onSelect={actions.onSendReaction} />}
         {view.phase === "playing" && (
           <HandArea
-            hand={view.myHand}
+            hand={optimisticHand}
             selected={selected}
             myTurnToPlay={myTurnToPlay}
             legalRanks={legalRanks}
@@ -639,11 +625,14 @@ function burnFlyDirection(seats: TableSeats, seat: Seat | null): { flyX: string;
   };
 }
 
-function PileArea({ view, seats }: { view: PlayerView; seats: TableSeats }) {
+/** `pile` is the (possibly optimistic) pile to render; `view.lastBurn`/other
+ *  event fields always come from the real server view - see
+ *  `usePresidentOptimisticPlay`. */
+function PileArea({ view, pile, seats }: { view: PlayerView; pile: PlayerView["pile"]; seats: TableSeats }) {
   const { t } = useI18n();
-  const { stack, burning } = usePileDisplay(view.pile, view.lastBurn);
+  const { stack, burning } = usePileDisplay(pile, view.lastBurn);
   const { flyX, flyY } = burnFlyDirection(seats, view.lastBurn?.seat ?? null);
-  const enterFrom = seatDirection(seats, view.pile.leader);
+  const enterFrom = seatDirection(seats, pile.leader);
 
   return (
     <div className="absolute left-1/2 top-[41%] -translate-x-1/2 -translate-y-1/2" data-id="president-pile">

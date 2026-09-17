@@ -137,6 +137,27 @@ If unsure: add an Open_Question to `STATE.md`, not a decision entry.
 - `data-id` values must not change unless the element's purpose changes. Treat them like a public API.
 - When modifying an existing element, preserve its `data-id` unless the element's role has changed.
 
+### Card games - shared base, differentiate on top
+- Coinche, la Bouilla, Président, and la Bataille Corse are one family of games sharing one visual/interaction base, not four independent tables. A new per-game behavior is either (a) an instance of something the base already provides - reuse it - or (b) a genuine rule difference for that game - add it on top of the base, never by forking/duplicating a base piece under a new name.
+- The base today (do not reinvent any of these per game):
+  - `TableShell.tsx` - the full-viewport table wrapper every game renders into.
+  - `TrickStage.tsx` - the played-card animation primitives: `playedCardEnterStyle`/`EnterDirection` (a card sliding in from a seat's direction - **this is "click a card, it animates to the center", reused by all 4 tables**: Coinche/Bouilla via `PlayedCardStage`, Président and la Bataille Corse call `playedCardEnterStyle` directly for their own single-pile layouts), plus `CompletedTrickHold`, `CardBackFanH`/`CardBackStackV`, `seatDirection`.
+  - `PlayingCard.tsx` - the `PlayingCard`/`CardBack` primitives every card, hand, and pile renders with.
+  - `GameHud.tsx`, `EmojiButton.tsx`, `ReactionBubble.tsx`, `SelfNameChip.tsx`, `PlayerBadge.tsx`, `gameTableHelpers.ts` (`playerName`/`relativeSeat`/`isConnected`) - HUD chrome, reactions, and seat helpers.
+  - `HandCardSlot.tsx` - the tap-a-legal-card-to-play-it-immediately fan slot (Coinche, Bouilla). Président's hand is deliberately its own (`HandArea` in `PresidentTable.tsx`): its interaction model - select 1-4 same-rank cards, then confirm with "Jouer" - is genuinely different from "tap once to play", so it does not force-fit `HandCardSlot`. That is a legitimate per-game difference, not duplication to fix.
+  - The instant-local-feel hooks above (`useOptimisticPlay.ts`, `useOptimisticFlip.ts`, `usePresidentOptimisticPlay.ts`) - one per genuinely distinct action shape, not one per game.
+- Before writing new per-game animation/interaction/chrome code: check whether the base above already covers it, or is a small, obviously-generalizable extension of something it already does. Only write game-specific code when the rule/interaction itself differs, as with Président's hand above.
+
+### Card games - simulate instant/local feel online
+- Every card game's table (online, ad-hoc/P2P, or any mode with a server round trip) MUST make its own player's move feel as instant as local pass-and-play, exactly like the offline/bot mode already does. A tap must visibly react on the same frame, never wait for the network response before showing anything.
+- Do this by reflecting the local player's own action in the UI immediately (optimistically), then reconciling with the server's real state once it arrives - rolling back only on an actual failure.
+- Reuse the existing shared hooks instead of re-implementing this per game - one per genuinely distinct action shape (see "shared base" above), not one per game:
+  - `lib/client/useOptimisticPlay.ts` for any turn-based "play a known card from my hand" action (Coinche's `GameTable`, Bouilla's `BouillaTable`).
+  - `lib/client/usePresidentOptimisticPlay.ts` for Président's "play a 1-4 card combo, or pass" action - shaped for combos and its own select-then-confirm hand UX instead of one bare card tapped straight out of hand.
+  - `lib/client/useOptimisticFlip.ts` for la Bataille Corse's "flip my own hidden top card" action - the value is unknown even to its owner, so only *that a flip happened* is simulated instantly (stock shrinks, a face-down placeholder lands center-table); the real face still waits for the server.
+- A brand-new action shape that doesn't fit any of the three still needs its own instant local simulation - do not ship a card-game action that only updates the tapping player's own screen after a server round trip completes.
+- This does not apply to reflecting an *opponent's* move: that is genuinely unknown until the network/broadcast delivers it, and cannot be simulated.
+
 ---
 
 ## 7. Before Acting

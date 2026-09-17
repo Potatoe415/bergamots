@@ -7,6 +7,7 @@ import { formatText, useI18n } from "@/lib/client/i18n";
 import type { ReactionPick, TableReaction } from "@/lib/client/reactions";
 import type { GameView } from "@/lib/server/view";
 import { CssVarProbe, useCssVarPx } from "@/lib/client/useCssVarPx";
+import { useOptimisticFlip } from "@/lib/client/useOptimisticFlip";
 import { CardBack, PlayingCard } from "./PlayingCard";
 import { EmojiButton } from "./EmojiButton";
 import { ReactionBubble } from "./ReactionBubble";
@@ -149,7 +150,7 @@ export function BataillecorseTable({
   const mySeat = gv.mySeat!;
   const opponentSeat = mySeat === 0 ? 1 : 0;
   const [panelOpen, setPanelOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const { myTurnToFlip, pendingFlip, optimisticStockCount, flip: tapFlip } = useOptimisticFlip(view, mySeat, actions.onFlip);
   const [myReactionMs, setMyReactionMs] = useState<number | null>(null);
   const windowSeenAtRef = useWindowSeenAtRef(view.slapWindow);
   const reactionHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -165,18 +166,7 @@ export function BataillecorseTable({
   const pileEnterDirection = usePileEnterDirection(view);
   const slapWindowUrgent = useSlapWindowUrgent(view.slapWindow);
   const opponentReactionMs = useOpponentReactionMs(view.lastPileWin, opponentSeat);
-  const myTurnToFlip = view.phase === "playing" && view.turn === mySeat && view.slapWindow === null;
   const owesTribute = view.tribute?.seat === mySeat;
-
-  async function tapFlip() {
-    if (!myTurnToFlip || busy) return;
-    setBusy(true);
-    try {
-      await actions.onFlip();
-    } finally {
-      setBusy(false);
-    }
-  }
 
   async function tapSlap() {
     if (view.phase !== "playing") return;
@@ -203,7 +193,7 @@ export function BataillecorseTable({
           ‹
         </Link>
         <p className="rounded-full bg-[var(--surface-overlay)]/70 px-3 py-1 text-xs font-medium text-[var(--card-face)]/70" data-id="bataillecorse-stock-tally">
-          {view.myStockCount} — {view.opponentStockCount}
+          {optimisticStockCount} — {view.opponentStockCount}
         </p>
         <GameInfoButton label={t("gameInfo")} onClick={() => setPanelOpen(true)} />
       </header>
@@ -246,7 +236,7 @@ export function BataillecorseTable({
                 : "bg-white/5 ring-1 ring-white/20",
             ].join(" ")}
           >
-            <PileStack cards={view.pile} enterFrom={pileEnterDirection} />
+            <PileStack cards={view.pile} enterFrom={pileEnterDirection} pendingSelfFlip={pendingFlip} />
           </button>
 
           <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
@@ -286,11 +276,11 @@ export function BataillecorseTable({
             </p>
           )}
           <StockPile
-            count={view.myStockCount}
+            count={optimisticStockCount}
             dataId="bataillecorse-my-stock"
             scale={1.5}
             onClick={tapFlip}
-            disabled={!myTurnToFlip || busy}
+            disabled={!myTurnToFlip || pendingFlip}
           />
         </div>
 
@@ -422,11 +412,25 @@ function cardKey(card: PlayerView["pile"][number]): string {
 /** The center pile: the current top card slides in from whichever seat just
  *  played it (`played-card-enter`, same animation every other game's table
  *  uses - see `TrickStage.tsx`), while the 1-2 cards behind it sit scattered
- *  and dimmed, always at least 2 of them visible when available. */
-function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom: EnterDirection }) {
+ *  and dimmed, always at least 2 of them visible when available.
+ *
+ *  `pendingSelfFlip`: the instant the local player taps their own stock (see
+ *  `useOptimisticFlip`), a face-down card lands here right away - simulating
+ *  the flip landing immediately instead of leaving the pile visibly frozen
+ *  until the network round trip resolves. It is removed the moment the
+ *  server's real card takes its place. */
+function PileStack({
+  cards,
+  enterFrom,
+  pendingSelfFlip,
+}: {
+  cards: PlayerView["pile"];
+  enterFrom: EnterDirection;
+  pendingSelfFlip?: boolean;
+}) {
   const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const shown = cards.slice(-3);
-  if (shown.length === 0) {
+  if (shown.length === 0 && !pendingSelfFlip) {
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
   return (
@@ -460,6 +464,15 @@ function PileStack({ cards, enterFrom }: { cards: PlayerView["pile"]; enterFrom:
           </div>
         );
       })}
+      {pendingSelfFlip && (
+        <div
+          className="absolute left-0 top-0 played-card-enter will-change-transform"
+          style={{ ...playedCardEnterStyle("bottom"), zIndex: shown.length }}
+          data-id="bataillecorse-pile-pending-flip"
+        >
+          <CardBack size="md" />
+        </div>
+      )}
     </div>
   );
 }
