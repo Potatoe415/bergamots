@@ -38,6 +38,7 @@ const PLAYER_META = CONFIG.players;
 const BONUS_CONFIG = CONFIG.bonus;
 const ROBOT_CONFIG = CONFIG.robot;
 const STORAGE_KEY = "yatzy-online-session";
+const LOCAL_GAME_STORAGE_KEY = "yatzy-local-game-session";
 const RULE_SETTINGS_STORAGE_KEY = "yatzy-rule-settings";
 const REVERSE_SELECTION_STORAGE_KEY = "yatzy-reverse-selection";
 const EXTRA_ROLL_EASTER_EGG_STORAGE_KEY = "yatzy-extra-roll-easter-egg";
@@ -220,7 +221,14 @@ const renderer = window.YATZY_RENDER.createRenderer({
   scheduleRobotTurnIfNeeded,
   scheduleDefeatModeTurnIfNeeded
 });
-const render = renderer.render;
+// Wrapped (not just renderer.render) so every state mutation that leads to a
+// render also keeps the local-game persistence snapshot in sync, the same
+// way session.js keeps yatzy-online-session in sync on every state change it
+// causes. See persistLocalGameState().
+const render = () => {
+  renderer.render();
+  persistLocalGameState();
+};
 
 // session.js owns matchmaking wiring, remote-state sync and session
 // persistence. It shares mutable game state through `state` directly and
@@ -271,6 +279,7 @@ const leaveCurrentGame = session.leaveCurrentGame;
 const syncOnlineGameState = session.syncOnlineGameState;
 const clearPersistedOnlineSession = session.clearPersistedOnlineSession;
 
+restoreLocalGameState();
 render();
 restoreOnlineSession();
 handleDeepLinkJoin();
@@ -654,6 +663,63 @@ function persistDefeatModeEnabled(enabled) {
 function readPersistedDefeatModeEnabled() {
   const stored = STORAGE.readJSON(DEFEAT_MODE_ENABLED_STORAGE_KEY);
   return stored === null ? true : Boolean(stored);
+}
+
+// Local games (solo vs robot, or two players passing the same device) had no
+// resume mechanism at all: unlike an online match (yatzy-online-session,
+// restored via restoreOnlineSession()), refreshing mid-game always dropped
+// back to the splash screen. This mirrors that same persist/restore/clear
+// pattern for local games. Only the fields needed to rebuild the board are
+// stored; transient UI state (pending selection, in-flight animations...)
+// intentionally comes back from createInitialState()'s own defaults instead.
+function persistLocalGameState() {
+  if (state.screen !== "game" || isOnlineGame()) {
+    clearPersistedLocalGameState();
+    return;
+  }
+
+  STORAGE.writeJSON(LOCAL_GAME_STORAGE_KEY, {
+    mode: state.setup.mode,
+    players: state.players,
+    dice: state.dice,
+    rollsRemaining: state.rollsRemaining,
+    turnPhase: state.turnPhase,
+    scores: state.scores,
+    currentPlayerIndex: state.currentPlayerIndex,
+    defeatMode: state.defeatMode,
+    gameOver: state.gameOver,
+    winner: state.winner
+  });
+}
+
+function clearPersistedLocalGameState() {
+  STORAGE.remove(LOCAL_GAME_STORAGE_KEY);
+}
+
+function readPersistedLocalGameState() {
+  const parsed = STORAGE.readJSON(LOCAL_GAME_STORAGE_KEY);
+  return parsed && (parsed.mode === "solo" || parsed.mode === "robot") ? parsed : null;
+}
+
+function restoreLocalGameState() {
+  const persisted = readPersistedLocalGameState();
+  if (!persisted) {
+    return;
+  }
+
+  const freshState = createInitialState();
+  freshState.screen = "game";
+  freshState.setup.mode = persisted.mode;
+  freshState.players = persisted.players;
+  freshState.dice = persisted.dice;
+  freshState.rollsRemaining = persisted.rollsRemaining;
+  freshState.turnPhase = persisted.turnPhase;
+  freshState.scores = persisted.scores;
+  freshState.currentPlayerIndex = persisted.currentPlayerIndex;
+  freshState.defeatMode = persisted.defeatMode;
+  freshState.gameOver = persisted.gameOver;
+  freshState.winner = persisted.winner;
+  Object.assign(state, freshState);
 }
 
 async function handleRestart() {
