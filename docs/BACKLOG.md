@@ -5,13 +5,12 @@ Status: Living document. Always reflects current state.
 ---
 
 ## Now
-- [ ] Finish the `coinchapp` Vercel repoint. The new project **`coinchapp-monorepo`** (linked to `Potatoe415/bergamots`, confirmed via dashboard screenshot — it already auto-deployed the latest `main` commit) exists and is correctly created, despite the Vercel MCP tool itself never being able to see it (`get_project`/`list_projects` 404 on it every time — the connected token is scoped to the single old `coinchapp` project only, confirmed twice; this is a tool/access limitation, not a project problem). Remaining, manual in the Vercel dashboard (agent cannot see this project to verify):
-  1. Settings → General → confirm Root Directory is `apps/coinchapp` (set at creation, verify it stuck).
-  2. Settings → Environment Variables → copy these 4 from the old `coinchapp` project: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GIPHY_API_KEY` (names only — see `apps/coinchapp/.env.example`; values never read by the agent).
-  3. Redeploy, then visit the `coinchapp-monorepo.vercel.app` preview and test `/`, `/coinche`, `/bouilla`, `/president`, `/bataillecorse`.
-  4. Once confirmed working: old `coinchapp` project → Settings → Domains → move `coinchapp.vercel.app` to `coinchapp-monorepo`.
-  5. Decide what to do with the now-empty old `coinchapp` Vercel project (delete or leave dormant).
-- [ ] Do the same for `tranquil`, once the separate `user-vercel` MCP connection is fixed (still in an error state) or manually — the agent has zero Vercel visibility into `tranquil` today.
+- [ ] Finish the `coinchapp` Vercel repoint. User provided a full-team-access Vercel token (2026-09-17; **was pasted in chat — rotate it once this migration is done**), which fixed the agent's earlier scoped-token limitation. Done so far on `coinchapp-monorepo` (`prj_QjePJaSpQOnJt4AHWJfvv8agqR51`, linked to `Potatoe415/bergamots`): Root Directory confirmed `apps/coinchapp`; `NEXT_PUBLIC_SUPABASE_ANON_KEY` + `NEXT_PUBLIC_SUPABASE_URL` copied from the old `coinchapp` project via API (values never printed); `/` and `/coinche` verified 200 on the current deployment. Remaining:
+  1. **User must add `GIPHY_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` manually** on `coinchapp-monorepo` → Settings → Environment Variables (Production + Preview) — Vercel's "sensitive" var type on the old project cannot be read back via API by anyone, even with a full-access token, so the agent cannot copy these two.
+  2. Once added: trigger a fresh deployment (env vars only apply to new builds) and verify the Supabase/Giphy-backed flows (create a game, GIF picker), not just static page loads.
+  3. Once confirmed: old `coinchapp` project → Settings → Domains → move `coinchapp.vercel.app` to `coinchapp-monorepo`.
+  4. Decide what to do with the now-empty old `coinchapp` Vercel project (delete or leave dormant).
+- [ ] Do the same for `tranquil` (`prj_FnorlK5RzjApMxvvVAXIhEvlxBdF`) — not started yet, same approach now unblocked by the full-access token.
 - [ ] Archive the original `coinchapp` and `tranquil` GitHub repos — only after the item above is verified live in production, per the user's 2026-09-17 decision to archive (not delete) them once migrated.
 - [ ] Confirm `/admin` renders and logs in from a real browser. The 2026-08-30 fix was verified at HTTP level only (every resource 200 with the right MIME, CSP checked against the full resource list) because the browser MCP would not register, so the render and the login round-trip are unconfirmed in a browser.
 - [ ] Delete the verification row from the live test: `delete from public.muchogames_events where game_id = '__verification__';`. Harmless, but it currently sits at the top of the `/admin` ranking.
