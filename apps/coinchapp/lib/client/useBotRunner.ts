@@ -8,24 +8,36 @@ import type { GameView } from "@/lib/server/view";
 import type { BotPunch } from "@/lib/coinche";
 import type { PlayerView as CoinchePlayerView } from "@/lib/coinche";
 import type { PlayerView as BouillaPlayerView } from "@/lib/bouilla";
+import type { PlayerView as PresidentPlayerView, PresidentBotAction } from "@/lib/president";
 import { DEFAULT_BOT_THINK_MS } from "@/lib/supabase/types";
 import { decideBouillaAction, type BouillaBotAction } from "./bouillaEngineAdapter";
+import { decidePresidentAction } from "./presidentEngineAdapter";
 import type { BotAction } from "./bot";
 import { wait } from "./cardGameDriver";
 import { useBotWorker } from "./useBotWorker";
 
-function toMove(action: BotAction | BouillaBotAction): BotMove {
+export function toMove(action: BotAction | BouillaBotAction): BotMove {
   if (action.action === "PLAY") return { kind: "play", card: action.card };
   if (action.action === "BID") return { kind: "bid", type: "bid", value: action.value, suit: action.suit };
   return { kind: "bid", type: "pass" };
+}
+
+/** Président-only: its `PresidentBotAction` shares the bare `{ action: "PASS" }`
+ *  shape with Coinche's bidding pass, so it needs its own mapping instead of
+ *  reusing `toMove` above. */
+export function toPresidentMove(action: PresidentBotAction): BotMove {
+  if (action.action === "PASS") return { kind: "pass" };
+  if (action.action === "COMBO") return { kind: "combo", combo: action.combo };
+  return { kind: "exchangeReturn", cards: action.cards };
 }
 
 /** Is the seat whose turn it is expected to act right now, for the active game type?
  *  La Bataille Corse has its own dedicated runner (`useBataillecorseBotRunner`,
  *  flip/slap instead of a card/bid) and must never fall into this Coinche-brain
  *  default below. */
-function isActiveTurn(gameType: GameView["gameType"], phase: string): boolean {
+export function isActiveTurn(gameType: GameView["gameType"], phase: string): boolean {
   if (gameType === "bataillecorse") return false;
+  if (gameType === "president") return phase === "playing" || phase === "exchange";
   return gameType === "bouilla" ? phase === "playing" : phase === "bidding" || phase === "playing";
 }
 
@@ -136,15 +148,20 @@ export function useBotRunner(
     void (async () => {
       const t0 = performance.now();
       try {
-        // Bouilla's heuristic bot is instant (no search to overlap): pace it with
-        // `thinkMs` like the local/ad-hoc driver does, so "reflexion" applies to
-        // both games (see GameSettings.botThinkMs).
-        const action =
-          gv.gameType === "bouilla"
-            ? (await Promise.all([decideBouillaAction(botView as BouillaPlayerView), wait(thinkMs)]))[0]
-            : await decideCoinche(botView as CoinchePlayerView);
+        // Bouilla's and Président's heuristic bots are instant (no search to
+        // overlap): pace them with `thinkMs` like the local/ad-hoc driver does,
+        // so "reflexion" applies to every game (see GameSettings.botThinkMs).
+        let move: BotMove;
+        if (gv.gameType === "bouilla") {
+          const [action] = await Promise.all([decideBouillaAction(botView as BouillaPlayerView), wait(thinkMs)]);
+          move = toMove(action);
+        } else if (gv.gameType === "president") {
+          const [action] = await Promise.all([decidePresidentAction(botView as PresidentPlayerView), wait(thinkMs)]);
+          move = toPresidentMove(action);
+        } else {
+          move = toMove(await decideCoinche(botView as CoinchePlayerView));
+        }
         const t1 = performance.now();
-        const move = toMove(action);
         let submitServerMs: number | null = null;
         if (debug) {
           submitServerMs = await submitBotMoveTimed(gameId, turn as Seat, move);
