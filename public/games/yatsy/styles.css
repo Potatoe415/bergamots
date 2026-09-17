@@ -603,7 +603,8 @@ select {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .robot-toggle,
@@ -619,6 +620,7 @@ select {
   letter-spacing: 0.03em;
   cursor: pointer;
   box-shadow: 0 0.2rem 0 rgba(87, 99, 110, 0.14);
+  flex-shrink: 0;
 }
 
 .robot-toggle.is-active {
@@ -813,8 +815,12 @@ select {
 
 h1 {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 2.6rem);
+  font-size: clamp(1.5rem, 5vw, 2.6rem);
   line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .score-summary {
@@ -948,7 +954,8 @@ body.player-two-turn .selection-action.is-primary {
 
 .score-group {
   display: grid;
-  grid-template-columns: minmax(5.25rem, 1.08fr) minmax(4rem, 0.92fr) minmax(4rem, 0.92fr);
+  grid-template-columns: 1.08fr 0.92fr 0.92fr;
+  min-width: 0;
 }
 
 .score-group + .score-group {
@@ -2085,9 +2092,7 @@ body.player-two-turn .player-cell.valid {
 
   .header-title {
     flex-wrap: nowrap;
-    flex: 0 1 auto;
     gap: 0.3rem;
-    min-width: 0;
   }
 
   h1 {

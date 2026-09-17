@@ -1,4 +1,4 @@
-const CACHE_NAME = "yatzy-offline-v33";
+const CACHE_NAME = "yatzy-offline-v34";
 const APP_ASSETS = [
   "./",
   "./index.html",
