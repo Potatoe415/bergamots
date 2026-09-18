@@ -148,7 +148,7 @@ const BATAILLECORSE_RULES = {
       },
       {
         heading: "La fausse tape",
-        body: "Taper alors qu'aucune tape n'était valable coûte une carte : elle est glissée face cachée sous le tas, sans être récupérée.",
+        body: "Taper alors qu'aucune tape n'était valable : une croix rouge WRONG s'affiche, et tout le tas va à l'adversaire.",
       },
       {
         heading: "Fin de la partie",
@@ -173,7 +173,7 @@ const BATAILLECORSE_RULES = {
       },
       {
         heading: "False slap",
-        body: "Slapping when no pattern is actually there costs a card: it is slid face-down under the pile, without being won back.",
+        body: "Slapping when no pattern is actually there: a red WRONG cross appears, and the whole pile goes to the opponent.",
       },
       {
         heading: "End of the game",

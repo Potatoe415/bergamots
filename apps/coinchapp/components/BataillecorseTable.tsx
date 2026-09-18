@@ -151,10 +151,8 @@ function useWindowSeenAtRef(slapWindow: PlayerView["slapWindow"]): RefObject<{ i
   return ref;
 }
 
-/** `{s}` in `myReactionTimeLabel`/`opponentReactionTimeLabel`/
- *  `reactionTimesLabel` - the reaction time in seconds, 2 decimal places
- *  (e.g. "0,54"): `performance.now()` has sub-millisecond precision, but the
- *  readout is deliberately shown in seconds, not raw ms. */
+/** Seconds, 2 decimals (e.g. "0,54" / "0.54") - `performance.now()` has
+ *  sub-millisecond precision, but the readout is shown in seconds. */
 function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
   const value = (ms / 1000).toFixed(2);
   return locale === "fr" ? value.replace(".", ",") : value;
@@ -164,9 +162,8 @@ function formatReactionSeconds(ms: number, locale: "fr" | "en"): string {
  *  resolved (see `PileWinEvent.reactionMsBySeat`) - `null` once nobody has
  *  won a slap yet, or that seat never claimed (won uncontested via
  *  `resolveStaleSlapWindow`). Diffed by event id so it only (re)appears once
- *  per resolution, auto-hiding after `REACTION_READOUT_MS`. Used both for the
- *  opponent's own under-their-deck readout (local/ad-hoc) and, in online
- *  mode, for both seats' combined readout above the player's own deck. */
+ *  per resolution, auto-hiding after `REACTION_READOUT_MS`. Shown as the
+ *  combined `{mine}s | {opponent}s` readout above the phone-holder's deck. */
 function useSeatReactionMs(lastPileWin: PlayerView["lastPileWin"], seat: 0 | 1): number | null {
   const [value, setValue] = useState<number | null>(null);
   const seenIdRef = useRef<number | undefined>(undefined);
@@ -199,6 +196,37 @@ function useSlapWindowUrgent(slapWindow: PlayerView["slapWindow"]): boolean {
   return slapWindow !== null && slapWindow.id === urgentWindowId;
 }
 
+/** `{mine}s | {opponent}s` above the phone-holder's deck. The shorter time
+ *  glows yellow; a missing claim (uncontested slap) shows an en-dash. */
+function ReactionTimesReadout({
+  mineMs,
+  opponentMs,
+  locale,
+}: {
+  mineMs: number | null;
+  opponentMs: number | null;
+  locale: "fr" | "en";
+}) {
+  if (mineMs === null && opponentMs === null) return null;
+  const mineFast = mineMs !== null && (opponentMs === null || mineMs <= opponentMs);
+  const oppFast = opponentMs !== null && (mineMs === null || opponentMs <= mineMs);
+  const chip = (ms: number | null) => (ms === null ? "–" : `${formatReactionSeconds(ms, locale)}s`);
+  return (
+    <p
+      className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg"
+      data-id="bataillecorse-reaction-times"
+    >
+      <span className={mineFast ? "bataillecorse-reaction-fast" : undefined} data-id="bataillecorse-reaction-time-mine">
+        {chip(mineMs)}
+      </span>
+      <span className="px-2 text-white/45">|</span>
+      <span className={oppFast ? "bataillecorse-reaction-fast" : undefined} data-id="bataillecorse-reaction-time-opponent">
+        {chip(opponentMs)}
+      </span>
+    </p>
+  );
+}
+
 export function BataillecorseTable({
   gv,
   actions,
@@ -214,21 +242,9 @@ export function BataillecorseTable({
   const view = gv.view!;
   const mySeat = gv.mySeat!;
   const opponentSeat = mySeat === 0 ? 1 : 0;
-  // `selfAvatar` is only ever passed by `GameRoom` (server-backed online
-  // mode) - local/ad-hoc callers omit it entirely, same signal already used
-  // below to gate the self-name label.
-  const isOnline = selfAvatar !== undefined;
   const [panelOpen, setPanelOpen] = useState(false);
   const { myTurnToFlip, pendingFlip, optimisticStockCount, flip: tapFlip } = useOptimisticFlip(view, mySeat, actions.onFlip);
-  const [myReactionMs, setMyReactionMs] = useState<number | null>(null);
   const windowSeenAtRef = useWindowSeenAtRef(view.slapWindow);
-  const reactionHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
-    };
-  }, []);
 
   const pileWinFlash = useFlash(view.lastPileWin?.id);
   const falseSlapFlash = useFlash(view.lastFalseSlap?.id);
@@ -241,35 +257,16 @@ export function BataillecorseTable({
   const eventReactionMsMine = useSeatReactionMs(view.lastPileWin, mySeat as 0 | 1);
   const winnerFireSeat = useWinnerFireSeat(view.lastPileWin);
   const owesTribute = view.tribute?.seat === mySeat;
-  const myReactionLabel =
-    myReactionMs !== null ? formatText(t("myReactionTimeLabel"), { s: formatReactionSeconds(myReactionMs, locale) }) : null;
-  const opponentReactionLabel =
-    opponentReactionMs !== null
-      ? formatText(t("opponentReactionTimeLabel"), { player: playerName(gv, opponentSeat, locale), s: formatReactionSeconds(opponentReactionMs, locale) })
-      : null;
-  // Online only: both seats' reaction time, merged into one readout above
-  // the player's own deck instead of one per side (see docs/DECISIONS.md).
-  // Sourced from the server-confirmed `reactionMsBySeat`, not the instant
-  // local `myReactionMs` (that one also fires on a false slap, which has no
-  // resolved reaction time to compare against the opponent's).
-  const combinedReactionLabel =
-    isOnline && (eventReactionMsMine !== null || opponentReactionMs !== null)
-      ? formatText(t("reactionTimesLabel"), {
-          mine: eventReactionMsMine !== null ? formatReactionSeconds(eventReactionMsMine, locale) : "–",
-          opponent: opponentReactionMs !== null ? formatReactionSeconds(opponentReactionMs, locale) : "–",
-        })
-      : null;
+  const [slapTapKey, setSlapTapKey] = useState(0);
+  const slapImpact =
+    pileFlyTarget !== null && (view.lastPileWin?.reason === "slap" || view.lastPileWin?.reason === "falseSlap");
 
   async function tapSlap() {
     if (view.phase !== "playing") return;
+    setSlapTapKey((n) => n + 1);
     const seen = view.slapWindow && windowSeenAtRef.current?.id === view.slapWindow.id ? windowSeenAtRef.current : null;
     const reactionMs = seen ? performance.now() - seen.perfMs : 0;
     const observedWindowId = view.slapWindow?.id ?? view.lastClosedSlapWindowId ?? null;
-
-    setMyReactionMs(reactionMs);
-    if (reactionHideTimerRef.current) clearTimeout(reactionHideTimerRef.current);
-    reactionHideTimerRef.current = setTimeout(() => setMyReactionMs(null), REACTION_READOUT_MS);
-
     await actions.onSlap(reactionMs, observedWindowId);
   }
 
@@ -308,7 +305,6 @@ export function BataillecorseTable({
           stockCount={view.opponentStockCount}
           isTurn={view.turn === opponentSeat}
           reaction={reactions?.get(opponentSeat)}
-          reactionLabel={isOnline ? null : opponentReactionLabel}
           fire={winnerFireSeat === opponentSeat}
           dataId="bataillecorse-opponent-seat"
           className="absolute inset-x-0 top-[calc(var(--table-hud-top)+3.5rem)]"
@@ -324,7 +320,7 @@ export function BataillecorseTable({
             disabled={view.phase !== "playing"}
             aria-label={t("slapPileButton")}
             className={[
-              "flex h-[var(--slap-circle-size)] w-[var(--slap-circle-size)] items-center justify-center rounded-full transition-all active:scale-95",
+              "relative flex h-[var(--slap-circle-size)] w-[var(--slap-circle-size)] items-center justify-center rounded-full transition-all active:scale-95",
               slapWindowUrgent
                 ? "animate-pulse bg-[var(--accent-red)]/15 ring-4 ring-[var(--accent-red)]"
                 : "bg-white/5 ring-1 ring-white/20",
@@ -334,7 +330,10 @@ export function BataillecorseTable({
               cards={displayPile}
               enterFrom={pileEnterDirection}
               fly={pileFlyTarget ? { key: view.lastPileWin!.id, toward: pileFlyTarget } : undefined}
+              slapImpact={slapImpact}
+              tapHitKey={slapTapKey}
             />
+            {falseSlapFlash && view.lastFalseSlap && <FalseSlapMark label={t("falseSlapStamp")} />}
           </button>
 
           <div className="flex min-h-[1.75rem] flex-col items-center gap-1.5">
@@ -349,7 +348,7 @@ export function BataillecorseTable({
                 })}
               </p>
             )}
-            {pileWinFlash && view.lastPileWin && (
+            {pileWinFlash && view.lastPileWin && view.lastPileWin.reason !== "falseSlap" && (
               <p className="rounded-full bg-[var(--accent-yellow)] px-4 py-1.5 text-center text-xs font-black text-[var(--surface)]" data-id="bataillecorse-pile-win-flash">
                 {formatText(t("pileWonBanner"), {
                   player: view.lastPileWin.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
@@ -358,7 +357,7 @@ export function BataillecorseTable({
               </p>
             )}
             {falseSlapFlash && view.lastFalseSlap && (
-              <p className="rounded-full bg-[var(--accent-red)] px-4 py-1.5 text-center text-xs font-black text-[var(--card-face)]" data-id="bataillecorse-false-slap-flash">
+              <p className="sr-only" data-id="bataillecorse-false-slap-flash">
                 {formatText(t("falseSlapBanner"), {
                   player: view.lastFalseSlap.seat === mySeat ? t("you") : playerName(gv, opponentSeat, locale),
                 })}
@@ -368,30 +367,16 @@ export function BataillecorseTable({
         </div>
 
         <div className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-1.5" data-id="bataillecorse-self-seat">
+          {/* `selfAvatar` is only passed by `GameRoom` (online). */}
           {selfAvatar !== undefined && (
             <p className="text-xs font-bold uppercase text-[var(--card-face)]/80" data-id="bataillecorse-self-name">
               {playerName(gv, mySeat, locale)}
             </p>
           )}
-          {/* Above the deck (toward the pile), not below. Local/ad-hoc: each
-              side gets its own readout (opponent's sits below theirs
-              instead, see `SeatRow`). Online: both seats' times are merged
-              into this one spot instead (`combinedReactionLabel`), in fire
-              yellow, since that is the only place either player looks. */}
-          {isOnline
-            ? combinedReactionLabel && (
-                <span
-                  className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-[var(--accent-yellow)] shadow-lg"
-                  data-id="bataillecorse-reaction-times"
-                >
-                  {combinedReactionLabel}
-                </span>
-              )
-            : myReactionLabel && (
-                <span className="pointer-events-none rounded-full bg-black/55 px-4 py-1.5 text-xs font-bold text-white shadow-lg" data-id="bataillecorse-my-reaction-time">
-                  {myReactionLabel}
-                </span>
-              )}
+          {/* Both seats' times, always above the phone-holder's deck
+              (`0.75s | 0.52s`, opponent on the right). The shorter one
+              glows yellow (see docs/DECISIONS.md). */}
+          <ReactionTimesReadout mineMs={eventReactionMsMine} opponentMs={opponentReactionMs} locale={locale} />
           <StockPile
             count={optimisticStockCount}
             dataId="bataillecorse-my-stock"
@@ -417,7 +402,6 @@ function SeatRow({
   stockCount,
   isTurn,
   reaction,
-  reactionLabel,
   fire,
   dataId,
   className,
@@ -426,10 +410,6 @@ function SeatRow({
   stockCount: number;
   isTurn: boolean;
   reaction?: TableReaction;
-  /** The opponent's own reaction-time readout, pre-formatted by the parent
-   *  (needs `t`/`locale`, which this presentational row doesn't otherwise
-   *  need) - shown right under their deck, same as the player's own. */
-  reactionLabel?: string | null;
   fire?: boolean;
   dataId: string;
   className: string;
@@ -438,11 +418,6 @@ function SeatRow({
     <div className={`flex flex-col items-center gap-1.5 ${className}`} data-id={dataId}>
       <p className={`text-xs font-bold uppercase ${isTurn ? "underline decoration-2" : ""}`}>{label}</p>
       <StockPile count={stockCount} fire={fire} />
-      {reactionLabel && (
-        <span className="pointer-events-none rounded-full bg-black/40 px-3 py-1 text-[11px] font-bold text-white/90 shadow-lg" data-id="bataillecorse-opponent-reaction-time">
-          {reactionLabel}
-        </span>
-      )}
       {reaction && <ReactionBubble reaction={reaction} size="md" dataId="bataillecorse-opponent-reaction" />}
     </div>
   );
@@ -549,27 +524,43 @@ const PILE_FLY_DISTANCE_SVH = 46;
  *  `fly`: set for that same lingering window when the win is the *current*
  *  one being shown - animates the whole gathered stack sweeping toward
  *  whichever seat just won it (up = opponent's stock, down = the player's
- *  own) and shrinking away, instead of just vanishing. Keyed by the win
- *  event's id so a second, later win restarts the sweep rather than being a
- *  no-op remount. */
+ *  own) and shrinking away, instead of just vanishing. A slap (or false
+ *  slap) uses `.bataillecorse-pile-fly-slap` instead: the hold is a hit on
+ *  the cards, then the same sweep. Keyed by the win event's id so a second,
+ *  later win restarts the sweep rather than being a no-op remount. That
+ *  remount must NOT replay `.played-card-enter` on the
+ *  top card, or the last flip looks like it is played a second time the
+ *  instant someone slaps (see `PileCurrentCard`). */
+function pileCardHitClass(tapHitKey: number, slapImpact: boolean, flying: boolean): string | undefined {
+  if (flying && slapImpact) return "bataillecorse-pile-card-slam";
+  if (flying || tapHitKey === 0) return undefined;
+  return tapHitKey % 2 === 1 ? "bataillecorse-pile-card-hit" : "bataillecorse-pile-card-hit-alt";
+}
+
 function PileStack({
   cards,
   enterFrom,
   fly,
+  slapImpact,
+  tapHitKey,
 }: {
   cards: PlayerView["pile"];
   enterFrom: EnterDirection;
   fly?: { key: number; toward: "up" | "down" };
+  slapImpact?: boolean;
+  tapHitKey?: number;
 }) {
   const { probeRef, px: cardW, probeStyle } = useCssVarPx("--card-md-w", 56);
   const shown = cards.slice(-3);
   if (shown.length === 0) {
     return <p className="text-sm italic text-[var(--card-face)]/70">{"—"}</p>;
   }
+  const hitClass = pileCardHitClass(tapHitKey ?? 0, Boolean(slapImpact), Boolean(fly));
+  const showShock = Boolean((fly && slapImpact) || (!fly && (tapHitKey ?? 0) > 0));
   return (
     <div
       key={fly ? `fly-${fly.key}` : "pile"}
-      className={`relative aspect-[2/3] w-[var(--card-md-w)] ${fly ? "bataillecorse-pile-fly" : ""}`}
+      className={`relative aspect-[2/3] w-[var(--card-md-w)] ${fly ? (slapImpact ? "bataillecorse-pile-fly-slap" : "bataillecorse-pile-fly") : ""}`}
       data-id="bataillecorse-pile"
       style={
         {
@@ -579,6 +570,22 @@ function PileStack({
       }
     >
       <CssVarProbe probeRef={probeRef} probeStyle={probeStyle} />
+      {showShock && (
+        <>
+          <span
+            key={fly ? `flash-fly-${fly.key}` : `flash-tap-${tapHitKey}`}
+            className="bataillecorse-pile-slap-flash"
+            data-id="bataillecorse-pile-slap-flash"
+            aria-hidden="true"
+          />
+          <span
+            key={fly ? `shock-fly-${fly.key}` : `shock-tap-${tapHitKey}`}
+            className="bataillecorse-pile-slap-shock"
+            data-id="bataillecorse-pile-slap-shock"
+            aria-hidden="true"
+          />
+        </>
+      )}
       {shown.map((card, i) => {
         const isTop = i === shown.length - 1;
         const depthFromTop = shown.length - 1 - i;
@@ -591,22 +598,65 @@ function PileStack({
             style={isTop ? { zIndex: i } : { transform: `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rot}deg)`, zIndex: i }}
             data-id={isTop ? "bataillecorse-pile-current" : `bataillecorse-pile-history-${depthFromTop}`}
           >
-            {isTop ? (
-              <div className="played-card-enter will-change-transform" style={playedCardEnterStyle(enterFrom)}>
-                <PlayingCard card={card} size="md" dataId="bataillecorse-pile-current-card" />
-              </div>
-            ) : (
-              <PlayingCard
-                card={card}
-                size="md"
-                dimmed
-                showRightIndex
-                dataId={`bataillecorse-pile-history-card-${depthFromTop}`}
-              />
-            )}
+            <div className={hitClass}>
+              {isTop ? (
+                <PileCurrentCard card={card} enterFrom={enterFrom} animateEnter={!fly} />
+              ) : (
+                <PlayingCard
+                  card={card}
+                  size="md"
+                  dimmed
+                  showRightIndex
+                  dataId={`bataillecorse-pile-history-card-${depthFromTop}`}
+                />
+              )}
+            </div>
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Top-of-pile card. The slide-in from the flipping seat is only for a
+ *  genuine new flip: a slap/tribute win remounts `PileStack` to restart the
+ *  fly-away, and replaying the enter animation then looks like the last
+ *  card was played twice. */
+function PileCurrentCard({
+  card,
+  enterFrom,
+  animateEnter,
+}: {
+  card: PlayerView["pile"][number];
+  enterFrom: EnterDirection;
+  animateEnter: boolean;
+}) {
+  const face = <PlayingCard card={card} size="md" dataId="bataillecorse-pile-current-card" />;
+  if (!animateEnter) return face;
+  return (
+    <div className="played-card-enter will-change-transform" style={playedCardEnterStyle(enterFrom)}>
+      {face}
+    </div>
+  );
+}
+
+/** Full-size stamp over the slap circle: a stylized red cross plus WRONG,
+ *  shown for `FLASH_MS` after a false slap. Pointer-events none so it never
+ *  eats the next tap. */
+function FalseSlapMark({ label }: { label: string }) {
+  return (
+    <div
+      className="bataillecorse-false-slap-mark pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
+      data-id="bataillecorse-false-slap-mark"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 100 100" className="h-full w-full text-[var(--accent-red)] drop-shadow-[0_3px_0_rgba(0,0,0,0.65)]" aria-hidden="true">
+        <line x1="18" y1="18" x2="82" y2="82" stroke="currentColor" strokeWidth="12" strokeLinecap="round" />
+        <line x1="82" y1="18" x2="18" y2="82" stroke="currentColor" strokeWidth="12" strokeLinecap="round" />
+      </svg>
+      <span className="absolute text-[clamp(1.25rem,5svmin,2rem)] font-black tracking-[0.2em] text-[var(--accent-red)] drop-shadow-[0_2px_0_rgba(0,0,0,0.55)]">
+        {label}
+      </span>
     </div>
   );
 }

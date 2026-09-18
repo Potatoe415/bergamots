@@ -153,19 +153,23 @@ describe("attemptSlap", () => {
     expect(twice.slapClaims).toEqual([{ seat: 0, reactionMs: 300 }]);
   });
 
-  it("flags a false slap even when the slapper has no stock left to give up", () => {
-    const state = stateWith({ turn: 0, stocks: [[card("3"), card("4")], []], pile: [card("9")] });
+  it("a false slap awards the whole pile to the opponent", () => {
+    const state = stateWith({ turn: 0, stocks: [[card("2")], [card("3"), card("K")]], pile: [card("9"), card("7")] });
     const next = attemptSlap(state, 1, 200);
-    expect(next.slapWindow).toBeNull();
     expect(next.lastFalseSlap).toEqual({ id: 0, seat: 1 });
-    expect(next.pile).toEqual([card("9")]);
+    expect(next.pile).toEqual([]);
+    expect(next.turn).toBe(0);
+    expect(next.lastPileWin).toEqual({ id: 1, seat: 0, cardCount: 2, reason: "falseSlap" });
+    expect(next.stocks[0]).toEqual([card("9"), card("7"), card("2")]);
+    expect(next.stocks[1]).toEqual([card("3"), card("K")]);
   });
 
-  it("a false slap slides one of the slapper's own cards face-down under the pile", () => {
-    const state = stateWith({ turn: 0, stocks: [[card("2")], [card("3"), card("K")]], pile: [card("9")] });
+  it("flags a false slap on an empty pile without moving any stock cards", () => {
+    const state = stateWith({ turn: 0, stocks: [[card("2")], [card("3")]], pile: [] });
     const next = attemptSlap(state, 1, 200);
+    expect(next.lastFalseSlap).toEqual({ id: 0, seat: 1 });
+    expect(next.lastPileWin).toBeNull();
     expect(next.stocks[1]).toEqual([card("3")]);
-    expect(next.pile).toEqual([card("K"), card("9")]);
   });
 
   it("does not penalize a claim for an already-closed window it correctly recognizes as late", () => {
@@ -216,11 +220,12 @@ describe("resolveStaleSlapWindow", () => {
 });
 
 describe("elimination", () => {
-  it("ends the game the instant a seat's stock is emptied by a false-slap penalty (the other seat wins)", () => {
+  it("a false slap does not empty the slapper's stock (the pile goes to the opponent instead)", () => {
     const state = stateWith({ turn: 0, stocks: [[card("2")], [card("3")]], pile: [card("9")] });
     const next = attemptSlap(state, 1, 200);
-    expect(next.phase).toBe("finished");
-    expect(next.winner).toBe(0);
+    expect(next.phase).toBe("playing");
+    expect(next.stocks[1]).toEqual([card("3")]);
+    expect(next.stocks[0]).toEqual([card("9"), card("2")]);
   });
 
   it("ends the game when a flip empties the flipping seat's stock", () => {

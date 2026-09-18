@@ -146,6 +146,235 @@ select option {
   }
 }
 
+/* Slap win: same 3400ms sweep as `.bataillecorse-pile-fly` (HOLD_PILE_MS
+   still covers it) but the hold is a hit — squash, flash, recoil — so the
+   tape reads on the cards themselves before they fly to the winner. */
+.bataillecorse-pile-fly-slap {
+  animation: bataillecorse-pile-fly-slap 3400ms cubic-bezier(0.4, 0, 0.6, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+@keyframes bataillecorse-pile-fly-slap {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1.5) rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  4% {
+    opacity: 1;
+    filter: brightness(2.1) contrast(1.25);
+    transform: scale(2.05) rotate(-11deg) translate3d(0, 5%, 0);
+  }
+
+  10% {
+    opacity: 1;
+    filter: brightness(1.2);
+    transform: scale(1.22) rotate(8deg) translate3d(0, -3%, 0);
+  }
+
+  16% {
+    opacity: 1;
+    filter: brightness(1.55);
+    transform: scale(1.72) rotate(-5deg) translate3d(0, 2%, 0);
+  }
+
+  26% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1.5) rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  100% {
+    opacity: 0;
+    filter: brightness(1);
+    transform: scale(0.4) rotate(0deg) translate3d(0, var(--pile-fly-y, 0px), 0);
+  }
+}
+
+/* Nested so it does not overwrite the pile's scattered history offsets. */
+.bataillecorse-pile-card-hit {
+  animation: bataillecorse-pile-card-hit 480ms cubic-bezier(0.22, 1.5, 0.36, 1) both;
+  will-change: transform, filter;
+}
+
+.bataillecorse-pile-card-hit-alt {
+  animation: bataillecorse-pile-card-hit-alt 480ms cubic-bezier(0.22, 1.5, 0.36, 1) both;
+  will-change: transform, filter;
+}
+
+.bataillecorse-pile-card-slam {
+  animation: bataillecorse-pile-card-slam 520ms cubic-bezier(0.22, 1.4, 0.36, 1) both;
+  will-change: transform, filter;
+}
+
+[data-id="bataillecorse-pile-history-1"] .bataillecorse-pile-card-slam {
+  animation-delay: 28ms;
+}
+
+[data-id="bataillecorse-pile-history-2"] .bataillecorse-pile-card-slam {
+  animation-delay: 52ms;
+}
+
+@keyframes bataillecorse-pile-card-hit {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+
+  16% {
+    filter: brightness(1.9);
+    transform: translate3d(14%, 22%, 0) rotate(-18deg) scale(1.28, 0.78);
+  }
+
+  36% {
+    transform: translate3d(-16%, -10%, 0) rotate(14deg) scale(0.82, 1.18);
+  }
+
+  58% {
+    transform: translate3d(6%, 8%, 0) rotate(-6deg) scale(1.1);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes bataillecorse-pile-card-hit-alt {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+
+  16% {
+    filter: brightness(1.9);
+    transform: translate3d(14%, 22%, 0) rotate(-18deg) scale(1.28, 0.78);
+  }
+
+  36% {
+    transform: translate3d(-16%, -10%, 0) rotate(14deg) scale(0.82, 1.18);
+  }
+
+  58% {
+    transform: translate3d(6%, 8%, 0) rotate(-6deg) scale(1.1);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes bataillecorse-pile-card-slam {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  20% {
+    filter: brightness(1.9);
+    transform: scale(1.28, 0.7) rotate(-14deg);
+  }
+
+  42% {
+    transform: scale(0.82, 1.2) rotate(10deg);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.bataillecorse-pile-slap-shock {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 6;
+  width: 220%;
+  height: 150%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 6px solid var(--card-face);
+  box-shadow: 0 0 22px var(--card-face), 0 0 48px var(--accent-yellow);
+  animation: bataillecorse-pile-slap-shock 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bataillecorse-pile-slap-flash {
+  pointer-events: none;
+  position: absolute;
+  inset: -35%;
+  z-index: 5;
+  border-radius: 1.25rem;
+  background: radial-gradient(circle, rgba(255, 250, 241, 0.9) 0%, rgba(243, 194, 71, 0.45) 42%, transparent 72%);
+  animation: bataillecorse-pile-slap-flash 380ms ease-out both;
+}
+
+@keyframes bataillecorse-pile-slap-shock {
+  0% {
+    opacity: 1;
+    transform: scale(0.22);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(2.15);
+  }
+}
+
+@keyframes bataillecorse-pile-slap-flash {
+  0% {
+    opacity: 1;
+    transform: scale(0.7);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/* False-slap stamp: fills the slap circle (same `--slap-circle-size` box)
+   with a slightly rotated red cross. Duration matches `FLASH_MS`. */
+.bataillecorse-false-slap-mark {
+  animation: bataillecorse-false-slap-mark 1800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes bataillecorse-false-slap-mark {
+  0% {
+    opacity: 0;
+    transform: scale(0.45) rotate(-22deg);
+  }
+  16% {
+    opacity: 1;
+    transform: scale(1.06) rotate(-8deg);
+  }
+  28%,
+  72% {
+    opacity: 1;
+    transform: scale(1) rotate(-6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1) rotate(-6deg);
+  }
+}
+
+/* Shorter of the two reaction times above the phone-holder's deck. */
+.bataillecorse-reaction-fast {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 8px var(--accent-yellow);
+  animation: bataillecorse-reaction-fast 700ms ease-in-out infinite alternate;
+}
+
+@keyframes bataillecorse-reaction-fast {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.45);
+  }
+}
+
 /* La Bataille Corse's winning deck: a flickering flame glow around whichever
    stock just grabbed the pile (`StockPile`'s `fire` prop, driven by
    `useWinnerFireSeat`) - drop-shadow (not box-shadow) so the glow follows the

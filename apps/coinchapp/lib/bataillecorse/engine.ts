@@ -2,11 +2,10 @@ import type { Rng } from "@/lib/cards";
 import { DEFAULT_DECK_SIZE } from "./cards";
 import { deal } from "./deal";
 import { detectSlapPattern } from "./pattern";
-import { resolveTributeEffect } from "./tribute";
+import { otherSeat, resolveTributeEffect } from "./tribute";
 import { SLAP_GRACE_MS, type Card, type DeckSize, type GameState, type PileWinEvent, type Seat, type SlapWindow } from "./types";
 
-export { SLAP_GRACE_MS };
-export { otherSeat } from "./tribute";
+export { SLAP_GRACE_MS, otherSeat };
 
 export function createInitialState(rng: Rng = Math.random, deckSize: DeckSize = DEFAULT_DECK_SIZE): GameState {
   const [a, b] = deal(rng, deckSize);
@@ -51,7 +50,7 @@ function openSlapWindowIfAny(state: GameState, nowMs: number): GameState {
 function awardPile(
   state: GameState,
   winner: Seat,
-  reason: "tribute" | "slap",
+  reason: PileWinEvent["reason"],
   reactionMsBySeat?: PileWinEvent["reactionMsBySeat"],
 ): GameState {
   const cardCount = state.pile.length;
@@ -69,16 +68,15 @@ function awardPile(
   };
 }
 
+/** False slap: the whole center pile goes to the other seat (see
+ *  docs/DECISIONS.md). An empty pile has nothing to award - the foul is
+ *  still flagged so the UI can flash the WRONG mark. */
 function applyFalseSlapPenalty(state: GameState, seat: Seat): GameState {
-  const marked = { lastFalseSlap: { id: state.nextEventId, seat }, nextEventId: state.nextEventId + 1 };
-  const stock = state.stocks[seat];
-  if (stock.length === 0) return { ...state, ...marked };
-  const stocks: [Card[], Card[]] = [[...state.stocks[0]], [...state.stocks[1]]];
-  stocks[seat] = stock.slice(0, -1);
-  // Slid face-down under the pile (the bottom): does not disturb the visible
-  // top, so it can never itself create or hide a slap pattern.
-  const pile = [stock[stock.length - 1], ...state.pile];
-  return checkElimination({ ...state, ...marked, stocks, pile });
+  const marked = { ...state, lastFalseSlap: { id: state.nextEventId, seat }, nextEventId: state.nextEventId + 1 };
+  if (marked.pile.length === 0) return marked;
+  const winner = otherSeat(seat);
+  const awarded = awardPile(marked, winner, "falseSlap");
+  return checkElimination({ ...awarded, turn: winner });
 }
 
 /** `seat` flips the top card of their own stock: a plain lead, or paying the

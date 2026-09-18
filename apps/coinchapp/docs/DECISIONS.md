@@ -588,3 +588,23 @@ Consequences: `pattern.ts`/`pattern.test.ts`/`engine.test.ts` gained the filtere
 Alternatives_Rejected: A brand-new `SlapPattern` label (e.g. `"figureChain"`) for the filtered-match case - rejected, it still resolves to a plain "double" or "sandwich" and no UI ever displays the pattern label itself, so a third label would only add an unused distinction. Keeping the combined online readout sourced from the local, pre-resolution `myReactionMs` - rejected, it fires even on a false slap (no comparable opponent time yet) and isn't the value the server actually confirmed. Applying the merged single-readout layout to local/ad-hoc too - rejected, the user specified "en mode en ligne" and this app already has an established per-mode signal (`selfAvatar`) for exactly this kind of online-only distinction.
 
 ---
+
+## 2026-09-18 - La Bataille Corse: false slap awards the pile + WRONG stamp
+
+Decision: A false slap (tap with no live slap window) now awards the whole center pile to the other seat, same tuck-under as a real slap/tribute win (`awardPile` with new `lastPileWin.reason` `"falseSlap"`), and the slap circle flashes a stylized red cross the size of `--slap-circle-size` with the stamp "WRONG". The previous 1-card-slid-under-the-pile penalty is gone. An empty pile still flags `lastFalseSlap` (so the mark can show) but has nothing to award. The yellow "rafle le tas" pill is suppressed for this reason - the cross is the signal; the pile still flies to the opponent's deck.
+Context: User asked live: tapping when you shouldn't should show a red cross the size of the circle labeled "wrong", and all the center cards should go to the opponent. This contradicts the 2026-09-16 "1 card under the pile" choice (picked then over a 3-card penalty).
+Rationale: Reusing `awardPile` kept the fly-away / fire-glow / turn-passes-to-winner path identical to a real slap win, only the reason and the overlay differ. "WRONG" is shown in both FR and EN as the stamp the user named, not translated to "FAUX". The mark is an overlay inside the existing slap button (absolute `inset-0`), so it is exactly the circle's size without a second hit target.
+Consequences: `PileWinEvent.reason` is now `"tribute" | "slap" | "falseSlap"`. Engine tests for the 1-card penalty were replaced. `RulesModal` FR/EN false-slap section rewritten. `falseSlapStamp` i18n key added. A false slap no longer drains the slapper's stock, so it can no longer eliminate a player by emptying their last card.
+Alternatives_Rejected: Keeping the 1-card penalty and only adding the visual (rejected - user said the cards go to the opponent). Giving the opponent the slapper's whole stock, not just the center pile (rejected - "toutes les cartes" in context is the center tas, matching every other pile-win). Translating the stamp to "FAUX" in French (rejected - user specified the word "wrong").
+
+---
+
+## 2026-09-18 - La Bataille Corse: both reaction times above own deck in every mode, shorter one yellow
+
+Decision: After every resolved slap, both seats' reaction times show in one readout just above the phone-holder's own deck, in **every** mode (local/solo, online, ad-hoc): `{mine}s | {opponent}s` (right side is always the opponent). The shorter time glows `--accent-yellow`; a missing claim (uncontested slap) shows "–". The previous per-mode split (online merged-and-all-yellow vs local two separate per-seat labels) is gone.
+Context: User asked that solo and online both show both times above the holding player's card, formatted `0.75s | 0.52s` with the opponent on the right, and that the shortest time shine yellow. This reverses the 2026-09-17 alternative that kept local/ad-hoc on two separate readouts because the user had then specified "en mode en ligne".
+Rationale: One `ReactionTimesReadout` component, sourced from the already-confirmed `PileWinEvent.reactionMsBySeat` (not the instant local tap, which also fires on a false slap). Per-span styling is why this is no longer a single i18n string. Locale still formats the decimal (FR comma / EN point); the unit is glued on as `s` to match the example.
+Consequences: Removed `myReactionTimeLabel` / `opponentReactionTimeLabel` / `reactionTimesLabel` and the local `myReactionMs` instant readout. `SeatRow` no longer takes a `reactionLabel`. New CSS `.bataillecorse-reaction-fast`. On a tie both sides glow (both are the shortest).
+Alternatives_Rejected: Keeping two per-seat labels in local/ad-hoc (rejected - user said solo and online the same). Shining the whole combined chip yellow (rejected - only the shorter time). Instant local-ms for "mine" before the opponent's claim lands (rejected - that also fires on a false slap and wouldn't be comparable).
+
+---

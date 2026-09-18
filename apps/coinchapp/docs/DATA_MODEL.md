@@ -164,7 +164,10 @@ a single continuous match, `state.phase` is just `"playing" | "finished"`.
   plain `setTimeout` instead, since there is no polled `getView` there.
   Tapping when no window is open (or one just closed and the tap's
   `observedWindowId` doesn't match `state.lastClosedSlapWindowId`) is a false
-  slap: one of the slapper's own stock cards slides face-down under the pile.
+  slap: the whole center `pile` is awarded to the other seat (`lastPileWin.reason`
+  `"falseSlap"`), same tuck-under as a real slap/tribute win, and
+  `lastFalseSlap` flags who fouled so the table can flash the WRONG mark.
+  An empty pile has nothing to award - the foul is still flagged.
 - Either seat's stock reaching 0 cards ends the match immediately - the
   other seat wins (`checkElimination`). No "capot"/sweep scoring: this is a
   single win/lose outcome (`state.winner: Seat | null`).
@@ -259,3 +262,9 @@ Impact: Existing Coinche/Bouilla rows/behavior unchanged. Every read of `game.st
 Change: No SQL change (the `seat between 0 and 3` check already accommodates a 2-seat game; `game_type` is plain `text`). `createGame` now also accepts `game_type: "bataillecorse"`. New `seatCountFor(gameType)` in `lib/supabase/types.ts` (2 for `bataillecorse`, 4 otherwise) replaces every hardcoded `[0,1,2,3]`/`length === 4`/`length < 4` in `lib/server/actions-lobby.ts` (`pickJoinSeat`, `fillWithBots`, `startGame` - error code renamed `need_four_players` -> `not_enough_players`), `components/Lobby.tsx`, and `components/BotSeatPicker.tsx` (previously hardcoded 4 seats independently of the actual roster passed in - a latent bug for any non-4-seat game, fixed by deriving seats from the roster itself instead of a fixed range). `GameRow.state`/`GameView.view`/`botViews` widened to a 4-way discriminated union.
 Reason: la Bataille Corse is a 2-player-only reflex game (first to slap a double/sandwich takes the pile; figures/aces open a tribute) - the first game that isn't 4 seats, so the seat-count assumption baked into the lobby/bot-fill/start-game plumbing had to become a per-game-type lookup instead of a literal.
 Impact: Existing Coinche/Bouilla/Président rows/behavior unchanged (still 4 seats). `state.slapWindow`/`state.tribute`/`state.slapClaims` etc. are new, `bataillecorse`-only fields with no shared-shape equivalent in any other game (see the dedicated section above) - unlike Bouilla/Président's `readySeats`, nothing here is reused verbatim by another game. Also fixed a real bug found while wiring this in: the generic online bot runner (`lib/client/useBotRunner.ts`) defaulted any non-`"bouilla"` game type to the Coinche ISMCTS brain on whatever `PlayerView` shape it was given - harmless-looking until `bataillecorse`'s view shape actually crashed it at runtime. Now explicitly excludes `bataillecorse` (which has its own `useBataillecorseBotRunner.ts`); Président likely has the same latent issue and was left alone (out of scope here, flagged in `docs/BACKLOG.md`).
+
+## 2026-09-18 - La Bataille Corse false slap awards the pile (`lastPileWin.reason` `"falseSlap"`)
+
+Change: No SQL change (`games.state` is opaque jsonb). `PileWinEvent.reason` gained `"falseSlap"`. A false slap now awards the whole center pile to the other seat (same tuck-under as a real slap/tribute win) and still sets `lastFalseSlap` for the UI stamp. Empty pile: foul is flagged, nothing awarded.
+Reason: User reversed the 2026-09-16 1-card-under-the-pile penalty: tapping when no pattern is live must show a WRONG mark and give every center card to the opponent.
+Impact: In-progress `bataillecorse` rows with an open pile are interpreted under the new rule on the next `attemptSlap`. No migration. Engine tests covering the old 1-card penalty were replaced.

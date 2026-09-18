@@ -55,7 +55,7 @@ export interface PileWinEvent {
   id: number;
   seat: Seat;
   cardCount: number;
-  reason: "tribute" | "slap";
+  reason: "tribute" | "slap" | "falseSlap";
   /** Only set when `reason === "slap"`: each seat's own locally-measured
    *  reaction time that decided the race (see `SlapClaim`) - lets both
    *  players' UI show the opponent's reflex too, not just their own. Missing
